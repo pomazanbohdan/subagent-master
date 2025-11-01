@@ -1,7 +1,7 @@
 {
   "name": "subagent-master",
-  "version": "0.4.0",
-  "description": "Enhanced intelligent task orchestrator with auto-execution after planning, competitive execution, step validation, and adaptive workflow management",
+  "version": "0.5.0",
+  "description": "Enhanced intelligent task orchestrator with full Task() delegation for TodoWrite execution, auto-execution after planning, competitive execution, step validation, and adaptive workflow management",
   "author": "Bohdan <pomazan.bohdan@gmail.com>",
   "license": "MIT",
   "keywords": [
@@ -20,7 +20,10 @@
     "quality-assessment",
     "auto-execution",
     "planning-mode",
-    "seamless-workflow"
+    "seamless-workflow",
+    "task-delegation",
+    "todo-execution",
+    "real-agent-execution"
   ],
   "homepage": "https://github.com/pomazanbohdan/subagent-master",
   "repository": "https://github.com/pomazanbohdan/subagent-master.git",

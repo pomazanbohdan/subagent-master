@@ -4,7 +4,7 @@ description: "Full-featured intelligent task orchestrator with parallel initiali
 capabilities: ["task-orchestration", "automatic-delegation", "task-planning", "complexity-analysis", "agent-selection", "interactive-workflow", "parallel-execution", "task-breakdown", "hybrid-workflow", "todo-coordination", "parallel-initialization"]
 triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage", "parallel", "team", "multiple-agents"]
 tools: ["sequential-thinking", "serena", "context7"]
-version: "0.4.0"
+version: "0.5.0"
 ---
 
 # 🧠 Intelligent Task Orchestrator
@@ -5151,24 +5151,130 @@ def create_sequential_execution_steps(user_request, task_context):
 
 def execute_block_with_agent(block, execution_context):
     """
-    Execute a parallel block with appropriate agent
+    Execute a parallel block with appropriate agent using Task() delegation
     """
-    # Find appropriate agent for this block
-    agent_type = block.get('agent_type', 'general')
+    # Determine appropriate agent type for Task()
+    task_context = execution_context.get('task_context', {})
+    agent_type = determine_agent_type_for_block(block, task_context)
 
-    # Execute with Task delegation (simplified)
-    result = {
-        'block_name': block.get('name'),
-        'agent_type': agent_type,
-        'execution_status': 'completed',
-        'result': f"Executed {block.get('name')} successfully"
+    # Create comprehensive delegation prompt
+    delegation_prompt = create_block_delegation_prompt(block, execution_context, task_context)
+
+    # Execute with Task()
+    try:
+        # Validate system state before delegation
+        system_validation = validate_system_state()
+        if not system_validation['valid']:
+            raise Exception(f"System validation failed: {system_validation['errors']}")
+
+        # Validate task execution parameters
+        task_validation = validate_task_execution(block.get('description', ''), agent_type)
+        if not task_validation['valid']:
+            raise Exception(f"Task validation failed: {task_validation['errors']}")
+
+        # Execute with Task()
+        task_result = Task(
+            subagent_type=agent_type,
+            description=delegation_prompt,
+            prompt=f"Execute block: {block.get('name', 'Block')} - {block.get('description', '')}"
+        )
+
+        return {
+            'block_name': block.get('name'),
+            'agent_type': agent_type,
+            'execution_status': 'completed',
+            'result': task_result,
+            'delegated': True,
+            'execution_method': 'task_delegation'
+        }
+    except Exception as e:
+        # Fallback to direct execution if Task() fails
+        return {
+            'block_name': block.get('name'),
+            'agent_type': agent_type,
+            'execution_status': 'failed',
+            'error': str(e),
+            'delegated': False,
+            'execution_method': 'direct_fallback',
+            'result': f"Failed to execute {block.get('name')} via Task() delegation"
+        }
+
+def determine_agent_type_for_block(block, task_context):
+    """
+    Determine the appropriate agent type for Task() delegation for a specific block
+    """
+    # Use explicit agent type if specified
+    agent_type = block.get('agent_type')
+    if agent_type:
+        return map_agent_type_to_task_agent(agent_type)
+
+    # Determine from block name and description
+    block_name = block.get('name', '').lower()
+    block_desc = block.get('description', '').lower()
+
+    # Analyze content for agent selection
+    content = f"{block_name} {block_desc}"
+
+    if 'analysis' in content or 'analyze' in content:
+        return 'deep-research-agent'
+    elif 'security' in content or 'auth' in content:
+        return 'security-engineer'
+    elif 'performance' in content or 'optimization' in content:
+        return 'performance-optimizer'
+    elif 'design' in content or 'architecture' in content:
+        return 'backend-architect'
+    elif 'frontend' in content or 'ui' in content:
+        return 'frontend-developer'
+    elif 'test' in content or 'testing' in content:
+        return 'quality-engineer'
+    else:
+        # Default to backend-architect for general blocks
+        return 'backend-architect'
+
+def map_agent_type_to_task_agent(agent_type):
+    """
+    Map block agent types to Task() agent types
+    """
+    agent_mapping = {
+        'analyst': 'deep-research-agent',
+        'implementer': 'backend-architect',
+        'designer': 'backend-architect',
+        'tester': 'quality-engineer',
+        'security': 'security-engineer',
+        'frontend': 'frontend-developer',
+        'performance': 'performance-optimizer'
     }
 
-    return result
+    return agent_mapping.get(agent_type, 'backend-architect')
+
+def create_block_delegation_prompt(block, execution_context, task_context):
+    """
+    Create comprehensive prompt for Task() delegation for block execution
+    """
+    prompt_parts = [
+        f"Block Task: {block.get('name', 'Block')}",
+        f"Description: {block.get('description', 'No description provided')}",
+        f"Original Request: {execution_context.get('original_request', 'N/A')}",
+        f"Block Type: {block.get('agent_type', 'general')}",
+        "",
+        "Execution Context:",
+        f"- Task Context: {task_context}",
+        f"- Execution Mode: {execution_context.get('mode', 'unknown')}",
+        "",
+        "Requirements:",
+        "- Execute this block thoroughly and professionally",
+        "- Consider dependencies and integration points",
+        "- Ensure high quality and best practices",
+        "- Provide comprehensive results for the block",
+        "",
+        "Please execute this block with full attention to detail and quality."
+    ]
+
+    return '\n'.join(prompt_parts)
 
 def execute_step_with_agent(step, execution_context, previous_results):
     """
-    Execute a sequential step with appropriate agent
+    Execute a sequential step with appropriate agent using Task() delegation
     """
     # Check dependencies
     dependencies = step.get('dependencies', [])
@@ -5178,15 +5284,151 @@ def execute_step_with_agent(step, execution_context, previous_results):
             if dep_id > len(previous_results):
                 raise Exception(f"Dependency {dep_id} not satisfied")
 
-    # Execute step
-    result = {
-        'step_id': step.get('step_id'),
-        'step_name': step.get('name'),
-        'execution_status': 'completed',
-        'result': f"Executed step {step.get('step_id')}: {step.get('name')} successfully"
+    # Determine appropriate agent type for Task()
+    task_context = execution_context.get('task_context', {})
+    agent_type = determine_agent_type_for_step(step, task_context, previous_results)
+
+    # Create comprehensive delegation prompt
+    delegation_prompt = create_step_delegation_prompt(step, execution_context, task_context, previous_results)
+
+    # Execute with Task()
+    try:
+        # Validate system state before delegation
+        system_validation = validate_system_state()
+        if not system_validation['valid']:
+            raise Exception(f"System validation failed: {system_validation['errors']}")
+
+        # Validate task execution parameters
+        task_validation = validate_task_execution(step.get('description', ''), agent_type)
+        if not task_validation['valid']:
+            raise Exception(f"Task validation failed: {task_validation['errors']}")
+
+        # Execute with Task()
+        task_result = Task(
+            subagent_type=agent_type,
+            description=delegation_prompt,
+            prompt=f"Execute step {step.get('step_id', '?')}: {step.get('name', 'Step')} - {step.get('description', '')}"
+        )
+
+        return {
+            'step_id': step.get('step_id'),
+            'step_name': step.get('name'),
+            'execution_status': 'completed',
+            'result': task_result,
+            'delegated': True,
+            'execution_method': 'task_delegation',
+            'dependencies_satisfied': len(dependencies) > 0
+        }
+    except Exception as e:
+        # Fallback to direct execution if Task() fails
+        return {
+            'step_id': step.get('step_id'),
+            'step_name': step.get('name'),
+            'execution_status': 'failed',
+            'error': str(e),
+            'delegated': False,
+            'execution_method': 'direct_fallback',
+            'result': f"Failed to execute step {step.get('step_id')} via Task() delegation",
+            'dependencies_satisfied': len(dependencies) > 0
+        }
+
+def determine_agent_type_for_step(step, task_context, previous_results):
+    """
+    Determine the appropriate agent type for Task() delegation for a specific step
+    """
+    # Use required capabilities to determine agent
+    required_capabilities = step.get('required_capabilities', [])
+
+    # Map capabilities to agent types
+    capability_agent_mapping = {
+        'analysis': 'deep-research-agent',
+        'research': 'deep-research-agent',
+        'requirements': 'deep-research-agent',
+        'security': 'security-engineer',
+        'authentication': 'security-engineer',
+        'performance': 'performance-optimizer',
+        'optimization': 'performance-optimizer',
+        'architecture': 'backend-architect',
+        'design': 'backend-architect',
+        'implementation': 'backend-architect',
+        'backend': 'backend-architect',
+        'frontend': 'frontend-developer',
+        'ui': 'frontend-developer',
+        'testing': 'quality-engineer',
+        'validation': 'quality-engineer',
+        'quality': 'quality-engineer'
     }
 
-    return result
+    # Find best matching agent based on capabilities
+    for capability in required_capabilities:
+        if capability in capability_agent_mapping:
+            return capability_agent_mapping[capability]
+
+    # Determine from step name and description
+    step_name = step.get('name', '').lower()
+    step_desc = step.get('description', '').lower()
+    content = f"{step_name} {step_desc}"
+
+    if 'analysis' in content or 'analyze' in content or 'requirements' in content:
+        return 'deep-research-agent'
+    elif 'security' in content or 'auth' in content:
+        return 'security-engineer'
+    elif 'performance' in content or 'optimization' in content:
+        return 'performance-optimizer'
+    elif 'design' in content or 'architecture' in content:
+        return 'backend-architect'
+    elif 'implement' in content or 'develop' in content or 'code' in content:
+        return 'backend-architect'
+    elif 'frontend' in content or 'ui' in content:
+        return 'frontend-developer'
+    elif 'test' in content or 'testing' in content or 'validation' in content:
+        return 'quality-engineer'
+    else:
+        # Default to backend-architect for general steps
+        return 'backend-architect'
+
+def create_step_delegation_prompt(step, execution_context, task_context, previous_results):
+    """
+    Create comprehensive prompt for Task() delegation for step execution
+    """
+    # Prepare dependencies context
+    dependencies_info = ""
+    if step.get('dependencies'):
+        dependencies_info = f"\nDependencies: {step.get('dependencies')}"
+        for dep_id in step.get('dependencies'):
+            if dep_id <= len(previous_results):
+                dep_result = previous_results[dep_id - 1]
+                dependencies_info += f"\n- Step {dep_id} result: {dep_result.get('result', 'No result available')}"
+
+    # Prepare previous steps context
+    previous_steps_info = f"\nPrevious Steps Completed: {len(previous_results)}"
+    for i, prev_result in enumerate(previous_results, 1):
+        previous_steps_info += f"\n- Step {i}: {prev_result.get('step_name', 'Unknown')}"
+
+    prompt_parts = [
+        f"Step Task: {step.get('step_id', '?')} - {step.get('name', 'Step')}",
+        f"Description: {step.get('description', 'No description provided')}",
+        f"Original Request: {execution_context.get('original_request', 'N/A')}",
+        f"Required Capabilities: {step.get('required_capabilities', [])}",
+        "",
+        "Execution Context:",
+        f"- Task Context: {task_context}",
+        f"- Execution Mode: {execution_context.get('mode', 'unknown')}",
+        f"- Step Dependencies: {step.get('dependencies', [])}",
+        previous_steps_info,
+        dependencies_info,
+        "",
+        "Requirements:",
+        "- Execute this step thoroughly and professionally",
+        "- Consider dependencies and integration with previous steps",
+        "- Ensure high quality and best practices",
+        "- Follow the required capabilities specification",
+        "- Provide comprehensive results for the step",
+        "",
+        "Please execute this step with full attention to detail and quality."
+    ]
+
+    return '\n'.join(prompt_parts)
 
 def synthesize_parallel_results(execution_results, task_plan):
     """
@@ -5330,23 +5572,39 @@ def auto_execute_sequential_plan(task_plan, execution_context):
     return final_result
 
 def auto_execute_simple_plan(task_plan, execution_context):
-    """Execute simple plan automatically"""
+    """Execute simple plan automatically using Task() delegation"""
     # For simple tasks, delegate directly to best agent
     task_description = execution_context['original_request']
     task_context = execution_context['task_context']
 
-    # Find best agent
-    compatible_agents = find_compatible_agents(task_context, categories_data['categories'])
-    best_agent = select_best_agent(compatible_agents, task_description, task_context)
+    # Find best agent using existing logic
+    task_complexity = analyze_task_complexity(task_description)
+    requires_specialization = check_specialization_requirement(task_description, task_context)
 
-    # Execute with Task delegation
-    result = execute_task_with_best_agent(task_description, task_context, best_agent, 0.85)
+    if task_complexity >= 2 or requires_specialization:
+        # Use existing Task() delegation logic
+        # Get compatible agents from existing system
+        compatible_agents = find_compatible_agents(task_context, categories_data['categories'])
+        if compatible_agents:
+            best_agent, best_score = compatible_agents[0], 0.85  # Use first agent with default score
+            result = execute_task_with_best_agent(task_description, task_context, best_agent, best_score)
+        else:
+            # Fallback to general agent
+            result = execute_task_with_best_agent(task_description, task_context,
+                                                   {'name': 'backend-architect', 'type': 'backend-architect'}, 0.7)
+    else:
+        # Direct execution for very simple tasks
+        result = execute_task_with_best_agent(task_description, task_context,
+                                               {'name': 'backend-architect', 'type': 'backend-architect'}, 0.6)
 
-    # Update TodoWrite
+    # Update TodoWrite with execution details
+    agent_name = result.get('selected_agent', {}).get('name', 'Unknown Agent')
+    execution_method = result.get('execution_method', 'unknown')
+
     TodoWrite(todos=[{
         "content": "🎉 Simple task execution completed",
         "status": "completed",
-        "activeForm": f"Executed by: {best_agent.get('name', 'Agent')}"
+        "activeForm": f"Executed by: {agent_name} ({execution_method})"
     }])
 
     return result
