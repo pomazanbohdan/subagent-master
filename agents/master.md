@@ -167,9 +167,12 @@ def select_optimal_agent(task_description, available_agents):
 
     # Step 2: Calculate match scores for all agents
     agent_scores = []
+    # Динамічне визначення порогу якості
+    quality_threshold = calculate_adaptive_threshold(task_context)
+
     for agent in available_agents:
         score = calculate_compatibility_score(task_keywords, task_context, agent)
-        if score >= 70:  # Quality threshold
+        if score >= quality_threshold:
             agent_scores.append((agent, score))
 
     # Step 3: Handle conflicting signals
@@ -186,14 +189,44 @@ def calculate_compatibility_score(task_keywords, task_context, agent):
     context_score = calculate_context_fit(task_context, agent)
     historical_score = get_historical_success_rate(agent)
 
-    # Weighted scoring with context priority
+    # Динамічне зважування на основі контексту задачі
+    context_weights = get_dynamic_weights(task_context)
     total_score = (
-        keyword_score * 0.4 +
-        context_score * 0.4 +
-        historical_score * 0.2
+        keyword_score * context_weights["keyword"] +
+        context_score * context_weights["context"] +
+        historical_score * context_weights["historical"]
     )
 
     return total_score
+
+def calculate_adaptive_threshold(task_context):
+    """Адаптивний поріг якості на основі контексту"""
+    base_threshold = 65  # Базовий поріг
+
+    # Підвищення порогу для критичних доменів
+    if task_context["domain"] in ["financial", "security", "healthcare"]:
+        base_threshold += 10
+
+    # Зниження порогу для дослідницьких задач
+    if task_context["complexity"] == "research":
+        base_threshold -= 5
+
+    # Підвищення при високій терміновості
+    if task_context["urgency"] == "high":
+        base_threshold += 5
+
+    return min(base_threshold, 85)  # Максимальний поріг
+
+def get_dynamic_weights(task_context):
+    """Динамічні ваги для скорингу на основі контексту"""
+    default_weights = {"keyword": 0.4, "context": 0.4, "historical": 0.2}
+
+    if task_context["domain"] == "research":
+        return {"keyword": 0.3, "context": 0.5, "historical": 0.2}
+    elif task_context["urgency"] == "high":
+        return {"keyword": 0.5, "context": 0.3, "historical": 0.2}
+
+    return default_weights
 
 def resolve_conflicts(agent_scores, task_context):
     """Handle cases where multiple agents score similarly"""
@@ -241,26 +274,71 @@ def find_best_agents_for_task(task_type, agent_vectors):
 ```python
 def should_ask_for_clarification(task_description, agent_scores):
     """
-    Determines when to ask user for clarification
+    Determines when to ask user for clarification using adaptive thresholds
     """
-    # High ambiguity scenarios (>30% uncertainty)
+    task_context = analyze_task_context(task_description)
+
+    # Адаптивні пороги на основі контексту
+    ambiguity_threshold = get_adaptive_ambiguity_threshold(task_context)
+    score_difference_threshold = get_adaptive_score_threshold(task_context)
+    confidence_threshold = get_adaptive_confidence_threshold(task_context)
+
+    # High ambiguity scenarios (adaptive uncertainty threshold)
     ambiguity_score = calculate_ambiguity(task_description, agent_scores)
 
-    if ambiguity_score > 0.3:
+    if ambiguity_score > ambiguity_threshold:
         return True, generate_clarification_questions(task_description, agent_scores)
 
-    # Close score competition (top agents within 5% of each other)
+    # Close score competition (adaptive score difference)
     if len(agent_scores) >= 2:
         top_score = agent_scores[0][1]
         second_score = agent_scores[1][1]
-        if abs(top_score - second_score) < 5:
+        if abs(top_score - second_score) < score_difference_threshold:
             return True, generate_agent_choice_questions(agent_scores[:2])
 
-    # Low confidence in best match
-    if agent_scores[0][1] < 80:
+    # Low confidence in best match (adaptive confidence threshold)
+    if agent_scores[0][1] < confidence_threshold:
         return True, generate_confidence_questions(agent_scores[0])
 
     return False, None
+
+def get_adaptive_ambiguity_threshold(task_context):
+    """Адаптивний поріг неоднозначності"""
+    base_threshold = 0.25
+
+    # Зниження порогу для складних технічних задач
+    if task_context["domain"] in ["engineering", "research"]:
+        base_threshold -= 0.05
+
+    # Підвищення для критичних доменів
+    if task_context["domain"] in ["financial", "security"]:
+        base_threshold += 0.1
+
+    return max(0.15, min(base_threshold, 0.4))
+
+def get_adaptive_score_threshold(task_context):
+    """Адаптивний поріг різниці між агентами"""
+    base_threshold = 3  # 3% difference
+
+    # Підвищення для високоточних доменів
+    if task_context["domain"] in ["financial", "healthcare"]:
+        base_threshold += 2
+
+    return base_threshold
+
+def get_adaptive_confidence_threshold(task_context):
+    """Адаптивний поріг впевненості"""
+    base_threshold = 75
+
+    # Підвищення для критичних завдань
+    if task_context["urgency"] == "critical":
+        base_threshold += 10
+
+    # Зниження для дослідницьких задач
+    if task_context["complexity"] == "exploratory":
+        base_threshold -= 5
+
+    return max(70, min(base_threshold, 90))
 
 def generate_clarification_questions(task_description, agent_scores):
     """Generate specific questions to reduce ambiguity"""
@@ -343,79 +421,67 @@ def extract_contextual_keywords(task_description):
 
 ---
 
-## 📋 **Task Type Classification**
+## 📋 **Динамічна класифікація задач**
 
-### **🏗️ Architecture Tasks**
+Замість статичних категорій, я використовую **динамічний аналіз** кожної задачі:
 
-```yaml
-Triggers: "architecture", "system design", "structure"
-Complexity: 2-3
-Agents: @backend-architect, @system-architect, @security-engineer
-Planning: Required TodoWrite with detailed stages
+### **🔄 Процес динамічної класифікації**
+
+1. **Аналіз ключових слів** - `extract_task_keywords()` визначає предметну область
+2. **Контекстуальний аналіз** - `analyze_task_context()` розуміє специфіку задачі
+3. **Формування категорії** - `generate_dynamic_categories()` створює унікальну категорію
+4. **Підбір агентів** - `select_optimal_agent()` знаходить релевантних спеціалістів
+5. **Оцінка складності** - динамічне визначення на основі контексту
+
+### **📊 Приклади динамічної класифікації**
+
+```
+Завдання: "оптимізувати API для електронної комерції"
+↓
+Динамічна категорія: "API оптимізація для e-commerce"
+↓
+Агенти: backend-architect, performance-engineer, database-specialist
+↓
+Складність: 2/3 (вимірюється динамічно)
 ```
 
-### **💻 Component Development**
-
-```yaml
-Triggers: "development", "API", "component", "module"
-Complexity: 1-3
-Agents: @backend-developer, @frontend-developer, @api-specialist
-Planning: TodoWrite for multi-component systems
-```
-
-### **🔍 Analytical Tasks**
-
-```yaml
-Triggers: "analysis", "research", "evaluation", "report"
-Complexity: 1-2
-Agents: @research-agent, @data-analyst, @business-analyst
-Planning: TodoWrite for multi-stage research
-```
-
-### **🛡️ Security and Quality**
-
-```yaml
-Triggers: "security", "audit", "validation", "testing"
-Complexity: 2-3
-Agents: @security-engineer, @quality-engineer, @quality-assurance
-Planning: TodoWrite with testing phases
-```
-
-### **⚡ Optimization and Performance**
-
-```yaml
-Triggers: "optimize", "improve", "performance"
-Complexity: 1-2
-Agents: @performance-engineer, @resource-optimizer
-Planning: TodoWrite with measurement stages
-```
+**Важливо:** Категорії, агенти та складність визначаються динамічно для кожної конкретної задачі, а не використовують фіксовані списки.
 
 ---
 
 ## ⚡ **Fast Analysis Algorithms**
 
-### **Complexity Determination Algorithm:**
+### **Dynamic Complexity Determination Algorithm:**
 
 ```python
 def analyze_task_complexity(task_description):
-    keywords = extract_keywords(task_description)
+    # Динамічний аналіз ключових слів з контексту
+    task_keywords = extract_task_keywords(task_description)
+    task_context = analyze_task_context(task_description)
+
+    # Динамічне визначення вагових коефіцієнтів
+    complexity_weights = calculate_dynamic_weights(task_context)
+
+    # Контекстуальний аналіз складності
     base_complexity = 0
+    for keyword in task_keywords:
+        weight = complexity_weights.get(keyword, 1.0)
+        base_complexity += weight
 
-    # Keyword analysis
-    if any(k in keywords for k in ["architecture", "system"]):
-        base_complexity += 2
-    if any(k in keywords for k in ["analysis", "research"]):
-        base_complexity += 1
-    if any(k in keywords for k in ["development", "create"]):
-        base_complexity += 1
-    if any(k in keywords for k in ["optimize", "improve"]):
-        base_complexity += 1
-
-    # Step count analysis
-    steps = estimate_task_steps(task_description)
+    # Динамічна оцінка кількості кроків
+    steps = estimate_dynamic_task_steps(task_description, task_context)
     base_complexity += min(steps // 2, 3)
 
     return min(base_complexity, 3)
+
+def calculate_dynamic_weights(task_context):
+    # Адаптивні ваги на основі домену та складності
+    domain_weights = {
+        "architecture": 2.0 if task_context["scope"] == "system" else 1.0,
+        "security": 1.5 if task_context["domain"] == "financial" else 1.0,
+        "performance": 1.2 if task_context["urgency"] == "high" else 1.0
+    }
+    return domain_weights
 ```
 
 ### **Agent Selection Algorithm:**
@@ -732,11 +798,14 @@ def breakdown_task_into_parallel_blocks(task_description, complexity_score):
 
 def analyze_task_dependencies(task_description):
     """
-    Аналіз залежностей між компонентами задачі
+    Динамічний аналіз залежностей між компонентами задачі
     """
-    # Виявлення послідовних та паралельних компонентів
-    sequential_patterns = ["then", "after", "followed by", "next", "before"]
-    parallel_patterns = ["and", "also", "additionally", "plus", "with", "together"]
+    # Динамічне визначення патернів на основі контексту
+    task_context = analyze_task_context(task_description)
+
+    # Адаптивні патерни для різних доменів
+    sequential_patterns = get_domain_specific_sequential_patterns(task_context)
+    parallel_patterns = get_domain_specific_parallel_patterns(task_context)
 
     dependencies = {
         "sequential": [],
@@ -744,7 +813,7 @@ def analyze_task_dependencies(task_description):
         "conditional": []
     }
 
-    # Логіка аналізу залежностей
+    # Динамічний аналіз залежностей
     for pattern in sequential_patterns:
         if pattern in task_description.lower():
             dependencies["sequential"].append(pattern)
@@ -755,73 +824,255 @@ def analyze_task_dependencies(task_description):
 
     return dependencies
 
+def get_domain_specific_sequential_patterns(task_context):
+    """Отримати послідовні патерни специфічні для домену"""
+    base_patterns = ["then", "after", "followed by", "next", "before"]
+
+    domain_extensions = {
+        "engineering": ["implement", "integrate", "deploy"],
+        "research": ["validate", "verify", "confirm"],
+        "business": ["analyze", "recommend", "implement"]
+    }
+
+    patterns = base_patterns.copy()
+    if task_context["domain"] in domain_extensions:
+        patterns.extend(domain_extensions[task_context["domain"]])
+
+    return patterns
+
+def get_domain_specific_parallel_patterns(task_context):
+    """Отримати паралельні патерни специфічні для домену"""
+    base_patterns = ["and", "also", "additionally", "plus", "with", "together"]
+
+    domain_extensions = {
+        "engineering": ["simultaneously", "concurrently", "in parallel"],
+        "research": ["compare", "contrast", "evaluate together"],
+        "business": ["assess", "evaluate", "consider together"]
+    }
+
+    patterns = base_patterns.copy()
+    if task_context["domain"] in domain_extensions:
+        patterns.extend(domain_extensions[task_context["domain"]])
+
+    return patterns
+
 def create_logical_blocks(task_description, dependencies):
     """
-    Створення логічних блоків з незалежними компонентами
+    Динамічне створення логічних блоків на основі контексту задачі
     """
+    # Динамічний аналіз контексту
+    task_context = analyze_task_context(task_description)
+    available_agents = get_available_agents()
+
     blocks = []
 
-    # Блок 1: Аналіз/дослідження
-    if any(kw in task_description.lower() for kw in ["analyze", "research", "investigate", "study", "examine"]):
-        blocks.append({
-            "id": "research",
-            "name": "Аналіз та дослідження",
-            "type": "analysis",
-            "estimated_time": "10-15 хв",
-            "agents": ["research-agent", "analyst", "business-analyst"],
-            "dependencies": [],
-            "parallel_capable": True
-        })
+    # Динамічне визначення блоків на основі контексту
+    if should_create_analysis_block(task_description, task_context):
+        analysis_block = create_dynamic_analysis_block(task_description, task_context, available_agents)
+        blocks.append(analysis_block)
 
-    # Блок 2: Проектування/архітектура
-    if any(kw in task_description.lower() for kw in ["design", "architecture", "plan", "structure", "organize"]):
-        blocks.append({
-            "id": "design",
-            "name": "Проектування",
-            "type": "design",
-            "estimated_time": "15-20 хв",
-            "agents": ["architect", "system-architect", "frontend-architect", "backend-architect"],
-            "dependencies": ["research"] if "research" in [b["id"] for b in blocks] else [],
-            "parallel_capable": True
-        })
+    if should_create_design_block(task_description, task_context):
+        design_block = create_dynamic_design_block(task_description, task_context, available_agents, blocks)
+        blocks.append(design_block)
 
-    # Блок 3: Імплементація
-    if any(kw in task_description.lower() for kw in ["implement", "develop", "create", "build", "code"]):
-        blocks.append({
-            "id": "implementation",
-            "name": "Імплементація",
-            "type": "implementation",
-            "estimated_time": "20-30 хв",
-            "agents": ["developer", "engineer", "backend-developer", "frontend-developer"],
-            "dependencies": ["design"] if "design" in [b["id"] for b in blocks] else [],
-            "parallel_capable": True
-        })
+    if should_create_implementation_block(task_description, task_context):
+        impl_block = create_dynamic_implementation_block(task_description, task_context, available_agents, blocks)
+        blocks.append(impl_block)
 
-    # Блок 4: Оптимізація
-    if any(kw in task_description.lower() for kw in ["optimize", "improve", "enhance", "boost", "speed up"]):
-        blocks.append({
-            "id": "optimization",
-            "name": "Оптимізація",
-            "type": "optimization",
-            "estimated_time": "15-25 хв",
-            "agents": ["performance-engineer", "optimizer", "resource-optimizer"],
-            "dependencies": ["implementation"] if "implementation" in [b["id"] for b in blocks] else [],
-            "parallel_capable": True
-        })
+    if should_create_optimization_block(task_description, task_context):
+        opt_block = create_dynamic_optimization_block(task_description, task_context, available_agents, blocks)
+        blocks.append(opt_block)
 
-    # Блок 5: Тестування
-    if any(kw in task_description.lower() for kw in ["test", "validate", "verify", "check", "qa"]):
-        blocks.append({
-            "id": "testing",
-            "name": "Тестування та валідація",
-            "type": "testing",
-            "estimated_time": "10-20 хв",
-            "agents": ["quality-engineer", "quality-assurance", "tester"],
-            "dependencies": ["implementation"] if "implementation" in [b["id"] for b in blocks] else [],
-            "parallel_capable": True
-        })
+    if should_create_testing_block(task_description, task_context):
+        test_block = create_dynamic_testing_block(task_description, task_context, available_agents, blocks)
+        blocks.append(test_block)
 
     return blocks
+
+def should_create_analysis_block(task_description, task_context):
+    """Динамічне визначення чи потрібен блок аналізу"""
+    analysis_keywords = ["analyze", "research", "investigate", "study", "examine", "evaluate", "assess"]
+    domain_specific_keywords = get_domain_analysis_keywords(task_context)
+
+    return (any(kw in task_description.lower() for kw in analysis_keywords) or
+            any(kw in task_description.lower() for kw in domain_specific_keywords))
+
+def create_dynamic_analysis_block(task_description, task_context, available_agents):
+    """Створення динамічного блоку аналізу"""
+    relevant_agents = find_relevant_agents_for_analysis(task_context, available_agents)
+
+    return {
+        "id": f"analysis_{task_context['domain']}_{len(available_agents)}",
+        "name": f"Аналіз {task_context['domain']} компонентів",
+        "type": "analysis",
+        "estimated_time": estimate_dynamic_time("analysis", task_context),
+        "agents": [agent.name for agent in relevant_agents],
+        "dependencies": [],
+        "parallel_capable": True
+    }
+
+def get_domain_analysis_keywords(task_context):
+    """Отримати ключові слова аналізу для конкретного домену"""
+    domain_keywords = {
+        "engineering": ["debug", "profile", "benchmark", "test"],
+        "research": ["investigate", "explore", "study", "compare"],
+        "business": ["evaluate", "assess", "analyze market", "review"],
+        "security": ["audit", "scan", "vulnerability", "penetration test"]
+    }
+    return domain_keywords.get(task_context["domain"], [])
+
+def find_relevant_agents_for_analysis(task_context, available_agents):
+    """Знайти релевантних агентів для аналізу на основі контексту"""
+    # Динамічний пошук агентів з відповідними компетенціями
+    analysis_competencies = get_analysis_competencies_for_domain(task_context)
+
+    relevant_agents = []
+    for agent in available_agents:
+        if has_competency_overlap(agent, analysis_competencies):
+            relevant_agents.append(agent)
+
+    return relevant_agents[:3]  # Повернути топ-3
+
+def get_analysis_competencies_for_domain(task_context):
+    """Отримати компетенції аналізу для домену"""
+    domain_competencies = {
+        "engineering": ["debugging", "performance analysis", "code review"],
+        "research": ["data analysis", "comparative analysis", "literature review"],
+        "business": ["market analysis", "requirements analysis", "feasibility study"],
+        "security": ["security analysis", "vulnerability assessment", "compliance review"]
+    }
+    return domain_competencies.get(task_context["domain"], ["analysis"])
+
+def estimate_dynamic_time(block_type, task_context):
+    """Динамічна оцінка часу на основі контексту"""
+    base_times = {
+        "analysis": 15,
+        "design": 20,
+        "implementation": 25,
+        "optimization": 18,
+        "testing": 12
+    }
+
+    base_time = base_times.get(block_type, 15)
+
+    # Модифікатори на основі контексту
+    if task_context["urgency"] == "critical":
+        base_time *= 0.8  # Прискорення для критичних задач
+    elif task_context["complexity"] == "high":
+        base_time *= 1.5  # Збільшення часу для складних задач
+
+    return f"{int(base_time)}-{int(base_time * 1.5)} хв"
+
+# Аналогічні функції для інших типів блоків...
+def should_create_design_block(task_description, task_context):
+    design_keywords = ["design", "architecture", "plan", "structure", "organize"]
+    return any(kw in task_description.lower() for kw in design_keywords)
+
+def create_dynamic_design_block(task_description, task_context, available_agents, existing_blocks):
+    design_agents = find_relevant_agents_for_design(task_context, available_agents)
+    dependencies = [b["id"] for b in existing_blocks if b["type"] == "analysis"]
+
+    return {
+        "id": f"design_{task_context['domain']}",
+        "name": f"Проектування {task_context['domain']} архітектури",
+        "type": "design",
+        "estimated_time": estimate_dynamic_time("design", task_context),
+        "agents": [agent.name for agent in design_agents],
+        "dependencies": dependencies,
+        "parallel_capable": True
+    }
+
+def find_relevant_agents_for_design(task_context, available_agents):
+    design_competencies = ["architecture", "design", "planning", "system design"]
+    relevant_agents = []
+    for agent in available_agents:
+        if has_competency_overlap(agent, design_competencies):
+            relevant_agents.append(agent)
+    return relevant_agents[:3]
+
+def has_competency_overlap(agent, required_competencies):
+    """Перевірка чи є перекриття компетенцій"""
+    agent_competencies = getattr(agent, 'capabilities', [])
+    return any(comp in agent_competencies for comp in required_competencies)
+
+# Спрощені версії для решати блоків...
+def should_create_implementation_block(task_description, task_context):
+    impl_keywords = ["implement", "develop", "create", "build", "code"]
+    return any(kw in task_description.lower() for kw in impl_keywords)
+
+def create_dynamic_implementation_block(task_description, task_context, available_agents, existing_blocks):
+    impl_agents = find_relevant_agents_for_implementation(task_context, available_agents)
+    dependencies = [b["id"] for b in existing_blocks if b["type"] in ["design", "analysis"]]
+
+    return {
+        "id": f"implementation_{task_context['domain']}",
+        "name": f"Імплементація {task_context['domain']} рішень",
+        "type": "implementation",
+        "estimated_time": estimate_dynamic_time("implementation", task_context),
+        "agents": [agent.name for agent in impl_agents],
+        "dependencies": dependencies,
+        "parallel_capable": True
+    }
+
+def find_relevant_agents_for_implementation(task_context, available_agents):
+    impl_competencies = ["development", "implementation", "coding", "programming"]
+    relevant_agents = []
+    for agent in available_agents:
+        if has_competency_overlap(agent, impl_competencies):
+            relevant_agents.append(agent)
+    return relevant_agents[:3]
+
+def should_create_optimization_block(task_description, task_context):
+    opt_keywords = ["optimize", "improve", "enhance", "boost", "speed up"]
+    return any(kw in task_description.lower() for kw in opt_keywords)
+
+def create_dynamic_optimization_block(task_description, task_context, available_agents, existing_blocks):
+    opt_agents = find_relevant_agents_for_optimization(task_context, available_agents)
+    dependencies = [b["id"] for b in existing_blocks if b["type"] == "implementation"]
+
+    return {
+        "id": f"optimization_{task_context['domain']}",
+        "name": f"Оптимізація {task_context['domain']} системи",
+        "type": "optimization",
+        "estimated_time": estimate_dynamic_time("optimization", task_context),
+        "agents": [agent.name for agent in opt_agents],
+        "dependencies": dependencies,
+        "parallel_capable": True
+    }
+
+def find_relevant_agents_for_optimization(task_context, available_agents):
+    opt_competencies = ["optimization", "performance", "improvement", "enhancement"]
+    relevant_agents = []
+    for agent in available_agents:
+        if has_competency_overlap(agent, opt_competencies):
+            relevant_agents.append(agent)
+    return relevant_agents[:3]
+
+def should_create_testing_block(task_description, task_context):
+    test_keywords = ["test", "validate", "verify", "check", "qa"]
+    return any(kw in task_description.lower() for kw in test_keywords)
+
+def create_dynamic_testing_block(task_description, task_context, available_agents, existing_blocks):
+    test_agents = find_relevant_agents_for_testing(task_context, available_agents)
+    dependencies = [b["id"] for b in existing_blocks if b["type"] in ["implementation", "optimization"]]
+
+    return {
+        "id": f"testing_{task_context['domain']}",
+        "name": f"Тестування {task_context['domain']} компонентів",
+        "type": "testing",
+        "estimated_time": estimate_dynamic_time("testing", task_context),
+        "agents": [agent.name for agent in test_agents],
+        "dependencies": dependencies,
+        "parallel_capable": True
+    }
+
+def find_relevant_agents_for_testing(task_context, available_agents):
+    test_competencies = ["testing", "quality assurance", "validation", "verification"]
+    relevant_agents = []
+    for agent in available_agents:
+        if has_competency_overlap(agent, test_competencies):
+            relevant_agents.append(agent)
+    return relevant_agents[:3]
 
 def determine_execution_strategy(blocks, dependencies):
     """
