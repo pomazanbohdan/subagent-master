@@ -1,6 +1,6 @@
 {
   "name": "subagent",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Intelligent task orchestrator with automatic delegation and adaptive agent management system",
   "author": {
     "name": "Bohdan",
