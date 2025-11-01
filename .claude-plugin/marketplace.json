@@ -6,11 +6,11 @@
   },
   "metadata": {
     "description": "Intelligent task orchestrator with automatic delegation and adaptive agent management system",
-    "version": "0.0.4"
+    "version": "0.0.5"
   },
   "plugins": [
     {
-      "name": "subagent",
+      "name": "master",
       "author": {
         "name": "Bohdan",
         "email": "pomazan.bohdan@gmail.com"

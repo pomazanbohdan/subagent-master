@@ -24,25 +24,25 @@
 
 ### 1. Add Marketplace
 
-```bash
+```ClaudeCode
 /plugin marketplace add pomazanbohdan/subagent-master
 ```
 
 ### 2. Install SM
 
-```bash
-/plugin install sm
+```ClaudeCode
+/plugin install master
 ```
 
 ### 3. Start Using
 
-```bash
-Just describe any task - SM automatically takes care of planning and delegation!
+```ClaudeCode
+@agent-
 ```
 
 ### Verify Installation
 
-```bash
+```ClaudeCode
 /plugin list
 # Look for "sm" in enabled plugins
 ```
@@ -55,7 +55,7 @@ Just describe any task - SM automatically takes care of planning and delegation!
 
 ### 🏗️ Design a User Authentication System
 
-```bash
+```ClaudeCode
 You: Design secure user authentication for my web app
 
 SM: [Analyzes task] → Selects security + backend agents → Creates 6-step plan → Monitors execution
@@ -64,7 +64,7 @@ Result: Complete authentication system with JWT tokens, password hashing, and se
 
 ### 🔍 Optimize Application Performance
 
-```bash
+```ClaudeCode
 You: My React app is slow, can you help?
 
 SM: [Identifies performance task] → Selects optimization expert → Analyzes bottlenecks
@@ -73,7 +73,7 @@ Result: Detailed performance analysis with specific recommendations for React op
 
 ### 📋 Coordinate Multi-Step Development
 
-```bash
+```ClaudeCode
 You: Build a REST API for project management
 
 SM: [Breaks into 8 steps] → Coordinates backend + database + testing agents → Monitors parallel execution
@@ -82,7 +82,7 @@ Result: Production-ready API with comprehensive testing, documentation, and depl
 
 ### 🛡️ Security Audit
 
-```bash
+```ClaudeCode
 You: Review my codebase for security vulnerabilities
 
 SM: [Detects security focus] → Engages security specialist → Scans for common vulnerabilities
@@ -203,7 +203,7 @@ SM automatically integrates with your existing MCP servers:
 
 ### Project Integration
 
-```bash
+```ClaudeCode
 # SM automatically understands your project context
 cd /path/to/your/project
 # Just start describing tasks - SM handles the rest
@@ -232,7 +232,7 @@ cd /path/to/your/project
 
 ### **Multi-Agent Orchestration**
 
-```bash
+```ClaudeCode
 You: Implement a complete e-commerce platform
 
 SM: Coordinates 5 specialists simultaneously:
@@ -247,7 +247,7 @@ Result: Full platform in 2 hours vs 8+ hours manually
 
 ### **Interactive Planning**
 
-```bash
+```ClaudeCode
 SM: I've identified 3 approaches to this task. Which do you prefer:
 1. 🚀 Fast & Simple (Basic implementation)
 2. ⚖️ Balanced (Features + maintainability)
@@ -301,7 +301,7 @@ Contributions welcome! Please ensure:
 
 ### Getting Help
 
-```bash
+```ClaudeCode
 # Check SM status
 /plugin status sm
 
