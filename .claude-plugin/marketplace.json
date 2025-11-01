@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Enhanced intelligent task orchestrator with full Task() delegation for TodoWrite execution, auto-execution after planning, competitive execution, step validation, and adaptive workflow management",
-    "version": "0.5.0"
+    "version": "0.5.1"
   },
   "plugins": [
     {

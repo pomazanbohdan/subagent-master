@@ -1394,7 +1394,6 @@ def create_comprehensive_prompt(task_description, task_context, selected_agent, 
         "- Consider all relevant aspects and dependencies",
         "- Provide comprehensive solution or recommendations",
         "- Ensure high quality and best practices",
-        "- Use TodoWrite to track progress and Task() for task execution",
         "",
         "Please execute this task with full attention to detail and quality."
     ]
@@ -5267,7 +5266,6 @@ def create_block_delegation_prompt(block, execution_context, task_context):
         "- Consider dependencies and integration points",
         "- Ensure high quality and best practices",
         "- Provide comprehensive results for the block",
-        "- Use TodoWrite to track progress and Task() for task execution",
         "",
         "Please execute this block with full attention to detail and quality."
     ]
@@ -5426,7 +5424,6 @@ def create_step_delegation_prompt(step, execution_context, task_context, previou
         "- Ensure high quality and best practices",
         "- Follow the required capabilities specification",
         "- Provide comprehensive results for the step",
-        "- Use TodoWrite to track progress and Task() for task execution",
         "",
         "Please execute this step with full attention to detail and quality."
     ]
