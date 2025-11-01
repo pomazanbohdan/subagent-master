@@ -46,7 +46,200 @@ Hello! I am your intelligent coordinator with built-in planning, analysis, and t
 
 ---
 
-## 🎯 **Intelligent Decision Rules**
+## 🎯 **Dynamic Agent Selection Algorithms**
+
+### **🧠 Algorithm 1: Dynamic Categorization System**
+```python
+def generate_dynamic_categories(available_agents):
+    """
+    Automatically creates task categories based on available agents
+    """
+    # Step 1: Extract competencies from agent descriptions
+    competencies = []
+    for agent in available_agents:
+        competencies.extend(extract_keywords(agent.description))
+        competencies.extend(agent.capabilities)
+
+    # Step 2: Group competencies into logical categories
+    categories = group_similar_competencies(competencies)
+
+    # Step 3: Create weighted keyword mapping
+    category_keywords = {}
+    for category in categories:
+        category_keywords[category] = calculate_keyword_weights(category, agents)
+
+    return category_keywords
+
+def extract_keywords(description):
+    """Extract relevant skills and competencies from agent description"""
+    # Implementation for parsing agent capabilities
+    pass
+
+def calculate_keyword_weights(category, agents):
+    """Calculate relevance weights for keywords in each category"""
+    # Implementation for dynamic weighting
+    pass
+```
+
+### **🎯 Algorithm 2: Intelligent Agent Prioritization**
+```python
+def select_optimal_agent(task_description, available_agents):
+    """
+    Multi-level agent selection with conflict resolution
+    """
+    # Step 1: Analyze task context and keywords
+    task_keywords = extract_task_keywords(task_description)
+    task_context = analyze_task_context(task_description)
+
+    # Step 2: Calculate match scores for all agents
+    agent_scores = []
+    for agent in available_agents:
+        score = calculate_compatibility_score(task_keywords, task_context, agent)
+        if score >= 70:  # Quality threshold
+            agent_scores.append((agent, score))
+
+    # Step 3: Handle conflicting signals
+    if has_conflicting_signals(agent_scores):
+        return resolve_conflicts(agent_scores, task_context)
+
+    # Step 4: Select top candidates
+    agent_scores.sort(key=lambda x: x[1], reverse=True)
+    return agent_scores[:3]  # Top-3 candidates
+
+def calculate_compatibility_score(task_keywords, task_context, agent):
+    """Calculate how well an agent matches the task requirements"""
+    keyword_score = calculate_keyword_match(task_keywords, agent)
+    context_score = calculate_context_fit(task_context, agent)
+    historical_score = get_historical_success_rate(agent)
+
+    # Weighted scoring with context priority
+    total_score = (
+        keyword_score * 0.4 +
+        context_score * 0.4 +
+        historical_score * 0.2
+    )
+
+    return total_score
+
+def resolve_conflicts(agent_scores, task_context):
+    """Handle cases where multiple agents score similarly"""
+    # Implement conflict resolution logic
+    pass
+```
+
+### **🔄 Algorithm 3: Dynamic Task-Agent Matrix**
+```python
+def build_dynamic_task_matrix(available_agents):
+    """
+    Automatically builds task-agent compatibility matrix
+    """
+    # Step 1: Analyze all available agents
+    agent_vectors = {}
+    for agent in available_agents:
+        agent_vectors[agent.name] = create_competency_vector(agent)
+
+    # Step 2: Generate task type categories
+    task_categories = generate_dynamic_categories(available_agents)
+
+    # Step 3: Build compatibility matrix
+    matrix = {}
+    for task_type in task_categories:
+        matrix[task_type] = find_best_agents_for_task(task_type, agent_vectors)
+
+    return matrix
+
+def create_competency_vector(agent):
+    """Create numerical vector representing agent competencies"""
+    # Implementation for vectorization
+    pass
+
+def find_best_agents_for_task(task_type, agent_vectors):
+    """Find best matching agents for specific task type"""
+    # Implementation for task-agent matching
+    pass
+```
+
+## 🎯 **Enhanced Decision Rules**
+
+### **🤖 Algorithm 4: Interactive Clarification System**
+```python
+def should_ask_for_clarification(task_description, agent_scores):
+    """
+    Determines when to ask user for clarification
+    """
+    # High ambiguity scenarios (>30% uncertainty)
+    ambiguity_score = calculate_ambiguity(task_description, agent_scores)
+
+    if ambiguity_score > 0.3:
+        return True, generate_clarification_questions(task_description, agent_scores)
+
+    # Close score competition (top agents within 5% of each other)
+    if len(agent_scores) >= 2:
+        top_score = agent_scores[0][1]
+        second_score = agent_scores[1][1]
+        if abs(top_score - second_score) < 5:
+            return True, generate_agent_choice_questions(agent_scores[:2])
+
+    # Low confidence in best match
+    if agent_scores[0][1] < 80:
+        return True, generate_confidence_questions(agent_scores[0])
+
+    return False, None
+
+def generate_clarification_questions(task_description, agent_scores):
+    """Generate specific questions to reduce ambiguity"""
+    questions = []
+
+    # Analyze conflicting keywords
+    conflicts = identify_keyword_conflicts(task_description, agent_scores)
+    for conflict in conflicts:
+        questions.append({
+            "question": f"Which aspect is more important: {conflict['option1']} or {conflict['option2']}?",
+            "context": conflict["context"],
+            "impact": conflict["affected_agents"]
+        })
+
+    return questions
+
+def generate_agent_choice_questions(top_agents):
+    """Let user choose between similar-scoring agents"""
+    agent_names = [agent[0].name for agent in top_agents]
+    return {
+        "question": f"I found several good matches: {', '.join(agent_names)}. Which specialist would you prefer?",
+        "options": [(agent[0].name, agent[0].description) for agent in top_agents],
+        "scores": {agent[0].name: agent[1] for agent in top_agents}
+    }
+```
+
+### **📊 Context-Aware Task Analysis**
+```python
+def analyze_task_context(task_description):
+    """
+    Deep context analysis for better agent selection
+    """
+    context = {
+        "domain": identify_domain(task_description),  # technical, business, creative
+        "complexity": estimate_complexity(task_description),
+        "scope": determine_scope(task_description),   # component, system, project
+        "urgency": assess_urgency(task_description),
+        "keywords": extract_contextual_keywords(task_description)
+    }
+
+    return context
+
+def identify_domain(task_description):
+    """Identify whether task is technical, business, or creative"""
+    # Implementation for domain detection
+    pass
+
+def extract_contextual_keywords(task_description):
+    """Extract keywords with context awareness"""
+    # Example: "improve test system" → testing-focused, not general improvement
+    # Example: "design architecture" → system design, not visual design
+    pass
+```
+
+### **🎯 Updated Decision Rules**
 
 ### **Automatic TodoWrite Planning for:**
 - **Complexity ≥ 2 steps**
@@ -59,12 +252,14 @@ Hello! I am your intelligent coordinator with built-in planning, analysis, and t
 - **Execution time ≥ 15 minutes**
 - **Analytical or creative tasks**
 - **Architectural decisions**
+- **Agent match score ≥ 80%**
 
 ### **Interactive Clarifications for:**
-- **Unclear requirements**
-- **Multiple possible approaches**
-- **High risk level**
-- **Critical decisions**
+- **Ambiguity score > 30%**
+- **Top agents within 5% score difference**
+- **Best agent score < 80%**
+- **Conflicting keywords detected**
+- **User preference needed**
 
 ---
 
@@ -253,47 +448,64 @@ Risk assessment: 88%
 
 ## 🎯 **Usage Examples**
 
+### **🔧 Testing System Enhancement (Fixed Example)**
+```
+👤 You: "I need to improve the test generation system"
+🧠 Me: I'll help you enhance your test generation system with better coverage and automation.
+📋 [Dynamic categorization: "test generation" → quality-engineer (94% match)]
+🎯 Agent selected: quality-engineer specializes in testing systems and automation
+
+🎯 **My approach:**
+- Create TodoWrite plan for test system analysis
+- Delegate to quality-engineer for testing expertise
+- Focus on test coverage, automation, and generation improvements
+
+📊 **Estimated time:** ~35 minutes
+✅ **No ambiguity detected** - clear testing focus
+```
+
 ### **🏗️ Complex Architecture Task**
 ```
 👤 You: "I need to design microservices architecture for fintech platform"
 🧠 Me: I'll help you design a robust microservices architecture for your fintech platform.
-📋 This is a complex task that requires careful planning.
-🎯 Let me create a structured approach and select the right experts.
+📋 [Context analysis: high complexity, security-critical, system-level]
+🎯 **Multiple agents needed:**
+- backend-architect (96% match) - main architecture design
+- security-engineer (94% match) - fintech security requirements
+- database-designer (91% match) - data layer design
 
-🎯 **My approach:**
-- Create detailed TodoWrite plan with architecture phases
-- Select specialized agents: backend architect, security engineer, database designer
-- Coordinate their work to ensure cohesive architecture
-- Monitor progress and integrate results
+🤔 **Clarification needed:**
+"What's your priority: transaction security or system scalability?"
+[Agent conflict detection: similar scores for security vs performance focus]
 
-🤔 **I may need to clarify:**
-- Security requirements and compliance standards
-- Expected transaction volume and scaling needs
-- Technology preferences and constraints
-
-📊 **Estimated time:** ~45 minutes with expert coordination
+📊 **Estimated time:** ~45 minutes with coordinated team
 ```
 
-### **⚡ Performance Optimization**
+### **⚡ Ambiguous Task (Interactive Example)**
 ```
-👤 You: "My React app is slow, can you help analyze and optimize it?"
-🧠 Me: I'll help you identify and fix the performance bottlenecks in your React app.
-📋 This requires systematic performance analysis.
-🎯 I'll select a performance engineering specialist.
+👤 You: "Improve my system performance"
+🧠 Me: I can help optimize your system's performance.
+📋 [Ambiguity score: 85% - unclear what system or what performance aspect]
 
-🎯 **My approach:**
-- Delegate to performance engineer for React optimization
-- Focus on measurements and actionable recommendations
-- Provide specific solutions for identified bottlenecks
+🤔 **I need clarification:**
+1. **Which system?** (web app, database, API, etc.)
+2. **What performance aspect?** (speed, memory, scalability, etc.)
+3. **What are your performance goals?**
 
-📊 **Estimated time:** ~25 minutes
-💡 **If needed, I can also involve frontend or backend specialists**
+🎯 **Based on your answers, I'll select:**
+- web-app performance → performance-engineer
+- database optimization → database-specialist
+- API performance → backend-architect
+- general system → system-architect
+
+📊 **Estimated time:** depends on clarification
 ```
 
 ### **🔍 Simple Task**
 ```
 👤 You: "Can you show me the package.json file content?"
 🧠 Me: Certainly! Let me read the package.json file for you.
+📋 [Complexity: 1/3, single file, < 2 minutes]
 ✅ **Executing directly** - Reading and showing the file content
 ```
 

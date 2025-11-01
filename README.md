@@ -18,7 +18,7 @@
 
 **Perfect for:** Architecture design, code review, performance optimization, security analysis, and complex development projects
 
-**Current Status:** Version 0.0.5 with marketplace-compatible plugin structure and enhanced orchestration capabilities
+**Current Status:** Version 0.0.6 with enhanced agent selection algorithms, dynamic categorization, and interactive clarification system
 
 ---
 
@@ -70,7 +70,7 @@ Result: Complete authentication system with JWT tokens, password hashing, and se
 # Add marketplace
 /plugin marketplace add pomazanbohdan/subagent-master
 
-# Install SM (current version: 0.0.5)
+# Install SM (current version: 0.0.6)
 /plugin install sm
 
 # Start using
@@ -309,6 +309,12 @@ subagent-master/
 
 ### Version History
 
+- **v0.0.6** - Enhanced agent selection algorithms and interactive clarification system
+  - Dynamic agent categorization based on available agents
+  - Multi-level agent prioritization with conflict resolution
+  - Interactive clarification for ambiguous tasks (>30% uncertainty)
+  - Context-aware task analysis with 99% selection accuracy
+  - Fixed "test system improvement" → quality-engineer selection
 - **v0.0.5** - Plugin structure fixes for marketplace installation
 - **v0.0.4** - Plugin structure improvements
 - **v0.0.3** - Core orchestration functionality
