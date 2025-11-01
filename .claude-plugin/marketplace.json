@@ -10,7 +10,7 @@
   },
   "plugins": [
     {
-      "name": "sm",
+      "name": "subagent",
       "author": {
         "name": "Bohdan",
         "email": "pomazan.bohdan@gmail.com"
