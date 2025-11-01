@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Intelligent task orchestrator with automatic delegation and adaptive agent management system",
-    "version": "0.0.8"
+    "version": "0.0.9"
   },
   "plugins": [
     {
