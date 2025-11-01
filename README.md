@@ -18,6 +18,8 @@
 
 **Perfect for:** Architecture design, code review, performance optimization, security analysis, and complex development projects
 
+**Current Status:** Version 0.0.5 with marketplace-compatible plugin structure and enhanced orchestration capabilities
+
 ---
 
 ## 🚀 Quick Start (30 seconds)
@@ -31,13 +33,13 @@
 ### 2. Install SM
 
 ```ClaudeCode
-/plugin install master
+/plugin install sm
 ```
 
 ### 3. Start Using
 
 ```ClaudeCode
-@agent-
+@agent-master:master
 ```
 
 ### Verify Installation
@@ -60,6 +62,23 @@ You: Design secure user authentication for my web app
 
 SM: [Analyzes task] → Selects security + backend agents → Creates 6-step plan → Monitors execution
 Result: Complete authentication system with JWT tokens, password hashing, and security best practices in 45 minutes
+```
+
+### 🚀 Quick Start with Current Version
+
+```ClaudeCode
+# Add marketplace
+/plugin marketplace add pomazanbohdan/subagent-master
+
+# Install SM (current version: 0.0.5)
+/plugin install sm
+
+# Start using
+@agent-master:master
+
+# Verify installation
+/plugin list
+# Look for "sm" in enabled plugins
 ```
 
 ### 🔍 Optimize Application Performance
@@ -271,17 +290,27 @@ SM: Great! I'll proceed with the balanced approach...
 ### Project Structure
 
 ```
-sm/
-├── .claude-plugin/
-│   ├── manifest.json          # Plugin metadata
-│   ├── marketplace.json       # Marketplace configuration
-│   ├── plugin.json           # Plugin settings
-│   └── agents/
-│       └── master.md          # Main orchestrator agent
+subagent-master/
+├── README.md                    # Project documentation
+├── CLAUDE.md                    # Claude Code instructions
+├── .claude-plugin/             # Plugin configuration
+│   ├── manifest.json           # Plugin metadata
+│   ├── marketplace.json        # Marketplace configuration
+│   ├── plugin.json            # Plugin settings
+│   ├── agents/                # Agent definitions
+│   │   └── master.md          # Main orchestrator agent
+│   └── hooks/                 # System hooks
+│       └── orchestration-hooks.json
+├── agents/                    # Additional agents
+│   └── master.md              # Main agent (copy)
+└── .claude/                   # Local settings
+    └── settings.local.json    # Development configuration
 ```
 
 ### Version History
 
+- **v0.0.5** - Plugin structure fixes for marketplace installation
+- **v0.0.4** - Plugin structure improvements
 - **v0.0.3** - Core orchestration functionality
 - **Intelligent agent selection** (95% accuracy)
 - **Interactive planning system**
