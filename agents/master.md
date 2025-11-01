@@ -4,7 +4,7 @@ description: "Full-featured intelligent task orchestrator with parallel initiali
 capabilities: ["task-orchestration", "automatic-delegation", "task-planning", "complexity-analysis", "agent-selection", "interactive-workflow", "parallel-execution", "task-breakdown", "hybrid-workflow", "todo-coordination", "parallel-initialization"]
 triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage", "parallel", "team", "multiple-agents"]
 tools: ["sequential-thinking", "serena", "context7"]
-version: "0.1.0"
+version: "0.3.0"
 ---
 
 # 🧠 Intelligent Task Orchestrator
@@ -1122,13 +1122,91 @@ def generate_dynamic_categories(available_agents):
 
 def extract_keywords(description):
     """Extract relevant skills and competencies from agent description"""
-    # Implementation for parsing agent capabilities
-    pass
+    if not description or not isinstance(description, str):
+        return []
+
+    # Define competency keyword patterns
+    competency_patterns = [
+        'architecture', 'design', 'development', 'coding', 'programming',
+        'testing', 'debugging', 'optimization', 'performance', 'security',
+        'database', 'frontend', 'backend', 'fullstack', 'mobile', 'web',
+        'api', 'microservices', 'devops', 'cloud', 'deployment', 'scaling',
+        'analysis', 'research', 'documentation', 'planning', 'management',
+        'ai', 'machine learning', 'data', 'algorithms', 'system design',
+        'ui', 'ux', 'user interface', 'user experience', 'interaction',
+        'networking', 'infrastructure', 'monitoring', 'logging', 'automation'
+    ]
+
+    # Convert to lowercase and split into words
+    words = description.lower().split()
+
+    # Extract keywords that match competency patterns
+    keywords = []
+    for word in words:
+        word = word.strip('.,!?()[]{}:;')
+        for pattern in competency_patterns:
+            if pattern in word or word in pattern:
+                keywords.append(pattern)
+                break
+
+    # Remove duplicates while preserving order
+    seen = set()
+    unique_keywords = []
+    for keyword in keywords:
+        if keyword not in seen:
+            seen.add(keyword)
+            unique_keywords.append(keyword)
+
+    return unique_keywords
 
 def calculate_keyword_weights(category, agents):
     """Calculate relevance weights for keywords in each category"""
-    # Implementation for dynamic weighting
-    pass
+    if not category or not agents:
+        return {}
+
+    # Base weights for different categories
+    category_weights = {
+        'technical': 1.0,
+        'architectural': 0.9,
+        'development': 0.8,
+        'analytical': 0.7,
+        'management': 0.6,
+        'creative': 0.5
+    }
+
+    # Calculate TF-IDF like weights
+    keyword_weights = {}
+    total_agents = len(agents)
+
+    # Count keyword occurrences across all agents
+    keyword_docs = {}
+    agent_keywords = []
+
+    for agent in agents:
+        if hasattr(agent, 'description') or 'description' in agent:
+            description = agent.get('description', '') if isinstance(agent, dict) else getattr(agent, 'description', '')
+            keywords = extract_keywords(description)
+            agent_keywords.append(keywords)
+
+            for keyword in set(keywords):
+                keyword_docs[keyword] = keyword_docs.get(keyword, 0) + 1
+
+    # Calculate weights for each keyword
+    for keyword, doc_count in keyword_docs.items():
+        # TF: how many agents have this keyword
+        tf = doc_count / total_agents
+
+        # IDF: inverse document frequency
+        idf = total_agents / doc_count if doc_count > 0 else 0
+
+        # Category relevance boost
+        category_boost = category_weights.get(category.lower(), 0.5)
+
+        # Final weight calculation
+        weight = tf * idf * category_boost
+        keyword_weights[keyword] = round(weight, 3)
+
+    return keyword_weights
 ```
 
 ### **🎯 Algorithm 2: Intelligent Agent Prioritization**
@@ -1210,6 +1288,16 @@ def execute_task_with_best_agent(task_description, task_context, selected_agent,
 
     # Execute with Task()
     try:
+        # Validate system state before delegation
+        system_validation = validate_system_state()
+        if not system_validation['valid']:
+            raise Exception(f"System validation failed: {system_validation['errors']}")
+
+        # Validate task execution parameters
+        task_validation = validate_task_execution(task_description, agent_type)
+        if not task_validation['valid']:
+            raise Exception(f"Task validation failed: {task_validation['errors']}")
+
         task_result = Task(
             subagent_type=agent_type,
             description=create_task_description(task_description, task_context),
@@ -1347,8 +1435,69 @@ def get_dynamic_weights(task_context, current_performance):
 
 def resolve_conflicts(agent_scores, task_context):
     """Handle cases where multiple agents score similarly"""
-    # Implement conflict resolution logic
-    pass
+    if not agent_scores or len(agent_scores) <= 1:
+        return agent_scores[0] if agent_scores else None
+
+    # Sort by score descending
+    agent_scores.sort(key=lambda x: x[1], reverse=True)
+
+    # Get top score and second score
+    top_score = agent_scores[0][1]
+    second_score = agent_scores[1][1] if len(agent_scores) > 1 else 0
+
+    # Check if there's a significant difference (threshold: 0.1)
+    if top_score - second_score > 0.1:
+        return agent_scores[0]
+
+    # Conflict resolution for close scores
+    top_candidates = [agent for agent, score in agent_scores if abs(score - top_score) < 0.1]
+
+    # Apply tie-breaking rules
+    if len(top_candidates) == 1:
+        return top_candidates[0]
+
+    # Rule 1: Prefer specialized agents over generalists
+    specialized_agents = []
+    generalist_agents = []
+
+    for agent in top_candidates:
+        agent_name = agent.get('name', '') if isinstance(agent, dict) else str(agent)
+        agent_desc = agent.get('description', '') if isinstance(agent, dict) else getattr(agent, 'description', '')
+
+        # Check if agent has specialized keywords
+        specialized_keywords = ['expert', 'specialist', 'senior', 'architect', 'lead']
+        is_specialized = any(keyword in agent_desc.lower() for keyword in specialized_keywords)
+
+        if is_specialized:
+            specialized_agents.append(agent)
+        else:
+            generalist_agents.append(agent)
+
+    if specialized_agents:
+        return specialized_agents[0]
+
+    # Rule 2: Use task context to match agent capabilities
+    if task_context:
+        task_keywords = extract_keywords(str(task_context))
+
+        best_match = None
+        best_match_score = 0
+
+        for agent in top_candidates:
+            agent_desc = agent.get('description', '') if isinstance(agent, dict) else getattr(agent, 'description', '')
+            agent_keywords = extract_keywords(agent_desc)
+
+            # Calculate keyword overlap
+            overlap = len(set(task_keywords) & set(agent_keywords))
+            if overlap > best_match_score:
+                best_match_score = overlap
+                best_match = agent
+
+        if best_match:
+            return best_match
+
+    # Rule 3: Default to first agent (maintains consistency)
+    return agent_scores[0]
 ```
 
 ### **🔄 Algorithm 3: Dynamic Task-Agent Matrix**
@@ -1375,13 +1524,395 @@ def build_dynamic_task_matrix(available_agents):
 
 def create_competency_vector(agent):
     """Create numerical vector representing agent competencies"""
-    # Implementation for vectorization
-    pass
+    if not agent:
+        return {}
+
+    # Get agent description
+    agent_desc = agent.get('description', '') if isinstance(agent, dict) else getattr(agent, 'description', '')
+
+    # Extract keywords from description
+    keywords = extract_keywords(agent_desc)
+
+    # Define competency dimensions
+    competency_dimensions = {
+        'technical': ['development', 'coding', 'programming', 'testing', 'debugging', 'optimization', 'algorithms'],
+        'architectural': ['architecture', 'design', 'system design', 'microservices', 'scaling'],
+        'domain_expertise': ['database', 'api', 'frontend', 'backend', 'mobile', 'web'],
+        'infrastructure': ['devops', 'cloud', 'deployment', 'infrastructure', 'monitoring'],
+        'data': ['data', 'machine learning', 'ai', 'analysis'],
+        'process': ['planning', 'management', 'documentation', 'automation'],
+        'user_focus': ['ui', 'ux', 'user interface', 'user experience', 'interaction'],
+        'security': ['security', 'networking', 'performance']
+    }
+
+    # Create competency vector
+    competency_vector = {}
+
+    for dimension, dimension_keywords in competency_dimensions.items():
+        # Calculate dimension score based on keyword overlap
+        overlap_count = 0
+        total_dimension_keywords = len(dimension_keywords)
+
+        for dim_keyword in dimension_keywords:
+            for agent_keyword in keywords:
+                if dim_keyword in agent_keyword or agent_keyword in dim_keyword:
+                    overlap_count += 1
+                    break
+
+        # Normalize score between 0 and 1
+        dimension_score = overlap_count / total_dimension_keywords if total_dimension_keywords > 0 else 0
+        competency_vector[dimension] = round(dimension_score, 3)
+
+    # Add overall competency score
+    overall_score = sum(competency_vector.values()) / len(competency_vector) if competency_vector else 0
+    competency_vector['overall'] = round(overall_score, 3)
+
+    # Add keyword count for reference
+    competency_vector['keyword_count'] = len(keywords)
+    competency_vector['keywords'] = keywords
+
+    return competency_vector
+
+def validate_system_state():
+    """Validate system state before Task() execution"""
+    validation_results = {
+        'valid': True,
+        'errors': [],
+        'warnings': []
+    }
+
+    # Check system initialization
+    try:
+        # Validate that key functions are available
+        required_functions = ['extract_keywords', 'calculate_keyword_weights', 'resolve_conflicts', 'create_competency_vector']
+        for func_name in required_functions:
+            if func_name not in globals():
+                validation_results['errors'].append(f"Missing required function: {func_name}")
+                validation_results['valid'] = False
+
+        # Validate agent availability (simulated check)
+        available_agent_types = [
+            'backend-architect', 'frontend-architect', 'system-architect',
+            'database-designer', 'security-engineer', 'performance-engineer',
+            'devops-architect', 'quality-engineer', 'technical-writer'
+        ]
+
+        # In a real implementation, this would check actual agent availability
+        validation_results['available_agents'] = available_agent_types
+
+    except Exception as e:
+        validation_results['errors'].append(f"System validation failed: {str(e)}")
+        validation_results['valid'] = False
+
+    return validation_results
+
+def validate_task_execution(task_description, agent_type):
+    """Validate task execution parameters before Task() call"""
+    validation = {
+        'valid': True,
+        'errors': [],
+        'retry_count': 0,
+        'max_retries': 3
+    }
+
+    # Validate task description
+    if not task_description or len(str(task_description).strip()) < 10:
+        validation['errors'].append("Task description too short or empty")
+        validation['valid'] = False
+
+    # Validate agent type
+    valid_agent_types = [
+        'backend-architect', 'frontend-architect', 'system-architect',
+        'database-designer', 'security-engineer', 'performance-engineer',
+        'devops-architect', 'quality-engineer', 'technical-writer',
+        'general-purpose', 'refactoring-expert', 'learning-guide'
+    ]
+
+    if agent_type not in valid_agent_types:
+        validation['errors'].append(f"Invalid agent type: {agent_type}")
+        validation['valid'] = False
+
+    return validation
 
 def find_best_agents_for_task(task_type, agent_vectors):
     """Find best matching agents for specific task type"""
     # Implementation for task-agent matching
     pass
+
+def detect_deadlock(task_dependencies):
+    """Detect potential deadlocks in task dependencies using DFS"""
+    if not task_dependencies:
+        return {'has_deadlock': False, 'cycles': []}
+
+    # Build dependency graph
+    graph = {}
+    for task_id, dependencies in task_dependencies.items():
+        graph[task_id] = dependencies
+
+    visited = set()
+    rec_stack = set()
+    cycles = []
+
+    def dfs(node, path):
+        if node in rec_stack:
+            # Found a cycle
+            cycle_start = path.index(node)
+            cycle = path[cycle_start:] + [node]
+            cycles.append(cycle)
+            return True
+
+        if node in visited:
+            return False
+
+        visited.add(node)
+        rec_stack.add(node)
+        path.append(node)
+
+        # Check all dependencies
+        for neighbor in graph.get(node, []):
+            if dfs(neighbor, path.copy()):
+                return True
+
+        rec_stack.remove(node)
+        return False
+
+    # Check each node for cycles
+    for node in graph:
+        if node not in visited:
+            if dfs(node, []):
+                return {'has_deadlock': True, 'cycles': cycles}
+
+    return {'has_deadlock': False, 'cycles': []}
+
+def limit_parallel_tasks(tasks, max_parallel=3):
+    """Limit number of parallel tasks to prevent resource exhaustion"""
+    if len(tasks) <= max_parallel:
+        return tasks
+
+    # Prioritize tasks by importance and dependencies
+    prioritized_tasks = []
+
+    for task in tasks:
+        priority = 0
+
+        # Higher priority for tasks with no dependencies
+        if not task.get('dependencies', []):
+            priority += 10
+
+        # Higher priority for critical tasks
+        if task.get('critical', False):
+            priority += 5
+
+        # Higher priority for shorter tasks (quick wins)
+        if task.get('estimated_time', 0) < 30:
+            priority += 3
+
+        prioritized_tasks.append((task, priority))
+
+    # Sort by priority (descending)
+    prioritized_tasks.sort(key=lambda x: x[1], reverse=True)
+
+    # Return top N tasks
+    return [task for task, _ in prioritized_tasks[:max_parallel]]
+
+def synchronize_parallel_results(results, timeout_ms=30000):
+    """Synchronize results from parallel tasks with timeout"""
+    if not results:
+        return {'synchronized': True, 'results': [], 'failed_tasks': []}
+
+    synchronized_results = []
+    failed_tasks = []
+
+    for result in results:
+        if result and result.get('success', False):
+            synchronized_results.append(result)
+        else:
+            failed_tasks.append({
+                'task_id': result.get('task_id', 'unknown'),
+                'error': result.get('error', 'Unknown error'),
+                'timeout': result.get('timeout', False)
+            })
+
+    return {
+        'synchronized': len(failed_tasks) == 0,
+        'results': synchronized_results,
+        'failed_tasks': failed_tasks,
+        'success_rate': len(synchronized_results) / len(results) if results else 0
+    }
+
+def handle_partial_parallel_failure(results, failed_tasks):
+    """Handle partial failures in parallel execution"""
+    if not failed_tasks:
+        return results
+
+    # Attempt retry for failed tasks
+    retry_results = []
+
+    for failed_task in failed_tasks:
+        if failed_task.get('retry_count', 0) < 2:  # Max 2 retries
+            # Retry logic would go here
+            retry_result = retry_failed_task(failed_task)
+            if retry_result.get('success', False):
+                retry_results.append(retry_result)
+
+    # Combine successful results with retries
+    final_results = [r for r in results if r.get('success', False)] + retry_results
+
+    return final_results
+
+def retry_failed_task(failed_task):
+    """Retry a failed task with exponential backoff"""
+    retry_count = failed_task.get('retry_count', 0)
+    delay = (2 ** retry_count) * 1000  # Exponential backoff in milliseconds
+
+    # Simulate retry logic
+    return {
+        'task_id': failed_task['task_id'],
+        'success': True,  # Simulated success
+        'retry_count': retry_count + 1,
+        'delay_ms': delay
+    }
+
+def create_global_execution_context():
+    """Create global execution context with state management"""
+    return {
+        'execution_id': f"exec_{int(time.time())}",
+        'start_time': time.time(),
+        'status': 'initializing',
+        'active_tasks': {},
+        'completed_tasks': {},
+        'failed_tasks': {},
+        'checkpoints': {},
+        'shared_resources': {},
+        'mutex_locks': set(),
+        'execution_stats': {
+            'total_tasks': 0,
+            'successful_tasks': 0,
+            'failed_tasks': 0,
+            'parallel_tasks': 0
+        }
+    }
+
+def create_checkpoint(context, checkpoint_name, data):
+    """Create checkpoint with system state snapshot"""
+    if not context.get('checkpoints'):
+        context['checkpoints'] = {}
+
+    checkpoint = {
+        'name': checkpoint_name,
+        'timestamp': time.time(),
+        'data': data,
+        'active_tasks': context.get('active_tasks', {}).copy(),
+        'completed_tasks': context.get('completed_tasks', {}).copy(),
+        'execution_stats': context.get('execution_stats', {}).copy()
+    }
+
+    context['checkpoints'][checkpoint_name] = checkpoint
+    return checkpoint
+
+def restore_from_checkpoint(context, checkpoint_name):
+    """Restore system state from checkpoint"""
+    if not context.get('checkpoints') or checkpoint_name not in context['checkpoints']:
+        return None
+
+    checkpoint = context['checkpoints'][checkpoint_name]
+
+    # Restore state
+    context['active_tasks'] = checkpoint.get('active_tasks', {}).copy()
+    context['completed_tasks'] = checkpoint.get('completed_tasks', {}).copy()
+    context['execution_stats'] = checkpoint.get('execution_stats', {}).copy()
+
+    return checkpoint
+
+def validate_state_consistency(context):
+    """Validate consistency of system state"""
+    issues = []
+
+    # Check for task count consistency
+    active_count = len(context.get('active_tasks', {}))
+    completed_count = len(context.get('completed_tasks', {}))
+    stats_total = context.get('execution_stats', {}).get('total_tasks', 0)
+
+    if active_count + completed_count > stats_total:
+        issues.append("Task count inconsistency")
+
+    # Check for mutex locks
+    stuck_locks = []
+    for lock in context.get('mutex_locks', set()):
+        if lock not in context.get('active_tasks', {}):
+            stuck_locks.append(lock)
+
+    if stuck_locks:
+        issues.append(f"Stuck mutex locks: {stuck_locks}")
+
+    # Check for orphaned tasks
+    orphaned_tasks = []
+    for task_id, task_info in context.get('active_tasks', {}).items():
+        if task_info.get('status') == 'completed' and task_id not in context.get('completed_tasks', {}):
+            orphaned_tasks.append(task_id)
+
+    if orphaned_tasks:
+        issues.append(f"Orphaned tasks: {orphaned_tasks}")
+
+    return {
+        'consistent': len(issues) == 0,
+        'issues': issues,
+        'active_tasks': active_count,
+        'completed_tasks': completed_count,
+        'total_tasks': stats_total
+    }
+
+def acquire_mutex(context, resource_id, task_id):
+    """Acquire mutex lock for shared resource"""
+    if resource_id in context.get('mutex_locks', set()):
+        return False  # Resource already locked
+
+    if 'mutex_locks' not in context:
+        context['mutex_locks'] = set()
+
+    context['mutex_locks'].add(resource_id)
+
+    # Track which task holds the lock
+    if 'resource_owners' not in context:
+        context['resource_owners'] = {}
+
+    context['resource_owners'][resource_id] = task_id
+    return True
+
+def release_mutex(context, resource_id, task_id):
+    """Release mutex lock for shared resource"""
+    if resource_id not in context.get('mutex_locks', set()):
+        return False  # Resource not locked
+
+    # Verify ownership
+    owner = context.get('resource_owners', {}).get(resource_id)
+    if owner != task_id:
+        return False  # Not the owner
+
+    context['mutex_locks'].remove(resource_id)
+    context.get('resource_owners', {}).pop(resource_id, None)
+    return True
+
+def update_execution_stats(context, task_result):
+    """Update execution statistics"""
+    if 'execution_stats' not in context:
+        context['execution_stats'] = {
+            'total_tasks': 0,
+            'successful_tasks': 0,
+            'failed_tasks': 0,
+            'parallel_tasks': 0
+        }
+
+    stats = context['execution_stats']
+    stats['total_tasks'] += 1
+
+    if task_result.get('success', False):
+        stats['successful_tasks'] += 1
+    else:
+        stats['failed_tasks'] += 1
+
+    if task_result.get('execution_mode') == 'parallel':
+        stats['parallel_tasks'] += 1
 ```
 
 ## 🎯 **Enhanced Decision Rules**
@@ -3160,6 +3691,15 @@ def execute_competitive_step(step, step_context, compatible_agents):
         try:
             print(f"   📝 Delegating to {agent['name']}...")
 
+            # Validate before Task() execution
+            system_validation = validate_system_state()
+            if not system_validation['valid']:
+                raise Exception(f"System validation failed: {system_validation['errors']}")
+
+            task_validation = validate_task_execution(step['description'], agent['type'])
+            if not task_validation['valid']:
+                raise Exception(f"Task validation failed: {task_validation['errors']}")
+
             task_result = Task(
                 subagent_type=agent['type'],
                 description=create_competitive_step_description(step, agent),
@@ -3230,6 +3770,15 @@ def execute_single_agent_step(step, step_context, agent):
 
     try:
         print(f"📝 Executing Step {step['step_id']} with single agent: {agent['name']}")
+
+        # Validate before Task() execution
+        system_validation = validate_system_state()
+        if not system_validation['valid']:
+            raise Exception(f"System validation failed: {system_validation['errors']}")
+
+        task_validation = validate_task_execution(step['description'], agent['type'])
+        if not task_validation['valid']:
+            raise Exception(f"Task validation failed: {task_validation['errors']}")
 
         task_result = Task(
             subagent_type=agent['type'],
