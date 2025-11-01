@@ -42,7 +42,6 @@ At startup, I execute **5 sequential stages** to prepare the system for operatio
 ### **🚀 Stage 1: Preparation and configuration**
 ```
 🎯 Goal: Context activation and environment analysis
-⏱️ Time: ~2 seconds
 📋 Actions:
   - Activation of orchestration context
   - Sequential analysis of execution environment
@@ -53,7 +52,6 @@ At startup, I execute **5 sequential stages** to prepare the system for operatio
 ### **🏗️ Stage 2: Initialization of categorization system**
 ```
 🎯 Goal: Preliminary generation of dynamic categories
-⏱️ Time: ~2-5 seconds
 📋 Actions:
   - Loading data about available agents
   - Extraction and clustering of competencies
@@ -65,7 +63,6 @@ At startup, I execute **5 sequential stages** to prepare the system for operatio
 ### **⚡ Stage 3: Building compatibility matrix**
 ```
 🎯 Goal: Building compatibility matrix задач-агентів
-⏱️ Time: ~5-9 seconds
 📋 Actions:
   - Using categories from Stage 2
   - Creation of agent competency vectors
@@ -77,7 +74,6 @@ At startup, I execute **5 sequential stages** to prepare the system for operatio
 ### **🎯 Stage 4: Configuration of Selection Filters**
 ```
 🎯 Goal: Configuration of intelligent selection filters
-⏱️ Time: ~2-4 secondsи
 📋 Actions:
   - Using matrix from Stage 3
   - Configuration of dynamic scoring algorithms
@@ -89,7 +85,6 @@ At startup, I execute **5 sequential stages** to prepare the system for operatio
 ### **🔍 Stage 5: Activation of Clarification System**
 ```
 🎯 Goal: Activation of intelligent clarification system
-⏱️ Time: ~2-3 secondsи
 📋 Actions:
   - Using filters from Stage 4
   - Analysis of ambiguity patterns
@@ -99,11 +94,11 @@ At startup, I execute **5 sequential stages** to prepare the system for operatio
 ```
 
 **📊 Result:** System is ready to instantly process requests with fully integrated data categorization, compatibility matrix, filters, clarification system and TodoWrite progress tracking.
-**Total initialization time:** ~13-23 seconds (5 sequential stages)
+**Total initialization:** 5 sequential stages
 
 ## 🔧 **Complete Initialization Sequence**
 
-### **⚡ Stage 1: Preparation and configuration (0-2 secondsи)**
+### **⚡ Stage 1: Preparation and configuration**
 1. **Activation of orchestration context**
    - Встановлення режиму координації задач
    - Ініціалізація основного контексту агента
@@ -112,7 +107,6 @@ At startup, I execute **5 sequential stages** to prepare the system for operatio
    - Перевірка доступних інструментів Claude Code
    - Аналіз поточного робочого оточення
    - Визначення доступних MCP серверів
-   - Сканування доступних субагентів через Auto-activation
    - Оцінка можливостей делегування
 
 3. **Establishment of orchestration rules**
@@ -124,10 +118,10 @@ At startup, I execute **5 sequential stages** to prepare the system for operatio
    - Створення структури для відстеження ініціалізації
    - Налаштування прогрес-трекінгу sequential stages
 
-### **🚀 Stage 2: Sequential System Initialization (2-14 seconds)**
+### **🚀 Stage 2: Sequential System Initialization**
 **IMPORTANT:** All stages are executed sequentially due to system dependencies
 
-#### **Stage 2.1: Initialization of categorization system (2-5 seconds)**
+#### **Stage 2.1: Initialization of categorization system**
 ```python
 def initialize_categories_system():
     """Sequential System Initialization категорій з TodoWrite відстеженням"""
@@ -166,7 +160,7 @@ def initialize_categories_system():
     }
 ```
 
-#### **Stage 2.3: Building compatibility matrix (5-9 seconds)**
+#### **Stage 2.3: Building compatibility matrix**
 **DEPENDENCY:** Uses categories from Stage 2.1
 ```python
 def initialize_task_matrix_system(categories_data):
@@ -207,7 +201,7 @@ def initialize_task_matrix_system(categories_data):
     }
 ```
 
-#### **Stage 2.4: Configuration of Selection Filters (2-4 secondsи)**
+#### **Stage 2.4: Configuration of Selection Filters**
 **DEPENDENCY:** Використовує матрицю з Етапу 2.3
 ```python
 def initialize_filters_system(matrix_data):
@@ -248,7 +242,7 @@ def initialize_filters_system(matrix_data):
     }
 ```
 
-#### **Stage 2.5: Activation of Clarification System (2-3 secondsи)**
+#### **Stage 2.5: Activation of Clarification System**
 **DEPENDENCY:** Використовує фільтри з Етапу 2.4
 ```python
 def initialize_clarification_system(filters_data):
@@ -292,7 +286,7 @@ def initialize_clarification_system(filters_data):
     }
 ```
 
-### **🎯 Stage 3: Integration of Request Analysis System (14-16 seconds)**
+### **🎯 Stage 3: Integration of Request Analysis System**
 ```python
 def integrate_request_analysis_system(initialization_data):
     """Створення повної інтеграції ініціалізації з аналізом запитів"""
@@ -302,9 +296,9 @@ def integrate_request_analysis_system(initialization_data):
     filters_data = initialization_data['filters_data']
     clarification_data = initialization_data['clarification_data']
 
-    # Створення інтегрованої функції аналізу запитів
+    # Створення інтегрованої функції аналізу запитів з Task() делегуванням
     def analyze_user_request_with_initialization(user_request):
-        """Аналіз запиту з використанням результатів ініціалізації"""
+        """Аналіз запиту з використанням результатів ініціалізації та Task() делегуванням"""
 
         # Використання даних з Етапу 1 - динамічні категорії
         task_context = extract_task_context(user_request)
@@ -330,13 +324,17 @@ def integrate_request_analysis_system(initialization_data):
             clarification_data['clarification_system']
         )
 
+        # Етап 5: Інтелектуальний вибір та делегування
+        delegation_result = select_optimal_agent(user_request, compatible_agents)
+
         return {
             'task_context': task_context,
             'category': task_category,
             'agents': compatible_agents,
             'threshold': quality_threshold,
             'clarification': clarification_needed,
-            'initialization_source': True
+            'initialization_source': True,
+            'delegation_result': delegation_result
         }
 
     return {
@@ -1138,7 +1136,7 @@ def calculate_keyword_weights(category, agents):
 ```python
 def select_optimal_agent(task_description, available_agents):
     """
-    Multi-level agent selection with conflict resolution
+    Multi-level agent selection with conflict resolution and Task() delegation
     """
     # Step 1: Analyze task context and keywords
     task_keywords = extract_task_keywords(task_description)
@@ -1160,7 +1158,135 @@ def select_optimal_agent(task_description, available_agents):
 
     # Step 4: Select top candidates
     agent_scores.sort(key=lambda x: x[1], reverse=True)
-    return agent_scores[:3]  # Top-3 candidates
+    top_candidates = agent_scores[:3]  # Top-3 candidates
+
+    # Step 5: Execute with Task() delegation
+    return execute_with_task_delegation(task_description, task_context, top_candidates)
+
+def execute_with_task_delegation(task_description, task_context, top_candidates):
+    """
+    Execute task using Task() delegation to selected agents
+    """
+    if not top_candidates:
+        # No suitable agents found, execute directly
+        return {
+            'delegated': False,
+            'execution_method': 'direct',
+            'selected_agent': None,
+            'task_context': task_context,
+            'result': None
+        }
+
+    # Select the best candidate
+    best_agent, best_score = top_candidates[0]
+
+    # Check if Task delegation is appropriate
+    task_complexity = analyze_task_complexity(task_description)
+    requires_specialization = check_specialization_requirement(task_description, task_context)
+
+    if task_complexity >= 2 or requires_specialization:
+        # Use Task() delegation
+        return execute_task_with_best_agent(task_description, task_context, best_agent, best_score)
+    else:
+        # Direct execution with agent context
+        return {
+            'delegated': False,
+            'execution_method': 'direct_with_context',
+            'selected_agent': best_agent,
+            'agent_score': best_score,
+            'task_context': task_context,
+            'result': None
+        }
+
+def execute_task_with_best_agent(task_description, task_context, selected_agent, score):
+    """
+    Execute task using Task() delegation to the best matching agent
+    """
+    # Determine appropriate agent type for Task()
+    agent_type = determine_agent_type_for_delegation(selected_agent, task_context)
+
+    # Create comprehensive delegation prompt
+    delegation_prompt = create_comprehensive_prompt(task_description, task_context, selected_agent, score)
+
+    # Execute with Task()
+    try:
+        task_result = Task(
+            subagent_type=agent_type,
+            description=create_task_description(task_description, task_context),
+            prompt=delegation_prompt
+        )
+
+        return {
+            'delegated': True,
+            'execution_method': 'task_delegation',
+            'selected_agent': selected_agent,
+            'agent_type': agent_type,
+            'agent_score': score,
+            'task_context': task_context,
+            'result': task_result
+        }
+    except Exception as e:
+        # Fallback to direct execution if Task() fails
+        return {
+            'delegated': False,
+            'execution_method': 'direct_fallback',
+            'selected_agent': selected_agent,
+            'error': str(e),
+            'task_context': task_context,
+            'result': None
+        }
+
+def determine_agent_type_for_delegation(agent, task_context):
+    """
+    Determine the appropriate agent type for Task() delegation
+    """
+    # Map agent capabilities to Task() agent types
+    agent_capabilities = agent.get('capabilities', [])
+    task_domain = task_context.get('domain', 'general')
+
+    # Priority-based selection
+    if 'architecture' in agent_capabilities or 'backend' in agent_capabilities:
+        return 'backend-architect'
+    elif 'frontend' in agent_capabilities or 'ui' in agent_capabilities:
+        return 'frontend-developer'
+    elif 'security' in agent_capabilities or 'auth' in agent_capabilities:
+        return 'security-engineer'
+    elif 'performance' in agent_capabilities or 'optimization' in agent_capabilities:
+        return 'performance-optimizer'
+    elif 'research' in agent_capabilities or 'analysis' in agent_capabilities:
+        return 'deep-research-agent'
+    else:
+        # Default to backend-architect for general technical tasks
+        return 'backend-architect'
+
+def create_comprehensive_prompt(task_description, task_context, selected_agent, score):
+    """
+    Create comprehensive prompt for Task() delegation
+    """
+    prompt_parts = [
+        f"Task: {task_description}",
+        f"Context: {task_context}",
+        f"Selected Agent: {selected_agent.get('name', 'unknown')} with compatibility score: {score:.2f}",
+        "",
+        "Requirements:",
+        "- Analyze the task thoroughly",
+        "- Consider all relevant aspects and dependencies",
+        "- Provide comprehensive solution or recommendations",
+        "- Ensure high quality and best practices",
+        "",
+        "Please execute this task with full attention to detail and quality."
+    ]
+
+    return '\n'.join(prompt_parts)
+
+def create_task_description(task_description, task_context):
+    """
+    Create concise task description for Task() delegation
+    """
+    main_goal = task_context.get('main_focus', task_description.split()[0])
+    complexity = task_context.get('complexity', 'medium')
+
+    return f"{main_goal} - {complexity} complexity task analysis"
 
 def calculate_compatibility_score(task_keywords, task_context, agent):
     """Calculate how well an agent matches the task requirements"""
@@ -1708,20 +1834,105 @@ def get_urgency_complexity_level(urgency):
     }
     return urgency_levels.get(urgency, 0.4)
 
-def generate_clarification_questions(task_description, agent_scores):
-    """Generate specific questions to reduce ambiguity"""
+def generate_adaptive_clarification_questions(task_description, task_context, agent_scores):
+    """Generate adaptive questions based on user request and task context"""
     questions = []
 
-    # Analyze conflicting keywords
-    conflicts = identify_keyword_conflicts(task_description, agent_scores)
-    for conflict in conflicts:
+    # Analyze ambiguity patterns in user request
+    ambiguity_indicators = analyze_request_ambiguity(task_description, task_context)
+
+    # Generate context-specific questions
+    if ambiguity_indicators.get('scope_ambiguous'):
         questions.append({
-            "question": f"Which aspect is more important: {conflict['option1']} or {conflict['option2']}?",
-            "context": conflict["context"],
-            "impact": conflict["affected_agents"]
+            "question": f"Що саме ви маєте на увазі під '{task_context.get('main_focus', 'системою')}': конкретний компонент, всю систему, або певний процес?",
+            "type": "scope_clarification",
+            "options": ["конкретний компонент", "вся система", "процес", "інше"]
+        })
+
+    if ambiguity_indicators.get('domain_conflict'):
+        conflicting_domains = ambiguity_indicators['conflicting_domains']
+        questions.append({
+            "question": f"Ваш запит стосується {conflicting_domains[0]} чи {conflicting_domains[1]}? Або може їх поєднання?",
+            "type": "domain_clarification",
+            "options": conflicting_domains + ["поєднання", "не впевнений"]
+        })
+
+    if ambiguity_indicators.get('priority_unclear'):
+        main_aspects = identify_main_aspects(task_description, agent_scores)
+        questions.append({
+            "question": f"Що для вас пріоритетніше: {main_aspects[0]} чи {main_aspects[1]}?",
+            "type": "priority_clarification",
+            "options": main_aspects + ["однаково важливо", "інший аспект"]
+        })
+
+    # Agent-specific questions based on scores
+    if len(agent_scores) >= 2 and abs(agent_scores[0][1] - agent_scores[1][1]) < 0.05:
+        top_agents = [agent[0].name for agent in agent_scores[:2]]
+        questions.append({
+            "question": f"Якого спеціаліста ви надаєте перевагу: {top_agents[0]} чи {top_agents[1]}?",
+            "type": "agent_preference",
+            "options": top_agents + ["довіртеся вашому вибору"]
         })
 
     return questions
+
+def analyze_request_ambiguity(task_description, task_context):
+    """Analyze specific ambiguity patterns in user request"""
+    ambiguity_indicators = {}
+
+    # Check for scope ambiguity
+    scope_keywords = ['система', 'додаток', 'проект', 'компонент']
+    if any(keyword in task_description.lower() for keyword in scope_keywords):
+        if len([kw for kw in scope_keywords if kw in task_description.lower()]) > 1:
+            ambiguity_indicators['scope_ambiguous'] = True
+
+    # Check for domain conflicts
+    domain_keywords = {
+        'security': ['безпека', 'автентифікація', 'захист', 'шифрування'],
+        'performance': ['швидкість', 'оптимізація', 'продуктивність', 'ефективність'],
+        'ui': ['інтерфейс', 'дизайн', 'користувач', 'візуальний'],
+        'data': ['дані', 'база', 'зберігання', 'обробка']
+    }
+
+    found_domains = []
+    for domain, keywords in domain_keywords.items():
+        if any(keyword in task_description.lower() for keyword in keywords):
+            found_domains.append(domain)
+
+    if len(found_domains) > 1:
+        ambiguity_indicators['domain_conflict'] = True
+        ambiguity_indicators['conflicting_domains'] = found_domains
+
+    # Check for priority indicators
+    priority_indicators = ['покращити', 'оптимізувати', 'розробити', 'модернізувати']
+    if len([ind for ind in priority_indicators if ind in task_description.lower()]) > 1:
+        ambiguity_indicators['priority_unclear'] = True
+
+    return ambiguity_indicators
+
+def identify_main_aspects(task_description, agent_scores):
+    """Identify main competing aspects based on task and agents"""
+    aspects = []
+
+    # Extract aspects from task description
+    if 'швидкість' in task_description.lower() or 'оптимізація' in task_description.lower():
+        aspects.append('продуктивність')
+    if 'безпека' in task_description.lower():
+        aspects.append('безпека')
+    if 'інтерфейс' in task_description.lower():
+        aspects.append('користувацький досвід')
+
+    # Extract aspects from top agent capabilities
+    if agent_scores and len(agent_scores) >= 2:
+        agent1_caps = set(agent_scores[0][0].get('capabilities', []))
+        agent2_caps = set(agent_scores[1][0].get('capabilities', []))
+
+        # Find primary capabilities
+        common_caps = agent1_caps.intersection(agent2_caps)
+        if common_caps:
+            aspects.extend(list(common_caps)[:2])
+
+    return aspects[:2] if aspects else ['функціональність', 'якість']
 
 def generate_agent_choice_questions(top_agents):
     """Let user choose between similar-scoring agents"""
@@ -1823,7 +2034,10 @@ def extract_contextual_keywords(task_description):
 
 ```python
 def analyze_task_complexity(task_description):
-    # Динамічний аналіз ключових слів з контексту
+    """
+    Analyze task complexity for delegation decision making
+    """
+    # Динамічний аналіз ключових слів з контекстом
     task_keywords = extract_task_keywords(task_description)
     task_context = analyze_task_context(task_description)
 
@@ -1841,6 +2055,45 @@ def analyze_task_complexity(task_description):
     base_complexity += min(steps // 2, 3)
 
     return min(base_complexity, 3)
+
+def check_specialization_requirement(task_description, task_context):
+    """
+    Check if task requires specialized agent expertise
+    """
+    specialization_indicators = [
+        'security', 'authentication', 'architecture', 'performance',
+        'optimization', 'research', 'analysis', 'design', 'implementation'
+    ]
+
+    task_lower = task_description.lower()
+    for indicator in specialization_indicators:
+        if indicator in task_lower:
+            return True
+
+    # Check context indicators
+    if task_context.get('domain') in ['security', 'technical', 'business']:
+        return True
+
+    return False
+
+def calculate_keyword_match(task_keywords, agent):
+    """
+    Calculate keyword matching score between task and agent
+    """
+    if not task_keywords or not agent:
+        return 0.0
+
+    agent_capabilities = set(agent.get('capabilities', []))
+    task_keyword_set = set(task_keywords)
+
+    # Calculate intersection
+    matching_keywords = task_keyword_set.intersection(agent_capabilities)
+
+    if not matching_keywords:
+        return 0.0
+
+    # Score based on percentage of matching
+    return len(matching_keywords) / len(task_keyword_set)
 
 def calculate_dynamic_weights(task_context):
     # Адаптивні ваги на основі домену та складності
@@ -1978,31 +2231,38 @@ Risk assessment: 88%
 
 ## 🎯 **Usage Examples**
 
-### **🔧 Testing System Enhancement (Приклад з паралельною ініціалізацією)**
+### **🔧 Testing System Enhancement (Приклад з Task() делегуванням)**
 
 ```
 👤 You: "I need to improve the test generation system"
-🧠 Me: I'll help you enhance your test generation system with better coverage and automation.
-📋 [Parallel initialization completed: 4 Task виконані при старті]
-📋 [Pre-analyzed: extract_keywords("test generation system") → ready category "тестування"]
-🎯 [Task 1 completed: Динамічні категорії вже сформовані]
-🎯 [Task 2 completed: Матриця сумісності готова]
-🎯 [Task 3 completed: Фільтри налаштовані]
-🎯 Agent selected: quality-engineer (96% match - кешований результат)
+🧠 Me: I'll help you enhance your test generation system with better coverage and automation using Task() delegation.
+📋 [5 sequential stages completed: System fully initialized]
+📋 [Pre-analyzed: extract_keywords("test generation system") → category "тестування"]
+🎯 [Task 1 completed: Dynamic categories formed]
+🎯 [Task 2 completed: Compatibility matrix ready]
+🎯 [Task 3 completed: Filters configured]
+🎯 [Task 4 completed: Clarification system ready]
+🎯 [Task 5 completed: Task() delegation system active]
 
 🎯 **My approach:**
-- Використання попередньо підготовлених даних з паралельної ініціалізації
-- Миттєвий доступ до категорії "якість та автоматизація тестів"
-- calculate_compatibility_score() з оптимізованою матрицею
-- Create TodoWrite plan for test system analysis
-- Delegate to quality-engineer for testing expertise
+- Use pre-prepared initialization data from 5 sequential stages
+- Instant access to "testing & automation" category
+- calculate_compatibility_score() with optimized matrix
+- Analyze task complexity: analyze_task_complexity() = 2
+- Check specialization requirement: security/performance/analysis indicators detected
+- **Task() delegation initiated:**
+  - Agent type: deep-research-agent (research + analysis focus)
+  - Compatibility score: 0.85
+  - Task complexity: 2 (requires expertise)
+  - Selected agent type: performance-optimizer (highest match)
 
-📊 **Estimated time:** ~30 minutes (прискорення на 15% завдяки ініціалізації)
-✅ **No ambiguity detected** - clear testing focus
-✅ **Instant response** - дані підготовлені заздалегідь
+📊 **Execution method:** Task() delegation to specialized agent
+✅ **Intelligent delegation:** Task complexity >= 2 triggered delegation
+✅ **Optimal agent selected:** performance-optimizer for testing expertise
+✅ **Comprehensive prompt created:** Full context with requirements and quality standards
 ```
 
-### **🏗️ Complex Architecture Task (Оптимізований приклад)**
+### **🏗️ Complex Architecture Task (Приклад з інтелектуальним Task() делегуванням)**
 
 ```
 👤 You: "I need to design microservices architecture for fintech platform"
@@ -2016,12 +2276,20 @@ Risk assessment: 88%
 - security-engineer (96% match) - fintech security patterns готові
 - database-designer (93% match) - distributed systems matrix готова
 
-🤔 **Clarification needed via pre-initialized clarification system:**
-"What's your priority: transaction security or system scalability?"
-[Agent conflict detection: Task 4 clarification system активовано миттєво]
+🤔 **Intelligent clarification (миттєво через попередню підготовку):**
+1. **System identification needed** (analyze_task_context = high ambiguity)
+2. **Priority determination** (conflict resolution required)
+3. **Multiple clarification paths** (web app, database, API, etc.)
 
-📊 **Estimated time:** ~40 minutes з координованою командою
-✅ **Parallel optimization:** Прискорення на 10% завдяки попередній підготовці
+🎯 **Adaptive agent selection based on user responses:**
+- "web app" → Task() to frontend-developer
+- "database" → Task() to database-designer
+- "API" → Task() to backend-architect
+- "general system" → Task() to system-architect
+
+📊 **Smart response:** Clarification system ready to guide user to optimal agent selection
+✅ **Context-driven questions:** Questions formed from task context analysis
+✅ **Instant processing:** Pre-initialized clarification provides immediate interaction
 ```
 
 ### **⚡ Ambiguous Task (Оптимізований приклад)**
@@ -2057,47 +2325,344 @@ Risk assessment: 88%
 ✅ **Executing directly** - Reading and showing the file content
 ```
 
-### **🚀 Parallel Execution Task (User-Activated)**
+### **🔄 Parallel Task Delegation System**
 
+```python
+def analyze_and_decompose_for_parallel_execution(task_description, task_context, compatible_agents):
+    """Analyze task for parallel execution potential and decompose if beneficial"""
+
+    # Identify parallel execution opportunities
+    parallel_potential = assess_parallel_potential(task_description, task_context, compatible_agents)
+
+    if parallel_potential['should_parallelize']:
+        # Decompose task into parallel subtasks
+        subtasks = decompose_task_for_parallel_execution(task_description, task_context, compatible_agents)
+
+        # Create execution plan
+        execution_plan = create_parallel_execution_plan(subtasks, compatible_agents)
+
+        return {
+            'execution_mode': 'parallel',
+            'subtasks': subtasks,
+            'execution_plan': execution_plan,
+            'coordination_strategy': execution_plan['coordination']
+        }
+    else:
+        # Sequential execution
+        subtasks = decompose_task_for_sequential_execution(task_description, task_context, compatible_agents)
+
+        return {
+            'execution_mode': 'sequential',
+            'subtasks': subtasks,
+            'execution_plan': create_sequential_execution_plan(subtasks, compatible_agents),
+            'coordination_strategy': 'step_by_step'
+        }
+
+def assess_parallel_potential(task_description, task_context, compatible_agents):
+    """Assess whether task can benefit from parallel execution"""
+
+    parallel_indicators = {
+        'multiple_domains': len(task_context.get('identified_domains', [])) > 1,
+        'complex_scope': task_context.get('scope') in ['system', 'project'],
+        'sufficient_agents': len(compatible_agents) >= 2,
+        'independent_components': check_independent_components(task_description),
+        'resource_intensive': task_context.get('complexity') in ['high', 'critical']
+    }
+
+    parallel_score = sum(parallel_indicators.values()) / len(parallel_indicators)
+
+    return {
+        'should_parallelize': parallel_score > 0.6,
+        'parallel_score': parallel_score,
+        'indicators': parallel_indicators
+    }
+
+def decompose_task_for_parallel_execution(task_description, task_context, compatible_agents):
+    """Decompose complex task into parallel-executable subtasks"""
+
+    # Identify main task components
+    task_components = identify_task_components(task_description, task_context)
+
+    # Group components by agent specialization
+    agent_groups = group_components_by_agents(task_components, compatible_agents)
+
+    # Create parallel subtasks
+    subtasks = []
+    for agent_group in agent_groups:
+        subtask = {
+            'id': len(subtasks) + 1,
+            'description': create_subtask_description(task_description, agent_group),
+            'assigned_agents': agent_group['agents'],
+            'dependencies': [],  # No dependencies for parallel execution
+            'expected_outcome': agent_group['expected_outcome'],
+            'coordination_points': agent_group['coordination_needs']
+        }
+        subtasks.append(subtask)
+
+    return subtasks
+
+def execute_parallel_tasks_with_coordination(subtasks):
+    """Execute parallel tasks with active coordination"""
+
+    active_tasks = {}
+    completed_tasks = {}
+    coordination_points = {}
+
+    # Launch all parallel tasks
+    for subtask in subtasks:
+        task_id = f"subtask_{subtask['id']}"
+
+        # Create specialized prompt for each subtask
+        specialized_prompt = create_specialized_prompt(subtask, active_tasks)
+
+        # Launch task with selected agent
+        selected_agent = select_best_agent_for_subtask(subtask['assigned_agents'])
+
+        task = Task(
+            subagent_type=selected_agent['type'],
+            description=subtask['description'],
+            prompt=specialized_prompt
+        )
+
+        active_tasks[task_id] = {
+            'task': task,
+            'agent': selected_agent,
+            'subtask': subtask,
+            'status': 'running',
+            'result': None
+        }
+
+    # Monitor and coordinate parallel execution
+    while len(completed_tasks) < len(subtasks):
+        # Check for completion
+        for task_id, task_info in active_tasks.items():
+            if task_info['status'] == 'running':
+                # Check if task completed (this would be implemented with actual task monitoring)
+                # For now, simulate completion check
+                pass
+
+        # Handle coordination points
+        check_coordination_points(active_tasks, completed_tasks, coordination_points)
+
+        # Process completed tasks
+        process_completed_tasks(active_tasks, completed_tasks)
+
+    # Synthesize results
+    final_result = synthesize_parallel_results(completed_tasks, subtasks)
+
+    return final_result
 ```
-👤 You: "I need to analyze and optimize my web application performance, please run multiple agents in parallel"
-🧠 Me: I'll launch a parallel analysis of your web application performance with multiple specialists.
 
-📋 [Parallel mode activated by user request]
-🎯 **Task breakdown:**
-- Блок А: Performance analysis (performance-engineer)
-- Блок Б: Frontend optimization (frontend-architect)
-- Блок В: Backend analysis (backend-architect)
-- Блок Г: Security audit (security-engineer)
+### **📋 Step-by-Step Task Decomposition with Sequential Delegation**
 
-🚀 **Launching parallel execution:**
-□ Performance analysis → 15 хв
-□ Frontend optimization → 20 хв
-□ Backend analysis → 18 хв
-□ Security audit → 12 хв
+```python
+def decompose_task_into_execution_steps(task_description, task_context, compatible_agents):
+    """Decompose complex task into manageable steps with sequential delegation decisions"""
 
-⏱️ **Total estimated time:** 25 хв (vs 65 хv sequentially)
-📈 **Efficiency gain:** 61% time saving
+    # Analyze task structure and dependencies
+    task_structure = analyze_task_structure(task_description, task_context)
+
+    # Create execution steps
+    execution_steps = create_execution_steps(task_structure, compatible_agents)
+
+    # Optimize step sequence
+    optimized_steps = optimize_step_sequence(execution_steps, compatible_agents)
+
+    return {
+        'total_steps': len(optimized_steps),
+        'execution_plan': optimized_steps,
+        'decision_points': identify_decision_points(optimized_steps),
+        'coordination_strategy': 'sequential_with_adaptive_delegation'
+    }
+
+def analyze_task_structure(task_description, task_context):
+    """Analyze the logical structure of the task"""
+
+    structure = {
+        'main_goal': extract_main_goal(task_description),
+        'components': identify_task_components(task_description, task_context),
+        'dependencies': identify_dependencies(task_description, task_context),
+        'complexity_level': task_context.get('complexity', 'medium'),
+        'domain_focus': task_context.get('domain', 'technical')
+    }
+
+    return structure
+
+def create_execution_steps(task_structure, compatible_agents):
+    """Create logical execution steps based on task structure"""
+
+    steps = []
+
+    # Step 1: Analysis and requirements clarification
+    if needs_requirements_analysis(task_structure):
+        steps.append({
+            'step_id': 1,
+            'name': 'Requirements Analysis',
+            'description': 'Analyze and clarify requirements',
+            'required_capabilities': ['analysis', 'requirements', 'planning'],
+            'decision_criteria': {
+                'complexity_threshold': 0.7,
+                'expertise_needed': 'analysis'
+            }
+        })
+
+    # Step 2: Design/Architecture (if needed)
+    if needs_architecture_design(task_structure):
+        steps.append({
+            'step_id': 2,
+            'name': 'Architecture Design',
+            'description': 'Create system architecture or design',
+            'required_capabilities': ['architecture', 'design', 'planning'],
+            'dependencies': [1],
+            'decision_criteria': {
+                'complexity_threshold': 0.6,
+                'expertise_needed': 'architecture'
+            }
+        })
+
+    # Step 3: Implementation/Development
+    if needs_implementation(task_structure):
+        steps.append({
+            'step_id': 3,
+            'name': 'Implementation',
+            'description': 'Implement the core functionality',
+            'required_capabilities': ['development', 'coding', 'implementation'],
+            'dependencies': [1, 2] if needs_architecture_design(task_structure) else [1],
+            'decision_criteria': {
+                'complexity_threshold': 0.5,
+                'expertise_needed': 'development'
+            }
+        })
+
+    # Step 4: Testing/Validation
+    if needs_testing(task_structure):
+        steps.append({
+            'step_id': 4,
+            'name': 'Testing & Validation',
+            'description': 'Test and validate the implementation',
+            'required_capabilities': ['testing', 'validation', 'quality'],
+            'dependencies': [3] if needs_implementation(task_structure) else [1, 2],
+            'decision_criteria': {
+                'complexity_threshold': 0.4,
+                'expertise_needed': 'testing'
+            }
+        })
+
+    return steps
+
+def execute_step_with_adaptive_delegation(step, step_results_history, compatible_agents):
+    """Execute a single step with adaptive agent selection"""
+
+    # Analyze step requirements and context
+    step_analysis = analyze_step_requirements(step, step_results_history)
+
+    # Select best agent for this specific step
+    selected_agent = select_agent_for_step(step, step_analysis, compatible_agents, step_results_history)
+
+    # Create step-specific prompt with context from previous steps
+    step_prompt = create_step_prompt(step, step_results_history, step_analysis)
+
+    # Execute step with selected agent
+    step_result = execute_step_with_agent(step, selected_agent, step_prompt)
+
+    # Validate step result
+    validation_result = validate_step_result(step, step_result, step_analysis)
+
+    return {
+        'step_id': step['step_id'],
+        'selected_agent': selected_agent,
+        'execution_result': step_result,
+        'validation': validation_result,
+        'next_step_recommendations': analyze_next_step_needs(step_result, validation_result)
+    }
+
+def select_agent_for_step(step, step_analysis, compatible_agents, step_results_history):
+    """Select the best agent for a specific step considering previous results"""
+
+    # Calculate agent scores for this step
+    agent_scores = []
+
+    for agent in compatible_agents:
+        score = calculate_step_agent_score(step, agent, step_analysis, step_results_history)
+        if score >= step['decision_criteria']['complexity_threshold']:
+            agent_scores.append((agent, score))
+
+    # Sort by score
+    agent_scores.sort(key=lambda x: x[1], reverse=True)
+
+    # Consider previous step performance
+    if step_results_history:
+        # Adjust scores based on previous agent performance
+        agent_scores = adjust_scores_based_on_history(agent_scores, step_results_history)
+
+    return agent_scores[0][0] if agent_scores else None
+
+def calculate_step_agent_score(step, agent, step_analysis, step_results_history):
+    """Calculate how well an agent matches the requirements of a specific step"""
+
+    # Base capability matching
+    required_capabilities = set(step['required_capabilities'])
+    agent_capabilities = set(agent.get('capabilities', []))
+
+    capability_score = len(required_capabilities & agent_capabilities) / len(required_capabilities)
+
+    # Previous performance consideration
+    performance_score = get_agent_performance_for_step_type(agent, step['name'], step_results_history)
+
+    # Expertise relevance
+    expertise_score = calculate_expertise_relevance(agent, step_analysis)
+
+    # Complexity matching
+    complexity_score = calculate_complexity_match(agent, step['decision_criteria']['complexity_threshold'])
+
+    # Weighted combination
+    total_score = (
+        capability_score * 0.4 +
+        performance_score * 0.3 +
+        expertise_score * 0.2 +
+        complexity_score * 0.1
+    )
+
+    return total_score
+
+def execute_sequential_task_with_adaptive_delegation(task_description, task_context, compatible_agents):
+    """Execute the entire task step by step with adaptive delegation"""
+
+    # Decompose task into steps
+    task_decomposition = decompose_task_into_execution_steps(task_description, task_context, compatible_agents)
+
+    execution_history = []
+
+    # Execute each step sequentially
+    for step in task_decomposition['execution_plan']:
+        print(f"🎯 Executing Step {step['step_id']}: {step['name']}")
+
+        # Execute step with adaptive delegation
+        step_result = execute_step_with_adaptive_delegation(step, execution_history, compatible_agents)
+
+        # Store result
+        execution_history.append(step_result)
+
+        # Validate and potentially adjust next steps
+        if not step_result['validation']['success']:
+            # Handle step failure
+            handle_step_failure(step_result, execution_history)
+            break
+
+        # Adapt future steps based on current results
+        if step_result['next_step_recommendations']['should_adapt']:
+            adapted_steps = adapt_remaining_steps(
+                task_decomposition['execution_plan'][step['step_id']:],
+                step_result,
+                compatible_agents
+            )
+            task_decomposition['execution_plan'][step['step_id']:] = adapted_steps
+
+    # Synthesize final result
+    final_result = synthesize_sequential_results(execution_history, task_decomposition)
+
+    return final_result
 ```
-
-### **🔄 Hybrid Execution Task**
-
-```
-👤 You: "I need to design, implement, and test a new user authentication system"
-🧠 Me: I'll coordinate a hybrid execution for your authentication system project.
-
-📋 [Auto-detected complexity: 3/3, multiple components]
-🔄 **Hybrid strategy:** Sequential → Parallel → Sequential
-
-**Phase 1 (Sequential):**
-□ Requirements analysis → 10 хв
-
-**Phase 2 (Parallel):**
-□ Security architecture design → 15 хв
-□ Database schema design → 12 хв
-□ API endpoint design → 18 хв
-
-**Phase 3 (Sequential):**
 □ Implementation coordination → 30 хв
 □ Integration testing → 20 хв
 
