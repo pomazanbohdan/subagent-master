@@ -1,0 +1,20 @@
+{
+  "name": "sm",
+  "version": "0.0.3",
+  "description": "Intelligent task orchestrator with automatic delegation and adaptive agent management system",
+  "author": "Bohdan",
+  "license": "MIT",
+  "engines": {
+    "claude-code": ">=2.0.30"
+  },
+  "keywords": [
+    "claude-code",
+    "agents",
+    "orchestrator",
+    "delegation",
+    "intelligence",
+    "task-automation",
+    "interactive"
+  ],
+  "main": "./agents/master.md"
+}

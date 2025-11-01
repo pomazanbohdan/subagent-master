@@ -1,0 +1,44 @@
+{
+  "hooks": {
+    "beforeTaskExecution": {
+      "description": "Prepare system environment before task execution",
+      "actions": [
+        "validateAgentAvailability",
+        "checkSystemResources",
+        "initializeExecutionEnvironment"
+      ]
+    },
+    "afterTaskCompletion": {
+      "description": "Cleanup and optimization after task completion",
+      "actions": [
+        "logExecutionMetrics",
+        "cleanupTempResources",
+        "updateAgentPerformanceData"
+      ]
+    },
+    "onAgentSelection": {
+      "description": "Validate and optimize agent selection",
+      "actions": [
+        "validateAgentCapabilities",
+        "checkAgentAvailability",
+        "optimizeAgentSelection"
+      ]
+    },
+    "onTaskFailure": {
+      "description": "Handle task failures and recovery",
+      "actions": [
+        "analyzeFailureReason",
+        "initiateRecoveryProtocol",
+        "updateFailurePatterns"
+      ]
+    },
+    "onParallelExecution": {
+      "description": "Manage parallel execution coordination",
+      "actions": [
+        "coordinateResourceSharing",
+        "monitorExecutionProgress",
+        "handleSynchronizationPoints"
+      ]
+    }
+  }
+}

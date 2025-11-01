@@ -1,0 +1,25 @@
+{
+  "name": "subagent-master",
+  "version": "0.0.3",
+  "description": "Intelligent task orchestrator with automatic delegation and adaptive agent management system",
+  "author": "Bohdan <pomazan.bohdan@gmail.com>",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "agents",
+    "orchestrator",
+    "delegation",
+    "intelligence",
+    "task-automation",
+    "interactive",
+    "parallel-execution"
+  ],
+  "homepage": "https://github.com/pomazanbohdan/subagent-master",
+  "repository": "https://github.com/pomazanbohdan/subagent-master.git",
+  "agents": [
+    "./agents/master.md"
+  ],
+  "engines": {
+    "claude-code": ">=2.0.30"
+  }
+}
