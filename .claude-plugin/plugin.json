@@ -1,7 +1,7 @@
 {
   "name": "master",
-  "version": "0.1.0",
-  "description": "Intelligent task orchestrator with automatic delegation and adaptive agent management system",
+  "version": "0.2.0",
+  "description": "Enhanced intelligent task orchestrator with competitive execution, step validation, and adaptive workflow management",
   "author": {
     "name": "Bohdan",
     "email": "pomazan.bohdan@gmail.com"
@@ -14,6 +14,12 @@
     "delegation",
     "intelligence",
     "task-automation",
-    "interactive"
+    "interactive",
+    "parallel-execution",
+    "competitive-execution",
+    "step-validation",
+    "adaptive-workflow",
+    "error-handling",
+    "quality-assessment"
   ]
 }

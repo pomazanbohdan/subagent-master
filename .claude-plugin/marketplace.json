@@ -5,8 +5,8 @@
     "email": "pomazan.bohdan@gmail.com"
   },
   "metadata": {
-    "description": "Intelligent task orchestrator with automatic delegation and adaptive agent management system",
-    "version": "0.1.0"
+    "description": "Enhanced intelligent task orchestrator with competitive execution, step validation, and adaptive workflow management",
+    "version": "0.2.0"
   },
   "plugins": [
     {
@@ -24,7 +24,12 @@
         "intelligence",
         "task-automation",
         "interactive",
-        "parallel-execution"
+        "parallel-execution",
+        "competitive-execution",
+        "step-validation",
+        "adaptive-workflow",
+        "error-handling",
+        "quality-assessment"
       ],
       "source": "./",
       "agents": [

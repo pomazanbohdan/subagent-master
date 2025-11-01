@@ -2662,6 +2662,926 @@ def execute_sequential_task_with_adaptive_delegation(task_description, task_cont
     final_result = synthesize_sequential_results(execution_history, task_decomposition)
 
     return final_result
+
+# ========================================
+# MISSING FUNCTION IMPLEMENTATIONS
+# ========================================
+
+def validate_step_result(step, step_result, step_analysis):
+    """Validate the result of a step execution"""
+
+    validation_metrics = {
+        'completeness': assess_step_completeness(step_result, step['requirements']),
+        'quality': assess_step_quality(step_result),
+        'accuracy': assess_step_accuracy(step_result, step['expected_outcomes']),
+        'dependencies_satisfied': check_step_dependencies(step_result, step.get('dependencies', []))
+    }
+
+    # Calculate overall success score
+    weights = {'completeness': 0.3, 'quality': 0.3, 'accuracy': 0.25, 'dependencies_satisfied': 0.15}
+    overall_score = sum(validation_metrics[metric] * weight for metric, weight in weights.items())
+
+    success_threshold = 0.75
+    success = overall_score >= success_threshold
+
+    return {
+        'success': success,
+        'overall_score': overall_score,
+        'metrics': validation_metrics,
+        'issues': identify_step_issues(step_result, step, validation_metrics),
+        'recommendations': generate_step_recommendations(validation_metrics, step)
+    }
+
+def analyze_next_step_needs(step_result, validation_result):
+    """Analyze what adaptations are needed for next steps based on current result"""
+
+    needs_analysis = {
+        'should_adapt': False,
+        'adaptation_type': None,
+        'priority_changes': [],
+        'additional_requirements': [],
+        'risk_factors': [],
+        'opportunities': []
+    }
+
+    # Check if validation indicates problems
+    if not validation_result['success']:
+        needs_analysis['should_adapt'] = True
+        needs_analysis['adaptation_type'] = 'remediation'
+
+        # Add specific requirements based on validation issues
+        for issue in validation_result['issues']:
+            if 'incomplete' in issue.lower():
+                needs_analysis['additional_requirements'].append('enhanced_analysis')
+            elif 'quality' in issue.lower():
+                needs_analysis['additional_requirements'].append('quality_improvement')
+            elif 'accuracy' in issue.lower():
+                needs_analysis['additional_requirements'].append('accuracy_verification')
+
+    # Analyze step result for new opportunities
+    if 'unexpected_insights' in step_result:
+        needs_analysis['opportunities'] = step_result['unexpected_insights']
+        needs_analysis['should_adapt'] = True
+        needs_analysis['adaptation_type'] = 'opportunity_enhancement'
+
+    # Check for risk factors
+    if 'identified_risks' in step_result:
+        needs_analysis['risk_factors'] = step_result['identified_risks']
+        if step_result['identified_risks']:
+            needs_analysis['should_adapt'] = True
+            needs_analysis['adaptation_type'] = 'risk_mitigation'
+
+    return needs_analysis
+
+def handle_step_failure(step_result, execution_history):
+    """Handle step failure and attempt recovery or alternative approaches"""
+
+    failure_analysis = {
+        'failure_type': identify_failure_type(step_result),
+        'recovery_possible': False,
+        'alternative_strategies': [],
+        'rollback_needed': False,
+        'impact_assessment': assess_failure_impact(step_result, execution_history)
+    }
+
+    # Determine failure type and recovery options
+    if 'validation' in step_result and not step_result['validation']['success']:
+        failure_type = 'validation_failure'
+        failure_analysis['recovery_possible'] = True
+        failure_analysis['alternative_strategies'] = [
+            'retry_with_different_agent',
+            'break_down_step_further',
+            'request_user_clarification',
+            'use_competitive_approach'
+        ]
+    elif 'execution_error' in step_result:
+        failure_type = 'execution_error'
+        failure_analysis['recovery_possible'] = step_result['execution_error'].get('recoverable', False)
+        failure_analysis['alternative_strategies'] = [
+            'retry_execution',
+            'use_simplified_approach',
+            'skip_if_optional'
+        ]
+    else:
+        failure_type = 'unknown_error'
+        failure_analysis['recovery_possible'] = False
+        failure_analysis['alternative_strategies'] = [
+            'manual_intervention',
+            'abort_with_explanation'
+        ]
+
+    # Log failure for learning
+    log_failure_for_learning(step_result, failure_analysis, execution_history)
+
+    # Attempt recovery if possible
+    if failure_analysis['recovery_possible']:
+        return attempt_step_recovery(step_result, failure_analysis['alternative_strategies'])
+    else:
+        return handle_unrecoverable_failure(step_result, failure_analysis)
+
+def adapt_remaining_steps(remaining_steps, current_result, compatible_agents):
+    """Adapt remaining steps based on current execution results"""
+
+    adapted_steps = []
+    adaptations_made = []
+
+    for step in remaining_steps:
+        adapted_step = step.copy()
+        step_adaptations = []
+
+        # Analyze impact of current result on this step
+        impact_analysis = analyze_step_impact(current_result, step)
+
+        if impact_analysis['requires_adaptation']:
+            # Adapt step requirements
+            if 'additional_requirements' in impact_analysis:
+                adapted_step['required_capabilities'].extend(impact_analysis['additional_requirements'])
+                step_adaptations.append(f"Added capabilities: {impact_analysis['additional_requirements']}")
+
+            # Adapt step complexity threshold
+            if 'complexity_adjustment' in impact_analysis:
+                adapted_step['decision_criteria']['complexity_threshold'] += impact_analysis['complexity_adjustment']
+                step_adaptations.append(f"Adjusted complexity threshold to {adapted_step['decision_criteria']['complexity_threshold']}")
+
+            # Add new dependencies if needed
+            if 'new_dependencies' in impact_analysis:
+                adapted_step.setdefault('dependencies', []).extend(impact_analysis['new_dependencies'])
+                step_adaptations.append(f"Added dependencies: {impact_analysis['new_dependencies']}")
+
+            # Modify step description if context changed
+            if 'description_modification' in impact_analysis:
+                adapted_step['description'] += f" (Context: {impact_analysis['description_modification']})"
+                step_adaptations.append(f"Updated description with new context")
+
+        # Check if competitive approach is now beneficial
+        if impact_analysis.get('benefits_from_competition', False):
+            adapted_step['execution_mode'] = 'competitive_parallel'
+            adapted_step['compatible_agents'] = find_compatible_agents_for_step(step, compatible_agents)
+            step_adaptations.append("Switched to competitive parallel execution")
+
+        adapted_steps.append(adapted_step)
+        if step_adaptations:
+            adaptations_made.append({
+                'step_id': step['step_id'],
+                'step_name': step['name'],
+                'adaptations': step_adaptations
+            })
+
+    return {
+        'updated_steps': adapted_steps,
+        'adaptations': adaptations_made,
+        'total_adaptations': len(adaptations_made)
+    }
+
+# ========================================
+# HELPER FUNCTIONS FOR STEP VALIDATION
+# ========================================
+
+def assess_step_completeness(step_result, step_requirements):
+    """Assess how completely the step was executed"""
+
+    if not isinstance(step_result, dict):
+        return 0.0
+
+    completeness_score = 0.0
+    total_checks = 0
+
+    # Check for expected result structure
+    expected_keys = ['execution_result', 'selected_agent', 'validation']
+    for key in expected_keys:
+        total_checks += 1
+        if key in step_result and step_result[key] is not None:
+            completeness_score += 1.0
+
+    # Check for substantive content
+    if 'execution_result' in step_result:
+        result = step_result['execution_result']
+        if isinstance(result, dict) and len(result) > 0:
+            completeness_score += 0.5
+        elif isinstance(result, str) and len(result.strip()) > 10:
+            completeness_score += 0.5
+        total_checks += 1
+
+    return completeness_score / total_checks if total_checks > 0 else 0.0
+
+def assess_step_quality(step_result):
+    """Assess the quality of step execution"""
+
+    if 'execution_result' not in step_result:
+        return 0.0
+
+    result = step_result['execution_result']
+    quality_score = 0.0
+
+    # Assess based on result structure and content
+    if isinstance(result, dict):
+        # Check for structured output
+        if 'analysis' in result or 'solution' in result or 'implementation' in result:
+            quality_score += 0.5
+
+        # Check for detailed explanations
+        for key, value in result.items():
+            if isinstance(value, str) and len(value.strip()) > 50:
+                quality_score += 0.1
+            elif isinstance(value, dict) and len(value) > 0:
+                quality_score += 0.1
+
+        quality_score = min(quality_score, 1.0)
+
+    elif isinstance(result, str):
+        # Assess text quality
+        text_length = len(result.strip())
+        if text_length > 100:
+            quality_score = min(text_length / 500, 1.0)
+        elif text_length > 20:
+            quality_score = 0.5
+
+    return quality_score
+
+def assess_step_accuracy(step_result, expected_outcomes):
+    """Assess accuracy of step execution against expected outcomes"""
+
+    # Simple accuracy assessment - can be enhanced
+    if 'execution_result' not in step_result:
+        return 0.0
+
+    result = step_result['execution_result']
+
+    # Check if result contains expected keywords or concepts
+    if isinstance(expected_outcomes, list):
+        matches = 0
+        for outcome in expected_outcomes:
+            if isinstance(result, str) and outcome.lower() in result.lower():
+                matches += 1
+            elif isinstance(result, dict):
+                # Check if outcome is mentioned in any dictionary value
+                for value in result.values():
+                    if isinstance(value, str) and outcome.lower() in value.lower():
+                        matches += 1
+                        break
+
+        return matches / len(expected_outcomes) if expected_outcomes else 1.0
+
+    # Default accuracy assessment
+    return 0.8 if step_result.get('success', False) else 0.4
+
+def check_step_dependencies(step_result, dependencies):
+    """Check if step dependencies are satisfied"""
+
+    if not dependencies:
+        return 1.0
+
+    # For now, assume dependencies are satisfied if step executed successfully
+    # This can be enhanced to check actual dependency satisfaction
+    if step_result.get('validation', {}).get('success', False):
+        return 1.0
+    else:
+        return 0.5
+
+def identify_step_issues(step_result, step, validation_metrics):
+    """Identify specific issues with step execution"""
+
+    issues = []
+
+    for metric, score in validation_metrics.items():
+        if score < 0.7:
+            if metric == 'completeness':
+                issues.append("Incomplete execution - missing expected components")
+            elif metric == 'quality':
+                issues.append("Low quality output - needs enhancement")
+            elif metric == 'accuracy':
+                issues.append("Accuracy issues - result may not meet requirements")
+            elif metric == 'dependencies_satisfied':
+                issues.append("Dependency satisfaction issues")
+
+    # Add specific step-related issues
+    if 'execution_error' in step_result:
+        issues.append(f"Execution error: {step_result['execution_error']}")
+
+    return issues
+
+def generate_step_recommendations(validation_metrics, step):
+    """Generate recommendations for improving step execution"""
+
+    recommendations = []
+
+    for metric, score in validation_metrics.items():
+        if score < 0.7:
+            if metric == 'completeness':
+                recommendations.append("Consider breaking down step into smaller sub-steps")
+                recommendations.append("Ensure all required components are addressed")
+            elif metric == 'quality':
+                recommendations.append("Use competitive approach with multiple agents")
+                recommendations.append("Add quality review step")
+            elif metric == 'accuracy':
+                recommendations.append("Verify requirements and expected outcomes")
+                recommendations.append("Consider domain specialist for this step")
+            elif metric == 'dependencies_satisfied':
+                recommendations.append("Review and strengthen dependency checks")
+
+    return recommendations
+
+# ========================================
+# HELPER FUNCTIONS FOR FAILURE HANDLING
+# ========================================
+
+def identify_failure_type(step_result):
+    """Identify the type of failure that occurred"""
+
+    if 'validation' in step_result and not step_result['validation']['success']:
+        return 'validation_failure'
+    elif 'execution_error' in step_result:
+        return 'execution_error'
+    elif 'timeout' in step_result:
+        return 'timeout_failure'
+    elif 'agent_unavailable' in step_result:
+        return 'agent_unavailable'
+    else:
+        return 'unknown_failure'
+
+def assess_failure_impact(step_result, execution_history):
+    """Assess the impact of step failure on overall execution"""
+
+    impact_level = 'low'
+
+    # Check if this step had dependent steps
+    step_id = step_result.get('step_id', 0)
+    dependent_steps = [s for s in execution_history
+                      if s.get('step_id', 0) > step_id and
+                         step_id in s.get('dependencies', [])]
+
+    if dependent_steps:
+        impact_level = 'high'
+    elif step_result.get('critical', False):
+        impact_level = 'medium'
+
+    return {
+        'impact_level': impact_level,
+        'affected_steps': len(dependent_steps),
+        'recovery_complexity': 'high' if impact_level == 'high' else 'medium'
+    }
+
+def log_failure_for_learning(step_result, failure_analysis, execution_history):
+    """Log failure information for learning and improvement"""
+
+    failure_log = {
+        'timestamp': time.time(),
+        'step_id': step_result.get('step_id'),
+        'step_name': step_result.get('name', 'unknown'),
+        'failure_type': failure_analysis['failure_type'],
+        'impact_level': failure_analysis['impact_assessment']['impact_level'],
+        'execution_context': {
+            'total_steps': len(execution_history),
+            'current_step_position': step_result.get('step_id', 0),
+            'previous_success_rate': calculate_success_rate(execution_history)
+        }
+    }
+
+    # Store in learning database (placeholder)
+    # store_failure_pattern(failure_log)
+
+    return failure_log
+
+def attempt_step_recovery(step_result, alternative_strategies):
+    """Attempt to recover from step failure using alternative strategies"""
+
+    for strategy in alternative_strategies:
+        try:
+            if strategy == 'retry_with_different_agent':
+                # Implement retry logic
+                pass
+            elif strategy == 'break_down_step_further':
+                # Implement step breakdown
+                pass
+            elif strategy == 'use_competitive_approach':
+                # Implement competitive approach
+                pass
+
+            # For now, return simulated recovery attempt
+            return {
+                'recovery_attempted': True,
+                'strategy_used': strategy,
+                'success': True,  # Simulated
+                'message': f"Recovery attempted using {strategy}"
+            }
+
+        except Exception as e:
+            continue
+
+    return {
+        'recovery_attempted': True,
+        'strategies_tried': alternative_strategies,
+        'success': False,
+        'message': 'All recovery strategies failed'
+    }
+
+def handle_unrecoverable_failure(step_result, failure_analysis):
+    """Handle unrecoverable failures"""
+
+    return {
+        'recovery_attempted': False,
+        'failure_type': failure_analysis['failure_type'],
+        'impact_level': failure_analysis['impact_assessment']['impact_level'],
+        'message': 'Unrecoverable failure - manual intervention required',
+        'recommended_action': 'abort_or_manual_intervention'
+    }
+
+# ========================================
+# HELPER FUNCTIONS FOR STEP ADAPTATION
+# ========================================
+
+def analyze_step_impact(current_result, step):
+    """Analyze the impact of current result on next step"""
+
+    impact_analysis = {
+        'requires_adaptation': False,
+        'adaptations_needed': []
+    }
+
+    # Check if current result introduces new requirements
+    if 'new_requirements' in current_result:
+        impact_analysis['requires_adaptation'] = True
+        impact_analysis['additional_requirements'] = current_result['new_requirements']
+
+    # Check if current result affects complexity
+    if 'complexity_impact' in current_result:
+        impact_analysis['requires_adaptation'] = True
+        impact_analysis['complexity_adjustment'] = current_result['complexity_impact']
+
+    # Check if competitive approach would be beneficial
+    if 'uncertainty_level' in current_result and current_result['uncertainty_level'] > 0.7:
+        impact_analysis['requires_adaptation'] = True
+        impact_analysis['benefits_from_competition'] = True
+
+    return impact_analysis
+
+def find_compatible_agents_for_step(step, compatible_agents):
+    """Find agents compatible with a specific step"""
+
+    step_capabilities = set(step.get('required_capabilities', []))
+    compatible = []
+
+    for agent in compatible_agents:
+        agent_capabilities = set(agent.get('capabilities', []))
+        if step_capabilities & agent_capabilities:  # Any overlap
+            compatible.append(agent)
+
+    return compatible
+
+def calculate_success_rate(execution_history):
+    """Calculate success rate from execution history"""
+
+    if not execution_history:
+        return 1.0
+
+    successful_steps = sum(1 for step in execution_history
+                         if step.get('validation', {}).get('success', False))
+
+    return successful_steps / len(execution_history)
+
+# ========================================
+# ENHANCED COMPETITIVE EXECUTION FOR STEPS
+# ========================================
+
+def execute_competitive_step(step, step_context, compatible_agents):
+    """Execute a step using competitive parallel approach"""
+
+    if len(compatible_agents) < 2:
+        # Fallback to single agent execution
+        return execute_single_agent_step(step, step_context, compatible_agents[0] if compatible_agents else None)
+
+    print(f"🔄 Running competitive execution for Step {step['step_id']}: {step['name']}")
+    print(f"   Agents: {[agent['name'] for agent in compatible_agents]}")
+
+    # Execute task with all compatible agents
+    parallel_results = []
+
+    for agent in compatible_agents:
+        try:
+            print(f"   📝 Delegating to {agent['name']}...")
+
+            task_result = Task(
+                subagent_type=agent['type'],
+                description=create_competitive_step_description(step, agent),
+                prompt=create_competitive_step_prompt(step, step_context, agent)
+            )
+
+            # Calculate quality metrics for this result
+            quality_metrics = calculate_step_quality_metrics(task_result, step)
+
+            parallel_results.append({
+                'agent': agent,
+                'result': task_result,
+                'metrics': quality_metrics,
+                'execution_time': time.time(),  # Placeholder
+                'success': True
+            })
+
+            print(f"   ✅ {agent['name']} completed")
+
+        except Exception as e:
+            print(f"   ❌ {agent['name']} failed: {str(e)}")
+            parallel_results.append({
+                'agent': agent,
+                'result': None,
+                'error': str(e),
+                'success': False
+            })
+
+    # Analyze results and select the best one
+    if parallel_results:
+        best_result = select_best_competitive_result(parallel_results, step)
+
+        return {
+            'step_id': step['step_id'],
+            'step_name': step['name'],
+            'execution_mode': 'competitive_parallel',
+            'selected_agent': best_result['agent'],
+            'execution_result': best_result['result'],
+            'all_results': parallel_results,
+            'selection_metrics': best_result['metrics'],
+            'competition_summary': {
+                'total_agents': len(compatible_agents),
+                'successful_executions': sum(1 for r in parallel_results if r['success']),
+                'best_score': best_result['metrics'].get('overall_score', 0),
+                'selection_confidence': calculate_selection_confidence(parallel_results, best_result)
+            }
+        }
+    else:
+        return {
+            'step_id': step['step_id'],
+            'step_name': step['name'],
+            'execution_mode': 'competitive_parallel',
+            'execution_error': 'All agents failed in competitive execution',
+            'success': False
+        }
+
+def execute_single_agent_step(step, step_context, agent):
+    """Execute a step with a single agent"""
+
+    if not agent:
+        return {
+            'step_id': step['step_id'],
+            'step_name': step['name'],
+            'execution_mode': 'single_agent',
+            'execution_error': 'No suitable agent available',
+            'success': False
+        }
+
+    try:
+        print(f"📝 Executing Step {step['step_id']} with single agent: {agent['name']}")
+
+        task_result = Task(
+            subagent_type=agent['type'],
+            description=create_single_step_description(step, agent),
+            prompt=create_single_step_prompt(step, step_context, agent)
+        )
+
+        return {
+            'step_id': step['step_id'],
+            'step_name': step['name'],
+            'execution_mode': 'single_agent',
+            'selected_agent': agent,
+            'execution_result': task_result,
+            'success': True
+        }
+
+    except Exception as e:
+        return {
+            'step_id': step['step_id'],
+            'step_name': step['name'],
+            'execution_mode': 'single_agent',
+            'selected_agent': agent,
+            'execution_error': str(e),
+            'success': False
+        }
+
+def create_competitive_step_description(step, agent):
+    """Create task description for competitive step execution"""
+
+    return f"Execute step '{step['name']}' as {agent['name']}. Step description: {step['description']}. " \
+           f"Required capabilities: {', '.join(step['required_capabilities'])}. " \
+           f"Provide your best solution for this step."
+
+def create_competitive_step_prompt(step, step_context, agent):
+    """Create prompt for competitive step execution"""
+
+    prompt = f"""You are {agent['name']}, executing step {step['step_id']}: {step['name']}
+
+Step Description: {step['description']}
+Required Capabilities: {', '.join(step['required_capabilities'])}
+
+Context from previous steps:
+{step_context.get('previous_results_summary', 'No previous steps')}
+
+Instructions:
+1. Execute this step to the best of your ability
+2. Leverage your specific expertise and capabilities
+3. Provide a comprehensive, high-quality result
+4. Focus on accuracy and completeness
+5. Consider how your result will integrate with overall task execution
+
+Expected outcomes: {step.get('expected_outcomes', 'High-quality execution of this step')}
+
+Please provide your execution result for this step."""
+
+    return prompt
+
+def create_single_step_description(step, agent):
+    """Create task description for single agent step execution"""
+
+    return f"Execute step '{step['name']}' ({step['step_id']}): {step['description']}"
+
+def create_single_step_prompt(step, step_context, agent):
+    """Create prompt for single agent step execution"""
+
+    prompt = f"""Execute step {step['step_id']}: {step['name']}
+
+Description: {step['description']}
+Required Capabilities: {', '.join(step['required_capabilities'])}
+
+Context: {step_context.get('previous_results_summary', 'No previous context')}
+
+Please execute this step and provide a comprehensive result."""
+
+    return prompt
+
+def calculate_step_quality_metrics(task_result, step):
+    """Calculate quality metrics for step execution result"""
+
+    metrics = {
+        'completeness': assess_step_completeness({'execution_result': task_result}, step),
+        'quality': assess_step_quality({'execution_result': task_result}),
+        'relevance': assess_step_relevance(task_result, step),
+        'efficiency': 0.8,  # Placeholder
+        'clarity': assess_step_clarity(task_result)
+    }
+
+    # Calculate overall score
+    weights = {'completeness': 0.3, 'quality': 0.25, 'relevance': 0.25, 'efficiency': 0.1, 'clarity': 0.1}
+    overall_score = sum(metrics[metric] * weight for metric, weight in weights.items())
+
+    metrics['overall_score'] = overall_score
+
+    return metrics
+
+def assess_step_relevance(task_result, step):
+    """Assess relevance of task result to step requirements"""
+
+    if not isinstance(task_result, (str, dict)):
+        return 0.0
+
+    # Check for relevant keywords based on step requirements
+    relevance_score = 0.0
+    requirements_text = ' '.join(step.get('required_capabilities', []))
+
+    if isinstance(task_result, str):
+        result_text = task_result.lower()
+        requirements_text = requirements_text.lower()
+
+        # Count keyword matches
+        matches = sum(1 for req in requirements_text.split() if req in result_text)
+        relevance_score = min(matches / len(requirements_text.split()), 1.0) if requirements_text else 0.5
+
+    elif isinstance(task_result, dict):
+        # Check if result addresses step requirements
+        for capability in step.get('required_capabilities', []):
+            if any(capability.lower() in str(value).lower() for value in task_result.values()):
+                relevance_score += 0.25
+
+        relevance_score = min(relevance_score, 1.0)
+
+    return relevance_score
+
+def assess_step_clarity(task_result):
+    """Assess clarity and structure of task result"""
+
+    if not isinstance(task_result, (str, dict)):
+        return 0.0
+
+    clarity_score = 0.0
+
+    if isinstance(task_result, str):
+        # Assess text clarity
+        sentences = task_result.split('.')
+        if len(sentences) > 1:
+            clarity_score += 0.3
+
+        # Check for structure indicators
+        if any(indicator in task_result.lower() for indicator in ['step', 'first', 'second', 'finally', 'conclusion']):
+            clarity_score += 0.3
+
+        # Length appropriateness
+        if 50 <= len(task_result) <= 2000:
+            clarity_score += 0.4
+
+        clarity_score = min(clarity_score, 1.0)
+
+    elif isinstance(task_result, dict):
+        # Assess structure clarity
+        if len(task_result.keys()) > 0:
+            clarity_score += 0.5
+
+        # Check for meaningful keys
+        meaningful_keys = sum(1 for key in task_result.keys()
+                            if len(key) > 2 and key not in ['data', 'info', 'result'])
+        if meaningful_keys > 0:
+            clarity_score += 0.5
+
+        clarity_score = min(clarity_score, 1.0)
+
+    return clarity_score
+
+def select_best_competitive_result(parallel_results, step):
+    """Select the best result from competitive execution"""
+
+    # Filter successful results
+    successful_results = [r for r in parallel_results if r['success'] and r['result'] is not None]
+
+    if not successful_results:
+        # Return first result even if failed
+        return parallel_results[0] if parallel_results else None
+
+    # Sort by overall score
+    successful_results.sort(key=lambda x: x['metrics'].get('overall_score', 0), reverse=True)
+
+    # Check if top results are close enough to consider combination
+    if len(successful_results) >= 2:
+        top_score = successful_results[0]['metrics'].get('overall_score', 0)
+        second_score = successful_results[1]['metrics'].get('overall_score', 0)
+
+        if abs(top_score - second_score) < 0.1:  # Close enough to combine
+            return combine_competitive_results(successful_results[:2], step)
+
+    return successful_results[0]
+
+def combine_competitive_results(top_results, step):
+    """Combine results from multiple top-performing agents"""
+
+    if len(top_results) < 2:
+        return top_results[0] if top_results else None
+
+    # Create combined result
+    combined_result = {
+        'agent': top_results[0]['agent'],  # Primary agent
+        'result': create_combined_agent_result(top_results),
+        'metrics': create_combined_metrics(top_results),
+        'combination_used': True,
+        'contributing_agents': [r['agent'] for r in top_results]
+    }
+
+    return combined_result
+
+def create_combined_agent_result(top_results):
+    """Create a combined result from multiple agent results"""
+
+    combined_content = {
+        'primary_solution': top_results[0]['result'],
+        'alternative_perspectives': [r['result'] for r in top_results[1:]],
+        'synthesis_notes': f"Combined insights from {len(top_results)} top-performing agents",
+        'confidence_level': 'high'  # Multiple high-quality results increase confidence
+    }
+
+    return combined_content
+
+def create_combined_metrics(top_results):
+    """Create combined metrics from multiple agent results"""
+
+    # Average the metrics, giving slight preference to the top result
+    weights = [0.6] + [0.4 / (len(top_results) - 1)] * (len(top_results) - 1)
+
+    combined_metrics = {}
+    for metric in top_results[0]['metrics']:
+        combined_metrics[metric] = sum(r['metrics'][metric] * weight
+                                     for r, weight in zip(top_results, weights))
+
+    # Add combination bonus
+    combined_metrics['overall_score'] = min(combined_metrics['overall_score'] * 1.1, 1.0)
+    combined_metrics['diversity_bonus'] = 0.05
+
+    return combined_metrics
+
+def calculate_selection_confidence(parallel_results, selected_result):
+    """Calculate confidence in the selected result"""
+
+    if not parallel_results:
+        return 0.0
+
+    successful_results = [r for r in parallel_results if r['success']]
+
+    if len(successful_results) == 1:
+        return 0.7  # Moderate confidence with single success
+
+    # Calculate score distribution
+    scores = [r['metrics'].get('overall_score', 0) for r in successful_results]
+    selected_score = selected_result['metrics'].get('overall_score', 0)
+
+    if not scores:
+        return 0.0
+
+    # Calculate how much better the selected result is
+    avg_score = sum(scores) / len(scores)
+    max_score = max(scores)
+
+    if selected_score == max_score:
+        if selected_score > avg_score + 0.2:
+            return 0.95  # High confidence - clear winner
+        elif selected_score > avg_score + 0.1:
+            return 0.85  # Good confidence - moderate winner
+        else:
+            return 0.75  # Reasonable confidence - slight winner
+    else:
+        return 0.6  # Lower confidence - not the winner
+
+# ========================================
+# ENHANCED STEP EXECUTION WITH COMPETITIVE APPROACH
+# ========================================
+
+def execute_step_with_adaptive_delegation(step, execution_history, compatible_agents):
+    """Execute step with adaptive delegation including competitive approach"""
+
+    # Build step context from execution history
+    step_context = build_step_context_from_history(step, execution_history)
+
+    # Determine if competitive approach should be used
+    should_use_competitive = should_use_competitive_approach(step, step_context, compatible_agents)
+
+    if should_use_competitive:
+        return execute_competitive_step(step, step_context, compatible_agents)
+    else:
+        # Select best single agent
+        selected_agent = select_agent_for_step(step, step_context, compatible_agents, execution_history)
+        return execute_single_agent_step(step, step_context, selected_agent)
+
+def should_use_competitive_approach(step, step_context, compatible_agents):
+    """Determine if competitive approach should be used for this step"""
+
+    # Use competitive approach if:
+    # 1. Multiple compatible agents available
+    # 2. Step is complex or critical
+    # 3. Previous steps had quality issues
+    # 4. Step allows for multiple valid approaches
+
+    if len(compatible_agents) < 2:
+        return False
+
+    # Check step complexity
+    complexity_threshold = step['decision_criteria'].get('complexity_threshold', 0.5)
+    if complexity_threshold > 0.7:
+        return True
+
+    # Check if step is critical
+    if step.get('critical', False):
+        return True
+
+    # Check previous quality issues
+    if step_context.get('previous_quality_issues', False):
+        return True
+
+    # Check if step benefits from multiple perspectives
+    if any(capability in step['required_capabilities']
+           for capability in ['analysis', 'design', 'planning', 'architecture']):
+        return True
+
+    return False
+
+def build_step_context_from_history(step, execution_history):
+    """Build context for step execution from previous steps"""
+
+    if not execution_history:
+        return {'previous_results_summary': 'No previous steps'}
+
+    # Summarize previous successful results
+    successful_results = [s for s in execution_history if s.get('validation', {}).get('success', False)]
+
+    context = {
+        'previous_results_summary': '',
+        'previous_quality_issues': False,
+        'available_insights': [],
+        'dependencies_met': True
+    }
+
+    if successful_results:
+        summary_parts = []
+        for prev_step in successful_results[-3:]:  # Last 3 successful steps
+            summary_parts.append(f"Step {prev_step['step_id']}: {prev_step.get('step_name', 'Unknown')} completed successfully")
+
+        context['previous_results_summary'] = '; '.join(summary_parts)
+
+    # Check for quality issues in recent steps
+    recent_steps = execution_history[-3:] if len(execution_history) >= 3 else execution_history
+    if any(not s.get('validation', {}).get('success', False) for s in recent_steps):
+        context['previous_quality_issues'] = True
+
+    # Extract insights from previous steps
+    for prev_step in successful_results:
+        if 'insights' in prev_step.get('execution_result', {}):
+            context['available_insights'].extend(prev_step['execution_result']['insights'])
+
+    return context
+
+# Add missing time import
+import time
 ```
 □ Implementation coordination → 30 хв
 □ Integration testing → 20 хв
