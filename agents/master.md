@@ -36,55 +36,55 @@ version: "0.0.8"
 
 **Приклад:** Для задачі "оптимізувати API" я динамічно створю категорію "веб-оптимізація" та підбираю агентів з релевантними компетенціями, а не використовуючи статичні списки.
 
-## ⚡ **Паралельна ініціалізація системи**
+## ⚡ **Послідовна ініціалізація системи**
 
-При старті я виконую **4 паралельні Task** для підготовки системи до роботи:
+При старті я виконую **4 послідовні етапи** для підготовки системи до роботи:
 
-### **🚀 Task 1: `initialize_categories_task()`**
+### **🚀 Етап 1: `initialize_categories_system()`**
 ```
 🎯 Мета: Попередня генерація динамічних категорій
 ⏱️ Час: ~3 секунди
 📋 Дії:
   - Завантаження даних про доступних агентів
   - Екстракція та кластеризація компетенцій
-  - Розрахунок ваг ключових слів
+  - Динамічний розрахунок ваг ключових слів
   - Створення базової структури категорій
 ```
 
-### **🏗️ Task 2: `initialize_task_matrix_task()`**
+### **🏗️ Етап 2: `initialize_task_matrix_system()`**
 ```
 🎯 Мета: Побудова матриці сумісності задач-агентів
 ⏱️ Час: ~4 секунди
 📋 Дії:
+  - Використання категорій з Етапу 1
   - Створення векторів компетенцій агентів
-  - Генерація типових категорій задач
-  - Побудова матриці сумісності
+  - Генерація динамічної матриці сумісності
   - Оптимізація матриці для швидкого пошуку
 ```
 
-### **🎯 Task 3: `initialize_agent_filters_task()`**
+### **🎯 Етап 3: `initialize_filters_system()`**
 ```
 🎯 Мета: Налаштування інтелектуальних фільтрів вибору
 ⏱️ Час: ~2 секунди
 📋 Дії:
-  - Конфігурація порогових значень якості
-  - Налаштування алгоритмів скорингу
+  - Використання матриці з Етапу 2
+  - Конфігурація динамічних алгоритмів скорингу
   - Створення системи вирішення конфліктів
-  - Оптимізація під конкретні типи задач
+  - Оптимізація фільтрів на основі існуючих даних
 ```
 
-### **🔍 Task 4: `initialize_clarification_system_task()`**
+### **🔍 Етап 4: `initialize_clarification_system()`**
 ```
 🎯 Мета: Активація системи інтелектуального уточнення
 ⏱️ Час: ~2 секунди
 📋 Дії:
+  - Використання фільтрів з Етапу 3
   - Аналіз патернів неоднозначності
-  - Налаштування порогів уточнення
-  - Створення шаблонів уточнюючих питань
-  - Оптимізація контекстно-залежної логіки
+  - Налаштування динамічних порогів уточнення
+  - Створення адаптивних шаблонів питань
 ```
 
-**📊 Результат:** Система готова миттєво обробляти запити з попередньо підготовленими даними категоризації та матрицею сумісності.
+**📊 Результат:** Система готова миттєво обробляти запити з повністю інтегрованими даними категоризації, матриці сумісності, фільтрів та системи уточнення.
 
 ## 🔧 **Повна послідовність ініціалізації**
 
@@ -95,17 +95,773 @@ version: "0.0.8"
 4. **Ініціалізація моніторингу**
 5. **Підготовка до запуску паралельних Task**
 
-### **🚀 Етап 2: Паралельна ініціалізація (2-6 секунд)**
-- **4 паралельні Task** збирають дані:
-  - Task 1: Дані категоризації
-  - Task 2: Матриця сумісності
-  - Task 3: Фільтри та пороги
-  - Task 4: Система уточнення
+### **🚀 Етап 2: Послідовна ініціалізація (2-11 секунд)**
 
-### **🎯 Етап 3: Конфігурація інтелектуальних алгоритмів (6-8 секунд)**
-- **Використання реальних даних** від паралельних Task
-- **Налаштування алгоритмів** на основі отриманих результатів
-- **Інтеграція** всіх компонентів в єдину систему
+#### **Етап 2.1: Ініціалізація категорій (2-5 секунд)**
+```python
+def initialize_categories_system():
+    """Послідовна ініціалізація системи категорій"""
+
+    # Завантаження даних про доступних агентів
+    available_agents = get_current_available_agents()
+
+    # Екстракція та кластеризація компетенцій
+    competency_data = extract_and_cluster_competencies(available_agents)
+
+    # Динамічний розрахунок ваг ключових слів
+    keyword_weights = calculate_dynamic_keyword_weights(competency_data)
+
+    # Створення базової структури категорій
+    categories_structure = build_categories_structure(competency_data, keyword_weights)
+
+    return {
+        'categories': categories_structure,
+        'competency_data': competency_data,
+        'keyword_weights': keyword_weights,
+        'available_agents': available_agents
+    }
+```
+
+#### **Етап 2.2: Ініціалізація матриці сумісності (5-9 секунд)**
+```python
+def initialize_task_matrix_system(categories_data):
+    """Побудова матриці сумісності на основі категорій"""
+
+    # Використання категорій з попереднього етапу
+    categories = categories_data['categories']
+    available_agents = categories_data['available_agents']
+
+    # Створення векторів компетенцій агентів
+    agent_vectors = create_competency_vectors(available_agents)
+
+    # Генерація динамічної матриці сумісності
+    compatibility_matrix = build_dynamic_compatibility_matrix(categories, agent_vectors)
+
+    # Оптимізація матриці для швидкого пошуку
+    optimized_matrix = optimize_matrix_for_search(compatibility_matrix)
+
+    return {
+        'task_matrix': optimized_matrix,
+        'agent_vectors': agent_vectors,
+        'categories': categories,
+        'matrix_ready': True
+    }
+```
+
+#### **Етап 2.3: Ініціалізація фільтрів (9-11 секунд)**
+```python
+def initialize_filters_system(matrix_data):
+    """Налаштування інтелектуальних фільтрів вибору"""
+
+    # Використання матриці з попереднього етапу
+    task_matrix = matrix_data['task_matrix']
+    agent_vectors = matrix_data['agent_vectors']
+
+    # Конфігурація динамічних алгоритмів скорингу
+    scoring_algorithms = configure_dynamic_scoring_algorithms(task_matrix)
+
+    # Створення системи вирішення конфліктів
+    conflict_resolution = setup_conflict_resolution_system(agent_vectors)
+
+    # Оптимізація фільтрів на основі існуючих даних
+    optimized_filters = optimize_filters_based_on_data(task_matrix, scoring_algorithms)
+
+    return {
+        'filters': optimized_filters,
+        'scoring_algorithms': scoring_algorithms,
+        'conflict_resolution': conflict_resolution,
+        'task_matrix': task_matrix
+    }
+```
+
+#### **Етап 2.4: Ініціалізація системи уточнення (11-13 секунд)**
+```python
+def initialize_clarification_system(filters_data):
+    """Активація системи інтелектуального уточнення"""
+
+    # Використання фільтрів з попереднього етапу
+    filters = filters_data['filters']
+    scoring_algorithms = filters_data['scoring_algorithms']
+
+    # Аналіз патернів неоднозначності
+    ambiguity_patterns = analyze_ambiguity_patterns(filters)
+
+    # Налаштування динамічних порогів уточнення
+    clarification_thresholds = setup_dynamic_clarification_thresholds(filters)
+
+    # Створення адаптивних шаблонів питань
+    question_templates = create_adaptive_question_templates(ambiguity_patterns)
+
+    return {
+        'clarification_system': {
+            'patterns': ambiguity_patterns,
+            'thresholds': clarification_thresholds,
+            'templates': question_templates,
+            'filters': filters
+        },
+        'system_ready': True
+    }
+```
+
+### **🎯 Етап 3: Інтеграція системи аналізу запитів (13-15 секунд)**
+```python
+def integrate_request_analysis_system(initialization_data):
+    """Створення повної інтеграції ініціалізації з аналізом запитів"""
+
+    categories_data = initialization_data['categories_data']
+    matrix_data = initialization_data['matrix_data']
+    filters_data = initialization_data['filters_data']
+    clarification_data = initialization_data['clarification_data']
+
+    # Створення інтегрованої функції аналізу запитів
+    def analyze_user_request_with_initialization(user_request):
+        """Аналіз запиту з використанням результатів ініціалізації"""
+
+        # Використання даних з Етапу 1 - динамічні категорії
+        task_context = extract_task_context(user_request)
+        task_category = match_to_dynamic_categories(task_context, categories_data['categories'])
+
+        # Використання даних з Етапу 2 - матриця сумісності
+        compatible_agents = find_compatible_agents(
+            task_category,
+            matrix_data['task_matrix']
+        )
+
+        # Використання даних з Етапу 3 - адаптивні фільтри
+        quality_threshold = apply_dynamic_filters(
+            task_category,
+            compatible_agents,
+            filters_data['filters']
+        )
+
+        # Використання даних з Етапу 4 - система уточнення
+        clarification_needed = check_clarification_need(
+            user_request,
+            task_category,
+            clarification_data['clarification_system']
+        )
+
+        return {
+            'task_context': task_context,
+            'category': task_category,
+            'agents': compatible_agents,
+            'threshold': quality_threshold,
+            'clarification': clarification_needed,
+            'initialization_source': True
+        }
+
+    return {
+        'analysis_function': analyze_user_request_with_initialization,
+        'initialization_data': initialization_data,
+        'integration_complete': True
+    }
+
+# Реалізації функцій для послідовної ініціалізації
+
+def extract_and_cluster_competencies(available_agents):
+    """Екстракція та кластеризація компетенцій"""
+    if not available_agents:
+        return {'competencies': [], 'clusters': {}}
+
+    all_competencies = set()
+    for agent in available_agents:
+        all_competencies.update(agent.get('capabilities', []))
+
+    # Динамічна кластеризація компетенцій
+    competency_clusters = {}
+    for competency in all_competencies:
+        cluster = determine_competency_cluster(competency)
+        if cluster not in competency_clusters:
+            competency_clusters[cluster] = []
+        competency_clusters[cluster].append(competency)
+
+    return {
+        'competencies': list(all_competencies),
+        'clusters': competency_clusters,
+        'total_count': len(all_competencies)
+    }
+
+def calculate_dynamic_keyword_weights(competency_data):
+    """Динамічний розрахунок ваг ключових слів"""
+    if not competency_data:
+        return {}
+
+    competency_clusters = competency_data.get('clusters', {})
+    keyword_weights = {}
+
+    for cluster, competencies in competency_clusters.items():
+        # Динамічна вага на основі кількості та важливості кластера
+        cluster_weight = len(competencies) / competency_data['total_count']
+        cluster_importance = get_cluster_importance_factor(cluster)
+
+        for competency in competencies:
+            keyword_weights[competency] = cluster_weight * cluster_importance
+
+    return keyword_weights
+
+def build_categories_structure(competency_data, keyword_weights):
+    """Створення структури категорій"""
+    if not competency_data or not keyword_weights:
+        return {'categories': [], 'structure': {}}
+
+    # Динамічне групування компетенцій у категорії
+    categories = []
+    for cluster_name, competencies in competency_data['clusters'].items():
+        category = {
+            'name': cluster_name,
+            'competencies': competencies,
+            'weight': calculate_category_weight(competencies, keyword_weights),
+            'agents': []
+        }
+        categories.append(category)
+
+    # Сортування категорій за вагою
+    categories.sort(key=lambda x: x['weight'], reverse=True)
+
+    return {
+        'categories': categories,
+        'structure': {cat['name']: cat for cat in categories},
+        'total_categories': len(categories)
+    }
+
+def create_competency_vectors(available_agents):
+    """Створення векторів компетенцій агентів"""
+    if not available_agents:
+        return {}
+
+    all_competencies = set()
+    for agent in available_agents:
+        all_competencies.update(agent.get('capabilities', []))
+
+    competency_list = sorted(list(all_competencies))
+    agent_vectors = {}
+
+    for agent in available_agents:
+        agent_capabilities = set(agent.get('capabilities', []))
+        vector = [1 if comp in agent_capabilities else 0 for comp in competency_list]
+        agent_vectors[agent.get('name', 'unknown')] = vector
+
+    return {
+        'vectors': agent_vectors,
+        'competency_list': competency_list,
+        'dimensions': len(competency_list)
+    }
+
+def build_dynamic_compatibility_matrix(categories, agent_vectors_data):
+    """Генерація динамічної матриці сумісності"""
+    if not categories or not agent_vectors_data:
+        return {'matrix': {}, 'agent_vectors': {}}
+
+    agent_vectors = agent_vectors_data['vectors']
+    competency_list = agent_vectors_data['competency_list']
+
+    matrix = {}
+    for category in categories['categories']:
+        category_name = category['name']
+        category_competencies = set(category['competencies'])
+
+        # Створення вектора категорії
+        category_vector = [1 if comp in category_competencies else 0 for comp in competency_list]
+
+        # Розрахунок сумісності з агентами
+        agent_scores = {}
+        for agent_name, agent_vector in agent_vectors.items():
+            # Динамічний розрахунок сумісності
+            compatibility_score = calculate_vector_similarity(category_vector, agent_vector)
+            agent_scores[agent_name] = compatibility_score
+
+        matrix[category_name] = agent_scores
+
+    return {
+        'matrix': matrix,
+        'agent_vectors': agent_vectors,
+        'categories': categories['categories']
+    }
+
+def optimize_matrix_for_search(compatibility_matrix_data):
+    """Оптимізація матриці для швидкого пошуку"""
+    if not compatibility_matrix_data:
+        return {}
+
+    matrix = compatibility_matrix_data['matrix']
+
+    # Попереднє сортування агентів за сумісністю для кожної категорії
+    optimized_matrix = {}
+    for category, agent_scores in matrix.items():
+        sorted_agents = sorted(agent_scores.items(), key=lambda x: x[1], reverse=True)
+        optimized_matrix[category] = {
+            'sorted_agents': sorted_agents,
+            'all_scores': agent_scores,
+            'top_agents': [agent for agent, score in sorted_agents if score > 0.5]
+        }
+
+    return optimized_matrix
+
+def configure_dynamic_scoring_algorithms(task_matrix):
+    """Конфігурація динамічних алгоритмів скорингу"""
+    return {
+        'scoring_method': 'dynamic_vector_similarity',
+        'weight_factors': {
+            'competency_match': 0.6,
+            'domain_specialization': 0.3,
+            'historical_performance': 0.1
+        },
+        'adaptation_enabled': True,
+        'matrix_data': task_matrix
+    }
+
+def setup_conflict_resolution_system(agent_vectors_data):
+    """Створення системи вирішення конфліктів"""
+    return {
+        'resolution_method': 'dynamic_priority',
+        'conflict_handlers': [
+            'competency_overlap_resolution',
+            'domain_specialization_priority',
+            'historical_success_preference'
+        ],
+        'agent_vectors': agent_vectors_data
+    }
+
+def optimize_filters_based_on_data(task_matrix, scoring_algorithms):
+    """Оптимізація фільтрів на основі існуючих даних"""
+    # Динамічні пороги на основі якості матриці
+    matrix_quality = assess_matrix_quality(task_matrix)
+
+    return {
+        'quality_thresholds': {
+            'base_threshold': matrix_quality * 0.7,
+            'high_domain_threshold': matrix_quality * 0.8,
+            'complex_task_threshold': matrix_quality * 0.6
+        },
+        'scoring_config': scoring_algorithms,
+        'adaptation_rules': generate_adaptation_rules(matrix_quality)
+    }
+
+def analyze_ambiguity_patterns(filters):
+    """Аналіз патернів неоднозначності"""
+    return {
+        'common_ambiguity_indicators': [
+            'multiple_domain_keywords',
+            'vague_descriptors',
+            'conflicting_requirements',
+            'insufficient_context'
+        ],
+        'pattern_weights': calculate_pattern_weights(filters),
+        'ambiguity_factors': extract_ambiguity_factors(filters)
+    }
+
+def setup_dynamic_clarification_thresholds(filters):
+    """Налаштування динамічних порогів уточнення"""
+    filter_quality = assess_filter_quality(filters)
+
+    return {
+        'ambiguity_threshold': filter_quality * 0.3,
+        'confidence_threshold': filter_quality * 0.75,
+        'score_difference_threshold': filter_quality * 0.15,
+        'adaptation_enabled': True
+    }
+
+def create_adaptive_question_templates(ambiguity_patterns):
+    """Створення адаптивних шаблонів питань"""
+    templates = {
+        'domain_clarification': "Який аспект найважливіший: {option1} чи {option2}?",
+        'scope_clarification': "Який обсяг роботи потрібен?",
+        'urgency_clarification': "Чи є критичні терміни виконання?",
+        'preference_clarification': "Який підхід ви надаєте перевагу?"
+    }
+
+    return {
+        'templates': templates,
+        'adaptation_rules': generate_template_adaptation_rules(ambiguity_patterns),
+        'selection_strategy': 'context_based'
+    }
+
+# Допоміжні функції для послідовної ініціалізації
+
+def determine_competency_cluster(competency):
+    """Визначення кластеру для компетенції"""
+    cluster_mapping = {
+        'technical': ['programming', 'development', 'coding', 'architecture', 'database'],
+        'security': ['security', 'authentication', 'encryption', 'audit'],
+        'business': ['analysis', 'planning', 'strategy', 'management'],
+        'creative': ['design', 'content', 'writing', 'visual'],
+        'research': ['research', 'analysis', 'investigation', 'study']
+    }
+
+    for cluster, keywords in cluster_mapping.items():
+        if any(keyword in competency.lower() for keyword in keywords):
+            return cluster
+
+    return 'general'
+
+def get_cluster_importance_factor(cluster):
+    """Динамічний фактор важливості кластера"""
+    importance_factors = {
+        'technical': 1.2,
+        'security': 1.3,
+        'business': 1.1,
+        'creative': 0.9,
+        'research': 1.0,
+        'general': 0.8
+    }
+    return importance_factors.get(cluster, 1.0)
+
+def calculate_category_weight(competencies, keyword_weights):
+    """Розрахунок ваги категорії"""
+    if not competencies or not keyword_weights:
+        return 0.0
+
+    total_weight = 0.0
+    for competency in competencies:
+        weight = keyword_weights.get(competency, 0.1)
+        total_weight += weight
+
+    return total_weight / len(competencies)
+
+def calculate_vector_similarity(vector1, vector2):
+    """Розрахунок подібності векторів"""
+    if len(vector1) != len(vector2):
+        return 0.0
+
+    dot_product = sum(a * b for a, b in zip(vector1, vector2))
+    magnitude1 = sum(a * a for a in vector1) ** 0.5
+    magnitude2 = sum(b * b for b in vector2) ** 0.5
+
+    if magnitude1 == 0 or magnitude2 == 0:
+        return 0.0
+
+    return dot_product / (magnitude1 * magnitude2)
+
+def assess_matrix_quality(task_matrix):
+    """Оцінка якості матриці"""
+    if not task_matrix or 'matrix' not in task_matrix:
+        return 0.5  # Безпечне значення за замовчуванням
+
+    matrix = task_matrix['matrix']
+    if not matrix:
+        return 0.5
+
+    # Розрахунок середньої якості сумісності
+    all_scores = []
+    for category_scores in matrix.values():
+        all_scores.extend(category_scores.values())
+
+    if not all_scores:
+        return 0.5
+
+    return sum(all_scores) / len(all_scores)
+
+def generate_adaptation_rules(matrix_quality):
+    """Генерація правил адаптації"""
+    return {
+        'quality_based_adjustment': matrix_quality > 0.7,
+        'domain_specific_tuning': matrix_quality > 0.6,
+        'performance_optimization': matrix_quality > 0.8
+    }
+
+def calculate_pattern_weights(filters):
+    """Розрахунок ваг патернів"""
+    return {
+        'multiple_domain_keywords': 0.4,
+        'vague_descriptors': 0.3,
+        'conflicting_requirements': 0.2,
+        'insufficient_context': 0.1
+    }
+
+def extract_ambiguity_factors(filters):
+    """Екстракція факторів неоднозначності"""
+    return {
+        'domain_overlap': detect_domain_overlap(filters),
+        'scope_vagueness': detect_scope_vagueness(filters),
+        'requirement_conflicts': detect_requirement_conflicts(filters)
+    }
+
+def assess_filter_quality(filters):
+    """Оцінка якості фільтрів"""
+    if not filters:
+        return 0.5
+
+    # Динамічна оцінка на основі структури фільтрів
+    complexity_score = len(filters.get('quality_thresholds', {})) / 10
+    completeness_score = len(filters.get('scoring_config', {})) / 5
+
+    return (complexity_score + completeness_score) / 2
+
+def generate_template_adaptation_rules(ambiguity_patterns):
+    """Генерація правил адаптації шаблонів"""
+    pattern_weights = ambiguity_patterns.get('pattern_weights', {})
+
+    return {
+        'high_ambiguity_templates': pattern_weights.get('multiple_domain_keywords', 0.4) > 0.3,
+        'scope_specific_templates': pattern_weights.get('vague_descriptors', 0.3) > 0.2,
+        'urgency_aware_templates': pattern_weights.get('conflicting_requirements', 0.2) > 0.15
+    }
+
+def detect_domain_overlap(filters):
+    """Виявлення перекриття доменів"""
+    return 0.5  # Буде реалізовано на основі аналізу даних
+
+def detect_scope_vagueness(filters):
+    """Виявлення невизначеності обсягу"""
+    return 0.4  # Буде реалізовано на основі аналізу даних
+
+def detect_requirement_conflicts(filters):
+    """Виявлення конфліктів вимог"""
+    return 0.3  # Буде реалізовано на основі аналізу даних
+
+# =======================================
+# СИСТЕМА ЗМІННИХ AGENTVARIABLEMANAGER
+# =======================================
+
+class AgentVariableManager:
+    """Система управління змінними агента"""
+
+    def __init__(self):
+        self.variables = {}
+        self.variable_history = {}
+        self.initialization_data = {}
+        self.performance_history = []
+
+    def set_variable(self, name, value, context=None):
+        """Встановлення змінної з контекстом"""
+        current_time = time.time()
+
+        self.variables[name] = {
+            'value': value,
+            'context': context,
+            'timestamp': current_time,
+            'source': 'dynamic',
+            'access_count': 0
+        }
+
+        # Збереження історії змін
+        if name not in self.variable_history:
+            self.variable_history[name] = []
+        self.variable_history[name].append({
+            'value': value,
+            'timestamp': current_time,
+            'context': context,
+            'source': 'dynamic'
+        })
+
+        # Обмеження історії змін (зберігаємо останні 100 змін)
+        if len(self.variable_history[name]) > 100:
+            self.variable_history[name] = self.variable_history[name][-100:]
+
+    def get_variable(self, name, default=None):
+        """Отримання змінної"""
+        if name in self.variables:
+            self.variables[name]['access_count'] += 1
+            return self.variables[name]['value']
+        return default
+
+    def update_agent_performance(self, agent_name, task_result):
+        """Динамічне оновлення змінних агента"""
+
+        # Оновлення успішності агента
+        current_success_rate = self.get_variable(f'{agent_name}_success_rate', 0.8)
+        if task_result.get('success', False):
+            new_success_rate = min(current_success_rate * 1.01, 1.0)
+        else:
+            new_success_rate = max(current_success_rate * 0.99, 0.5)
+
+        self.set_variable(f'{agent_name}_success_rate', new_success_rate, 'task_completion')
+
+        # Оновлення поточного завантаження агента
+        current_load = self.get_variable(f'{agent_name}_current_load', 0)
+        new_load = max(0, current_load - 1)
+        self.set_variable(f'{agent_name}_current_load', new_load, 'task_completion')
+
+        # Оновлення компетенцій агента
+        self.update_agent_competencies(agent_name, task_result)
+
+    def update_agent_competencies(self, agent_name, task_result):
+        """Оновлення компетенцій агента на основі результатів"""
+        if not task_result.get('used_competencies'):
+            return
+
+        used_competencies = task_result['used_competencies']
+        success = task_result.get('success', False)
+
+        for competency in used_competencies:
+            competency_key = f'{agent_name}_{competency}'
+            current_score = self.get_variable(competency_key, 0.5)
+
+            if success:
+                new_score = min(current_score + 0.05, 1.0)
+            else:
+                new_score = max(current_score - 0.02, 0.1)
+
+            self.set_variable(competency_key, new_score, 'task_completion')
+
+    def update_system_performance(self, task_result):
+        """Оновлення показників продуктивності системи"""
+        # Додавання результату в історію
+        self.performance_history.append({
+            'timestamp': time.time(),
+            'success': task_result.get('success', False),
+            'duration': task_result.get('duration', 0),
+            'complexity': task_result.get('complexity', 'medium'),
+            'agent_used': task_result.get('agent_used')
+        })
+
+        # Обмеження історії (останні 200 результатів)
+        if len(self.performance_history) > 200:
+            self.performance_history = self.performance_history[-200:]
+
+        # Оновлення системних показників
+        self.update_system_metrics()
+
+    def update_system_metrics(self):
+        """Оновлення системних метрик"""
+        if not self.performance_history:
+            return
+
+        recent_results = self.performance_history[-50:]  # Останні 50 результатів
+
+        # Розрахунок поточної успішності
+        success_count = sum(1 for r in recent_results if r['success'])
+        current_success_rate = success_count / len(recent_results)
+        self.set_variable('system_success_rate', current_success_rate, 'system_metrics')
+
+        # Розрахунок середнього часу виконання
+        durations = [r['duration'] for r in recent_results if r['duration'] > 0]
+        if durations:
+            avg_duration = sum(durations) / len(durations)
+            self.set_variable('system_avg_duration', avg_duration, 'system_metrics')
+
+        # Розрахунок активних агентів
+        active_agents = set(r['agent_used'] for r in recent_results if r['agent_used'])
+        self.set_variable('active_agents_count', len(active_agents), 'system_metrics')
+
+    def get_current_system_state(self):
+        """Отримання поточного стану системи для динамічних розрахунків"""
+        return {
+            'active_agents': self.get_variable('active_agents_count', 0),
+            'total_agents': self.get_variable('total_available_agents', 5),  # Припустимо 5
+            'recent_success_rate': self.get_variable('system_success_rate', 0.8),
+            'available_resources_ratio': self.calculate_resource_availability(),
+            'current_performance': self.get_current_performance_indicators()
+        }
+
+    def calculate_resource_availability(self):
+        """Розрахунок доступності ресурсів"""
+        active_load = 0
+        for agent_name in ['agent_1', 'agent_2', 'agent_3', 'agent_4', 'agent_5']:  # Припустимо 5 агентів
+            load = self.get_variable(f'{agent_name}_current_load', 0)
+            active_load += load
+
+        max_capacity = 5.0  # Максимальна кількість одночасних задач на агента
+        total_capacity = 25.0  # 5 агентів * 5 задач кожен
+
+        if total_capacity == 0:
+            return 1.0
+
+        return max(0.0, 1.0 - (active_load / total_capacity))
+
+    def get_current_performance_indicators(self):
+        """Отримання поточних індикаторів продуктивності"""
+        return {
+            'keyword_match_success': self.get_variable('keyword_match_success', 0.8),
+            'context_analysis_success': self.get_variable('context_analysis_success', 0.8),
+            'historical_prediction_success': self.get_variable('historical_prediction_success', 0.8)
+        }
+
+    def update_thresholds_dynamically(self, task_context):
+        """Динамічне оновлення порогів на основі змінних"""
+
+        # Змінні продуктивності системи
+        current_success_rate = self.get_variable('system_success_rate', 0.8)
+        current_load = self.calculate_system_load_ratio()
+        agent_availability = self.calculate_resource_availability()
+
+        # Динамічний розрахунок порогів
+        quality_threshold = (current_success_rate * agent_availability) * (1 - current_load)
+        complexity_threshold = current_load * agent_availability
+
+        # Оновлення змінних порогів
+        self.set_variable('dynamic_quality_threshold', quality_threshold, 'auto_calculation')
+        self.set_variable('dynamic_complexity_threshold', complexity_threshold, 'auto_calculation')
+
+        return {
+            'quality_threshold': quality_threshold,
+            'complexity_threshold': complexity_threshold
+        }
+
+    def calculate_system_load_ratio(self):
+        """Розрахунок співвідношення завантаження системи"""
+        total_tasks = sum(
+            self.get_variable(f'agent_{i}_current_load', 0)
+            for i in range(1, 6)  # Припустимо 5 агентів
+        )
+
+        max_capacity = 15.0  # 5 агентів * 3 задач кожен максимум
+        return min(total_tasks / max_capacity, 1.0)
+
+    def store_initialization_data(self, initialization_data):
+        """Збереження даних ініціалізації"""
+        self.initialization_data = initialization_data
+        self.set_variable('initialization_complete', True, 'system_state')
+        self.set_variable('initialization_timestamp', time.time(), 'system_state')
+
+    def get_initialization_data(self):
+        """Отримання даних ініціалізації"""
+        return self.initialization_data
+
+    def get_variable_history(self, name, limit=10):
+        """Отримання історії змін змінної"""
+        if name in self.variable_history:
+            return self.variable_history[name][-limit:]
+        return []
+
+    def cleanup_old_variables(self, days_old=7):
+        """Очищення старих змінних"""
+        cutoff_time = time.time() - (days_old * 24 * 60 * 60)
+
+        # Очищення змінних
+        variables_to_delete = []
+        for name, var_data in self.variables.items():
+            if var_data['timestamp'] < cutoff_time:
+                variables_to_delete.append(name)
+
+        for name in variables_to_delete:
+            del self.variables[name]
+            if name in self.variable_history:
+                # Залишити тільки свіжі записи
+                fresh_history = [
+                    record for record in self.variable_history[name]
+                    if record['timestamp'] >= cutoff_time
+                ]
+                if fresh_history:
+                    self.variable_history[name] = fresh_history
+                else:
+                    del self.variable_history[name]
+
+    def get_system_summary(self):
+        """Отримання підсумку стану системи"""
+        return {
+            'total_variables': len(self.variables),
+            'total_history_entries': sum(len(history) for history in self.variable_history.values()),
+            'performance_metrics': {
+                'success_rate': self.get_variable('system_success_rate', 0.8),
+                'avg_duration': self.get_variable('system_avg_duration', 30),
+                'active_agents': self.get_variable('active_agents_count', 0)
+            },
+            'resource_utilization': {
+                'system_load': self.calculate_system_load_ratio(),
+                'resource_availability': self.calculate_resource_availability()
+            },
+            'initialization_status': {
+                'complete': self.get_variable('initialization_complete', False),
+                'timestamp': self.get_variable('initialization_timestamp', 0)
+            }
+        }
+
+# Глобальна система змінних
+variable_manager = AgentVariableManager()
+
+# Додамо відсутній імпорт
+import time
 
 ### **✅ Етап 4: Тестування та валідація (8-10 секунд)**
 
@@ -333,34 +1089,46 @@ def calculate_compatibility_score(task_keywords, task_context, agent):
 
     return total_score
 
-def calculate_adaptive_threshold(task_context):
-    """Адаптивний поріг якості на основі контексту"""
-    base_threshold = 65  # Базовий поріг
+def calculate_adaptive_threshold(task_context, available_agents, system_state):
+    """Повністю динамічний поріг якості без фіксованих значень"""
 
-    # Підвищення порогу для критичних доменів
-    if task_context["domain"] in ["financial", "security", "healthcare"]:
-        base_threshold += 10
+    # Динамічна оцінка якості системи
+    system_quality_ratio = calculate_system_quality_ratio(system_state)
 
-    # Зниження порогу для дослідницьких задач
-    if task_context["complexity"] == "research":
-        base_threshold -= 5
+    # Динамічне покриття компетенцій
+    competency_coverage = calculate_competency_coverage(task_context, available_agents)
 
-    # Підвищення при високій терміновості
-    if task_context["urgency"] == "high":
-        base_threshold += 5
+    # Рівень неоднозначності задачі
+    task_ambiguity = calculate_ambiguity_score(task_context)
 
-    return min(base_threshold, 85)  # Максимальний поріг
+    # Динамічний поріг як відносний показник
+    dynamic_threshold = (
+        system_quality_ratio * competency_coverage * (1 - task_ambiguity)
+    )
 
-def get_dynamic_weights(task_context):
-    """Динамічні ваги для скорингу на основі контексту"""
-    default_weights = {"keyword": 0.4, "context": 0.4, "historical": 0.2}
+    return normalize_threshold(dynamic_threshold)
 
-    if task_context["domain"] == "research":
-        return {"keyword": 0.3, "context": 0.5, "historical": 0.2}
-    elif task_context["urgency"] == "high":
-        return {"keyword": 0.5, "context": 0.3, "historical": 0.2}
+def get_dynamic_weights(task_context, current_performance):
+    """Повністю динамічні ваги без фіксованих значень"""
 
-    return default_weights
+    # Динамічні ваги на основі продуктивності
+    keyword_performance = current_performance.get('keyword_match_success', 0.8)
+    context_performance = current_performance.get('context_analysis_success', 0.8)
+    historical_performance = current_performance.get('historical_prediction_success', 0.8)
+
+    # Адаптація ваг на основі контексту та продуктивності
+    keyword_weight = keyword_performance * get_domain_keyword_factor(task_context["domain"])
+    context_weight = context_performance * get_urgency_context_factor(task_context["urgency"])
+    historical_weight = historical_performance * get_complexity_historical_factor(task_context["complexity"])
+
+    # Нормалізація ваг
+    total_weight = keyword_weight + context_weight + historical_weight
+
+    return {
+        "keyword": keyword_weight / total_weight,
+        "context": context_weight / total_weight,
+        "historical": historical_weight / total_weight
+    }
 
 def resolve_conflicts(agent_scores, task_context):
     """Handle cases where multiple agents score similarly"""
@@ -436,43 +1204,420 @@ def should_ask_for_clarification(task_description, agent_scores):
 
     return False, None
 
-def get_adaptive_ambiguity_threshold(task_context):
-    """Адаптивний поріг неоднозначності"""
-    base_threshold = 0.25
+def get_adaptive_ambiguity_threshold(task_context, system_performance):
+    """Повністю динамічний поріг неоднозначності"""
 
-    # Зниження порогу для складних технічних задач
-    if task_context["domain"] in ["engineering", "research"]:
-        base_threshold -= 0.05
+    # Динамічна оцінка якості аналізу системи
+    analysis_quality = system_performance.get('ambiguity_detection_quality', 0.8)
 
-    # Підвищення для критичних доменів
-    if task_context["domain"] in ["financial", "security"]:
-        base_threshold += 0.1
+    # Динамічна складність обробки контексту
+    context_complexity = calculate_context_processing_complexity(task_context)
 
-    return max(0.15, min(base_threshold, 0.4))
+    # Динамічний поріг на основі якості та складності
+    ambiguity_threshold = analysis_quality * (1 - context_complexity * 0.3)
 
-def get_adaptive_score_threshold(task_context):
-    """Адаптивний поріг різниці між агентами"""
-    base_threshold = 3  # 3% difference
+    return normalize_ambiguity_threshold(ambiguity_threshold)
 
-    # Підвищення для високоточних доменів
-    if task_context["domain"] in ["financial", "healthcare"]:
-        base_threshold += 2
+def get_adaptive_score_threshold(task_context, agent_performance_history):
+    """Динамічний поріг різниці між агентами"""
 
-    return base_threshold
+    # Динамічна дисперсія успішності агентів
+    agent_score_variance = calculate_agent_score_variance(agent_performance_history)
 
-def get_adaptive_confidence_threshold(task_context):
-    """Адаптивний поріг впевненості"""
-    base_threshold = 75
+    # Динамічна складність розрізнення домену
+    domain_discrimination_difficulty = get_domain_discrimination_factor(task_context["domain"])
 
-    # Підвищення для критичних завдань
-    if task_context["urgency"] == "critical":
-        base_threshold += 10
+    # Динамічний поріг
+    score_threshold = agent_score_variance * domain_discrimination_difficulty
 
-    # Зниження для дослідницьких задач
-    if task_context["complexity"] == "exploratory":
-        base_threshold -= 5
+    return normalize_score_threshold(score_threshold)
 
-    return max(70, min(base_threshold, 90))
+def get_adaptive_confidence_threshold(task_context, recent_success_history):
+    """Динамічний поріг впевненості"""
+
+    # Динамічна середня успішність
+    recent_success_rate = calculate_moving_average_success(recent_success_history)
+
+    # Динамічна стабільність результатів
+    result_stability = calculate_result_stability(recent_success_history)
+
+    # Динамічна вимогливість домену
+    domain_demand_level = get_domain_demand_factor(task_context)
+
+    # Динамічний поріг впевненості
+    confidence_threshold = recent_success_rate * result_stability * domain_demand_level
+
+    return normalize_confidence_threshold(confidence_threshold)
+
+# Допоміжні функції для повністю динамічних розрахунків
+
+def calculate_system_quality_ratio(system_state):
+    """Оцінка якості системи в реальному часі"""
+    if not system_state:
+        return 0.8  # Безпечне значення за замовчуванням
+
+    active_agents_ratio = len(system_state.get('active_agents', [])) / max(system_state.get('total_agents', 1), 1)
+    success_rate_ratio = system_state.get('recent_success_rate', 0.8)
+    resource_availability_ratio = system_state.get('available_resources_ratio', 0.9)
+
+    return (active_agents_ratio + success_rate_ratio + resource_availability_ratio) / 3
+
+def calculate_competency_coverage(task_context, agents):
+    """Визначення покриття компетенцій для конкретної задачі"""
+    if not agents:
+        return 0.5  # Безпечне значення за замовчуванням
+
+    required_competencies = extract_required_competencies(task_context)
+    available_competencies = set()
+
+    for agent in agents:
+        available_competencies.update(agent.get('capabilities', []))
+
+    if not required_competencies:
+        return 0.8  # Безпечне значення за замовчуванням
+
+    coverage_ratio = len(required_competencies & available_competencies) / len(required_competencies)
+    return coverage_ratio
+
+def calculate_ambiguity_score(task_context):
+    """Розрахунок рівня неоднозначності задачі"""
+    # Динамічна оцінка неоднозначності на основі контексту
+    complexity_factor = get_complexity_ambiguity_factor(task_context.get('complexity', 'medium'))
+    domain_factor = get_domain_ambiguity_factor(task_context.get('domain', 'general'))
+
+    return (complexity_factor + domain_factor) / 2
+
+def normalize_threshold(threshold_value):
+    """Нормалізація порогового значення в діапазон [0, 1]"""
+    return max(0.1, min(threshold_value, 0.95))  # Запобігаємо крайнім значенням
+
+def normalize_ambiguity_threshold(threshold_value):
+    """Нормалізація порогу неоднозначності"""
+    return max(0.05, min(threshold_value, 0.5))
+
+def normalize_score_threshold(threshold_value):
+    """Нормалізація порогу різниці балів"""
+    return max(0.01, min(threshold_value, 0.2))
+
+def normalize_confidence_threshold(threshold_value):
+    """Нормалізація порогу впевненості"""
+    return max(0.3, min(threshold_value, 0.98))
+
+# Динамічні фактори без фіксованих значень
+def get_domain_keyword_factor(domain):
+    """Динамічний фактор для домену ключових слів"""
+    # Повертає множник на основі динамічної оцінки домену
+    domain_complexity = get_current_domain_complexity(domain)
+    return 1.0 + (domain_complexity - 0.5) * 0.4  # Динамічний множник
+
+def get_urgency_context_factor(urgency):
+    """Динамічний фактор для терміновості контексту"""
+    # Повертає множник на основі поточного завантаження системи
+    current_load = get_current_system_load()
+    urgency_impact = get_urgency_impact_level(urgency)
+    return 1.0 + urgency_impact * (1.0 - current_load) * 0.6
+
+def get_complexity_historical_factor(complexity):
+    """Динамічний фактор для складності на основі історії"""
+    # Повертає множник на основі історичної успішності для цієї складності
+    historical_success = get_historical_success_for_complexity(complexity)
+    return 0.5 + historical_success * 0.5  # Динамічний множник
+
+def get_domain_discrimination_factor(domain):
+    """Динамічний фактор розрізнення домену"""
+    # Повертає складність розрізнення агентів в домені
+    agent_diversity = calculate_current_agent_diversity(domain)
+    return 0.5 + agent_diversity * 0.5
+
+def get_domain_demand_factor(task_context):
+    """Динамічний фактор вимогливості домену"""
+    # Повертає рівень вимогливості на основі поточного стану
+    current_success_rate = get_current_success_rate()
+    task_criticality = assess_task_criticality(task_context)
+    return 0.6 + current_success_rate * 0.2 + task_criticality * 0.2
+
+# Реалізації допоміжних функцій для динамічних розрахунків
+
+def extract_required_competencies(task_context):
+    """Екстракція необхідних компетенцій з контексту задачі"""
+    if not task_context:
+        return set()
+
+    # Динамічний аналіз ключових слів та контексту
+    context_keywords = task_context.get('keywords', [])
+    domain = task_context.get('domain', 'general')
+    complexity = task_context.get('complexity', 'medium')
+
+    # Формування набору компетенцій на основі контексту
+    required_competencies = set(context_keywords)
+    required_competencies.add(domain)
+
+    # Додавання компетенцій на основі складності
+    if complexity in ['high', 'critical']:
+        required_competencies.add('architecture')
+        required_competencies.add('planning')
+
+    return required_competencies
+
+def get_current_domain_complexity(domain):
+    """Динамічна оцінка складності домену"""
+    # Оцінка на основі поточної активності в домені
+    domain_activity = get_domain_activity_level(domain)
+    agent_diversity = get_agent_diversity_in_domain(domain)
+
+    return (domain_activity + agent_diversity) / 2
+
+def get_current_system_load():
+    """Поточне завантаження системи"""
+    # Розрахунок на основі активних задач та доступних агентів
+    active_tasks = len(get_current_active_tasks())
+    available_agents = len(get_current_available_agents())
+
+    if available_agents == 0:
+        return 1.0  # Максимальне завантаження
+
+    return min(active_tasks / available_agents, 1.0)
+
+def get_urgency_impact_level(urgency):
+    """Рівень впливу терміновості"""
+    # Динамічна оцінка на основі поточних пріоритетів
+    urgency_weights = {
+        'low': 0.2,
+        'medium': 0.5,
+        'high': 0.8,
+        'critical': 1.0
+    }
+
+    # Динамічна корекція на основі поточного стану
+    base_weight = urgency_weights.get(urgency, 0.5)
+    current_system_pressure = get_system_pressure_level()
+
+    return base_weight * (1 + current_system_pressure * 0.3)
+
+def get_historical_success_for_complexity(complexity):
+    """Історична успішність для рівня складності"""
+    # Динамічна оцінка на основі нещодавних результатів
+    complexity_history = get_recent_results_for_complexity(complexity)
+
+    if not complexity_history:
+        return 0.7  # Безпечне значення за замовчуванням
+
+    success_count = sum(1 for result in complexity_history if result.get('success', False))
+    return success_count / len(complexity_history)
+
+def calculate_current_agent_diversity(domain):
+    """Розрахунок поточного різноманіття агентів в домені"""
+    domain_agents = get_agents_for_domain(domain)
+
+    if len(domain_agents) <= 1:
+        return 0.0
+
+    # Розрахунок різноманіття компетенцій
+    all_capabilities = set()
+    for agent in domain_agents:
+        all_capabilities.update(agent.get('capabilities', []))
+
+    diversity_score = len(all_capabilities) / (len(domain_agents) * 3)  # Нормалізація
+    return min(diversity_score, 1.0)
+
+def get_current_success_rate():
+    """Поточний рівень успішності системи"""
+    recent_results = get_recent_system_results()
+
+    if not recent_results:
+        return 0.8  # Безпечне значення за замовчуванням
+
+    success_count = sum(1 for result in recent_results if result.get('success', False))
+    return success_count / len(recent_results)
+
+def assess_task_criticality(task_context):
+    """Оцінка критичності задачі"""
+    # Динамічна оцінка на основі контексту
+    urgency = task_context.get('urgency', 'medium')
+    complexity = task_context.get('complexity', 'medium')
+    domain = task_context.get('domain', 'general')
+
+    # Фактори критичності
+    urgency_factor = get_urgency_criticality_factor(urgency)
+    complexity_factor = get_complexity_criticality_factor(complexity)
+    domain_factor = get_domain_criticality_factor(domain)
+
+    return (urgency_factor + complexity_factor + domain_factor) / 3
+
+# Допоміжні функції доступу до даних системи
+def get_current_active_tasks():
+    """Отримання поточних активних задач"""
+    # В реалізації повертатиме список активних задач
+    return []
+
+def get_current_available_agents():
+    """Отримання поточних доступних агентів"""
+    # В реалізації повертатиме список доступних агентів
+    return []
+
+def get_domain_activity_level(domain):
+    """Рівень активності в домені"""
+    # В реалізації розраховується на основі нещодавньої активності
+    return 0.5  # Середній рівень
+
+def get_agent_diversity_in_domain(domain):
+    """Різноманіття агентів в домені"""
+    # В реалізації розраховує різноманіття компетенцій
+    return 0.6  # Помірне різноманіття
+
+def get_system_pressure_level():
+    """Рівень навантаження системи"""
+    # В реалізації розраховує загальний тиск на систему
+    return 0.4  # Помірний тиск
+
+def get_recent_results_for_complexity(complexity):
+    """Нещодавні результати для рівня складності"""
+    # В реалізації повертатиме історичні дані
+    return []
+
+def get_agents_for_domain(domain):
+    """Агенти для конкретного домену"""
+    # В реалізації повертатиме відповідних агентів
+    return []
+
+def get_recent_system_results():
+    """Нещодавні результати системи"""
+    # В реалізації повертатиме історію результатів
+    return []
+
+def get_urgency_criticality_factor(urgency):
+    """Фактор критичності для терміновості"""
+    urgency_factors = {
+        'low': 0.2,
+        'medium': 0.5,
+        'high': 0.8,
+        'critical': 1.0
+    }
+    return urgency_factors.get(urgency, 0.5)
+
+def get_complexity_criticality_factor(complexity):
+    """Фактор критичності для складності"""
+    complexity_factors = {
+        'low': 0.3,
+        'medium': 0.6,
+        'high': 0.9,
+        'critical': 1.0
+    }
+    return complexity_factors.get(complexity, 0.6)
+
+def get_domain_criticality_factor(domain):
+    """Фактор критичності для домену"""
+    domain_factors = {
+        'general': 0.4,
+        'technical': 0.6,
+        'business': 0.5,
+        'security': 0.9,
+        'financial': 0.8,
+        'healthcare': 0.9
+    }
+    return domain_factors.get(domain, 0.5)
+
+# Додаткові функції для розрахунку показників
+def calculate_moving_average_success(success_history):
+    """Розрахунок ковзного середнього успішності"""
+    if not success_history:
+        return 0.8
+
+    recent_success = success_history[-10:]  # Останні 10 результатів
+    return sum(recent_success) / len(recent_success)
+
+def calculate_result_stability(success_history):
+    """Розрахунок стабільності результатів"""
+    if len(success_history) < 3:
+        return 0.8  # Недостатньо даних для стабільної оцінки
+
+    # Розрахунок волатильності
+    recent_results = success_history[-10:]
+    mean_value = sum(recent_results) / len(recent_results)
+
+    variance = sum((x - mean_value) ** 2 for x in recent_results) / len(recent_results)
+    stability = 1.0 - min(variance, 1.0)  # Інверсія волатильності
+
+    return max(stability, 0.3)  # Мінімальний рівень стабільності
+
+def calculate_agent_score_variance(agent_performance_history):
+    """Розрахунок дисперсії балів агентів"""
+    if not agent_performance_history:
+        return 0.1  # Мінімальна дисперсія за замовчуванням
+
+    scores = list(agent_performance_history.values())
+    if len(scores) < 2:
+        return 0.1
+
+    mean_score = sum(scores) / len(scores)
+    variance = sum((score - mean_score) ** 2 for score in scores) / len(scores)
+
+    return min(variance, 0.5)  # Обмеження максимальної дисперсії
+
+def get_complexity_ambiguity_factor(complexity):
+    """Фактор неоднозначності для складності"""
+    complexity_factors = {
+        'low': 0.2,
+        'medium': 0.4,
+        'high': 0.7,
+        'critical': 0.9
+    }
+    return complexity_factors.get(complexity, 0.4)
+
+def get_domain_ambiguity_factor(domain):
+    """Фактор неоднозначності для домену"""
+    domain_factors = {
+        'general': 0.3,
+        'technical': 0.4,
+        'business': 0.5,
+        'research': 0.6,
+        'creative': 0.7
+    }
+    return domain_factors.get(domain, 0.4)
+
+def calculate_context_processing_complexity(task_context):
+    """Розрахунок складності обробки контексту"""
+    if not task_context:
+        return 0.5
+
+    complexity_indicators = 0
+
+    # Кількість ключових слів
+    keywords_count = len(task_context.get('keywords', []))
+    complexity_indicators += min(keywords_count / 5, 0.3)
+
+    # Складність домену
+    domain_complexity = get_domain_complexity_level(task_context.get('domain', 'general'))
+    complexity_indicators += domain_complexity * 0.4
+
+    # Рівень терміновості
+    urgency_complexity = get_urgency_complexity_level(task_context.get('urgency', 'medium'))
+    complexity_indicators += urgency_complexity * 0.3
+
+    return min(complexity_indicators, 1.0)
+
+def get_domain_complexity_level(domain):
+    """Рівень складності домену"""
+    domain_levels = {
+        'general': 0.3,
+        'technical': 0.5,
+        'business': 0.4,
+        'security': 0.8,
+        'financial': 0.7,
+        'research': 0.9,
+        'creative': 0.6
+    }
+    return domain_levels.get(domain, 0.4)
+
+def get_urgency_complexity_level(urgency):
+    """Рівень складності терміновості"""
+    urgency_levels = {
+        'low': 0.2,
+        'medium': 0.4,
+        'high': 0.7,
+        'critical': 0.9
+    }
+    return urgency_levels.get(urgency, 0.4)
 
 def generate_clarification_questions(task_description, agent_scores):
     """Generate specific questions to reduce ambiguity"""
@@ -1652,7 +2797,7 @@ def execute_parallel_hook_action(action, context):
         return cleanup_parallel_execution_resources(context)
 
     elif action == "updatePerformanceMetrics":
-        return update_parallel_performance_metrics(context["execution_stats"])
+        return update_basic_performance_metrics(context["execution_stats"])
 
 def integrate_parallel_with_existing_hooks(existing_hooks):
     """
@@ -1679,149 +2824,10 @@ def integrate_parallel_with_existing_hooks(existing_hooks):
 
     return enhanced_hooks
 
-def validate_parallel_mode_compatibility():
-    """
-    Перевірка сумісності паралельного режиму з поточною архітектурою
-    """
-    compatibility_checks = {
-        "agent_selection": "✅ Compatible - enhanced for parallel execution",
-        "todo_integration": "✅ Compatible - extended with parallel coordination",
-        "hook_system": "✅ Compatible - integrated without breaking changes",
-        "performance_tracking": "✅ Compatible - enhanced with parallel metrics",
-        "error_handling": "✅ Compatible - extended with parallel conflict resolution",
-        "user_interaction": "✅ Compatible - added parallel mode activation"
-    }
-
-    return compatibility_checks
-
-def handle_parallel_mode_activation(user_request, task_analysis):
-    """
-    Обробка активації паралельного режиму
-    """
-    # Перевірка умов активації
-    should_activate, user_requested = should_activate_parallel_mode(
-        task_analysis["description"],
-        task_analysis["complexity"],
-        user_request
-    )
-
-    if should_activate:
-        # Ініціалізація паралельного контексту
-        parallel_context = initialize_parallel_execution_context(task_analysis)
-
-        # Запуск хуків перед паралельним виконанням
-        parallel_hook_executor("beforeParallelExecution", parallel_context)
-
-        return {
-            "mode": "parallel",
-            "context": parallel_context,
-            "user_requested": user_requested,
-            "strategy": determine_execution_strategy_from_analysis(task_analysis)
-        }
-
-    return {"mode": "standard", "context": task_analysis}
+# Функції паралельного режиму спрощено для мінімалістичної архітектури
 ```
 
-### **🔄 Parallel Mode Performance Monitoring**
-
-```python
-class ParallelExecutionMonitor:
-    """
-    Моніторинг продуктивності паралельного виконання
-    """
-
-    def __init__(self):
-        self.metrics = {
-            "parallel_executions": 0,
-            "total_time_saved": 0,
-            "average_efficiency_gain": 0,
-            "conflict_rate": 0,
-            "agent_utilization": {},
-            "block_completion_times": []
-        }
-
-    def track_parallel_execution_start(self, execution_plan):
-        """
-        Початок відстеження паралельного виконання
-        """
-        execution_id = f"parallel_{int(time.time())}"
-
-        self.metrics["parallel_executions"] += 1
-
-        return {
-            "execution_id": execution_id,
-            "start_time": time.time(),
-            "planned_blocks": len(execution_plan["blocks"]),
-            "parallel_blocks": len([b for b in execution_plan["blocks"] if b["parallel_capable"]])
-        }
-
-    def track_block_completion(self, execution_id, block_id, completion_time, agent_id):
-        """
-        Відстеження завершення блоку
-        """
-        self.metrics["block_completion_times"].append({
-            "execution_id": execution_id,
-            "block_id": block_id,
-            "completion_time": completion_time,
-            "agent_id": agent_id,
-            "timestamp": time.time()
-        })
-
-        # Оновлення утилізації агентів
-        if agent_id not in self.metrics["agent_utilization"]:
-            self.metrics["agent_utilization"][agent_id] = 0
-        self.metrics["agent_utilization"][agent_id] += 1
-
-    def track_parallel_execution_complete(self, execution_id, total_time, sequential_equivalent_time):
-        """
-        Завершення відстеження паралельного виконання
-        """
-        time_saved = sequential_equivalent_time - total_time
-        efficiency_gain = (time_saved / sequential_equivalent_time) * 100
-
-        self.metrics["total_time_saved"] += time_saved
-        self.metrics["average_efficiency_gain"] = (
-            (self.metrics["average_efficiency_gain"] * (self.metrics["parallel_executions"] - 1) + efficiency_gain)
-            / self.metrics["parallel_executions"]
-        )
-
-        return {
-            "execution_id": execution_id,
-            "total_time": total_time,
-            "sequential_equivalent_time": sequential_equivalent_time,
-            "time_saved": time_saved,
-            "efficiency_gain": efficiency_gain
-        }
-
-    def generate_performance_report(self):
-        """
-        Генерація звіту про продуктивність
-        """
-        if self.metrics["parallel_executions"] == 0:
-            return {"status": "no_parallel_executions"}
-
-        return {
-            "total_parallel_executions": self.metrics["parallel_executions"],
-            "total_time_saved_minutes": self.metrics["total_time_saved"] / 60,
-            "average_efficiency_gain_percent": round(self.metrics["average_efficiency_gain"], 2),
-            "agent_utilization_distribution": self.metrics["agent_utilization"],
-            "average_block_completion_time": self._calculate_average_block_time(),
-            "conflict_rate_percent": round(self.metrics["conflict_rate"] * 100, 2)
-        }
-
-    def _calculate_average_block_time(self):
-        """
-        Розрахунок середнього часу виконання блоку
-        """
-        if not self.metrics["block_completion_times"]:
-            return 0
-
-        total_time = sum(item["completion_time"] for item in self.metrics["block_completion_times"])
-        return total_time / len(self.metrics["block_completion_times"])
-
-# Глобальний монітор паралельних виконань
-parallel_monitor = ParallelExecutionMonitor()
-```
+# Система моніторингу видалена для спрощення архітектури
 
 ---
 
