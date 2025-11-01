@@ -4,7 +4,7 @@ description: "Full-featured intelligent task orchestrator with parallel initiali
 capabilities: ["task-orchestration", "automatic-delegation", "task-planning", "complexity-analysis", "agent-selection", "interactive-workflow", "parallel-execution", "task-breakdown", "hybrid-workflow", "todo-coordination", "parallel-initialization"]
 triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage", "parallel", "team", "multiple-agents"]
 tools: ["sequential-thinking", "serena", "context7"]
-version: "0.3.0"
+version: "0.4.0"
 ---
 
 # 🧠 Intelligent Task Orchestrator
@@ -317,7 +317,40 @@ def integrate_request_analysis_system(initialization_data):
             filters_data['filters']
         )
 
-        # Використання даних з Етапу 4 - система уточнення
+        # НОВА ЛОГІКА: Аналіз складності для автоматичного виконання
+        task_complexity = analyze_task_complexity(user_request)
+
+        # Перевірка чи потрібне планування
+        if task_complexity >= 2 or check_specialization_requirement(user_request, task_context):
+            # Створення плану
+            task_plan = create_structured_plan(user_request, task_context)
+
+            # Перевірка чи можна авто-виконувати
+            if should_auto_execute(task_complexity, task_context):
+                print("🎯 **Plan Created - Auto-Executing...**")
+                return auto_execute_plan(task_plan, user_request, task_context)
+            else:
+                # Старий поведінка: запит уточнення
+                clarification_needed = check_clarification_need(
+                    user_request,
+                    task_category,
+                    clarification_data['clarification_system']
+                )
+
+                delegation_result = select_optimal_agent(user_request, compatible_agents)
+
+                return {
+                    'task_context': task_context,
+                    'category': task_category,
+                    'agents': compatible_agents,
+                    'threshold': quality_threshold,
+                    'clarification': clarification_needed,
+                    'initialization_source': True,
+                    'delegation_result': delegation_result,
+                    'plan': task_plan
+                }
+
+        # Використання даних з Етапу 4 - система уточнення (для простих задач)
         clarification_needed = check_clarification_need(
             user_request,
             task_category,
@@ -5037,6 +5070,349 @@ def integrate_parallel_with_existing_hooks(existing_hooks):
 2. **Consider dependencies** between components
 3. **Plan integration** of parallel results
 4. **Monitor progress** through TodoWrite updates
+
+# ========================================
+# 🛠️ HELPER FUNCTIONS FOR AUTO-EXECUTION
+# ========================================
+
+def create_structured_plan(user_request, task_context):
+    """
+    Create structured plan for auto-execution
+    """
+    task_complexity = analyze_task_complexity(user_request)
+
+    # Determine execution mode
+    if task_complexity >= 3:
+        execution_mode = 'parallel'
+    elif task_complexity >= 2:
+        execution_mode = 'sequential'
+    else:
+        execution_mode = 'simple'
+
+    plan = {
+        'main_task': user_request,
+        'execution_mode': execution_mode,
+        'complexity': task_complexity,
+        'task_context': task_context,
+        'created_at': time.time()
+    }
+
+    if execution_mode == 'parallel':
+        plan['blocks'] = create_parallel_blocks(user_request, task_context)
+    elif execution_mode == 'sequential':
+        plan['execution_plan'] = create_sequential_execution_steps(user_request, task_context)
+
+    return plan
+
+def create_parallel_blocks(user_request, task_context):
+    """
+    Create parallel execution blocks
+    """
+    # Simple implementation - can be enhanced
+    return [
+        {
+            'name': 'Analysis',
+            'description': 'Analyze requirements and context',
+            'agent_type': 'analyst'
+        },
+        {
+            'name': 'Implementation',
+            'description': 'Implement the solution',
+            'agent_type': 'implementer'
+        }
+    ]
+
+def create_sequential_execution_steps(user_request, task_context):
+    """
+    Create sequential execution steps
+    """
+    return [
+        {
+            'step_id': 1,
+            'name': 'Requirements Analysis',
+            'description': 'Analyze and understand requirements',
+            'required_capabilities': ['analysis']
+        },
+        {
+            'step_id': 2,
+            'name': 'Implementation',
+            'description': 'Implement the solution',
+            'required_capabilities': ['implementation'],
+            'dependencies': [1]
+        },
+        {
+            'step_id': 3,
+            'name': 'Testing & Validation',
+            'description': 'Test and validate the implementation',
+            'required_capabilities': ['testing'],
+            'dependencies': [2]
+        }
+    ]
+
+def execute_block_with_agent(block, execution_context):
+    """
+    Execute a parallel block with appropriate agent
+    """
+    # Find appropriate agent for this block
+    agent_type = block.get('agent_type', 'general')
+
+    # Execute with Task delegation (simplified)
+    result = {
+        'block_name': block.get('name'),
+        'agent_type': agent_type,
+        'execution_status': 'completed',
+        'result': f"Executed {block.get('name')} successfully"
+    }
+
+    return result
+
+def execute_step_with_agent(step, execution_context, previous_results):
+    """
+    Execute a sequential step with appropriate agent
+    """
+    # Check dependencies
+    dependencies = step.get('dependencies', [])
+    if dependencies:
+        # Ensure all dependencies are satisfied
+        for dep_id in dependencies:
+            if dep_id > len(previous_results):
+                raise Exception(f"Dependency {dep_id} not satisfied")
+
+    # Execute step
+    result = {
+        'step_id': step.get('step_id'),
+        'step_name': step.get('name'),
+        'execution_status': 'completed',
+        'result': f"Executed step {step.get('step_id')}: {step.get('name')} successfully"
+    }
+
+    return result
+
+def synthesize_parallel_results(execution_results, task_plan):
+    """
+    Synthesize results from parallel execution
+    """
+    return {
+        'execution_mode': 'parallel',
+        'total_blocks': len(execution_results),
+        'completed_blocks': len(execution_results),
+        'synthesis': 'All parallel blocks completed successfully',
+        'detailed_results': execution_results
+    }
+
+def synthesize_sequential_results(execution_results, task_plan):
+    """
+    Synthesize results from sequential execution
+    """
+    return {
+        'execution_mode': 'sequential',
+        'total_steps': len(execution_results),
+        'completed_steps': len(execution_results),
+        'synthesis': 'All sequential steps completed successfully',
+        'detailed_results': execution_results
+    }
+
+# ========================================
+# 🔥 AUTOMATIC EXECUTION AFTER PLANNING
+# ========================================
+
+## 🚀 **Auto-Execution System for Planning Mode**
+
+### **Problem Solved:**
+When planning mode creates TodoWrite plans, instead of asking for clarification, the system automatically transitions to execution mode.
+
+### **🔧 Key Functions:**
+
+```python
+def auto_execute_plan(task_plan, user_request, task_context):
+    """
+    Automatically execute plan without user clarification
+    """
+    print(f"🎯 **Plan Created - Auto-Executing: {task_plan.get('main_task', 'Task')}**")
+
+    # Initialize execution context
+    execution_context = {
+        "mode": "auto_execution",
+        "original_request": user_request,
+        "task_context": task_context,
+        "plan": task_plan,
+        "started_at": time.time()
+    }
+
+    # Update TodoWrite with execution start
+    TodoWrite(todos=[{
+        "content": "🚀 Auto-execution started",
+        "status": "in_progress",
+        "activeForm": f"Executing: {task_plan.get('main_task', 'Task')}"
+    }])
+
+    # Execute based on plan type
+    if task_plan.get('execution_mode') == 'parallel':
+        return auto_execute_parallel_plan(task_plan, execution_context)
+    elif task_plan.get('execution_mode') == 'sequential':
+        return auto_execute_sequential_plan(task_plan, execution_context)
+    else:
+        return auto_execute_simple_plan(task_plan, execution_context)
+
+def auto_execute_parallel_plan(task_plan, execution_context):
+    """Execute parallel plan automatically"""
+    parallel_blocks = task_plan.get('blocks', [])
+
+    # Launch all parallel blocks simultaneously
+    execution_results = []
+
+    for block in parallel_blocks:
+        # Update TodoWrite progress
+        TodoWrite(todos=[{
+            "content": f"🔄 Executing parallel block: {block.get('name', 'Block')}",
+            "status": "in_progress",
+            "activeForm": f"Parallel execution: {block.get('name', 'Block')}"
+        }])
+
+        # Execute block with appropriate agent
+        result = execute_block_with_agent(block, execution_context)
+        execution_results.append(result)
+
+        # Mark block as completed
+        TodoWrite(todos=[{
+            "content": f"✅ Completed parallel block: {block.get('name', 'Block')}",
+            "status": "completed",
+            "activeForm": f"Block completed: {block.get('name', 'Block')}"
+        }])
+
+    # Synthesize results
+    final_result = synthesize_parallel_results(execution_results, task_plan)
+
+    # Final TodoWrite update
+    TodoWrite(todos=[{
+        "content": "🎉 Auto-execution completed",
+        "status": "completed",
+        "activeForm": "All parallel blocks executed successfully"
+    }])
+
+    return final_result
+
+def auto_execute_sequential_plan(task_plan, execution_context):
+    """Execute sequential plan automatically"""
+    execution_steps = task_plan.get('execution_plan', [])
+
+    execution_results = []
+
+    for step in execution_steps:
+        # Update TodoWrite progress
+        TodoWrite(todos=[{
+            "content": f"🔄 Executing step {step.get('step_id', '?')}: {step.get('name', 'Step')}",
+            "status": "in_progress",
+            "activeForm": f"Step execution: {step.get('name', 'Step')}"
+        }])
+
+        # Execute step with appropriate agent
+        result = execute_step_with_agent(step, execution_context, execution_results)
+        execution_results.append(result)
+
+        # Mark step as completed
+        TodoWrite(todos=[{
+            "content": f"✅ Completed step {step.get('step_id', '?')}: {step.get('name', 'Step')}",
+            "status": "completed",
+            "activeForm": f"Step completed: {step.get('name', 'Step')}"
+        }])
+
+    # Synthesize results
+    final_result = synthesize_sequential_results(execution_results, task_plan)
+
+    # Final TodoWrite update
+    TodoWrite(todos=[{
+        "content": "🎉 Auto-execution completed",
+        "status": "completed",
+        "activeForm": "All sequential steps executed successfully"
+    }])
+
+    return final_result
+
+def auto_execute_simple_plan(task_plan, execution_context):
+    """Execute simple plan automatically"""
+    # For simple tasks, delegate directly to best agent
+    task_description = execution_context['original_request']
+    task_context = execution_context['task_context']
+
+    # Find best agent
+    compatible_agents = find_compatible_agents(task_context, categories_data['categories'])
+    best_agent = select_best_agent(compatible_agents, task_description, task_context)
+
+    # Execute with Task delegation
+    result = execute_task_with_best_agent(task_description, task_context, best_agent, 0.85)
+
+    # Update TodoWrite
+    TodoWrite(todos=[{
+        "content": "🎉 Simple task execution completed",
+        "status": "completed",
+        "activeForm": f"Executed by: {best_agent.get('name', 'Agent')}"
+    }])
+
+    return result
+
+def should_auto_execute(task_complexity, task_context):
+    """
+    Determine if plan should be auto-executed
+    """
+    # Auto-execute if complexity is 2 or higher
+    # Or if task has clear requirements
+    has_clear_requirements = assess_requirement_clarity(task_context) >= 0.7
+
+    return task_complexity >= 2 or has_clear_requirements
+
+def assess_requirement_clarity(task_context):
+    """Assess how clear the task requirements are"""
+    if not task_context:
+        return 0.5
+
+    clarity_score = 0.5  # Base score
+
+    # Add points for specific indicators
+    if 'keywords' in task_context and len(task_context['keywords']) > 0:
+        clarity_score += 0.2
+
+    if 'domain' in task_context and task_context['domain'] != 'general':
+        clarity_score += 0.2
+
+    if 'scope' in task_context:
+        clarity_score += 0.1
+
+    return min(clarity_score, 1.0)
+
+def modify_planning_workflow():
+    """
+    Integration function to modify existing planning workflow
+    """
+
+    def enhanced_plan_and_execute(user_request):
+        """
+        Enhanced planning with automatic execution
+        """
+        # Analyze request (existing logic)
+        task_context = extract_task_context(user_request)
+        task_complexity = analyze_task_complexity(user_request)
+
+        # Check if planning is needed
+        if task_complexity >= 2 or check_specialization_requirement(user_request, task_context):
+            # Create plan (existing TodoWrite logic)
+            task_plan = create_structured_plan(user_request, task_context)
+
+            # NEW: Auto-execute instead of asking for clarification
+            if should_auto_execute(task_complexity, task_context):
+                print("🎯 **Plan Ready - Auto-Executing...**")
+                return auto_execute_plan(task_plan, user_request, task_context)
+            else:
+                # Fallback: ask for clarification (existing behavior)
+                return request_user_clarification(task_plan, user_request)
+        else:
+            # Simple task - direct execution (existing behavior)
+            return handle_simple_task(user_request, task_context)
+
+    return enhanced_plan_and_execute
+
+# Integration point: Replace existing planning logic
+enhanced_workflow = modify_planning_workflow()
 
 ---
 

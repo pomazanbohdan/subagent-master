@@ -5,8 +5,8 @@
     "email": "pomazan.bohdan@gmail.com"
   },
   "metadata": {
-    "description": "Enhanced intelligent task orchestrator with competitive execution, step validation, and adaptive workflow management",
-    "version": "0.3.0"
+    "description": "Enhanced intelligent task orchestrator with auto-execution after planning, competitive execution, step validation, and adaptive workflow management",
+    "version": "0.4.0"
   },
   "plugins": [
     {
@@ -29,7 +29,10 @@
         "step-validation",
         "adaptive-workflow",
         "error-handling",
-        "quality-assessment"
+        "quality-assessment",
+        "auto-execution",
+        "planning-mode",
+        "seamless-workflow"
       ],
       "source": "./",
       "agents": [

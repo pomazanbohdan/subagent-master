@@ -1,7 +1,7 @@
 {
   "name": "subagent-master",
-  "version": "0.3.0",
-  "description": "Enhanced intelligent task orchestrator with competitive execution, step validation, and adaptive workflow management",
+  "version": "0.4.0",
+  "description": "Enhanced intelligent task orchestrator with auto-execution after planning, competitive execution, step validation, and adaptive workflow management",
   "author": "Bohdan <pomazan.bohdan@gmail.com>",
   "license": "MIT",
   "keywords": [
@@ -17,7 +17,10 @@
     "step-validation",
     "adaptive-workflow",
     "error-handling",
-    "quality-assessment"
+    "quality-assessment",
+    "auto-execution",
+    "planning-mode",
+    "seamless-workflow"
   ],
   "homepage": "https://github.com/pomazanbohdan/subagent-master",
   "repository": "https://github.com/pomazanbohdan/subagent-master.git",
