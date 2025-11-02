@@ -5,7 +5,7 @@
 
 ## Configuration Files
 ### Knowledge Base
-- config/knowledge-base/agent-selection.yaml - Agent selection algorithms
+- config/knowledge-base/unified_agent_selection.yaml - Unified agent selection system
 - config/knowledge-base/categorization-engine.yaml - Task categorization system
 - config/knowledge-base/parallel_coordination.yaml - Parallel execution coordination
 - config/knowledge-base/task-analysis.yaml - Task analysis framework

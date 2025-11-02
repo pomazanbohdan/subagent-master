@@ -11,8 +11,8 @@ metadata:
 name_validation:
   required_format: "category:agent-name"
   examples:
-    valid: ["master:master", "frontend-architect", "security-engineer"]
-    invalid: ["master", "agent", "undefined"]
+    valid: ["master:master", "frontend-architect", "security-engineer", "backend:backend-architect", "performance:performance-engineer"]
+    invalid: ["master", "agent", "undefined", "frontend"]
 
   validation_steps:
     step_1: "Check if name exists in agent registry"
@@ -37,6 +37,7 @@ error_prevention:
         "frontend": "frontend-architect"
         "backend": "backend-architect"
         "security": "security-engineer"
+        "performance": "performance-engineer"
 
     suggestion_system:
       enabled: true
@@ -50,9 +51,11 @@ error_prevention:
 # Registry Integration
 registry_integration:
   agent_registry_query:
-    endpoint: "config/dynamic/agent_types.yaml"
+    primary_endpoint: "filesystem_discovery"
+    fallback_endpoint: "config/dynamic/agent_types.yaml"
     query_method: "registry_lookup"
     validation_required: true
+    registry_format: "entries_based"
 
   auto_discovery:
     scan_paths: ["agents/", ".claude/agents/"]
@@ -72,9 +75,10 @@ implementation:
 
     ALGORITHM:
     1. Registry Lookup:
-       - Search agent registry for exact match
+       - Search primary agent registry for exact match
        - Check agent availability status
        - Validate agent capabilities
+       - If not found, try fallback registry
 
     2. Format Validation:
        - Validate category:agent-name format
@@ -109,3 +113,75 @@ integration_points:
     integration_point: "before_multi_agent_coordination"
     validation_scope: "all_selected_agents"
     error_handling: "fail_fast_on_invalid_names"
+
+# Registry Format Specification
+registry_format:
+  entries_based:
+    structure: |
+      agent_registry:
+        entries:
+          - agent_id: "category:agent-name"
+          - agent_name: "string"
+          - agent_type: "string"
+          - capabilities: {...}
+          - availability: {...}
+    
+    lookup_method: |
+      Search entries array for matching agent_id or agent_name
+      Use category:agent-name format for precise matching
+      Fallback to fuzzy matching if exact match fails
+
+# Validation Rules
+validation_rules:
+  category_validation:
+    allowed_categories: ["master", "backend", "frontend", "security", "performance", "general_purpose"]
+    case_sensitive: false
+    separator_required: ":"
+
+  agent_name_validation:
+    min_length: 3
+    max_length: 50
+    allowed_characters: "alphanumeric_hyphen_underscore"
+    no_special_characters: true
+
+  availability_validation:
+    valid_statuses: ["available", "busy", "unavailable", "maintenance"]
+    check_current_load: true
+    check_last_active: true
+
+# Auto-Discovery Enhancement
+auto_discovery_enhancement:
+  enabled: true
+  methods:
+    file_system_scan:
+      enabled: true
+      scan_patterns: 
+        - "agents/*.md"
+        - "subagents/*.md"
+      metadata_extraction:
+        - yaml_frontmatter_name
+        - yaml_frontmatter_description
+        - yaml_frontmatter_capabilities
+    
+    registry_population:
+      enabled: true
+      auto_register_discovered: true
+      validation_required: true
+      backup_creation: true
+
+# Performance Optimization
+performance_optimization:
+  caching:
+    enabled: true
+    cache_duration: "5_minutes"
+    cache_size: "100_entries"
+    
+  batch_validation:
+    enabled: true
+    max_concurrent_checks: 10
+    timeout_per_validation: "5_seconds"
+    
+  precomputed_suggestions:
+    enabled: true
+    suggestion_generation: "capability_based"
+    popularity_weighting: true

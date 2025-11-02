@@ -17,6 +17,8 @@ imports: [
   "config/dynamic/domain_system.yaml",
   "config/dynamic/time_estimation.yaml",
   "config/dynamic/agent_types.yaml",
+  "config/dynamic/dynamic_agent_discovery.yaml",
+  "config/dynamic/performance_tracking.yaml",
   "config/dynamic/integrated_environment_config.yaml",
   "config/dynamic/unified_metrics.yaml"
 ]
@@ -49,18 +51,28 @@ I am your intelligent coordinator for task orchestration, agent selection, and i
 
 ### Phase 1: Dynamic System Initialization
 - Load dynamic configurations from config/dynamic/*.yaml
+- **ERROR HANDLING**: Try-catch wrapper for configuration loading
+- **FALLBACK**: Use safe defaults if configuration loading fails
 - Detect runtime environment and adapt parameters
 - Initialize MCP registry and domain systems
 - **CRITICAL: Validate agent naming conventions and availability**
-- **Validate agent names use category:agent-name format from agent registry**
-- **Fallback mechanisms for unavailable agents**
+- **RECOVERY**: Graceful degradation if some components fail to load
 
-### Phase 1.5: Agent Name Resolution
-- **Query agent registry for available agents using config/dynamic/agent_types.yaml**
-- **Validate agent name format: category:agent-name (e.g., master:master, frontend-architect)**
-- **Auto-discover agents from agents/ directory structure**
+### Phase 1.5: Dynamic Agent Discovery
+- **Query filesystem for available agents using config/dynamic/dynamic_agent_discovery.yaml**
+- **ERROR RECOVERY**: Continue even if agent discovery fails
+- **Dynamically discover agents from filesystem and built-in defaults**
+- **Validate agent name format: simple-name (from YAML frontmatter)**
 - **Provide fallback suggestions for invalid agent names**
-- **Handle ambiguous agent names with interactive clarification**
+- **FALLBACK AGENT**: Always have master agent available as last resort**
+
+**Dynamic Agent Loading:**
+- **Filesystem Scan**: Discover agent files from `agents/` directory
+- **ERROR HANDLING**: Continue with available agents if some fail to load
+- **Real-time Validation**: Validate agent availability and capabilities
+- **Caching System**: Cache discovered agents for session performance
+- **Auto-registration**: Automatically register discovered agents
+- **FALLBACK**: Use hardcoded master agent if no agents discovered
 
 ### Phase 2: Task Analysis and Classification  
 - Analyze task complexity using config/knowledge-base/task-analysis.yaml
@@ -72,7 +84,7 @@ I am your intelligent coordinator for task orchestration, agent selection, and i
 - **CRITICAL: Validate agent availability before selection**
 - Query MCP registry for available tools using config/dynamic/mcp_registry.yaml
 - **Verify agent names in agent registry before delegation**
-- Select optimal agents using config/knowledge-base/agent-selection.yaml
+- Select optimal agents using config/knowledge-base/unified_agent_selection.yaml
 - Calculate time estimates using config/dynamic/time_estimation.yaml
 - Match agent types using config/dynamic/agent_types.yaml
 - **Apply agent name resolution and validation logic**
@@ -103,7 +115,7 @@ subagent-master/
 │   └── master.md                    # High-level orchestration logic
 ├── config/
 │   ├── knowledge-base/              # Algorithm definitions and analysis
-│   │   ├── agent-selection.yaml    # Agent selection and scoring algorithms
+│   │   ├── unified_agent_selection.yaml    # Unified agent selection system
 │   │   ├── tfidf-system.yaml        # TF-IDF implementation and fallback system
 │   │   ├── task-analysis.yaml       # Task complexity and domain analysis
 │   │   ├── categorization-engine.yaml # ML categorization and semantic analysis
@@ -136,8 +148,9 @@ subagent-master/
 input: "Fix CSS styling issue"
 complexity: 1
 routing: direct_agent_delegation
-selected_agent: "frontend-architect"  # Must match registry name exactly
+selected_agent: "discovered_from_registry"  # Dynamically discovered agent
 validation_required: true
+discovery_method: "dynamic_agent_discovery"
 expected_time: "15-30 minutes"
 ```
 
@@ -146,8 +159,9 @@ expected_time: "15-30 minutes"
 input: "Implement authentication system"
 complexity: 4
 routing: multi_agent_coordination
-selected_agents: ["security-engineer", "backend-architect", "frontend-architect"]  # All names validated
-agent_validation: "registry_lookup"
+selected_agents: ["dynamically_discovered_agents"]  # All agents discovered and validated
+agent_validation: "dynamic_registry_lookup"
+discovery_source: "config/dynamic/dynamic_agent_discovery.yaml"
 coordination: parallel_execution
 expected_time: "4-8 hours"
 ```

@@ -1,0 +1,248 @@
+# Dynamic Agent Discovery System
+# Real-time agent detection and initialization
+
+metadata:
+  name: "dynamic-agent-discovery"
+  version: "1.0.0"
+  description: "Dynamic agent discovery and real-time initialization system"
+  author: "Master Agent System v3.6.0"
+
+# Core Discovery Algorithm
+discovery_algorithm:
+  name: "Dynamic Agent Loader"
+  version: "1.0.0"
+
+  # Discovery Process
+  process:
+    step_1_filesystem_scan:
+      description: "Scan filesystem for agent files"
+      scan_paths: [
+        "agents/",              # Project agents
+        "subagents/",           # Project subagents
+        ".claude/agents/",      # User system agents (if exists)
+        "~/.claude/agents/"     # Global system agents (if exists)
+      ]
+      file_patterns: ["*.md"]
+      extraction_method: "yaml_frontmatter"
+      fallback_on_empty: true    # Continue even if no agents found
+
+    step_2_validation:
+      description: "Validate discovered agents"
+      format_validation: "simple-name"  # Accept simple names from YAML frontmatter
+      capability_check: true
+      availability_check: true
+      strict_validation: false         # More flexible validation
+
+    step_3_caching:
+      description: "Cache discovered agents"
+      cache_duration: "session_lifetime"
+      update_trigger: "registry_change"
+
+# Agent Detection Function
+agent_detection_function: |
+  # Dynamic Agent Discovery Function
+  def discover_agents():
+      """
+      Dynamically discovers and validates available agents in the system
+      Returns list of valid agent objects with metadata
+      """
+
+      discovered_agents = []
+
+      # 1. Registry-based discovery (project agents)
+      registry_agents = load_agent_registry()
+
+      # 2. Filesystem-based discovery (project + system agents)
+      filesystem_agents = scan_agent_files([
+          "agents/",              # Project-specific agents
+          "subagents/",           # Project subagents
+          ".claude/agents/",      # User system agents
+          "~/.claude/agents/"     # Global system agents
+      ])
+
+      # 3. Merge and deduplicate
+      all_agents = merge_agent_sources(registry_agents, filesystem_agents)
+
+      # 4. Validation for different agent types
+      valid_agents = validate_agent_list(all_agents)
+
+      # 5. Cache for performance
+      cache_agent_list(valid_agents)
+
+      return valid_agents
+
+  def validate_agent_list(agents):
+      """
+      Validates both registry agents and system agents
+      """
+      valid_agents = []
+
+      for agent in agents:
+          if is_registry_agent(agent):
+              # Registry agent validation (category:agent-name format)
+              if validate_registry_agent(agent):
+                  valid_agents.append(agent)
+          elif is_system_agent(agent):
+              # System agent validation (name format from YAML frontmatter)
+              if validate_system_agent(agent):
+                  valid_agents.append(agent)
+
+      return valid_agents
+
+  def get_available_agents():
+      """
+      Returns list of currently available agents
+      """
+      return get_cached_agents() or discover_agents()
+
+  def validate_agent_name(agent_name):
+      """
+      Validates agent name against discovered agents
+      """
+      available_agents = get_available_agents()
+      return find_agent_by_name(agent_name, available_agents)
+
+# Filesystem-based Discovery Integration
+discovery_integration:
+  primary_source:
+    method: "filesystem_scan"
+    directories: ["agents/", "subagents/"]
+    file_pattern: "*.md"
+    extraction: "yaml_frontmatter_parsing"
+
+  additional_sources:
+    - directory: ".claude/agents/"
+      file_pattern: "*.md"
+      extraction: "frontmatter_parsing"
+      required: false
+    - directory: "~/.claude/agents/"
+      file_pattern: "*.md"
+      extraction: "frontmatter_parsing"
+      required: false
+
+# Validation Rules
+validation_rules:
+  # Filesystem-based Agents (from YAML frontmatter)
+  filesystem_agents:
+    name_format:
+      pattern: "simple-name"  # Name from YAML frontmatter
+      required_separator: "none"
+      source: "yaml_frontmatter"
+
+    required_fields: ["name", "description", "version"]
+    optional_fields: ["triggers", "tools", "capabilities", "category"]
+
+    category_validation:
+      allowed_categories: ["engineering", "analysis", "management", "quality", "architecture", "research", "development", "infrastructure", "orchestration"]
+
+    format_validation:
+      yaml_frontmatter_required: true
+      markdown_content_required: true
+
+  # Fallback validation for missing information
+  fallback_validation:
+    auto_generate_missing: true
+    default_values:
+      version: "1.0.0"
+      category: "general"
+      capabilities: ["basic_functionality"]
+      availability: "available"
+
+# Caching System
+caching_system:
+  cache_type: "memory"
+  cache_duration: "session_lifetime"
+  invalidation_triggers:
+    - "registry_file_change"
+    - "filesystem_change"
+    - "agent_availability_change"
+
+  cache_structure:
+    agent_list: "list_of_agent_objects"
+    last_updated: "timestamp"
+    source_hash: "file_integrity_hash"
+
+# Error Handling
+error_handling:
+  invalid_agent_name:
+    action: "suggest_alternatives"
+    source: "available_agents_cache"
+    message_template: "Agent '{name}' not found. Available: {alternatives}"
+
+  no_agents_found:
+    action: "create_fallback_agent"
+    fallback_agent:
+      name: "master"
+      description: "Master orchestration agent"
+      category: "orchestration"
+      capabilities: ["task-orchestration", "agent-selection"]
+
+  filesystem_scan_failure:
+    action: "use_hardcoded_agents"
+    hardcoded_agents:
+      - name: "master"
+        type: "orchestration"
+        capabilities: ["task-orchestration", "coordination"]
+
+  validation_failure:
+    action: "skip_invalid_agent"
+    log_level: "warning"
+    continue_processing: true
+
+# Performance Optimization
+performance_optimization:
+  parallel_scanning:
+    enabled: true
+    max_concurrent_scans: 5
+
+  incremental_updates:
+    enabled: true
+    track_file_changes: true
+
+  precomputed_indices:
+    enabled: true
+    index_types: ["name", "category", "capabilities"]
+
+# Integration Points
+integration_points:
+  master_agent:
+    call_point: "agent_selection_phase"
+    method: "get_available_agents()"
+    refresh_interval: "on_demand"
+
+  task_delegation:
+    call_point: "before_task_routing"
+    validation_required: true
+    fallback_behavior: "suggest_alternatives"
+
+  parallel_execution:
+    call_point: "agent_coordination"
+    validation_scope: "all_selected_agents"
+    error_handling: "fail_fast_on_invalid"
+
+# Monitoring and Metrics
+monitoring:
+  discovery_metrics:
+    - "discovery_time_ms"
+    - "agents_discovered_count"
+    - "validation_success_rate"
+    - "cache_hit_rate"
+
+  performance_metrics:
+    - "agent_loading_time"
+    - "validation_processing_time"
+    - "cache_efficiency"
+    - "error_recovery_time"
+
+# Configuration Updates
+configuration_updates:
+  auto_reload:
+    enabled: true
+    trigger: "file_system_change"
+
+  manual_reload:
+    command: "reload_agent_discovery"
+    effect: "clear_cache_and_rediscover"
+
+  cache_invalidation:
+    triggers: ["agent_status_change", "filesystem_modification", "configuration_change"]

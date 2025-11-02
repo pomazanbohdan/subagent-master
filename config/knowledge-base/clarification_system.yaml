@@ -324,7 +324,7 @@ integration:
     - "config/knowledge-base/task-analysis.yaml" - for ambiguity detection
     - "config/dynamic/domain_system.yaml" - for domain-specific questions
     - "config/dynamic/runtime_environment.yaml" - for technical context
-    - "config/knowledge-base/agent-selection.yaml" - for workflow selection
+    - "config/knowledge-base/unified_agent_selection.yaml" - for workflow selection
     
   outputs:
     - "refined_task_context" - to task analysis and agent selection
