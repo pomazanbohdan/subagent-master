@@ -1,0 +1,111 @@
+# Agent Name Resolution System
+# Prevents agent initialization errors through validation and correction
+
+metadata:
+  name: "agent-name-resolution"
+  version: "1.0.0"
+  description: "Agent name validation and resolution system"
+  author: "Master Agent System v3.6.0"
+
+# Agent Name Validation Rules
+name_validation:
+  required_format: "category:agent-name"
+  examples:
+    valid: ["master:master", "frontend-architect", "security-engineer"]
+    invalid: ["master", "agent", "undefined"]
+
+  validation_steps:
+    step_1: "Check if name exists in agent registry"
+    step_2: "Validate format matches category:agent-name pattern"
+    step_3: "Verify agent availability and capabilities"
+    step_4: "Provide suggestions for invalid names"
+
+# Error Prevention Mechanisms
+error_prevention:
+  pre_validation:
+    enabled: true
+    check_points:
+      - "before_task_delegation"
+      - "during_agent_selection"
+      - "in_parallel_execution"
+
+  fallback_strategies:
+    auto_correction:
+      enabled: true
+      corrections:
+        "master": "master:master"
+        "frontend": "frontend-architect"
+        "backend": "backend-architect"
+        "security": "security-engineer"
+
+    suggestion_system:
+      enabled: true
+      message_template: "Agent '{requested_name}' not found. Did you mean: {suggestions}?"
+
+    interactive_clarification:
+      enabled: true
+      trigger: "ambiguous_or_invalid_name"
+      message: "Please specify the agent name from available options: {available_agents}"
+
+# Registry Integration
+registry_integration:
+  agent_registry_query:
+    endpoint: "config/dynamic/agent_types.yaml"
+    query_method: "registry_lookup"
+    validation_required: true
+
+  auto_discovery:
+    scan_paths: ["agents/", ".claude/agents/"]
+    file_patterns: ["*.md"]
+    name_extraction: "yaml_frontmatter_name_field"
+
+  availability_check:
+    check_method: "registry_validation"
+    fallback_method: "file_system_scan"
+    error_handling: "graceful_degradation"
+
+# Implementation Logic
+implementation:
+  name_resolution_algorithm: |
+    # Agent Name Resolution Algorithm
+    INPUT: requested_agent_name
+
+    ALGORITHM:
+    1. Registry Lookup:
+       - Search agent registry for exact match
+       - Check agent availability status
+       - Validate agent capabilities
+
+    2. Format Validation:
+       - Validate category:agent-name format
+       - Check for common naming errors
+       - Apply auto-correction rules
+
+    3. Fallback Resolution:
+       - Try fuzzy matching for similar names
+       - Suggest alternatives based on capabilities
+       - Provide interactive clarification if needed
+
+    4. Error Handling:
+       - Generate helpful error messages
+       - Provide suggestion lists
+       - Enable graceful fallback mechanisms
+
+    OUTPUT: validated_agent_name OR error_with_suggestions
+
+# Integration Points
+integration_points:
+  task_delegation:
+    integration_point: "before_Task_tool_calls"
+    validation_required: true
+    error_handling: "prevent_delegation_on_invalid_name"
+
+  agent_selection:
+    integration_point: "during_agent_matching"
+    validation_method: "registry_cross_check"
+    fallback_behavior: "suggest_alternatives"
+
+  parallel_execution:
+    integration_point: "before_multi_agent_coordination"
+    validation_scope: "all_selected_agents"
+    error_handling: "fail_fast_on_invalid_names"

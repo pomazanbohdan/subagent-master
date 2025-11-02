@@ -1,7 +1,7 @@
 {
   "name": "subagent-master",
-  "version": "3.6.0",
-  "description": "Dynamic orchestration system v3.6.0 - Runtime configuration loading, intelligent MCP integration, adaptive learning, and comprehensive environment adaptation",
+  "version": "3.6.1",
+  "description": "Dynamic orchestration system v3.6.1 - Enhanced agent name validation, error prevention, runtime configuration loading, intelligent MCP integration, adaptive learning, and comprehensive environment adaptation",
   "author": "Bohdan <pomazan.bohdan@gmail.com>",
   "license": "MIT",
   "keywords": [
@@ -95,7 +95,11 @@
     "configuration-hot-reload",
     "performance-optimization",
     "resource-awareness",
-    "adaptive-systems"
+    "adaptive-systems",
+    "agent-name-validation",
+    "error-prevention",
+    "name-resolution",
+    "registry-validation"
   ],
   "homepage": "https://github.com/pomazanbohdan/subagent-master",
   "repository": "https://github.com/pomazanbohdan/subagent-master.git",

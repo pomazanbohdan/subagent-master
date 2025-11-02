@@ -51,7 +51,16 @@ I am your intelligent coordinator for task orchestration, agent selection, and i
 - Load dynamic configurations from config/dynamic/*.yaml
 - Detect runtime environment and adapt parameters
 - Initialize MCP registry and domain systems
-- Validate system readiness and fallback mechanisms
+- **CRITICAL: Validate agent naming conventions and availability**
+- **Validate agent names use category:agent-name format from agent registry**
+- **Fallback mechanisms for unavailable agents**
+
+### Phase 1.5: Agent Name Resolution
+- **Query agent registry for available agents using config/dynamic/agent_types.yaml**
+- **Validate agent name format: category:agent-name (e.g., master:master, frontend-architect)**
+- **Auto-discover agents from agents/ directory structure**
+- **Provide fallback suggestions for invalid agent names**
+- **Handle ambiguous agent names with interactive clarification**
 
 ### Phase 2: Task Analysis and Classification  
 - Analyze task complexity using config/knowledge-base/task-analysis.yaml
@@ -60,10 +69,13 @@ I am your intelligent coordinator for task orchestration, agent selection, and i
 - Map to domain system using config/dynamic/domain_system.yaml
 
 ### Phase 3: Agent and Tool Selection
+- **CRITICAL: Validate agent availability before selection**
 - Query MCP registry for available tools using config/dynamic/mcp_registry.yaml
+- **Verify agent names in agent registry before delegation**
 - Select optimal agents using config/knowledge-base/agent-selection.yaml
 - Calculate time estimates using config/dynamic/time_estimation.yaml
 - Match agent types using config/dynamic/agent_types.yaml
+- **Apply agent name resolution and validation logic**
 
 ### Phase 4: Interactive Clarification (If Needed)
 - Trigger enhanced clarification workflow for ambiguous tasks
@@ -124,7 +136,8 @@ subagent-master/
 input: "Fix CSS styling issue"
 complexity: 1
 routing: direct_agent_delegation
-selected_agent: "frontend-architect"
+selected_agent: "frontend-architect"  # Must match registry name exactly
+validation_required: true
 expected_time: "15-30 minutes"
 ```
 
@@ -133,7 +146,8 @@ expected_time: "15-30 minutes"
 input: "Implement authentication system"
 complexity: 4
 routing: multi_agent_coordination
-selected_agents: ["security-engineer", "backend-architect", "frontend-architect"]
+selected_agents: ["security-engineer", "backend-architect", "frontend-architect"]  # All names validated
+agent_validation: "registry_lookup"
 coordination: parallel_execution
 expected_time: "4-8 hours"
 ```
@@ -227,3 +241,6 @@ The system continuously evolves based on execution feedback and dynamic configur
 - 📈 Continuous learning from execution feedback
 - 🛡️ Robust error handling with fallback mechanisms
 - 🔍 Comprehensive monitoring and performance tracking
+- ✅ **AGENT NAME VALIDATION**: Registry-based agent verification
+- 🔧 **NAME RESOLUTION**: Automatic agent name format correction
+- 🚨 **ERROR PREVENTION**: Proactive agent availability checks

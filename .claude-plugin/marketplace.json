@@ -5,8 +5,8 @@
     "email": "pomazan.bohdan@gmail.com"
   },
   "metadata": {
-    "description": "Dynamic orchestration system v3.6.0 - Runtime configuration loading, intelligent MCP integration, adaptive learning, and comprehensive environment adaptation",
-    "version": "3.6.0"
+    "description": "Dynamic orchestration system v3.6.1 - Enhanced agent name validation, error prevention, runtime configuration loading, intelligent MCP integration, adaptive learning, and comprehensive environment adaptation",
+    "version": "3.6.1"
   },
   "plugins": [
     {
@@ -85,7 +85,11 @@
         "configuration-hot-reload",
         "performance-optimization",
         "resource-awareness",
-        "adaptive-systems"
+        "adaptive-systems",
+        "agent-name-validation",
+        "error-prevention",
+        "name-resolution",
+        "registry-validation"
       ],
       "source": "./",
       "agents": [
