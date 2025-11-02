@@ -5,6 +5,13 @@ capabilities: ["task-orchestration", "automatic-delegation", "intelligent-mcp-us
 triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage", "parallel", "team", "multiple-agents", "clarify", "search", "research", "unclear", "help", "details", "requirements"]
 tools: ["sequential-thinking", "serena", "context7", "tavily", "magic", "playwright"]
 version: "3.5.0"
+imports: [
+  "config/knowledge-base/agent-selection.yaml",
+  "config/knowledge-base/tfidf-system.yaml",
+  "config/knowledge-base/task-analysis.yaml",
+  "config/knowledge-base/categorization-engine.yaml",
+  "config/knowledge-base/parallel_coordination.yaml"
+]
 ---
 
 # 🧠 Enhanced Intelligent Task Orchestrator
@@ -56,30 +63,43 @@ Choose this agent for coordinating complex tasks that require breaking down into
 subagent-master/
 ├── agents/
 │   └── master.md                    # Orchestration logic and delegation algorithms
-├── src/                            # Implementation modules
-│   ├── orchestration/             # Core orchestration algorithms
-│   ├── agent_matrix/              # Agent compatibility system
-│   ├── delegation/                # Task delegation system
-│   ├── interactive/                # Interactive clarification system
-│   ├── mcp/                       # MCP tools integration
-│   ├── testing/                   # Testing and validation framework
-│   ├── parallel/                  # Parallel execution system
-│   ├── error_handling/            # Error management
-│   └── configuration/             # Configuration management
-├── config/                        # Configuration files
-└── .claude-plugin/               # Plugin metadata
+├── config/
+│   └── knowledge-base/              # Consolidated algorithm definitions
+│       ├── agent-selection.yaml    # Agent selection and scoring algorithms
+│       ├── tfidf-system.yaml        # TF-IDF implementation and fallback system
+│       ├── task-analysis.yaml       # Task complexity and domain analysis
+│       ├── categorization-engine.yaml # ML categorization and semantic analysis
+│       └── parallel_coordination.yaml # Parallel execution coordination
+├── config/
+│   ├── dynamic/                     # Dynamic configuration files
+│   ├── rules/                       # Selection rules and thresholds
+│   └── core/                        # Core configuration management
+└── .claude-plugin/                  # Plugin metadata
 ```
 
-## 🔄 Core Processing Algorithms
+## 🔄 Core Processing Workflow
 
-### Algorithm 1: Task Complexity Analysis
-Located in: `src/orchestration/complexity.py`
+### Phase 1: Task Analysis and Classification
 
-**Process:**
-1. **analyze_task_complexity(task_description)** - Calculate complexity score (1-5 scale)
-2. **check_specialization_requirement(task_description, task_context)** - Determine specialization needs
-3. **analyze_task_context(task_description)** - Deep context analysis
-4. **Automatic execution trigger** - Execute automatically for complexity ≥ 2
+**Implementation:**
+```yaml
+task_analysis_workflow:
+  steps:
+    - analyze_task_complexity:
+        algorithm: "config/knowledge-base/task-analysis.yaml"
+        input: "task_description, task_context"
+        output: "complexity_score (1-5), domain_classification, priority_level"
+
+    - detect_ambiguity:
+        algorithm: "config/knowledge-base/task-analysis.yaml"
+        triggers: ["vague_requirements", "missing_context", "conflicting_goals"]
+        output: "ambiguity_score, clarification_needed"
+
+    - categorize_task:
+        algorithm: "config/knowledge-base/categorization-engine.yaml"
+        method: "hybrid_ml_tfidf"
+        output: "primary_category, secondary_categories, confidence_score"
+```
 
 **Complexity Evaluation Criteria (1-5 Scale):**
 
@@ -113,743 +133,218 @@ Located in: `src/orchestration/complexity.py`
 - Strategic planning required
 - >16 hours estimated completion time
 
-### Algorithm 2: Enhanced Agent Compatibility Matrix with TF-IDF
-Located in: `src/agent_matrix/enhanced_compatibility.py`
+### Phase 2: Intelligent Agent Selection
 
-**Core TF-IDF Implementation with Fallback System:**
+**Implementation:**
+```yaml
+agent_selection_workflow:
+  algorithm: "config/knowledge-base/agent-selection.yaml"
 
-```python
-# TF-IDF System with sklearn fallback for LLM agent environment
-try:
-    from sklearn.feature_extraction.text import TfidfVectorizer
-    from sklearn.metrics.pairwise import cosine_similarity
-    SKLEARN_AVAILABLE = True
-except ImportError:
-    SKLEARN_AVAILABLE = False
+  hybrid_scoring:
+    formula: |
+      Total Score = (ML_Score × 0.40) +
+                   (TF-IDF_Score × 0.30) +
+                   (Performance_Score × 0.20) +
+                   (Complexity_Score × 0.10)
 
-    # Lightweight TF-IDF implementation for LLM environments
-    def create_simple_tfidf_vectorizer(max_features=1000, stop_words='english', ngram_range=(1, 2)):
-        class SimpleTFIDFVectorizer:
-            def __init__(self, max_features=1000, stop_words='english', ngram_range=(1, 2)):
-                self.max_features = max_features
-                self.stop_words = stop_words
-                self.ngram_range = ngram_range
-                self.vocabulary = {}
-                self.idf_values = {}
+    components:
+      ml_score: "Machine learning compatibility analysis"
+      tfidf_score: "config/knowledge-base/tfidf-system.yaml"
+      performance_score: "Historical agent performance metrics"
+      complexity_score: "Agent capability vs task complexity matching"
 
-            def _extract_ngrams(self, text):
-                words = [w.lower() for w in text.split() if len(w) > 2]
-                ngrams = []
-                for n in range(self.ngram_range[0], self.ngram_range[1] + 1):
-                    for i in range(len(words) - n + 1):
-                        ngram = ' '.join(words[i:i+n])
-                        if ngram not in self.stop_words:
-                            ngrams.append(ngram)
-                return ngrams
+  selection_process:
+    - calculate_relevance_scores:
+        method: "tfidf_enhanced_analysis"
+        fallback: "keyword_matching"
 
-            def fit_transform(self, documents):
-                # Build vocabulary
-                all_ngrams = []
-                for doc in documents:
-                    all_ngrams.extend(self._extract_ngrams(doc))
+    - apply_hybrid_scoring:
+        weights: "adaptive_based_on_category_performance"
+        threshold: "minimum_relevance_0.3"
 
-                # Select top terms by frequency
-                from collections import Counter
-                term_freq = Counter(all_ngrams)
-                self.vocabulary = {term: i for i, (term, _) in enumerate(term_freq.most_common(self.max_features))}
-
-                # Calculate IDF values
-                import math
-                for term in self.vocabulary:
-                    doc_freq = sum(1 for doc in documents if term in doc.lower())
-                    self.idf_values[term] = math.log(len(documents) / doc_freq) if doc_freq > 0 else 0
-
-                # Create TF-IDF matrix
-                tfidf_matrix = []
-                for doc in documents:
-                    vector = [0.0] * len(self.vocabulary)
-                    doc_ngrams = self._extract_ngrams(doc)
-
-                    # Calculate TF
-                    from collections import Counter
-                    tf_counter = Counter(doc_ngrams)
-                    doc_length = len(doc_ngrams)
-
-                    for term, idx in self.vocabulary.items():
-                        tf = tf_counter.get(term, 0) / doc_length if doc_length > 0 else 0
-                        idf = self.idf_values.get(term, 0)
-                        vector[idx] = tf * idf
-
-                    tfidf_matrix.append(vector)
-
-                return tfidf_matrix
-
-            def get_feature_names_out(self):
-                return list(self.vocabulary.keys())
-
-        return SimpleTFIDFVectorizer()
-
-    def create_simple_cosine_similarity():
-        def cosine_similarity_matrix(X, Y=None):
-            if Y is None:
-                Y = X
-            import math
-
-            result = []
-            for i in range(len(X)):
-                row = []
-                for j in range(len(Y)):
-                    dot_product = sum(a * b for a, b in zip(X[i], Y[j]))
-                    norm_x = math.sqrt(sum(a * a for a in X[i]))
-                    norm_y = math.sqrt(sum(b * b for b in Y[j]))
-
-                    if norm_x == 0 or norm_y == 0:
-                        similarity = 0.0
-                    else:
-                        similarity = dot_product / (norm_x * norm_y)
-                    row.append(similarity)
-                result.append(row)
-            return result
-        return cosine_similarity_matrix
+    - select_top_candidates:
+        count: 3
+        validation: "compatibility_matrix_check"
 ```
 
-**Process:**
-1. **initialize_task_matrix_system(categories_data)** - Build compatibility matrix with TF-IDF enhancement
-2. **calculate_tfidf_relevance_enhanced(task_context, available_agents)** - Core TF-IDF analysis:
-   ```python
-   def calculate_tfidf_relevance_enhanced(task_context, available_agents):
-       """Enhanced TF-IDF analysis with task-agent relevance matching"""
-       try:
-           # Extract keywords from task and agent capabilities
-           task_keywords = extract_task_keywords(task_context['description'])
-           agent_descriptions = [
-               f"{agent['capabilities']} {agent['expertise']} {agent['specialization']}"
-               for agent in available_agents
-           ]
+### Phase 3: Interactive Clarification (If Needed)
 
-           # Create TF-IDF vectors
-           if SKLEARN_AVAILABLE:
-               vectorizer = TfidfVectorizer(max_features=1000, stop_words='english', ngram_range=(1, 2))
-           else:
-               vectorizer = create_simple_tfidf_vectorizer(max_features=1000, ngram_range=(1, 2))
+**Implementation:**
+```yaml
+clarification_workflow:
+  triggers:
+    - complexity_score: ">= 3"
+    - ambiguity_score: "> 0.6"
+    - missing_requirements: "> 0.8"
 
-           # Fit and transform
-           all_texts = [task_keywords] + agent_descriptions
-           tfidf_matrix = vectorizer.fit_transform(all_texts)
+  process:
+    - generate_contextual_questions:
+        template_type: "adaptive_based_on_task_domain"
+        question_types: ["requirements", "constraints", "preferences", "scope"]
 
-           # Calculate similarity scores
-           task_vector = tfidf_matrix[0] if hasattr(tfidf_matrix[0], 'toarray') else [tfidf_matrix[0]]
-           agent_vectors = tfidf_matrix[1:] if hasattr(tfidf_matrix[1:], '__iter__') else tfidf_matrix[1:]
+    - process_user_responses:
+        method: "feedback_integration"
+        update: "task_context_refinement"
 
-           if SKLEARN_AVAILABLE:
-               similarity_scores = cosine_similarity(task_vector, agent_vectors).flatten()
-           else:
-               cosine_func = create_simple_cosine_similarity()
-               similarity_scores = cosine_func([task_vector], agent_vectors)[0]
-
-           # Return relevance scores
-           return {
-               agent['name']: float(similarity_scores[i])
-               for i, agent in enumerate(available_agents)
-           }
-
-       except Exception as e:
-           # Fallback to keyword matching
-           return fallback_keyword_matching(task_context, available_agents)
-   ```
-3. **calculate_agent_score_enhanced(agent, task_context)** - Enhanced weighted scoring formula:
-   ```
-   Total Score = (ML_Score × 0.40) + (TF-IDF_Score × 0.30) + (Performance_Score × 0.20) + (Complexity_Score × 0.10)
-   ```
-4. **select_top_candidates_enhanced(matrix, filters)** - Choose top 3 agents with TF-IDF ranking
-5. **validate_agent_selection_enhanced(agents, task)** - Enhanced validation with relevance scoring
-
-**Fallback Keyword Matching System:**
-```python
-def fallback_keyword_matching(task_context, available_agents):
-    """Simple keyword matching when TF-IDF fails"""
-    task_keywords = set(extract_task_keywords(task_context['description']).split())
-
-    results = {}
-    for agent in available_agents:
-        agent_text = f"{agent['capabilities']} {agent['expertise']}".lower()
-        agent_keywords = set(agent_text.split())
-
-        # Calculate Jaccard similarity
-        intersection = task_keywords & agent_keywords
-        union = task_keywords | agent_keywords
-
-        if union:
-            match_score = len(intersection) / len(union)
-        else:
-            match_score = 0.0
-
-        results[agent['name']] = match_score
-
-    return results
-
-def extract_task_keywords(description):
-    """Extract relevant keywords from task description"""
-    # Remove stop words and normalize
-    stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by'}
-    words = [w.lower() for w in description.split() if w.lower() not in stop_words and len(w) > 2]
-    return ' '.join(words)
+    - validate_clarification_success:
+        threshold: "ambiguity_reduction_>50%"
+        fallback: "escalate_to_expert_agent"
 ```
 
-**Adaptive Learning System with TF-IDF Feedback:**
-```python
-class AdaptiveLearningSystem:
-    """Learning system that evolves based on task execution feedback and TF-IDF analysis"""
+### Phase 4: Task Distribution and Execution
 
-    def __init__(self):
-        self.execution_history = []
-        self.category_performance = {}
-        self.tfidf_feedback_weights = {}
-        self.learning_rate = 0.1
+**Implementation:**
+```yaml
+task_distribution_workflow:
+  algorithm: "config/knowledge-base/parallel_coordination.yaml"
 
-    def evolve_categories_with_execution_feedback(self):
-        """Improve categories based on task execution results and TF-IDF analysis"""
-        recent_history = self.get_recent_execution_history(limit=50)
+  routing_logic:
+    - complexity_1_mcp_task:
+        action: "direct_mcp_tool_execution"
+        tools: ["tavily", "context7", "sequential-thinking", "magic", "playwright"]
 
-        for task_result in recent_history:
-            task_category = task_result.get('assigned_category')
-            success_rate = task_result.get('success_rate', 0.5)
-            tfidf_relevance = task_result.get('tfidf_score', 0.5)
-            user_satisfaction = task_result.get('user_feedback', 0.5)
+    - complexity_1_simple:
+        action: "single_optimal_agent_delegation"
+        selection: "highest_scoring_agent"
 
-            # Multi-factor performance calculation
-            performance_factor = (success_rate + user_satisfaction) / 2
-            relevance_factor = tfidf_relevance
+    - complexity_2_plus:
+        action: "multi_agent_coordination"
+        coordination: "parallel_execution_with_synthesis"
 
-            # Category weight adjustment based on performance
-            if performance_factor < 0.7 or relevance_factor < 0.5:
-                self.adjust_category_weights(task_category, -self.learning_rate)
-                self.log_category_misalignment(task_category, performance_factor, relevance_factor)
-            elif performance_factor > 0.9 and relevance_factor > 0.8:
-                self.adjust_category_weights(task_category, self.learning_rate / 2)
-                self.log_category_success(task_category, performance_factor, relevance_factor)
+  execution_patterns:
+    mcp_tools:
+      search_research: "tavily web search and current information"
+      documentation: "context7 API references and framework guides"
+      analysis: "sequential-thinking complex reasoning"
+      file_operations: "serena project navigation and code understanding"
+      ui_components: "magic design patterns and components"
+      web_automation: "playwright browser testing and automation"
 
-            # TF-IDF parameter tuning
-            self.tune_tfidf_parameters(task_result, performance_factor, relevance_factor)
-
-    def tune_tfidf_parameters(self, task_result, performance_factor, relevance_factor):
-        """Adaptively tune TF-IDF parameters based on feedback"""
-        task_category = task_result.get('assigned_category')
-
-        # Adjust n-gram range based on performance
-        if performance_factor < 0.6:
-            # Increase n-gram range for better context
-            self.adjust_ngram_range(task_category, increase=True)
-        elif performance_factor > 0.9:
-            # Optimize n-gram range for efficiency
-            self.adjust_ngram_range(task_category, increase=False)
-
-        # Adjust max_features based on relevance
-        if relevance_factor < 0.5:
-            # Increase features for better coverage
-            self.adjust_max_features(task_category, increase=True)
-        elif relevance_factor > 0.8:
-            # Optimize features for efficiency
-            self.adjust_max_features(task_category, increase=False)
-
-    def adjust_category_weights(self, category, adjustment):
-        """Adjust category weights based on performance feedback"""
-        if category not in self.category_performance:
-            self.category_performance[category] = {
-                'weight': 1.0,
-                'success_count': 0,
-                'total_count': 0,
-                'avg_tfidf_score': 0.5
-            }
-
-        self.category_performance[category]['weight'] += adjustment
-        self.category_performance[category]['weight'] = max(0.1, min(2.0, self.category_performance[category]['weight']))
-
-    def adjust_ngram_range(self, category, increase=True):
-        """Adjust n-gram range for TF-IDF based on category performance"""
-        if category not in self.tfidf_feedback_weights:
-            self.tfidf_feedback_weights[category] = {'ngram_range': (1, 2), 'max_features': 1000}
-
-        current_range = self.tfidf_feedback_weights[category]['ngram_range']
-        if increase and current_range[1] < 3:
-            self.tfidf_feedback_weights[category]['ngram_range'] = (current_range[0], current_range[1] + 1)
-        elif not increase and current_range[1] > 2:
-            self.tfidf_feedback_weights[category]['ngram_range'] = (current_range[0], current_range[1] - 1)
-
-    def adjust_max_features(self, category, increase=True):
-        """Adjust max_features for TF-IDF based on category performance"""
-        if category not in self.tfidf_feedback_weights:
-            self.tfidf_feedback_weights[category] = {'ngram_range': (1, 2), 'max_features': 1000}
-
-        current_max = self.tfidf_feedback_weights[category]['max_features']
-        if increase:
-            self.tfidf_feedback_weights[category]['max_features'] = min(5000, current_max + 500)
-        else:
-            self.tfidf_feedback_weights[category]['max_features'] = max(500, current_max - 500)
-
-    def get_adaptive_tfidf_params(self, task_category):
-        """Get adaptively tuned TF-IDF parameters for a category"""
-        if task_category in self.tfidf_feedback_weights:
-            return self.tfidf_feedback_weights[task_category]
-        return {'ngram_range': (1, 2), 'max_features': 1000}
-
-    def record_task_execution(self, task_result):
-        """Record task execution result for learning"""
-        self.execution_history.append(task_result)
-
-        # Update category performance metrics
-        category = task_result.get('assigned_category')
-        if category:
-            if category not in self.category_performance:
-                self.category_performance[category] = {
-                    'weight': 1.0,
-                    'success_count': 0,
-                    'total_count': 0,
-                    'avg_tfidf_score': 0.5
-                }
-
-            self.category_performance[category]['total_count'] += 1
-            if task_result.get('success_rate', 0) > 0.7:
-                self.category_performance[category]['success_count'] += 1
-
-            # Update average TF-IDF score
-            current_avg = self.category_performance[category]['avg_tfidf_score']
-            tfidf_score = task_result.get('tfidf_score', 0.5)
-            total = self.category_performance[category]['total_count']
-            self.category_performance[category]['avg_tfidf_score'] = (
-                (current_avg * (total - 1) + tfidf_score) / total
-            )
-
-    def get_recent_execution_history(self, limit=50):
-        """Get recent task execution history for learning"""
-        return self.execution_history[-limit:] if self.execution_history else []
-
-    def log_category_misalignment(self, category, performance, relevance):
-        """Log category misalignment for analysis"""
-        log_entry = {
-            'timestamp': self._get_timestamp(),
-            'category': category,
-            'performance_score': performance,
-            'relevance_score': relevance,
-            'action': 'weight_decrease',
-            'reason': 'low_performance_or_relevance'
-        }
-        self._write_to_log(log_entry)
-
-    def log_category_success(self, category, performance, relevance):
-        """Log successful category matches"""
-        log_entry = {
-            'timestamp': self._get_timestamp(),
-            'category': category,
-            'performance_score': performance,
-            'relevance_score': relevance,
-            'action': 'weight_increase',
-            'reason': 'high_performance_and_relevance'
-        }
-        self._write_to_log(log_entry)
-
-    def _get_timestamp(self):
-        """Get current timestamp"""
-        import datetime
-        return datetime.datetime.now().isoformat()
-
-    def _write_to_log(self, log_entry):
-        """Write log entry to learning log"""
-        # In a real implementation, this would write to a file or database
-        print(f"📊 Learning Log: {log_entry}")
-
-    def get_category_insights(self):
-        """Get insights about category performance"""
-        insights = {}
-        for category, metrics in self.category_performance.items():
-            success_rate = (
-                metrics['success_count'] / metrics['total_count']
-                if metrics['total_count'] > 0 else 0
-            )
-            insights[category] = {
-                'success_rate': success_rate,
-                'weight': metrics['weight'],
-                'avg_tfidf_score': metrics['avg_tfidf_score'],
-                'total_tasks': metrics['total_count']
-            }
-        return insights
-
-# Global learning system instance
-learning_system = AdaptiveLearningSystem()
+    agent_coordination:
+      parallel_execution: "simultaneous agent processing"
+      result_synthesis: "intelligent result combination"
+      conflict_resolution: "cross-agent disagreement handling"
+      progress_monitoring: "real-time execution tracking"
 ```
 
-**Hybrid Scoring System Integration:**
-```python
-def hybrid_scoring_system(agent, task_context, available_agents):
-    """Enhanced hybrid scoring combining ML, TF-IDF, performance, and complexity"""
+## 📊 System Performance Metrics
 
-    # Get individual scores
-    ml_score = get_ml_compatibility_score(agent, task_context)
-    tfidf_scores = calculate_tfidf_relevance_enhanced(task_context, available_agents)
-    tfidf_score = tfidf_scores.get(agent['name'], 0.0)
-    performance_score = get_historical_performance_score(agent, task_context['category'])
-    complexity_score = calculate_complexity_compatibility(agent, task_context['complexity'])
-
-    # Get adaptive weights from learning system
-    category_weights = learning_system.category_performance.get(task_context['category'], {})
-    adaptive_weight = category_weights.get('weight', 1.0)
-
-    # Apply hybrid scoring formula with adaptive weighting
-    total_score = (
-        (ml_score * 0.40) +
-        (tfidf_score * 0.30) +
-        (performance_score * 0.20) +
-        (complexity_score * 0.10)
-    ) * adaptive_weight
-
-    return {
-        'agent_name': agent['name'],
-        'total_score': total_score,
-        'breakdown': {
-            'ml_score': ml_score,
-            'tfidf_score': tfidf_score,
-            'performance_score': performance_score,
-            'complexity_score': complexity_score,
-            'adaptive_weight': adaptive_weight
-        }
-    }
-
-def enhanced_agent_selection(task_context, available_agents):
-    """Enhanced agent selection using TF-IDF and adaptive learning"""
-
-    # Get adaptive TF-IDF parameters for the task category
-    task_category = task_context.get('category', 'general')
-    adaptive_params = learning_system.get_adaptive_tfidf_params(task_category)
-
-    # Calculate TF-IDF relevance with adaptive parameters
-    tfidf_scores = calculate_tfidf_relevance_enhanced(task_context, available_agents)
-
-    # Apply hybrid scoring to all agents
-    scored_agents = []
-    for agent in available_agents:
-        score_result = hybrid_scoring_system(agent, task_context, available_agents)
-        scored_agents.append(score_result)
-
-    # Sort by total score (descending)
-    scored_agents.sort(key=lambda x: x['total_score'], reverse=True)
-
-    # Select top candidates with minimum relevance threshold
-    min_relevance_threshold = 0.3
-    top_candidates = [
-        agent for agent in scored_agents
-        if agent['breakdown']['tfidf_score'] >= min_relevance_threshold
-    ][:3]  # Top 3 candidates
-
-    # If no candidates meet threshold, take top 2 regardless of threshold
-    if not top_candidates:
-        top_candidates = scored_agents[:2]
-
-    return {
-        'selected_agents': top_candidates,
-        'tfidf_analysis': {
-            'scores': tfidf_scores,
-            'parameters_used': adaptive_params,
-            'category': task_category
-        },
-        'selection_confidence': calculate_selection_confidence(top_candidates)
-    }
-
-def calculate_selection_confidence(selected_agents):
-    """Calculate confidence level in agent selection"""
-    if not selected_agents:
-        return 0.0
-
-    top_score = selected_agents[0]['total_score']
-    avg_tfidf = sum(agent['breakdown']['tfidf_score'] for agent in selected_agents) / len(selected_agents)
-
-    # Confidence based on top score and TF-IDF relevance
-    confidence = (top_score * 0.6) + (avg_tfidf * 0.4)
-    return min(1.0, confidence)
-
-def record_execution_result(task_context, selected_agent, execution_result):
-    """Record execution result for adaptive learning"""
-
-    # Calculate TF-IDF score for this execution
-    tfidf_scores = calculate_tfidf_relevance_enhanced(
-        task_context,
-        [selected_agent]
-    )
-    tfidf_score = tfidf_scores.get(selected_agent['name'], 0.5)
-
-    # Create execution record
-    execution_record = {
-        'timestamp': learning_system._get_timestamp(),
-        'task_context': task_context,
-        'assigned_agent': selected_agent['name'],
-        'assigned_category': task_context.get('category'),
-        'success_rate': execution_result.get('success_rate', 0.5),
-        'tfidf_score': tfidf_score,
-        'user_feedback': execution_result.get('user_feedback', 0.5),
-        'execution_time': execution_result.get('execution_time', 0),
-        'error_occurred': execution_result.get('error_occurred', False)
-    }
-
-    # Record in learning system
-    learning_system.record_task_execution(execution_record)
-
-    # Trigger evolution if enough data accumulated
-    if len(learning_system.execution_history) % 10 == 0:
-        learning_system.evolve_categories_with_execution_feedback()
-
-def get_ml_compatibility_score(agent, task_context):
-    """Get ML-based compatibility score"""
-    # This would integrate with existing ML scoring system
-    # For now, return a reasonable default
-    return 0.7
-
-def get_historical_performance_score(agent, category):
-    """Get historical performance score for agent-category combination"""
-    # This would look up historical performance data
-    # For now, return a reasonable default
-    return 0.75
-
-def calculate_complexity_compatibility(agent, task_complexity):
-    """Calculate how well agent handles task complexity"""
-    # This would match agent capabilities to task complexity
-    # For now, return a reasonable default
-    return 0.8
-```
-
-### Algorithm 3: Enhanced Task Distribution System
-Located in: `src/delegation/enhanced_distribution.py`
-
-**Process:**
-1. **enhanced_task_distribution(task_description, task_context)** - Intelligent distribution between agents and MCP tools
-2. **execute_with_mcp_tools(task_description, task_context)** - Direct MCP tool execution for small tasks
-3. **execute_task_with_best_agent()** - Single agent delegation for simple tasks
-4. **execute_with_task_delegation(task_description, task_context, top_candidates)** - Multi-agent coordination
-5. **Task() mechanism integration** - Direct Task() calls with timeout handling
-
-**Enhanced Distribution Logic:**
-```python
-def enhanced_task_distribution(task_description, task_context):
-    complexity_score = analyze_task_complexity(task_description)
-
-    if complexity_score == 1 and is_mcp_task(task_description):
-        # Very simple tasks → Master's MCP tools
-        return execute_with_mcp_tools(task_description, task_context)
-    elif complexity_score == 1:
-        # Simple tasks → Single optimal agent
-        return execute_task_with_best_agent(task_description, task_context)
-    else:
-        # Complex tasks → Agent delegation
-        return execute_with_task_delegation(task_description, task_context)
-```
-
-## 🔧 Interactive Clarification System
-
-Located in: `src/interactive/clarification.py`
-
-**Process:**
-1. **determine_need_for_clarification(task_description, task_context, complexity_score)** - Assess if clarification needed
-2. **analyze_task_ambiguity(task_description, task_context)** - Identify ambiguity indicators
-3. **generate_contextual_questions(task_description, task_context, complexity_score)** - Create relevant questions
-4. **process_user_responses(responses, task_context)** - Incorporate user feedback
-5. **refine_task_understanding(task_context, user_responses)** - Update task understanding
-
-**Clarification Triggers:**
-- Complex tasks (complexity ≥ 3) with high ambiguity (>0.6)
-- Any tasks with critical missing requirements (>0.8)
-
-## 🔧 MCP Tools Integration for Small Tasks
-
-Located in: `src/mcp/intelligent_tools.py`
-
-**Process:**
-1. **is_mcp_task(task_description)** - Determine if task should use MCP tools
-2. **intelligent_mcp_tool_selection(task_description, task_context)** - Select optimal MCP tool
-3. **execute_mcp_tool_chain(task_description, execution_plan)** - Execute tool sequences
-4. **synthesize_mcp_results(results)** - Combine results from multiple MCP tools
-
-**MCP Task Patterns:**
-- **Search & Research**: Tavily for web search and current information
-- **Documentation**: Context7 for API references and framework guides
-- **Analysis**: Sequential Thinking for complex reasoning
-- **File Operations**: Serena for project navigation and code understanding
-- **UI Components**: Magic for design patterns and components
-- **Web Automation**: Playwright for browser testing and automation
-
-## 🎯 Enhanced Delegation Conditions
-
-### Automatic Delegation Triggers
-- **Complexity score ≥ 2**: Automatic delegation without user confirmation
-- **Specialized requirements detected**: Tasks requiring specific expertise
-- **Multi-agent coordination needed**: Tasks requiring multiple specializations
-- **Parallel execution opportunities**: Tasks with parallelizable components
-
-### Context-Aware Delegation
-- **Multi-step tasks (>3 steps)**: Create TodoWrite structure for tracking
-- **Cross-domain requirements**: Select agents with complementary expertise
-- **High complexity (≥4)**: Multi-agent coordination with parallel execution
-- **Time-sensitive tasks**: Prioritize agents with best performance metrics
-
-## 📋 System Implementation
-
-# Core orchestration modules
-from src.orchration import (
-    analyze_task_complexity,
-    check_specialization_requirement,
-    analyze_task_context
-)
-
-# Enhanced agent selection with TF-IDF
-from src.agent_matrix import (
-    calculate_tfidf_relevance_enhanced,
-    enhanced_agent_selection,
-    hybrid_scoring_system,
-    learning_system,
-    fallback_keyword_matching,
-    extract_task_keywords,
-    AdaptiveLearningSystem
-)
-
-# Interactive clarification system
-from src.interactive import (
-    determine_need_for_clarification,
-    generate_contextual_questions,
-    process_user_responses
-)
-
-# Enhanced task distribution system
-from src.delegation import (
-    enhanced_task_distribution,
-    execute_with_mcp_tools,
-    execute_task_with_best_agent,
-    execute_with_task_delegation
-)
-
-# MCP tools integration
-from src.mcp import (
-    is_mcp_task,
-    intelligent_mcp_tool_selection,
-    execute_mcp_tool_chain
-)
-
-# Parallel execution and monitoring
-from src.parallel import (
-    track_progress,
-    wait_for_parallel_completion,
-    handle_partial_parallel_failure,
-    synchronize_parallel_results
-)
-
-# Error handling and recovery
-from src.error_handling import (
-    classify_error,
-    delegate_error_handling,
-    attempt_recovery,
-    retry_failed_task
-)
-
-# Testing and validation
-from src.testing import (
-    run_comprehensive_tests,
-    validate_system_readiness
-)
-
-# Configuration and monitoring
-from src.configuration import load_configuration, enable_hot_reload
-from src.utils import monitor_performance, analyze_performance
-
-## 📈 System Capabilities
-
-### Core Features
-- **Intelligent Task Distribution**: Smart routing between agents and MCP tools
-- **TF-IDF Enhanced Categorization**: Improved task-agent matching with fallback system
-- **Hybrid Scoring System**: ML + TF-IDF + Performance + Complexity scoring
-- **Adaptive Learning**: System evolution with feedback-based parameter tuning
-- **Interactive Clarification**: Context-aware question generation
-- **Parallel Execution**: Coordinated multi-agent processing
-- **Error Recovery**: Comprehensive error handling and retry logic
-- **Lightweight TF-IDF**: Works without sklearn dependencies in LLM environments
-
-### TF-IDF System Capabilities
-- **Sklearn Integration**: Full TF-IDF with sklearn when available
-- **Fallback Implementation**: Lightweight TF-IDF for LLM environments
-- **Adaptive Parameters**: Dynamic n-gram range and feature tuning
-- **Cosine Similarity**: Text similarity calculations
-- **Keyword Extraction**: Stop word removal and normalization
-- **Performance Tracking**: Category-based performance metrics
-
-### Performance Metrics
+### Core Performance Indicators
 - **Task Distribution Accuracy**: >90% correct routing
 - **Clarification Success Rate**: >85% ambiguity resolution
 - **TF-IDF Relevance Score**: >80% meaningful matches
 - **Adaptive Learning Efficiency**: >15% improvement over time
 - **Overall System Success Rate**: >95% task completion
 
-## 🚀 Usage Examples
+### Quality Assurance Mechanisms
+- **Real-time Performance Monitoring**: Track execution metrics and success rates
+- **Adaptive Parameter Tuning**: Dynamic optimization based on feedback
+- **Fallback System**: Graceful degradation when primary methods fail
+- **Error Recovery**: Comprehensive error handling and retry logic
+- **User Feedback Integration**: Continuous improvement through satisfaction scores
 
-```python
-# TF-IDF Enhanced Agent Selection
-task_context = {
-    'description': 'Implement React authentication system with JWT tokens',
-    'category': 'frontend-development',
-    'complexity': 3
-}
+## 🚀 Usage Patterns
 
-selection = enhanced_agent_selection(task_context, available_agents)
-# Returns: {
-#   'selected_agents': [
-#     {'agent_name': 'frontend-architect', 'total_score': 0.85, 'breakdown': {...}},
-#     {'agent_name': 'security-engineer', 'total_score': 0.78, 'breakdown': {...}}
-#   ],
-#   'tfidf_analysis': {
-#     'scores': {'frontend-architect': 0.92, 'security-engineer': 0.85},
-#     'parameters_used': {'ngram_range': (1, 2), 'max_features': 1000},
-#     'category': 'frontend-development'
-#   },
-#   'selection_confidence': 0.87
-# }
-
-# Adaptive Learning Integration
-execution_result = {
-    'success_rate': 0.9,
-    'user_feedback': 0.8,
-    'execution_time': 120,
-    'error_occurred': False
-}
-
-record_execution_result(task_context, selected_agent, execution_result)
-# Triggers adaptive learning and parameter tuning
-
-# Fallback System (when sklearn unavailable)
-tfidf_scores = calculate_tfidf_relevance_enhanced(task_context, available_agents)
-# Automatically falls back to keyword matching if TF-IDF fails
-
-# Category Performance Insights
-insights = learning_system.get_category_insights()
-# Returns: {
-#   'frontend-development': {
-#     'success_rate': 0.85,
-#     'weight': 1.2,
-#     'avg_tfidf_score': 0.78,
-#     'total_tasks': 15
-#   },
-#   'security-auditing': {
-#     'success_rate': 0.92,
-#     'weight': 1.5,
-#     'avg_tfidf_score': 0.88,
-#     'total_tasks': 8
-#   }
-# }
-
-# Intelligent task distribution
-result = enhanced_task_distribution("Search React best practices", {})
-# Returns: MCP tool execution with Tavily
-
-result = enhanced_task_distribution("Fix simple bug", {})
-# Returns: Single agent selection
-
-result = enhanced_task_distribution("Implement authentication system", {})
-# Returns: Multi-agent delegation with TF-IDF enhanced selection
+### Simple Task Routing
+```yaml
+example_1:
+  input: "Search React best practices"
+  complexity: 1
+  routing: "mcp_tools.tavily"
+  expected_output: "Current information from web search"
 ```
+
+### Single Agent Delegation
+```yaml
+example_2:
+  input: "Fix simple CSS bug"
+  complexity: 1
+  routing: "single_agent.frontend-architect"
+  selection_criteria: "highest compatibility score"
+```
+
+### Multi-Agent Coordination
+```yaml
+example_3:
+  input: "Implement authentication system"
+  complexity: 4
+  routing: "multi_agent_coordination"
+  selected_agents: ["security-engineer", "backend-architect", "frontend-architect"]
+  coordination: "parallel_with_synthesis"
+```
+
+### Interactive Clarification
+```yaml
+example_4:
+  input: "Improve user experience"
+  complexity: 3 (ambiguous)
+  action: "initiate_clarification_workflow"
+  questions: [
+    "What specific aspect of UX needs improvement?",
+    "What are the current pain points?",
+    "What's the target user profile?",
+    "What metrics define success?"
+  ]
+```
+
+## 🔧 Integration Points
+
+### Knowledge Base Integration
+The orchestrator seamlessly integrates with specialized algorithm modules:
+
+- **Agent Selection**: `config/knowledge-base/agent-selection.yaml`
+  - Hybrid scoring algorithms
+  - TF-IDF enhanced matching
+  - Adaptive learning systems
+
+- **Text Analysis**: `config/knowledge-base/tfidf-system.yaml`
+  - Lightweight TF-IDF implementation
+  - Sklearn integration with fallback
+  - Adaptive parameter tuning
+
+- **Task Classification**: `config/knowledge-base/task-analysis.yaml`
+  - Complexity assessment algorithms
+  - Domain classification systems
+  - Priority evaluation frameworks
+
+- **Categorization Engine**: `config/knowledge-base/categorization-engine.yaml`
+  - ML-based categorization
+  - Semantic analysis systems
+  - Ensemble approaches
+
+- **Parallel Coordination**: `config/knowledge-base/parallel_coordination.yaml`
+  - Parallel execution management
+  - Result synthesis strategies
+  - Synchronization protocols
+
+### MCP Tools Ecosystem
+- **Sequential Thinking**: Complex reasoning and hypothesis testing
+- **Serena**: Project navigation and semantic code understanding
+- **Context7**: Official documentation and framework patterns
+- **Tavily**: Web search and real-time information retrieval
+- **Magic**: UI component generation and design patterns
+- **Playwright**: Browser automation and E2E testing
+
+## 📈 Continuous Learning and Adaptation
+
+### Adaptive Learning System
+The system continuously evolves based on execution feedback:
+
+- **Performance Tracking**: Monitor agent success rates and user satisfaction
+- **Parameter Optimization**: Dynamic tuning of TF-IDF parameters and scoring weights
+- **Category Evolution**: Refine task categorization based on execution results
+- **Feedback Integration**: Incorporate user feedback for continuous improvement
+
+### Quality Assurance
+- **Validation Gates**: Multi-level quality checks throughout the process
+- **Error Handling**: Comprehensive error recovery and fallback mechanisms
+- **Performance Monitoring**: Real-time tracking of system metrics
+- **User Satisfaction**: Continuous feedback collection and analysis
 
 ---
 
 **System Status**: Enhanced orchestration with intelligent MCP integration, TF-IDF categorization, and adaptive learning capabilities.
+
+**Architecture**: Modular design with consolidated knowledge base and intelligent workflow orchestration.
+
+**Performance**: Optimized for LLM execution with pseudocode algorithms and adaptive parameter tuning.

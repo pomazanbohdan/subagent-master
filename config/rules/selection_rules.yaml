@@ -1,7 +1,12 @@
-name: "Agent Selection Rules"
-description: "Comprehensive rules for intelligent agent selection with error handling and TODO framework integration"
-version: "2.1.0"
+# Agent Selection Rules
+# Clean rule definitions with pseudocode algorithms for LLM agent selection
 
+metadata:
+  name: "Agent Selection Rules"
+  description: "Intelligent agent selection with comprehensive error handling and fallback strategies"
+  version: "2.1.0"
+
+# Selection Criteria
 selection_criteria:
   complexity_thresholds:
     simple: 0.3
@@ -18,6 +23,7 @@ selection_criteria:
     max_load_ratio: 0.8
     min_availability: 0.2
 
+  Task Analysis Rules
 task_analysis_rules:
   # Keyword-based task classification
   keywords:
@@ -61,35 +67,8 @@ task_analysis_rules:
       secondary: ["issue", "problem", "failure", "crash", "exception"]
       weight: 1.0
 
-    task_continuation:
-      primary: ["continue", "resume", "proceed", "advance", "progress"]
-      secondary: ["complete", "finish", "wrap up", "conclude"]
-      weight: 0.9
-
-  # Complexity indicators
-  complexity_indicators:
-    very_complex:
-      keywords: ["enterprise", "scalable", "distributed", "multi-system", "architecture", "comprehensive"]
-      patterns: ["multiple", "several", "various", "integrated", "end-to-end"]
-      weight: 1.0
-
-    complex:
-      keywords: ["design", "implement", "optimize", "integrate", "system"]
-      patterns: ["complex", "advanced", "sophisticated"]
-      weight: 0.8
-
-    medium:
-      keywords: ["create", "build", "develop", "configure", "setup"]
-      patterns: ["basic", "standard", "typical"]
-      weight: 0.6
-
-    simple:
-      keywords: ["fix", "update", "modify", "adjust", "simple"]
-      patterns: ["quick", "minor", "small", "basic"]
-      weight: 0.3
-
-agent_scoring_rules:
-  # Scoring algorithm weights
+# Scoring System
+scoring_system:
   weights:
     competency_match: 0.35
     performance_history: 0.25
@@ -97,362 +76,236 @@ agent_scoring_rules:
     availability: 0.15
     cost_efficiency: 0.05
 
-  # Competency scoring rules
+  Scoring Algorithms:
   competency_scoring:
-    exact_match: 1.0
-    partial_match: 0.7
-    related_match: 0.4
-    no_match: 0.0
+    implementation: |
+      # Competency-Based Scoring Algorithm
+      INPUT: task_requirements, agent_competencies
+      OUTPUT: competency_scores (0.0-1.0)
+      
+      PROCESS:
+      1. Extract task requirements and agent competencies
+      2. Calculate skill overlap (task_skills ∩ agent_skills)
+      3. Score based on skill importance (primary=1.0, secondary=0.7, optional=0.5)
+      4. Apply domain-specific adjustments
+      5. Return highest score
 
-  # Performance scoring adjustments
-  performance_adjustments:
-    high_success_rate_bonus: 0.1  # bonus for success_rate > 0.9
-    low_load_bonus: 0.05         # bonus for load_ratio < 0.3
-    reliability_bonus: 0.1       # bonus for reliability > 0.95
-    response_time_penalty: 0.1   # penalty for avg_response_time > 5.0
+  performance_scoring:
+    implementation: |
+      # Performance-Based Scoring Algorithm
+      INPUT: task_context, agent_performance
+      OUTPUT: performance_scores (0.0-1.0)
+      
+      PROCESS:
+      1. Get historical success rate
+      2. Calculate recent performance trend
+      3. Apply time-based decay (newer is better)
+      4. Apply domain expertise bonus
+      5. Return final performance score
 
+  availability_scoring:
+    implementation: |
+      # Availability-Based Scoring Algorithm
+      INPUT: agent_capacity
+      OUTPUT: availability_scores (0.0-1.0)
+      
+      PROCESS:
+      1. Calculate availability ratio
+      2. Apply sigmoid smoothing
+      3. Apply confidence adjustments
+      4. Return final score
+
+  Hybrid Scoring:
+    implementation: |
+      # Combined Scoring Algorithm
+      INPUT: all individual scores
+      OUTPUT: final_scores (0.0-1.0)
+      
+      PROCESS:
+      1. Apply weights: competency*0.35 + performance*0.25 + current_load*0.20 + availability*0.15 + cost_efficiency*0.05
+      2. Normalize final scores
+      3. Apply confidence adjustment
+      4. Return top scoring agent
+
+# Selection Strategies
 selection_strategies:
-  # Different strategies for different scenarios
-  strategies:
-    performance_first:
-      name: "Performance First"
-      weights:
-        competency_match: 0.4
-        performance_history: 0.4
-        current_load: 0.1
-        availability: 0.05
-        cost_efficiency: 0.05
-      use_case: "Critical tasks where quality is paramount"
+  performance_first:
+    name: "Performance First"
+    weights:
+      competency_match: 0.4
+      performance_history: 0.4
+      current_load: 0.1
+      availability: 0.05
+      cost_efficiency: 0.05
+    use_case: "Critical tasks where quality is paramount"
 
-    availability_first:
-      name: "Availability First"
-      weights:
-        competency_match: 0.3
-        performance_history: 0.2
-        current_load: 0.3
-        availability: 0.2
-        cost_efficiency: 0.0
-      use_case: "Time-sensitive tasks requiring immediate attention"
+  availability_first:
+    name: "Availability First"
+    weights:
+      competency_match: 0.3
+      performance_history: 0.2
+      current_load: 0.3
+      availability: 0.2
+      cost_efficiency: 0.0
+    use_case: "Time-sensitive tasks requiring immediate attention"
 
-    cost_optimized:
-      name: "Cost Optimized"
-      weights:
-        competency_match: 0.3
-        performance_history: 0.2
-        current_load: 0.2
-        availability: 0.1
-        cost_efficiency: 0.2
-      use_case: "Budget-conscious scenarios with acceptable quality trade-offs"
+  balanced:
+    name: "Balanced Approach"
+    weights:
+      competency_match: 0.35
+      performance_history: 0.25
+      current_load: 0.20
+      availability: 0.15
+      cost_efficiency: 0.05
+    use_case: "Default strategy for most scenarios"
 
-    balanced:
-      name: "Balanced Approach"
-      weights:
-        competency_match: 0.35
-        performance_history: 0.25
-        current_load: 0.20
-        availability: 0.15
-        cost_efficiency: 0.05
-      use_case: "Default strategy for most scenarios"
+  cost_optimized:
+    name: "Cost Optimized"
+    weights:
+      competency_match: 0.3
+      performance_history: 0.2
+      current_load: 0.2
+      availability: 0.1
+      cost_efficiency: 0.2
+    use_case: "Budget-conscious scenarios with acceptable quality trade-offs"
 
+# Fallback Rules
 fallback_rules:
-  # Rules for handling selection failures
   no_suitable_agent:
-    action: "expand_search_criteria"
-    options:
-      - lower_competency_threshold: 0.1
-      - increase_load_tolerance: 0.1
-      - consider_backup_agents: true
-      - enable_cross_domain_fallback: true
-      - use_general_purpose_as_last_resort: true
+  action: "Expand search criteria"
+  options:
+    - lower_competency_threshold: 0.1
+    - increase_load_tolerance: 0.1
+    consider_backup_agents: true
+    enable_cross_domain_fallback: true
+    use_general_purpose_as_last_resort: true
 
   all_agents_busy:
-    action: "intelligent_queue_management"
-    options:
-      - priority_queue: true
-      - wait_time_limit: 300  # 5 minutes
-      - escalation_threshold: 2
-      - preempt_low_priority_tasks: true
-      - notify_user_of_delay: true
+  action: "Intelligent queue management"
+  options:
+    priority_queue: true
+    wait_time_limit: 300  # 5 minutes
+    escalation_threshold: 2
+    preempt_low_priority_tasks: true
+    notify_user_of_delay: true
 
   selection_timeout:
-    action: "emergency_selection_protocol"
-    options:
-      - ignore_load_constraints: true
-      - minimum_acceptance_score: 0.3
-      - select_least_loaded_available: true
-      - log_selection_difficulty: true
+  action: "Emergency selection protocol"
+  options:
+    ignore_load_constraints: true
+    minimum_acceptance_score: 0.3
+    select_least_loaded_available: true
+    log_selection_difficulty: true
 
-  no_competency_match:
-    action: "competency_expansion"
-    options:
-      - consider_related_competencies: true
-      - use_partial_matches: true
-      - enable_learning_from_similar_tasks: true
-      - create_custom_agent_combination: true
-
-  critical_task_no_agent:
-    action: "resource_reallocation"
-    options:
-      - preempt_non_critical_tasks: true
-      - increase_agent_capacity_temporarily: true
-      - use_parallel_agent_combination: true
-      - notify_administrator: true
-
-dynamic_adjustments:
-  # Rules for dynamic threshold adjustments based on system state
-  system_load_adjustments:
-    high_load:
-      load_threshold: 0.8
-      adjustments:
-        - lower_performance_requirements: 0.1
-        - increase_load_tolerance: 0.2
-        - prioritize_availability: true
-
-    low_performance:
-      performance_threshold: 0.7
-      adjustments:
-        - increase_performance_weight: 0.1
-        - add_retry_logic: true
-        - enable_monitoring: true
-
-  time_based_adjustments:
-    business_hours:
-      timezone: "UTC"
-      hours: "9-17"
-      days: "Monday-Friday"
-      adjustments:
-        - prioritize_quality: true
-        - increase_timeout_tolerance: 1.5
-
-    after_hours:
-      timezone: "UTC"
-      hours: "17-9"
-      days: "Friday-Monday"
-      adjustments:
-        - prioritize_availability: true
-        - use_fallback_agents: true
-
-selection_validation:
-  # Validation rules for selection decisions
-  pre_selection_checks:
-    - validate_task_requirements: true
-    - check_agent_availability: true
-    - verify_compatibility_matrix: true
-    - ensure_minimum_criteria_met: true
-
-  post_selection_validation:
-    - validate_selection_rationale: true
-    - check_load_balance_impact: true
-    - verify_resource_availability: true
-    - ensure_selection_consistency: true
-
-  consistency_checks:
-    - cross_validate_with_history: true
-    - check_selection_bias: true
-    - validate_performance_predictions: true
-    - ensure_fair_resource_distribution: true
-
-learning_rules:
-  # Rules for learning from selection outcomes
-  success_learning:
-    trigger: "task_completed_successfully"
-    actions:
-      - increase_agent_competency: 0.05
-      - reinforce_selection_pattern: true
-      - update_performance_metrics: true
-      - log_successful_pattern: true
-
-  failure_learning:
-    trigger: "task_completed_with_failure"
-    actions:
-      - decrease_agent_competency: 0.02
-      - analyze_failure_reason: true
-      - adjust_selection_criteria: true
-      - identify_pattern_corrections: true
-      - update_risk_assessment: true
-
-  feedback_loop:
-    frequency: "daily"
-    actions:
-      - analyze_selection_patterns: true
-      - update_competency_scores: true
-      - optimize_thresholds: true
-      - generate_performance_report: true
-      - validate_selection_logic: true
-
-integrity_monitoring:
-  # Monitoring for selection system integrity
-  anomaly_detection:
-    - unusual_selection_patterns: true
-    - performance_degradation: true
-    - competency_score_anomalies: true
-    - load_imbalance_alerts: true
-
-  self_healing:
-    - automatic_threshold_adjustment: true
-    - pattern_correction: true
-    - system_state_restoration: true
-    - emergency_fallback_activation: true
-
+# Error Handling
 error_handling_rules:
-  # Rules for error detection and delegation
   error_detection:
-    syntax_errors:
-      triggers: ["parse errors", "format errors", "structure errors", "template errors"]
-      detection_keywords: ["syntax", "format", "structure", "parse", "template"]
-      priority: "medium"
-      return_condition: "on_significant_syntax_error"
+  syntax_errors:
+    triggers: ["parse errors", "format errors", "structure errors", "template errors"]
+    priority: "medium"
+    return_condition: "on_significant_syntax_error"
 
-    logic_errors:
-      triggers: ["algorithm errors", "logic flow errors", "decision errors", "reasoning errors"]
-      detection_keywords: ["logic", "algorithm", "reasoning", "decision", "flow"]
-      priority: "high"
-      return_condition: "on_logic_inconsistency"
+  logic_errors:
+  triggers: ["algorithm errors", "logic flow errors", "decision errors", "reasoning errors"]
+    priority: "high"
+    return_condition: "on_logic_inconsistency"
 
-    runtime_errors:
-      triggers: ["execution errors", "timeout errors", "resource errors", "performance errors"]
-      detection_keywords: ["runtime", "execution", "timeout", "performance", "resource"]
-      priority: "high"
-      return_condition: "on_performance_threshold_exceeded"
+  runtime_errors:
+  triggers: ["runtime errors", "timeout errors", "resource errors", "performance errors"]
+    priority: "high"
+    return_condition: "on_performance_threshold_exceeded"
 
-    resource_errors:
-      triggers: ["api errors", "connection errors", "data access errors", "service errors"]
-      detection_keywords: ["api", "connection", "database", "service", "external"]
-      priority: "critical"
-      return_condition: "on_service_unavailable"
-
-    integration_errors:
-      triggers: ["interface errors", "compatibility errors", "system errors", "coordination errors"]
-      detection_keywords: ["interface", "compatibility", "integration", "coordination"]
-      priority: "high"
-      return_condition: "on_integration_failure"
-
-  error_delegation:
-    delegation_rules:
-      primary_strategy: "specialized_error_agent"
-      fallback_strategy: "domain_expert_agent"
-      last_resort: "general_purpose_agent"
-
-    agent_selection_for_errors:
-      syntax_errors:
-        primary: "general-purpose"
-        fallback: "error-recovery-specialist"
-        reasoning: "Pattern recognition and template correction"
-
-      logic_errors:
-        primary: "agent_with_domain_expertise"
-        fallback: "error-recovery-specialist"
-        reasoning: "Domain-specific logic understanding"
-
-      runtime_errors:
-        primary: "performance-engineer"
-        fallback: "error-recovery-specialist"
-        reasoning: "Performance and resource optimization"
-
-      resource_errors:
-        primary: "backend-architect"
-        fallback: "error-recovery-specialist"
-        reasoning: "Infrastructure and system understanding"
-
-      integration_errors:
-        primary: "agent_with_integration_expertise"
-        fallback: "error-recovery-specialist"
-        reasoning: "System integration and interface knowledge"
+  error_recovery_workflows:
+  recovery_steps:
+  - 1. Detect and classify error
+  2. Create comprehensive error report
+    - "log_error_details: " + " + "timestamp", "error_type", "error_message", "stack_trace", "context"
+  - "cleanup_partial_state": "Remove temporary files, scripts, directories"
+  - "create_recovery_checkpoint": "Save successful outputs"
+  - "attempt_graceful_degradation": "Attempt minimal functionality with reduced capabilities"
+  - "request_additional_resources": "Ask for human assistance"
+  - "escalate_to_orchestrator": "Escalate to human oversight if critical"
 
   task_continuation:
-    continuation_strategies:
-      auto_continue:
-        condition: "error_fixed_and_state_preserved"
-        action: "resume_from_failed_step"
-        requirements: ["error_resolution", "state_preservation"]
-
-      manual_review:
-        condition: "security_or_critical_errors"
-        action: "require_human_approval_before_continuation"
-        requirements: ["error_resolution", "human_approval"]
-
-      restart_required:
-        condition: "state_corrupted_or_unrecoverable"
-        action: "restart_task_from_beginning"
-        requirements: ["fresh_start", "error_prevention"]
-
-      delegate_different_agent:
-        condition: "original_agent_unable_to_continue"
-        action: "assign_to_alternative_agent"
-        requirements: ["agent_selection", "context_transfer"]
-
-    state_preservation:
-      checkpoint_requirements:
-        - "completed_steps_list"
-        - "partial_results_snapshot"
-        - "context_state_preservation"
-        - "dependencies_tracking"
-        - "return_requirements_specification"
-
-  error_return_conditions:
-    condition_evaluation:
-      critical_errors:
-        threshold: "blocks_task_completion"
-        action: "immediate_error_reporting"
-        notification: "escalate_to_orchestrator"
-
-      security_errors:
-        threshold: "security_policy_violation"
-        action: "specialist_review_required"
-        notification: "security_team_alert"
-
-      performance_errors:
-        threshold: "performance_limits_exceeded"
-        action: "optimization_required"
-        notification: "performance_monitoring"
-
-      user_specified:
-        threshold: "user_defined_condition_met"
-        action: "follow_user_instructions"
-        notification: "custom_user_notification"
-
-  error_recovery_workflow:
-    recovery_steps:
-      1. "Detect and classify error"
-      2. "Check error_return_conditions"
-      3. "Create comprehensive_error_report"
-      4. "Select appropriate_error_recovery_agent"
-      5. "Delegate error_resolution_task"
-      6. "Monitor error_fixing_progress"
-      7. "Validate_error_resolution"
-      8. "Determine_task_continuation_strategy"
-      9. "Restore_original_agent_or_delegate_to_alternative"
-      10. "Update_performance_metrics_and_learning"
-
-    validation_checkpoints:
-      - error_classification_accuracy
-      - agent_selection_appropriateness
-      - resolution_effectiveness
-      - continuation_strategy_validity
-      - overall_workflow_success
+    auto_continue:
+      condition: "error_fixed_and_state_preserved"
+      action: "Resume from failed step"
+      requirements: ["error_resolution", "state_preservation"]
+    manual_review:
+      condition: "security_or_critical_errors"
+      action: "Require human approval before continuation"
+      requirements: ["error_resolution", "human_approval"]
+    restart_required:
+      condition: "state_corrupted_or_unrecoverable"
+      action: "Restart task from beginning"
+      requirements: ["fresh_start", "error_prevention"]
 
   todo_framework_integration:
     error_handling_in_todos:
       todo_state_transitions:
         pending → in_progress → error_detected → error_reporting → error_delegated → error_resolved → in_progress → completed
         pending → in_progress → failed → error_reporting → error_delegated → error_resolved → restart_from_pending
-
+      
       error_return_conditions_in_todos:
         todo_item_specification:
           error_return_condition: "specific_error_criteria"
           error_handling_strategy: "delegate_to_error_recovery_agent"
           continuation_plan: "resume_or_restart_after_fix"
+      validation_checkpoints:
+        - error_classification_accuracy: "Validate error classification accuracy"
+        - recovery_effectiveness: "Assess recovery success rate"
+        - continuation_strategy_validity: "Check if continuation plan is valid"
 
-      error_monitoring_in_todos:
-        progress_monitoring:
-          - check_for_errors_during_execution
-          - monitor_timeout_conditions
-          - validate_intermediate_results
-          - track_dependency_satisfaction
+# Quality Assurance
+quality_assurance:
+  validation_rules:
+    minimum_confidence: "Minimum confidence threshold for acceptance"
+    maximum_categories: "Maximum number of categories to return"
+    consistency_check: "Ensure logical category relationships"
+    evidence_support: "Require substantial supporting evidence"
+    cross_validation: "Cross-validate with historical data"
+    user_acceptance_required: "User validation of results"
 
-        error_detection_triggers:
-          - execution_timeout
-          - validation_failure
-          - dependency_unavailable
-          - resource_constraints
-          - user_interruption
+  performance_metrics:
+  classification_precision: "Target > 0.85"
+  recall_score: "Target > 0.80"
+  user_satisfaction: "Target > 0.80"
+  error_recovery_success: "Target > 90%"
+
+# Integration Points
+integration:
+  imports:
+    agent_selection_system:
+      file: "config/knowledge-base/agent-selection.yaml"
+      description: "Agent selection algorithms and hybrid scoring"
+    tfidf_system:
+      file: "config/knowledge-base/tfidf-system.yaml"
+      description: "TF-IDF text processing system"
+    task_analysis:
+      file: "config/knowledge-base/task-analysis.yaml"
+      description: "Task complexity assessment and classification"
+    categorization_engine:
+      file: "config/knowledge-base/categorization-engine.yaml"
+      description: "ML-based task categorization"
+    parallel_coordination:
+      file: "config/knowledge-base/parallel_coordination.yaml"
+      description: "Parallel execution coordination"
+
+  export:
+  agent_selection_results: "Selection scores and confidence scores"
+  agent_performance_updates: "Performance metrics and learning data"
+  learning_module: "Feedback integration and parameter optimization"
+
+# Configuration Management
+configuration_management:
+  parameter_storage:
+    current_configuration: "Active selection configuration"
+    parameter_history: "Previous parameter versions"
+    optimization_log: "Record of parameter adjustments"
+    model_performance_history: "Historical model performance data"
+
+  version_control:
+  model_versioning: "Track model version changes"
+  compatibility_checking: "Ensure backward compatibility"
+  migration_support: "Assist with system upgrades"
+  rollback_capability: "Restore previous configurations"

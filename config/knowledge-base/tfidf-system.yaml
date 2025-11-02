@@ -1,0 +1,437 @@
+# TF-IDF Text Processing System
+# Lightweight, self-contained text similarity analysis with adaptive learning
+
+metadata:
+  name: "tfidf-text-processing-system"
+  version: "1.0.0"
+  description: "Complete TF-IDF implementation with fallback system for LLM agent text analysis"
+  author: "Master Agent System"
+  tags: ["text-processing", "similarity", "categorization", "machine-learning"]
+
+# Core TF-IDF Configuration
+tfidf_configuration:
+  default_parameters:
+    max_features: 1000
+    stop_words: ["the", "a", "an", "and", "or", "but", "in", "on", "at", "to", "for", "of", "with", "by", "is", "are", "was", "were", "be", "been", "have", "has", "had", "do", "does", "did", "will", "would", "could", "should", "may", "might", "can", "must"]
+    min_word_length: 2
+    ngram_range: [1, 2]
+    lowercase: true
+    
+  adaptive_parameters:
+    enabled: true
+    learning_rate: 0.1
+    update_frequency: "after_10_analyses"
+    confidence_threshold: 0.7
+    performance_tracking: true
+
+# Text Preprocessing Pipeline
+text_preprocessing:
+  tokenization:
+    method: "word_extraction"
+    patterns:
+      - Extract alphabetic words only
+      - Split on whitespace and punctuation
+      - Normalize to lowercase
+      - Filter by minimum word length
+      - Remove numeric-only tokens (unless context requires)
+      
+    stop_words_removal:
+      - Predefined English stop words list
+      - Domain-specific stop words (configurable)
+      - Frequency-based stop words (high-frequency, low-value)
+      - Custom stop words (user-definable)
+      
+  normalization:
+    - Convert to lowercase
+    - Remove punctuation (keep only alphanumeric and spaces)
+    - Collapse multiple spaces
+    - Strip leading/trailing whitespace
+    
+  cleaning:
+    - Remove special characters and symbols
+    - Preserve contextual punctuation (important for understanding)
+    - Handle contractions and abbreviations
+    - Maintain sentence structure where relevant
+
+# TF-IDF Vectorization Algorithm
+tfidf_vectorization:
+  document_collection:
+    input: "array of text documents"
+    processing: "batch_optimized"
+    
+  vocabulary_building:
+    implementation: |
+      # Vocabulary Construction Algorithm
+      INPUT: preprocessed_documents (array)
+      OUTPUT: vocabulary_dict, document_frequencies
+      
+      STEPS:
+        1. Token extraction:
+        - Extract all unique tokens from all documents
+           - Apply stop words filtering
+           - Apply minimum word length filter
+      2. Document frequency calculation:
+           - Count occurrences of each token in each document
+           - Create document frequency (DF) dictionary
+           - DF[token] = number of documents containing token
+      3. Inverse document frequency calculation:
+           - Calculate IDF for each token
+           - IDF[token] = log(total_documents / DF[token])
+           - Apply smoothing to avoid division by zero
+      4. Vocabulary finalization:
+           - Filter vocabulary by maximum features
+           - Sort by TF-IDF score descending
+           - Assign indices to vocabulary terms
+      5. Stop words handling:
+           - Remove common stop words from final vocabulary
+           - Maintain stop words list for reference
+      
+      OUTPUT:
+      - vocabulary: {"term": index} dictionary
+      - idf_values: {index: idf_value} dictionary
+      - max_features: integer limit on vocabulary size
+      
+  term_frequency_calculation:
+    implementation: |
+      # Term Frequency Calculation
+      INPUT: document_text, vocabulary_dict
+      OUTPUT: tf_vector (sparse representation)
+      
+      PROCESS:
+      1. Token frequency in document:
+           - Count occurrences of each term in document
+           - TF[token] = frequency_of_term_in_document
+      2. TF normalization:
+           - Apply logarithmic scaling: TF = 1 + log(TF)
+           - Or use raw frequency: TF = frequency / total_terms
+           - Choose normalization method based on use case
+      3. Vector construction:
+           - Create vector with dimension = vocabulary_size
+           - Set vector[index] = TF * IDF for each vocabulary term
+           - Handle missing terms (vector = 0 for absent terms)
+      4. Sparse representation:
+           - Use (index, value) pairs for non-zero elements
+           - Reduce memory usage for large vocabularies
+           - Maintain list of active terms per document
+        
+      OUTPUT_FORMAT:
+      - sparse_vector: [(term_index, tfidf_value), ...]
+      - dense_vector: [0.0, tfidf_value, 0.0, ...]
+      - term_weights: {term: tfidf_value, ...}
+
+# Similarity Calculation Algorithms
+similarity_algorithms:
+  cosine_similarity:
+    implementation: |
+      # Cosine Similarity Calculation
+      INPUT: vector_a, vector_b (both dense or sparse)
+      OUTPUT: similarity_score (0.0-1.0)
+      
+      PROCESS:
+      1. Dot product calculation:
+           - dot_product = Σ(A[i] * B[i]) for all i
+      2. Magnitude calculation:
+           - magnitude_A = sqrt(Σ(A[i]²)) for all i
+           - magnitude_B = sqrt(Σ(B[i]²)) for all i
+      3. Similarity calculation:
+           - similarity = dot_product / (magnitude_A * magnitude_B)
+           - Handle zero magnitude cases (return 0.0)
+      4. Score normalization:
+           - Ensure score is in range [0.0, 1.0]
+           - Handle numerical precision issues
+      5. Edge cases:
+           - Zero vectors: return 0.0
+           - Identical vectors: return 1.0
+           - Opposite vectors: return 0.0
+        
+      PROPERTIES:
+      - Range: [0.0, 1.0] (0=orthogonal, 1=identical)
+      - Scale-invariant (works with different vector magnitudes)
+      - Direction-sensitive (captures angle between vectors)
+      
+  jaccard_similarity:
+    implementation: |
+      # Jaccard Similarity Calculation
+      INPUT: set_a, set_b (sets of terms)
+      OUTPUT: similarity_score (0.0-1.0)
+      
+      PROCESS:
+      1. Set intersection:
+           - intersection = set_a ∩ set_b
+      2. Set union:
+           - union = set_a ∪ set_b
+      3. Similarity calculation:
+           - similarity = |intersection| / |union|
+      4. Edge cases:
+           - Empty sets: return 0.0
+           - Identical sets: return 1.0
+      
+      USE_CASES:
+      - Quick similarity estimates
+      - Overlap measurement
+      - Binary feature comparison
+
+  manhattan_distance:
+    implementation: |
+      # Manhattan Distance Similarity
+      INPUT: vector_a, vector_b (dense vectors)
+      OUTPUT: similarity_score (0.0-1.0)
+      
+      PROCESS:
+      1. Distance calculation:
+           - distance = Σ|A[i] - B[i]| for all i
+      2. Maximum possible distance:
+           - max_distance = Σmax(A[i], B[i]) for all i
+      3. Similarity calculation:
+           - similarity = 1 - (distance / max_distance)
+      4. Edge cases:
+           - Identical vectors: return 1.0
+           - Zero vectors: return 0.0
+        
+      PROPERTIES:
+      - Range: [0.0, 1.0] (0=completely different, 1=identical)
+      - Scale-dependent (affected by vector magnitudes)
+      - Component-wise comparison
+
+# Fallback System Implementation
+fallback_system:
+  keyword_matching:
+    implementation: |
+      # Keyword Matching Fallback
+      INPUT: task_keywords, agent_keywords
+      OUTPUT: similarity_score (0.0-1.0)
+      
+      PROCESS:
+      1. Keyword extraction:
+           - Extract keywords from both inputs
+           - Apply stop words filtering
+           - Convert to lowercase
+           - Remove duplicates
+      2. Set creation:
+           - task_set = set(task_keywords)
+           - agent_set = set(agent_keywords)
+      3. Similarity calculation:
+           - intersection = task_set ∩ agent_set
+           - union = task_set ∪ agent_set
+           - similarity = |intersection| / |union|
+      4. Score adjustment:
+           - Apply context-based weighting
+           - Account for keyword importance
+           - Scale final score to [0.0, 1.0]
+      
+      ADVANTAGES:
+      - Fast execution
+      - No preprocessing overhead
+      - Works with any text length
+      - No vocabulary requirements
+      
+      LIMITATIONS:
+      - Loses semantic meaning
+      - Ignores word frequency
+      - Limited to exact matches
+
+  simplified_scoring:
+    implementation: |
+      # Simplified Scoring Fallback
+      INPUT: task_text, agent_text
+      OUTPUT: relevance_score (0.0-1.0)
+      
+      PROCESS:
+      1. Text preprocessing:
+           - Extract meaningful words (nouns, verbs, adjectives)
+           - Remove stop words and punctuation
+           - Convert to lowercase
+      2. Feature extraction:
+           - Count matching words
+           - Calculate word overlap percentage
+           - Apply part-of-speech weighting
+      3. Score calculation:
+           - base_score = (matching_words / total_words)
+           - Apply semantic_boost for domain-specific terms
+           - Normalize to [0.0, 1.0] range
+      4. Quality adjustment:
+           - Apply confidence based on match quality
+           - Consider text length and complexity
+        
+      WEIGHTING_STRATEGY:
+      - Nouns: weight 1.0 (most important)
+      - Verbs: weight 0.8 (action-oriented)
+      - Adjectives: weight 0.6 (descriptive)
+      - Domain terms: weight 1.2 (context-specific)
+
+# Adaptive Learning System
+adaptive_learning:
+  feedback_integration:
+    enabled: true
+    data_sources:
+      - "user_satisfaction_ratings"
+      - "selection_success_outcomes"
+      - "task_execution_results"
+      - "performance_metrics"
+      
+  parameter_optimization:
+    max_features_tuning:
+      current_range: [500, 2000]
+      optimal_target: 1000
+      adjustment_rate: 100
+      performance_monitoring: true
+      
+    ngram_range_tuning:
+      current_range: [1, 2]
+      alternatives: [[1, 3], [2, 3]]
+      selection_criteria: "highest_classification_accuracy"
+      
+    stop_words_customization:
+      domain_stop_words: []
+      industry_terms: []
+      technical_jargon: []
+      project_specific: []
+      
+  performance_monitoring:
+    metrics_tracked:
+      - "analysis_accuracy"
+      - "processing_speed"
+      - "memory_usage"
+      - "classification_precision"
+      - "user_satisfaction"
+      
+    optimization_targets:
+      - processing_time: "< 2 seconds"
+      - memory_usage: "< 10MB"
+      - accuracy_improvement: "> 5%"
+      - user_satisfaction: "> 0.85"
+
+# Performance Optimization
+performance_optimization:
+  memory_efficiency:
+    sparse_vector_storage:
+      enabled: true
+      storage_method: "coordinate_list"
+      compression_ratio: "10:1"
+      
+    vocabulary_optimization:
+      feature_selection: "tfidf_based"
+      max_vocab_size: 1000
+      pruning_frequency: "weekly"
+      
+    batch_processing:
+      enabled: true
+      batch_size: 10
+      vectorized_operations: true
+      
+  speed_optimization:
+    caching_mechanism:
+      - Cache vocabulary between analyses
+      - Cache IDF values for repeated use
+      - Cache document vectors for similarity queries
+      
+    early_termination:
+      - confidence_threshold: 0.9
+      - minimum_relevance_score: 0.8
+      - stop_processing_when_met: true
+      
+    parallel_processing:
+      - Independent document processing
+      - Concurrent similarity calculations
+      - Result aggregation strategies
+
+# Quality Assurance
+quality_assurance:
+  validation_rules:
+    - minimum_document_length: 5 words
+    - maximum_vocabulary_size: 10000
+    - minimum_term_frequency: 1
+    - similarity_score_range: [0.0, 1.0]
+    
+  error_detection:
+    - empty_documents
+    - zero_vocabulary_scenarios
+    - division_by_zero_protection
+    - memory_limit_exceeded
+    
+  consistency_checks:
+    - vocabulary_consistency_across_analyses
+    - parameter_consistency_with_configuration
+    - reproducibility_of_results
+    
+  performance_monitoring:
+    - processing_time_measurement
+    - memory_usage_tracking
+    - accuracy_validation
+    - user_satisfaction_collection
+
+# Integration Interface
+integration_interface:
+  input_formats:
+    - plain_text: "String input"
+    - preprocessed_tokens: "Array of tokens"
+    - structured_data: "Object with fields"
+    
+  output_formats:
+    - similarity_scores: "Array of float values"
+    - ranking_list: "Sorted agent IDs with scores"
+    - detailed_analysis: "Object with comprehensive results"
+    - confidence_intervals: "Statistical confidence ranges"
+    
+  system_dependencies:
+    - text_preprocessing: "Built-in preprocessing pipeline"
+    - mathematical_operations: "Basic arithmetic functions"
+    - storage_system: "Memory and file system access"
+    - monitoring: "Performance and quality metrics"
+    
+  external_integrations:
+    - task_analyzer: "For task complexity assessment"
+    - agent_registry: "For agent capability matching"
+    - learning_module: "For performance feedback"
+    - user_interface: "For feedback collection"
+
+# Usage Examples
+usage_examples:
+  basic_similarity_analysis:
+    input: "Analyze similarity between task description and agent capabilities"
+    process: "Extract text → Calculate TF-IDF vectors → Compute similarity → Return ranked agents"
+    expected_output: "List of agents ranked by similarity score"
+    
+  adaptive_parameter_tuning:
+    input: "Optimize TF-IDF parameters based on recent performance"
+    process: "Analyze feedback → Adjust parameters → Update configuration → Monitor results"
+    expected_output: "Optimized parameter configuration"
+    
+  batch_document_processing:
+    input: "Process multiple documents simultaneously"
+    process: "Batch preprocessing → Vectorize all documents → Calculate pairwise similarities → Return similarity matrix"
+    expected_output: "Matrix of document similarity scores"
+
+# Monitoring and Metrics
+monitoring_metrics:
+  performance_metrics:
+    - "analysis_processing_time": "Time to complete TF-IDF analysis"
+    - "memory_usage": "Peak memory consumption during processing"
+    - "vocabulary_size": "Number of terms in active vocabulary"
+    - "cache_hit_rate": "Percentage of cached results used"
+    
+  quality_metrics:
+    - "classification_accuracy": "Accuracy of document categorization"
+    - "reliability_score": "Consistency of results across runs"
+    - "user_satisfaction": "User feedback on analysis quality"
+    - "error_recovery_rate": "Success of fallback mechanisms"
+    
+  learning_metrics:
+    - "parameter_improvement": "Optimization effectiveness over time"
+    - "adaptation_speed": "Rate of learning from feedback"
+    - "prediction_accuracy": "ML model performance improvements"
+    - "overall_system_health": "Composite health score"
+
+# Configuration Management
+configuration_management:
+  parameter_storage:
+    current_configuration: "Active parameter set"
+    configuration_history: "Previous parameter versions"
+    parameter_tuning_log: "Record of all parameter adjustments"
+    rollback_capability: "Restore previous configurations"
+    
+  version_control:
+    configuration_versioning: "Track configuration changes"
+    compatibility_checking: "Ensure backward compatibility"
+    migration_support: "Assist with system upgrades"
+    change_logging: "Record all configuration modifications"
