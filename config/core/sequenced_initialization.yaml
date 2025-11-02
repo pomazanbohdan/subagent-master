@@ -9,17 +9,17 @@ metadata:
 
 # Initialization Phases Configuration
 initialization_phases:
-  phase_1a_critical_core:
-    name: "Critical Core Initialization"
+  phase_1_core_systems:
+    name: "Core Systems Initialization"
     priority: "critical"
-    timeout: 30  # seconds
-    fallback_timeout: 10
+    timeout: 45  # seconds
+    description: "Initialize critical error handling and recovery systems"
 
     load_order:
       - config: "config/core/unified_error_handling.yaml"
         required: true
         fallback_config: "builtin_error_handling"
-        timeout: 10
+        timeout: 15
 
     validation:
       required_functions:
@@ -37,11 +37,12 @@ initialization_phases:
       - "use_builtin_error_handling"
       - "continue_with_minimal_functionality"
 
-  phase_1b_knowledge_base:
+  phase_2_knowledge_base:
     name: "Knowledge Base Initialization"
     priority: "high"
-    timeout: 45
-    depends_on: "phase_1a_critical_core"
+    timeout: 60
+    depends_on: "phase_1_core_systems"
+    description: "Initialize core knowledge and analysis systems"
 
     load_order:
       - config: "config/knowledge-base/task-analysis.yaml"
@@ -83,11 +84,12 @@ initialization_phases:
       - "use_fallback_configs"
       - "continue_with_basic_functionality"
 
-  phase_1c_dynamic_configuration:
+  phase_3_dynamic_configuration:
     name: "Dynamic Configuration Initialization"
     priority: "high"
-    timeout: 60
-    depends_on: "phase_1b_knowledge_base"
+    timeout: 75
+    depends_on: "phase_2_knowledge_base"
+    description: "Initialize dynamic agent discovery and system configuration"
 
     load_order:
       - config: "config/dynamic/agent_types.yaml"
@@ -146,11 +148,12 @@ initialization_phases:
       - "enable_basic_mcp_tools"
       - "continue_with_limited_discovery"
 
-  phase_1d_integration_validation:
+  phase_4_system_integration:
     name: "System Integration and Validation"
     priority: "critical"
     timeout: 30
-    depends_on: ["phase_1a_critical_core", "phase_1b_knowledge_base", "phase_1c_dynamic_configuration"]
+    depends_on: ["phase_1_core_systems", "phase_2_knowledge_base", "phase_3_dynamic_configuration"]
+    description: "Validate system integration and prepare for operation"
 
     integration_tasks:
       - name: "validate_all_components"
@@ -181,6 +184,257 @@ initialization_phases:
         - preferred_agents: ">=3"
         - fallback_systems: "ready"
         - error_recovery: "tested"
+
+  phase_5_agent_discovery:
+    name: "Dynamic Agent Discovery and Registration"
+    priority: "high"
+    timeout: 60
+    depends_on: ["phase_1_core_systems", "phase_2_knowledge_base", "phase_3_dynamic_configuration", "phase_4_system_integration"]
+    description: "Discover, validate and register available agents"
+
+    discovery_process:
+      - step: "Query filesystem for available agents"
+        config: "config/dynamic/dynamic_agent_discovery.yaml"
+        timeout: 15
+        error_recovery: "continue_even_if_fails"
+
+      - step: "Dynamically discover agents from filesystem and built-in defaults"
+        scan_paths: ["agents/"]
+        file_patterns: ["*.md"]
+        timeout: 10
+
+      - step: "Validate agent name format"
+        validation: "simple-name (from YAML frontmatter)"
+        timeout: 5
+        fallback: "provide_suggestions_for_invalid_names"
+
+      - step: "Auto-registration and caching"
+        actions: ["cache_discovered_agents", "auto_register_agents"]
+        timeout: 10
+        fallback: "use_hardcoded_master_agent"
+
+    validation:
+      required_functions:
+        - "agent_discovery_active"
+        - "agent_validation_ready"
+        - "fallback_agent_available"
+
+      success_criteria:
+        - agents_discovered: ">=1"
+        - master_agent_available: true
+        - validation_systems: "operational"
+
+    failure_actions:
+      - "activate_master_agent_fallback"
+      - "use_hardcoded_agent_list"
+      - "continue_with_minimal_functionality"
+      - "log_discovery_failure"
+
+    fallback_configurations:
+      master_agent_fallback:
+        description: "Always have master agent available as last resort"
+        priority: "critical"
+        actions: ["register_master_agent", "enable_basic_functionality"]
+
+      emergency_agents:
+        default_agents: ["master"]
+        capabilities: ["basic_orchestration", "native_execution"]
+
+phase_6_task_analysis_systems:
+    name: "Task Analysis and TF-IDF Systems"
+    priority: "high"
+    timeout: 45
+    depends_on: ["phase_5_agent_discovery"]
+    description: "Initialize task analysis, TF-IDF processing and categorization systems"
+
+    load_order:
+      - config: "config/knowledge-base/task-analysis.yaml"
+        required: true
+        fallback_config: "builtin_task_analysis"
+        timeout: 15
+
+      - config: "config/knowledge-base/tfidf-system.yaml"
+        required: true
+        fallback_config: "builtin_tfidf"
+        timeout: 10
+
+      - config: "config/knowledge-base/categorization-engine.yaml"
+        required: true
+        depends_on: ["task-analysis.yaml", "tfidf-system.yaml"]
+        fallback_config: "builtin_categorization"
+        timeout: 10
+
+      - config: "config/knowledge-base/clarification_system.yaml"
+        required: false
+        depends_on: "categorization-engine.yaml"
+        fallback_config: "builtin_clarification"
+        timeout: 10
+
+    validation:
+      required_functions:
+        - "task_analysis_ready"
+        - "tfidf_processing_active"
+        - "categorization_operational"
+        - "clarification_available"
+
+      success_criteria:
+        - task_analysis_status: "operational"
+        - tfidf_status: "active"
+        - categorization_status: "operational"
+        - analysis_quality: ">=85%"
+
+    failure_actions:
+      - "enable_basic_task_analysis"
+      - "use_keyword_extraction_fallback"
+      - "disable_advanced_categorization"
+      - "continue_with_simplified_analysis"
+
+  phase_7_agent_selection_systems:
+    name: "Agent Selection and Matching Systems"
+    priority: "high"
+    timeout: 30
+    depends_on: ["phase_6_task_analysis_systems", "phase_5_agent_discovery"]
+    description: "Initialize intelligent agent selection and matching systems"
+
+    load_order:
+      - config: "config/knowledge-base/unified_agent_selection.yaml"
+        required: true
+        fallback_config: "builtin_agent_selection"
+        timeout: 10
+
+      - config: "config/dynamic/domain_system.yaml"
+        required: false
+        fallback_config: "builtin_domain_system"
+        timeout: 5
+
+      - config: "config/dynamic/time_estimation.yaml"
+        required: false
+        fallback_config: "builtin_time_estimation"
+        timeout: 5
+
+    validation:
+      required_functions:
+        - "agent_selection_ready"
+        - "matching_algorithm_active"
+        - "scoring_system_operational"
+
+      success_criteria:
+        - selection_status: "operational"
+        - matching_quality: ">=90%"
+        - scoring_accuracy: ">=85%"
+
+    failure_actions:
+      - "use_basic_agent_selection"
+      - "fallback_to_master_agent"
+      - "disable_intelligent_matching"
+      - "continue_with_simple_selection"
+
+  phase_8_execution_systems:
+    name: "Task Execution and Coordination Systems"
+    priority: "high"
+    timeout: 45
+    depends_on: ["phase_7_agent_selection_systems"]
+    description: "Initialize task execution, parallel coordination and TODO-EXECUTION engine"
+
+    load_order:
+      - config: "config/knowledge-base/parallel_coordination.yaml"
+        required: true
+        fallback_config: "builtin_coordination"
+        timeout: 10
+
+      - config: "config/knowledge-base/todo_execution_engine.yaml"
+        required: true
+        fallback_config: "builtin_todo_execution"
+        timeout: 15
+
+      - config: "config/dynamic/mcp_registry.yaml"
+        required: true
+        fallback_config: "builtin_mcp_registry"
+        timeout: 10
+
+    validation:
+      required_functions:
+        - "coordination_ready"
+        - "todo_execution_active"
+        - "mcp_registry_operational"
+        - "task_delegation_ready"
+
+      success_criteria:
+        - coordination_status: "operational"
+        - todo_execution_status: "active"
+        - mcp_tools_available: ">=5"
+        - delegation_success_rate: ">=90%"
+
+    failure_actions:
+      - "enable_sequential_execution"
+      - "use_native_task_execution"
+      - "disable_parallel_coordination"
+      - "fallback_to_direct_execution"
+
+  phase_9_monitoring_systems:
+    name: "Monitoring and Performance Systems"
+    priority: "medium"
+    timeout: 30
+    depends_on: ["phase_8_execution_systems"]
+    description: "Initialize performance tracking, monitoring and learning systems"
+
+    load_order:
+      - config: "config/dynamic/performance_tracking.yaml"
+        required: false
+        fallback_config: "builtin_performance_tracking"
+        timeout: 10
+
+      - config: "config/dynamic/integrated_environment_config.yaml"
+        required: false
+        fallback_config: "builtin_environment_config"
+        timeout: 5
+
+      - config: "config/dynamic/unified_metrics.yaml"
+        required: false
+        fallback_config: "builtin_metrics"
+        timeout: 5
+
+    validation:
+      required_functions:
+        - "monitoring_active"
+        - "metrics_collection_ready"
+
+      success_criteria:
+        - monitoring_status: "operational"
+        - metrics_quality: ">=80%"
+
+    failure_actions:
+      - "enable_basic_monitoring"
+      - "use_builtin_metrics"
+      - "continue_without_advanced_tracking"
+
+  phase_10_system_ready:
+    name: "Final System Readiness and Validation"
+    priority: "critical"
+    timeout: 30
+    depends_on: ["phase_1_core_systems", "phase_2_knowledge_base", "phase_3_dynamic_configuration", "phase_4_system_integration", "phase_5_agent_discovery", "phase_6_task_analysis_systems", "phase_7_agent_selection_systems", "phase_8_execution_systems"]
+    description: "Final validation and system readiness confirmation"
+
+    final_validation:
+      system_health_checks:
+        - error_handling: "operational"
+        - agent_discovery: ">=1_agent_found"
+        - task_analysis: "functional"
+        - agent_selection: "functional"
+        - execution_systems: "operational"
+
+      operational_readiness:
+        - minimal_functionality: ">=80%"
+        - preferred_functionality: ">=60%"
+        - fallback_systems: "ready"
+        - error_recovery: "tested"
+        - performance_baseline: "established"
+
+    completion_actions:
+      - "log_initialization_success"
+      - "activate_monitoring"
+      - "enable_learning_systems"
+      - "provide_system_status_report"
 
 # Fallback Configuration Templates
 fallback_configurations:
