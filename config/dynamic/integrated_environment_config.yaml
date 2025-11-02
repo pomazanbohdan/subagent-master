@@ -367,7 +367,6 @@ integration:
   imports:
     - "config/core/unified_error_handling.yaml"
     - "config/knowledge-base/unified_agent_selection.yaml"
-    - "config/dynamic/runtime_environment.yaml"
 
   exports:
     - "environment_configuration"
@@ -375,14 +374,9 @@ integration:
     - "resource_adaptation_settings"
     - "claude_code_integration_settings"
 
-  claude_code_dependencies:
-    - "unified_error_handling.yaml"
-    - "unified_agent_selection.yaml"
-    - "runtime_environment.yaml"
-
-# Version Management
+  # Version Management
 version_management:
-  current_version: "1.0.0"
+  current_version: "1.0.1"
   supported_versions: ["1.0.0"]
   compatibility_check: true
   migration_support: true

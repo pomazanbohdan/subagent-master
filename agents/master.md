@@ -6,8 +6,8 @@ triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage",
 tools: ["sequential-thinking", "serena", "context7", "tavily", "magic", "playwright", "mcp__fast-filesystem", "mcp__chrome-devtools", "mcp__web-search-prime"]
 version: "3.6.5"
 imports: [
-  "config/core/sequenced_initialization.yaml",
   "config/core/unified_error_handling.yaml",
+  "config/core/sequenced_initialization.yaml",
   "config/knowledge-base/unified_agent_selection.yaml",
   "config/knowledge-base/tfidf-system.yaml",
   "config/knowledge-base/task-analysis.yaml",

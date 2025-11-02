@@ -374,8 +374,8 @@ error_handling:
       recovery_actions: ["restart_task_system", "fallback_to_native", "escalate_to_human"]
 
     agent_discovery_failure:
-      fallback_strategy: "use_hardcoded_agent_list"
-      recovery_actions: ["reload_agent_configurations", "use_backup_agents", "manual_agent_selection"]
+      fallback_strategy: "use_master_agent_directly"
+      recovery_actions: ["reload_agent_configurations", "use_master_agent", "manual_agent_selection"]
 
     configuration_corruption:
       fallback_strategy: "use_last_known_good_configuration"

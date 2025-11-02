@@ -1,316 +1,441 @@
 # Unified Error Handling System
-# Standardized error handling with Claude Code native fallbacks
+# Consolidated error handling strategy for all system components
 
 metadata:
-  name: "unified-error-handling"
+  name: "unified_error_handling"
   version: "1.0.0"
-  description: "Unified error handling system with automatic Claude Code fallback integration"
-  author: "Master Agent System v3.6.0"
+  description: "Centralized error handling system with graceful degradation and fallback mechanisms"
+  author: "Master Agent System v3.6.5"
+  tags: ["error-handling", "fallback", "recovery", "graceful-degradation"]
+
+# Core Error Handling Philosophy
+error_handling_philosophy: |
+  1. Fail Fast and Gracefully: Detect errors early and handle them gracefully
+  2. Fallback-first: Always have fallback mechanisms available
+  3. Context-aware Recovery: Adapt recovery strategies based on context
+  4. Never-crash Policy: System should remain operational even with partial failures
+  5. Continuous Learning: Learn from errors to improve future handling
 
 # Error Classification System
 error_classification:
-  categories:
+  severity_levels:
     critical:
-      description: "System-blocking errors requiring immediate intervention"
-      severity: "critical"
-      auto_recovery: false
-      claude_fallback_required: true
+      description: "System-breaking errors requiring immediate attention"
+      recovery_strategy: "emergency_fallback"
+      user_notification: true
+      escalation_required: true
       examples:
-        - "no_agents_available"
-        - "system_initialization_failure"
-        - "configuration_corruption"
-        - "mcp_server_unavailable"
+        - "complete_system_initialization_failure"
+        - "all_agents_unavailable"
+        - "memory_exhaustion_complete"
+        - "core_configuration_corruption"
 
     high:
-      description: "High-priority errors affecting task completion"
-      severity: "high"
-      auto_recovery: true
-      claude_fallback_available: true
+      description: "Major component failures with workarounds available"
+      recovery_strategy: "graceful_degradation"
+      user_notification: true
+      escalation_required: false
       examples:
-        - "agent_timeout"
-        - "selection_failure"
-        - "coordination_deadlock"
-        - "performance_degradation"
+        - "agent_discovery_partial_failure"
+        - "mcp_server_unavailable"
+        - "configuration_loading_errors"
+        - "task_execution_timeout"
 
     medium:
-      description: "Medium-priority errors with workarounds available"
-      severity: "medium"
-      auto_recovery: true
-      claude_fallback_optional: true
+      description: "Non-critical errors with automatic recovery possible"
+      recovery_strategy: "auto_recovery"
+      user_notification: false
+      escalation_required: false
       examples:
-        - "partial_failure"
-        - "resource_constraint"
-        - "quality_threshold_miss"
-        - "retry_required"
+        - "individual_agent_failure"
+        - "network_connectivity_issues"
+        - "temporary_resource_unavailability"
+        - "validation_warnings"
 
     low:
-      description: "Low-priority errors with minimal impact"
-      severity: "low"
-      auto_recovery: true
-      claude_fallback_not_needed: true
+      description: "Minor issues that don't affect core functionality"
+      recovery_strategy: "log_and_continue"
+      user_notification: false
+      escalation_required: false
       examples:
-        - "non_critical_timeout"
-        - "minor_quality_issue"
-        - "resource_optimization_opportunity"
-        - "performance_variance"
+        - "performance_degradation"
+        - "cache_misses"
+        - "non_critical_feature_unavailable"
+        - "debug_logging_triggers"
 
-# Unified Error Response Strategy
-error_response_strategy:
-  immediate_actions:
-    error_detection:
-      action: "Classify and log error"
-      timeout: 5  # seconds
-      claude_fallback_if_timeout: true
+  error_categories:
+    system_errors:
+      initialization_failures:
+        detection_criteria: "failed_system_startup_components"
+        handling_strategy: "selective_initialization_with_fallbacks"
+        recovery_actions:
+          - "identify_failed_components"
+          - "initialize_available_components"
+          - "activate_fallback_mechanisms"
+          - "log_comprehensive_failure_report"
 
-    error_containment:
-      action: "Prevent error propagation"
-      isolation_required: true
-      claude_fallback_if_isolation_fails: true
+      configuration_errors:
+        detection_criteria: "config_file_loading_or_validation_failures"
+        handling_strategy: "use_last_known_good_configuration"
+        recovery_actions:
+          - "fallback_to_cached_configuration"
+          - "use_embedded_default_configuration"
+          - "disable_advanced_features"
+          - "notify_configuration_team"
 
-    user_notification:
-      action: "Inform user of error status"
-      notification_level: "error"
-      claude_fallback_if_notification_fails: true
+      resource_errors:
+        detection_criteria: "memory_cpu_or_disk_exhaustion"
+        handling_strategy: "adaptive_resource_management"
+        recovery_actions:
+          - "activate_low_resource_mode"
+          - "clear_caches_and_temporary_data"
+          - "prioritize_essential_operations"
+          - "gracefully_degrade_non_critical_features"
 
-  recovery_actions:
-    automatic_recovery:
-      enabled: true
-      max_attempts: 3
-      backoff_strategy: "exponential"
-      claude_fallback_after_attempts: 2
+    agent_errors:
+      agent_unavailable:
+        detection_criteria: "selected_agent_not_responding"
+        handling_strategy: "agent_substitution_with_fallback"
+        recovery_actions:
+          - "select_alternative_agent_based_on_capabilities"
+          - "use_general_purpose_agent_as_fallback"
+          - "retry_with_different_parameters"
+          - "escalate_to_manual_selection"
 
-    graceful_degradation:
-      enabled: true
-      degradation_levels: 3
-      claude_fallback_at_level_2: true
+      agent_capability_mismatch:
+        detection_criteria: "agent_lacks_required_capabilities"
+        handling_strategy: "task_decomposition_or_agent_switching"
+        recovery_actions:
+          - "decompose_task_into_simpler_subtasks"
+          - "find_agent_with_matching_capabilities"
+          - "use_multiple_agents协作"
+          - "provide_additional_guidance_to_agent"
 
-    claude_native_fallback:
-      enabled: true
-      trigger_conditions:
-        - "automatic_recovery_failed"
-        - "no_suitable_agents_available"
-        - "system_overload_detected"
-        - "user_requested_fallback"
+    task_execution_errors:
+      timeout_errors:
+        detection_criteria: "task_execution_exceeds_time_limit"
+        handling_strategy: "adaptive_timeout_handling"
+        recovery_actions:
+          - "increase_timeout_based_on_task_complexity"
+          - "decompose_task_into_smaller_chunks"
+          - "try_different_agent_with_better_performance"
+          - "provide_progress_feedback_to_user"
 
-# Claude Code Native Fallback System
-claude_code_fallback_system:
-  activation_triggers:
-    system_failure:
-      - "all_agents_unavailable"
-      - "critical_initialization_error"
-      - "configuration_corruption"
-      - "timeout_exceeded"
+      validation_errors:
+        detection_criteria: "task_requirements_or_results_validation_failure"
+        handling_strategy: "clarification_or_task_refinement"
+        recovery_actions:
+          - "trigger_clarification_workflow"
+          - "refine_task_requirements"
+          - "provide_examples_or_templates"
+          - "break_down_ambiguous_requirements"
 
-    performance_issues:
-      - "response_time > 30_seconds"
-      - "error_rate > 20%"
-      - "resource_exhaustion"
-      - "user_timeout"
+    communication_errors:
+      mcp_server_errors:
+        detection_criteria: "mcp_server_unreachable_or_responding_with_errors"
+        handling_strategy: "mcp_fallback_to_native_capabilities"
+        recovery_actions:
+          - "switch_to_claude_native_tools"
+          - "use_alternative_mcp_servers"
+          - "cache_mcp_results_for_offline_use"
+          - "disable_advanced_mcp_features"
 
-    user_preference:
-      - "user_requests_direct_execution"
-      - "simplification_requested"
-      - "fallback_preferred"
+      network_errors:
+        detection_criteria: "network_connectivity_or_api_errors"
+        handling_strategy: "offline_mode_with_cached_data"
+        recovery_actions:
+          - "activate_offline_mode"
+          - "use_cached_information_when_available"
+          - "queue_operations_for_later_execution"
+          - "provide_graceful_degradation_message"
 
-  claude_native_capabilities:
-    file_operations:
-      tools: ["Read", "Write", "Edit", "Glob", "Grep"]
-      fallback_strategy: "direct_file_manipulation"
-      quality_assurance: "automatic_validation"
+# Fallback Strategy Matrix
+fallback_strategies:
+  # System-level Fallbacks
+  system_level_fallbacks:
+    complete_system_failure:
+      primary_fallback: "claude_native_mode"
+      description: "Fallback to Claude Code native capabilities when all else fails"
+      activation_criteria: "all_specialized_systems_unavailable"
+      capabilities:
+        - "basic_file_operations"
+        - "code_analysis"
+        - "simple_task_execution"
+        - "direct_user_communication"
+      limitations:
+        - "no_parallel_execution"
+        - "no_specialized_agent_coordination"
+        - "limited_advanced_features"
 
-    web_operations:
-      tools: ["WebFetch", "WebSearch"]
-      fallback_strategy: "direct_web_access"
-      quality_assurance: "source_validation"
+    configuration_system_failure:
+      primary_fallback: "embedded_configuration"
+      description: "Use built-in default configuration when config loading fails"
+      activation_criteria: "configuration_loading_complete_failure"
+      fallback_config:
+        max_agents: 3
+        default_agents: ["general-purpose", "technical-writer", "analyzer"]
+        timeout_values: "conservative_defaults"
+        error_handling: "minimal_safe_mode"
 
-    mcp_operations:
-      tools: ["All available MCP servers"]
-      fallback_strategy: "direct_mcp_usage"
-      quality_assurance: "server_health_check"
+  # Agent-level Fallbacks
+  agent_level_fallbacks:
+    specialized_agent_unavailable:
+      primary_fallback: "general_purpose_agent"
+      secondary_fallback: "claude_native_execution"
+      description: "Use general-purpose agent when specialized agent is unavailable"
+      activation_criteria: "selected_agent_not_responding_after_3_retries"
+      capabilities_mapping:
+        "backend-architect": "general-purpose (with architecture_guidance)"
+        "frontend-developer": "general-purpose (with ui_best_practices)"
+        "research-agent": "general-purpose (with search_instructions)"
+        "testing-specialist": "general-purpose (with testing_checklist)"
 
-    bash_operations:
-      tools: ["Bash"]
-      fallback_strategy: "direct_command_execution"
-      quality_assurance: "command_validation"
-
-    delegation_operations:
-      tools: ["Task"]
-      fallback_strategy: "direct_task_delegation"
-      quality_assurance: "result_validation"
-
-  fallback_execution_strategies:
-    direct_execution:
-      description: "Execute task directly using Claude Code tools"
-      process:
-        1. "Analyze task requirements"
-        2. "Select appropriate Claude Code tools"
-        3. "Execute task in coordinated manner"
-        4. "Validate and present results"
-
-    parallel_execution:
-      description: "Use Claude Code parallel processing capabilities"
-      process:
-        1. "Identify parallelizable components"
-        2. "Execute tool calls in parallel"
-        3. "Synthesize results"
-        4. "Handle conflicts and dependencies"
-
-    simplified_execution:
-      description: "Execute simplified version of task"
-      process:
-        1. "Identify core requirements"
-        2. "Remove non-essential complexity"
-        3. "Execute using basic Claude Code tools"
-        4. "Provide incremental improvements"
+  # Task-level Fallbacks
+  task_level_fallbacks:
+    complex_task_decomposition_failure:
+      primary_fallback: "simplified_sequential_execution"
+      description: "Break complex task into simple sequential steps"
+      activation_criteria: "parallel_coordination_or_dependency_resolution_failure"
+      fallback_approach:
+        - "execute_tasks_one_by_one"
+        - "skip_complex_dependency_analysis"
+        - "use_manual_progress_tracking"
+        - "provide_basic_coordination"
 
 # Error Recovery Workflows
 recovery_workflows:
-  workflow_template:
-    error_detection:
-      step_1: "Detect and classify error"
-      step_2: "Log error details with context"
-      step_3: "Trigger appropriate response strategy"
-      timeout: 10  # seconds
+  initialization_recovery:
+    workflow_name: "System Initialization Recovery"
+    trigger_conditions:
+      - "phase_initialization_failure"
+      - "critical_component_unavailable"
+      - "dependency_resolution_failure"
 
-    immediate_response:
-      step_1: "Apply immediate containment actions"
-      step_2: "Notify user of error status"
-      step_3: "Prepare recovery strategy"
-      timeout: 5  # seconds
+    recovery_steps:
+      1. "Assess initialization failure scope and identify failed components"
+      2. "Isolate failed components to prevent cascade failures"
+      3. "Initialize available components with safe defaults"
+      4. "Activate fallback mechanisms for critical functionality"
+      5. "Log comprehensive failure report for debugging"
+      6. "Notify user about system capabilities and limitations"
+      7. "Continue operation in degraded mode if possible"
 
-    recovery_execution:
-      step_1: "Attempt automatic recovery (3 attempts max)"
-      step_2: "Apply graceful degradation if needed"
-      step_3: "Activate Claude Code fallback if required"
-      timeout: 60  # seconds
-
-    validation_and_completion:
-      step_1: "Validate recovery success"
-      step_2: "Complete task using fallback strategy"
-      step_3: "Log recovery outcome and learn from it"
-      timeout: 30  # seconds
-
-  specific_workflows:
-    agent_selection_failure:
-      error_detection:
-        criteria: "no_suitable_agents_found OR confidence_below_threshold"
-
-      recovery_actions:
-        - "expand_search_criteria"
-        - "lower_confidence_threshold"
-        - "enable_cross_domain_search"
-        - "claude_direct_execution"
-
-      claude_fallback:
-        trigger: "after_expansion_fails"
-        strategy: "direct_execution_with_available_tools"
-
-    coordination_deadlock:
-      error_detection:
-        criteria: "circular_dependencies OR timeout_exceeded"
-
-      recovery_actions:
-        - "break_dependency_cycles"
-        - "prioritize_critical_paths"
-        - "sequential_execution"
-        - "claude_parallel_processing"
-
-      claude_fallback:
-        trigger: "after_dependency_break_fails"
-        strategy: "parallel_execution_without_coordination"
-
-    performance_degradation:
-      error_detection:
-        criteria: "response_time > 30s OR error_rate > 20%"
-
-      recovery_actions:
-        - "reduce_concurrent_operations"
-        - "increase_timeout_values"
-        - "simplify_processing"
-        - "claude_optimized_execution"
-
-      claude_fallback:
-        trigger: "after_optimization_fails"
-        strategy: "simplified_execution_with_core_features"
-
-# Quality Assurance and Validation
-validation_system:
-  error_recovery_validation:
     success_criteria:
-      - "task_completion_achieved"
-      - "quality_thresholds_met"
-      - "user_acceptance_obtained"
-      - "no_new_errors_introduced"
+      - "core_system_functional"
+      - "basic_task_execution_possible"
+      - "error_handling_operational"
+      - "user_communication_available"
 
     failure_criteria:
-      - "recovery_attempts_exhausted"
-      - "claude_fallback_failed"
-      - "user_rejection"
-      - "new_critical_errors_introduced"
+      - "no_components_successful"
+      - "critical_infrastructure_unavailable"
+      - "emergency_mode_required"
 
-  fallback_effectiveness_metrics:
-    success_rate: "Percentage of successful fallback activations"
-    response_time: "Time from fallback activation to task completion"
-    quality_preservation: "Maintenance of task quality standards"
-    user_satisfaction: "User acceptance of fallback results"
+  agent_execution_recovery:
+    workflow_name: "Agent Execution Recovery"
+    trigger_conditions:
+      - "selected_agent_unresponsive"
+      - "agent_execution_timeout"
+      - "agent_capability_mismatch"
 
-# Learning and Adaptation
-learning_system:
-  error_pattern_recognition:
-    enabled: true
-    data_sources:
-      - "error_logs"
-      - "recovery_attempts"
-      - "fallback_activations"
-      - "user_feedback"
+    recovery_steps:
+      1. "Validate agent availability and responsiveness"
+      2. "Attempt agent restart or reconnection"
+      3. "Select alternative agent based on task requirements"
+      4. "Modify task parameters to better suit alternative agent"
+      5. "Execute with enhanced monitoring and timeouts"
+      6. "Validate execution results quality"
+      7. "Update agent performance metrics for future selection"
 
-    learning_objectives:
-      - "Identify recurring error patterns"
-      - "Optimize recovery strategies"
-      - "Improve fallback trigger conditions"
-      - "Enhance claude_fallback_effectiveness"
+    success_criteria:
+      - "task_completed_successfully"
+      - "results_meet_minimum_quality_threshold"
+      - "execution_time_within_acceptable_limits"
 
-  adaptive_improvement:
-    enabled: true
-    improvement_mechanisms:
-      - "automatic_threshold_adjustment"
-      - "recovery_strategy_optimization"
-      - "fallback_trigger_refinement"
-      - "performance_baseline_update"
+    failure_criteria:
+      - "all_agents_unavailable"
+      - "task_requirements_impossible"
+      - "continuous_execution_failures"
 
-# Integration Points
-integration:
-  required_imports:
-    - "config/knowledge-base/unified_agent_selection.yaml"
-    - "config/dynamic/runtime_environment.yaml"
+  configuration_recovery:
+    workflow_name: "Configuration Recovery"
+    trigger_conditions:
+      - "configuration_file_loading_failure"
+      - "configuration_validation_errors"
+      - "configuration_corruption_detected"
 
-  exports:
-    - "error_handling_status"
-    - "fallback_activation_log"
-    - "recovery_performance_metrics"
-    - "claude_native_usage_statistics"
+    recovery_steps:
+      1. "Identify corrupted or missing configuration files"
+      2. "Restore from last known good configuration cache"
+      3. "Fallback to embedded default configuration"
+      4. "Disable advanced features requiring complex configuration"
+      5. "Initialize with safe conservative settings"
+      6. "Log configuration issues for admin notification"
+      7. "Provide user notification about limited functionality"
 
-  claude_code_integration:
-    direct_tool_access: true
-    parallel_execution_support: true
-    mcp_server_coordination: true
-    task_delegation_capabilities: true
+    success_criteria:
+      - "system_initializes_with_basic_configuration"
+      - "core_functionality_available"
+      - "configuration_stabilized"
 
-# Configuration Management
-configuration:
-  error_handling_enabled: true
-  claude_fallback_enabled: true
-  automatic_recovery_enabled: true
-  learning_system_enabled: true
+    failure_criteria:
+      - "even_embedded_configuration_fails"
+      - "core_system_components_uninitialized"
 
-  timeout_values:
-    error_detection: 5  # seconds
-    immediate_response: 5  # seconds
-    recovery_execution: 60  # seconds
-    validation_and_completion: 30  # seconds
+# Error Handling Integration Points
+integration_points:
+  with_config_loader:
+    error_propagation: "config_loader_errors → unified_error_handling"
+    recovery_coordination: "config_loader_uses_unified_recovery_strategies"
+    fallback_integration: "config_loader_uses_unified_fallback_mechanisms"
+
+  with_agent_discovery:
+    error_propagation: "agent_discovery_failures → unified_error_handling"
+    recovery_coordination: "agent_discovery_uses_unified_recovery_workflows"
+    fallback_integration: "agent_discovery_uses_unified_fallback_agents"
+
+  with_task_execution:
+    error_propagation: "task_execution_failures → unified_error_handling"
+    recovery_coordination: "task_execution_uses_unified_recovery_strategies"
+    fallback_integration: "task_execution_uses_unified_fallback_execution"
+
+  with_environment_system:
+    error_propagation: "environment_errors → unified_error_handling"
+    recovery_coordination: "environment_system_uses_unified_recovery"
+    fallback_integration: "environment_system_uses_unified_fallback_environment"
+
+# Error Monitoring and Learning
+error_monitoring:
+  metrics_collection:
+    error_rates:
+      - "system_initialization_error_rate"
+      - "agent_execution_error_rate"
+      - "configuration_loading_error_rate"
+      - "task_completion_error_rate"
+      - "mcp_communication_error_rate"
+
+    recovery_success_rates:
+      - "fallback_activation_success_rate"
+      - "recovery_workflow_success_rate"
+      - "graceful_degradation_success_rate"
+      - "auto_recovery_success_rate"
+
+    performance_impact:
+      - "error_handling_overhead_percentage"
+      - "fallback_execution_time_vs_optimal"
+      - "degraded_mode_functionality_percentage"
+
+  learning_system:
+    error_pattern_analysis:
+      enabled: true
+      learning_rate: 0.1
+      pattern_recognition_threshold: 3  # occurrences before pattern recognized
+
+    adaptive_thresholds:
+      enabled: true
+      adaptation_rate: 0.05
+      min_threshold_adjustment: 0.01
+      max_threshold_adjustment: 0.2
+
+    recovery_strategy_optimization:
+      enabled: true
+      success_tracking: true
+      strategy_ranking: true
+      automatic_strategy_selection: true
+
+# Environment-Specific Error Handling
+environment_specific_handling:
+  development:
+    error_tolerance: "high"
+    recovery_automation: "full"
+    user_notification: "verbose"
+    debug_information: "detailed"
+    fallback_aggressiveness: "conservative"
+
+  testing:
+    error_tolerance: "medium"
+    recovery_automation: "controlled"
+    user_notification: "structured"
+    debug_information: "moderate"
+    fallback_aggressiveness: "balanced"
+
+  production:
+    error_tolerance: "low"
+    recovery_automation: "minimal"
+    user_notification: "minimal"
+    debug_information: "minimal"
+    fallback_aggressiveness: "aggressive"
+
+# Error Handling Configuration
+configuration_parameters:
+  timeouts:
+    error_detection_timeout: 5000  # milliseconds
+    recovery_attempt_timeout: 30000  # milliseconds
+    fallback_activation_timeout: 10000  # milliseconds
 
   thresholds:
-    max_recovery_attempts: 3
-    max_fallback_activations: 2
-    error_rate_threshold: 0.20  # 20%
-    response_time_threshold: 30  # seconds
+    max_retry_attempts: 3
+    max_consecutive_failures: 5
+    error_rate_threshold: 0.1  # 10%
+    recovery_success_threshold: 0.8  # 80%
+
+  logging:
+    error_log_level: "ERROR"
+    recovery_log_level: "INFO"
+    debug_log_level: "DEBUG"
+    structured_logging: true
+    error_context_capture: true
+
+# Default Error Responses
+default_error_responses:
+  system_unavailable:
+    message: "I'm experiencing some technical difficulties, but I can still help you with basic tasks using my core capabilities."
+    capabilities: "basic_file_operations, code_analysis, simple_task_execution"
+    escalation: "Contact support if issues persist."
+
+  agent_unavailable:
+    message: "The specialized agent I selected is temporarily unavailable. I'll use an alternative approach or help you directly."
+    fallback: "general_purpose_agent or direct_execution"
+    reassurance: "Your task will still be completed, though perhaps with less specialization."
+
+  configuration_error:
+    message: "I'm having trouble with some configuration settings. Let me work with a simpler setup to assist you."
+    impact: "Some advanced features may be temporarily unavailable."
+    recovery: "System will continue with basic functionality."
+
+# Emergency Procedures
+emergency_procedures:
+  complete_system_failure:
+    procedure_name: "Emergency Claude Native Mode"
+    trigger: "all_specialized_systems_unavailable"
+    actions:
+      1. "Disable all specialized components"
+      2. "Activate Claude Code native tools only"
+      3. "Inform user about limited capabilities"
+      4. "Provide basic task execution assistance"
+      5. "Log emergency activation for admin review"
+
+  critical_configuration_corruption:
+    procedure_name: "Emergency Embedded Configuration"
+    trigger: "all_configuration_sources_unavailable"
+    actions:
+      1. "Load embedded safe configuration"
+      2. "Initialize with minimal safe settings"
+      3. "Disable all advanced features"
+      4. "Provide user notification about limitations"
+      5. "Queue configuration repair for admin attention"
+
+# Version Management and Compatibility
+version_management:
+  current_version: "1.0.0"
+  compatibility_requirements:
+    minimal_system_version: "3.6.0"
+    required_components:
+      - "basic_logging"
+      - "fallback_mechanisms"
+      - "error_detection"
+
+  migration_support:
+    previous_version_support: true
+    migration_strategy: "backward_compatible_fallbacks"
+    configuration_migration: "automatic_with_validation"
