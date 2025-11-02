@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Enhanced intelligent task orchestrator with dynamic adaptive planning, self-correction algorithms, dependency analysis, and intelligent task decomposition",
-    "version": "0.6.3"
+    "version": "0.7.0"
   },
   "plugins": [
     {
