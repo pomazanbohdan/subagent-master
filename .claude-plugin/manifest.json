@@ -1,7 +1,7 @@
 {
   "name": "subagent-master",
-  "version": "2.8.0",
-  "description": "Enhanced intelligent task orchestrator v2.8.0 - Clear algorithms, simple delegation rules, and user-friendly interface with powerful coordination capabilities",
+  "version": "2.9.0",
+  "description": "Clean modular orchestration system v2.9.0 - Separated architecture with modular implementation and improved maintainability",
   "author": "Bohdan <pomazan.bohdan@gmail.com>",
   "license": "MIT",
   "keywords": [
