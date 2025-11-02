@@ -1,7 +1,7 @@
 {
   "name": "subagent-master",
-  "version": "3.6.2",
-  "description": "Dynamic orchestration system v3.6.2 - Critical bug fixes, filesystem-based agent discovery, enhanced error handling, and robust initialization fallbacks",
+  "version": "3.6.3",
+  "description": "Dynamic orchestration system v3.6.3 - Integrated TODO-EXECUTION engine with automatic Task() delegation, real-time progress tracking, and intelligent failure recovery",
   "author": "Bohdan <pomazan.bohdan@gmail.com>",
   "license": "MIT",
   "keywords": [
@@ -99,7 +99,17 @@
     "agent-name-validation",
     "error-prevention",
     "name-resolution",
-    "registry-validation"
+    "registry-validation",
+    "todo-execution-engine",
+    "automatic-task-delegation",
+    "real-time-progress-tracking",
+    "intelligent-failure-recovery",
+    "todo-write-integration",
+    "task-delegation-automation",
+    "execution-workflow",
+    "progress-monitoring-advanced",
+    "failure-recovery-intelligent",
+    "automatic-plan-execution"
   ],
   "homepage": "https://github.com/pomazanbohdan/subagent-master",
   "repository": "https://github.com/pomazanbohdan/subagent-master.git",

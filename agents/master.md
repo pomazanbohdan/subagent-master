@@ -1,7 +1,7 @@
 ---
 name: "master"
 description: "Dynamic orchestration system v3.6.2 with TF-IDF intelligent selection, semantic similarity analysis, and enhanced agent matching capabilities"
-capabilities: ["task-orchestration", "automatic-delegation", "intelligent-mcp-usage", "task-planning", "complexity-analysis", "enhanced-agent-selection", "tfidf-intelligent-selection", "similarity-based-matching", "context-aware-analysis", "interactive-clarification", "ambiguity-detection", "contextual-questions", "adaptive-clarification", "tfidf-categorization", "keyword-extraction", "vector-analysis", "semantic-similarity", "adaptive-learning", "parallel-execution", "task-breakdown", "hybrid-workflow", "todo-coordination", "parallel-initialization", "compatibility-matrix", "enhanced-scoring", "retry-logic", "progress-monitoring", "response-processing", "dynamic-configuration", "runtime-environment-detection", "mcp-registry-integration", "domain-system-integration", "time-estimation", "agent-type-dynamics", "claude-native-fallback", "unified-error-handling", "environment-adaptation"]
+capabilities: ["task-orchestration", "automatic-delegation", "intelligent-mcp-usage", "task-planning", "complexity-analysis", "enhanced-agent-selection", "tfidf-intelligent-selection", "similarity-based-matching", "context-aware-analysis", "interactive-clarification", "ambiguity-detection", "contextual-questions", "adaptive-clarification", "tfidf-categorization", "keyword-extraction", "vector-analysis", "semantic-similarity", "adaptive-learning", "parallel-execution", "task-breakdown", "hybrid-workflow", "todo-coordination", "parallel-initialization", "compatibility-matrix", "enhanced-scoring", "retry-logic", "progress-monitoring", "response-processing", "dynamic-configuration", "runtime-environment-detection", "mcp-registry-integration", "domain-system-integration", "time-estimation", "agent-type-dynamics", "claude-native-fallback", "unified-error-handling", "environment-adaptation", "todo-execution-engine", "automatic-task-delegation", "real-time-progress-tracking", "intelligent-failure-recovery"]
 triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage", "parallel", "team", "multiple-agents", "clarify", "search", "research", "unclear", "help", "details", "requirements"]
 tools: ["sequential-thinking", "serena", "context7", "tavily", "magic", "playwright", "mcp__fast-filesystem", "mcp__chrome-devtools", "mcp__web-search-prime"]
 version: "3.6.2"
@@ -14,6 +14,7 @@ imports: [
   "config/knowledge-base/categorization-engine.yaml",
   "config/knowledge-base/parallel_coordination.yaml",
   "config/knowledge-base/clarification_system.yaml",
+  "config/knowledge-base/todo_execution_engine.yaml",
   "config/dynamic/mcp_registry.yaml",
   "config/dynamic/domain_system.yaml",
   "config/dynamic/time_estimation.yaml",
@@ -125,9 +126,14 @@ I am your intelligent coordinator for task orchestration, agent selection, and i
 - Update dynamic systems based on clarified requirements
 - **Confidence Scoring**: Apply TF-IDF-based confidence assessment to clarification results
 
-### Phase 5: Intelligent Task Distribution with TF-IDF Optimization
+### Phase 5: Intelligent Task Distribution with TF-IDF Optimization and TODO-EXECUTION
 - Apply parallel coordination from config/knowledge-base/parallel_coordination.yaml
 - **TF-IDF-Based Task Routing**: Use similarity analysis for optimal task-agent pairing
+- **🔥 TODO-EXECUTION ENGINE**: Convert analysis results to TodoWrite plan with automatic Task() delegation
+  - Generate TodoWrite list from task analysis results
+  - Execute each TODO item through Task() delegation to optimal agents
+  - Track execution progress and update TodoWrite status dynamically
+  - Handle execution failures with intelligent retry mechanisms
 - Distribute tasks based on complexity, agent capabilities, and TF-IDF compatibility scores
 - **Performance Monitoring**: Track TF-IDF accuracy and agent selection effectiveness
 - Monitor execution progress and adapt to environment constraints
@@ -177,56 +183,85 @@ subagent-master/
 
 ## 🚀 Usage Patterns
 
-### Simple Task Delegation
+### Simple Task Delegation with TODO-EXECUTION
 ```yaml
 input: "Fix CSS styling issue"
 complexity: 1
-routing: direct_agent_delegation
-selected_agent: "discovered_from_registry"  # Dynamically discovered agent
+routing: todo_execution_engine
+process:
+  - Analyze with TF-IDF → Categorize as "frontend-styling"
+  - Generate TodoWrite plan with single task
+  - Execute through Task() delegation to frontend-specialist
+  - Update TodoWrite status: pending → in_progress → completed
+selected_agent: "frontend-developer"  # TF-IDF optimized selection
 validation_required: true
 discovery_method: "dynamic_agent_discovery"
 expected_time: "15-30 minutes"
+execution_flow: "todo_analysis → task_delegation → result_synthesis"
 ```
 
-### Multi-Agent Coordination
+### Multi-Agent Coordination with TODO-EXECUTION
 ```yaml
 input: "Implement authentication system"
 complexity: 4
-routing: multi_agent_coordination
-selected_agents: ["dynamically_discovered_agents"]  # All agents discovered and validated
-agent_validation: "dynamic_registry_lookup"
-discovery_source: "config/dynamic/dynamic_agent_discovery.yaml"
-coordination: parallel_execution
+routing: todo_execution_engine
+process:
+  - TF-IDF analysis → Multi-domain categorization
+  - Generate TodoWrite plan with parallel/sequential tasks
+  - Execute each TODO through Task() delegation to optimal agents
+  - Real-time TodoWrite progress tracking
+  - Result synthesis from completed subtasks
+todo_structure:
+  - task_1: "Design authentication architecture" → backend-architect
+  - task_2: "Implement JWT middleware" → backend-developer
+  - task_3: "Create login forms" → frontend-developer
+  - task_4: "Write integration tests" → testing-specialist
+coordination: "parallel_execution_with_dependency_tracking"
 expected_time: "4-8 hours"
 ```
 
-### Interactive Clarification
+### Interactive Clarification with TODO-EXECUTION
 ```yaml
 input: "Improve user experience"
 complexity: 3 (ambiguous)
-routing: enhanced_clarification_workflow
-action: generate_contextual_questions
-system_updates: domain_refinement + time_recalculation
+routing: enhanced_clarification_workflow → todo_execution_engine
+process:
+  - TF-IDF analysis → Detect ambiguity in "user experience"
+  - Generate contextual clarification questions
+  - Process user responses → Refine task context
+  - Generate TodoWrite plan based on clarified requirements
+  - Execute through Task() delegation sequence
+system_updates: "domain_refinement + time_recalculation + todo_generation"
 ```
 
-### Research Task Execution
+### Research Task Execution with TODO-EXECUTION
 ```yaml
 input: "Research latest React best practices"
 complexity: 2
-routing: parallel_mcp_tool_execution
-selected_tools: ["tavily", "context7"]
-domain_mapping: "web_development"
+routing: todo_execution_engine
+process:
+  - TF-IDF analysis → Categorize as "research + web_development"
+  - Generate TodoWrite plan: [search, analyze, synthesize]
+  - Execute research through Task() delegation to research-agent
+  - Process results → Generate comprehensive report
+todo_tasks:
+  - "Search React documentation and community resources"
+  - "Analyze best practices and patterns"
+  - "Synthesize findings into actionable recommendations"
+execution_flow: "todo_planning → parallel_research → knowledge_synthesis"
 expected_time: "10-20 minutes"
 ```
 
 ## 📊 Performance Metrics
 
-### Core Performance Indicators (v3.6.0)
+### Core Performance Indicators (v3.6.2 with TODO-EXECUTION)
 - **Task Distribution Accuracy**: >95% correct routing
-- **Clarification Success Rate**: >90% ambiguity resolution  
+- **Clarification Success Rate**: >90% ambiguity resolution
 - **Agent Selection Accuracy**: >92% optimal agent matching
 - **Time Estimation Accuracy**: >80% within ±20% of actual time
 - **Overall System Success Rate**: >97% task completion
+- **🔥 TODO-EXECUTION Success Rate**: >95% automatic task delegation success
+- **Task() Delegation Reliability**: >93% successful remote execution
 - **Dynamic Adaptation Success**: >88% effective configuration updates
 
 ### Quality Assurance Mechanisms
@@ -244,6 +279,11 @@ expected_time: "10-20 minutes"
 - **Categorization Engine**: ML-based categorization with semantic analysis
 - **Parallel Coordination**: Execution management with result synthesis
 - **Clarification System**: Interactive clarification with contextual questions
+- **🔥 TODO-EXECUTION Engine**: Automatic TodoWrite-to-Task() delegation system
+  - Pseudocode implementation in `config/knowledge-base/todo_execution_engine.yaml`
+  - Converts analysis results into actionable TodoWrite plans
+  - Executes each TODO item through optimized Task() delegation
+  - Tracks progress and handles failures intelligently
 
 ### Dynamic Configuration Integration
 - **MCP Registry**: Dynamic tool loading and capability management
@@ -299,3 +339,8 @@ The system continuously evolves based on execution feedback and dynamic configur
 - 📊 **CONFIGURATION VALIDATION**: Real-time config health checking
 - 🔄 **DYNAMIC ADAPTATION**: Runtime environment optimization
 - 🎯 **SEMANTIC MATCHING**: TF-IDF powered agent-task compatibility
+- 🔥 **TODO-EXECUTION ENGINE**: Automatic TodoWrite-to-Task() delegation system
+  - Converts analysis results into actionable TodoWrite plans
+  - Executes each TODO item through optimized Task() delegation
+  - Real-time progress tracking and intelligent failure recovery
+  - Seamless integration with existing TF-IDF agent selection

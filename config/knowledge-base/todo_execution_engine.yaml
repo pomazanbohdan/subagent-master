@@ -1,0 +1,442 @@
+# TODO-EXECUTION ENGINE
+# Comprehensive system for converting analysis results into TodoWrite plans with automatic Task() delegation
+
+metadata:
+  name: "todo_execution_engine"
+  version: "1.0.0"
+  description: "Automatic TodoWrite-to-Task() delegation system with intelligent execution management"
+  author: "master"
+  tags: ["todo-execution", "task-delegation", "automatic-execution", "progress-tracking"]
+
+# Core Engine Architecture
+todo_execution_engine:
+  purpose: |
+    Convert TF-IDF analysis results into actionable TodoWrite plans
+    and execute each TODO item through optimized Task() delegation
+    with real-time progress tracking and intelligent failure recovery
+
+  input_sources:
+    - task_analysis_results: "From config/knowledge-base/task-analysis.yaml"
+    - tfidf_categorization: "From config/knowledge-base/tfidf-system.yaml"
+    - agent_selection_results: "From config/knowledge-base/unified_agent_selection.yaml"
+    - clarification_responses: "From config/knowledge-base/clarification_system.yaml"
+    - parallel_coordination_data: "From config/knowledge-base/parallel_coordination.yaml"
+
+  output_targets:
+    - todo_write_plans: "Structured TodoWrite lists for execution"
+    - task_delegation_commands: "Task() calls with optimized parameters"
+    - progress_tracking_data: "Real-time execution status updates"
+    - result_synthesis_inputs: "Completed task results for integration"
+
+# TodoWrite Plan Generation
+todo_plan_generation:
+  implementation: |
+    # TODO Plan Generation Algorithm
+    INPUT: task_analysis, tfidf_results, agent_mapping, complexity_score
+    OUTPUT: todo_write_plan, execution_strategy
+
+    ALGORITHM:
+    1. Task Decomposition:
+       IF complexity_score >= 4:
+          - Generate multi-phase plan with dependencies
+          - Create parallel execution blocks where possible
+          - Identify critical path for sequential execution
+       ELIF complexity_score >= 2:
+          - Generate structured plan with 3-7 tasks
+          - Mix parallel and sequential execution
+       ELSE:
+          - Generate simple 1-2 task plan
+          - Sequential execution only
+
+    2. Agent Assignment:
+       FOR each task in plan:
+          - Use TF-IDF similarity for agent selection
+          - Map task requirements to agent capabilities
+          - Assign optimal agent with confidence score
+          - Set fallback agent options
+
+    3. TodoWrite Structure:
+       todo_items = []
+       FOR each task:
+          todo_item = {
+            "content": "task_description",
+            "status": "pending",
+            "activeForm": "action_description",
+            "agent_assignment": "selected_agent",
+            "estimated_time": "time_estimate",
+            "dependencies": ["dependency_list"],
+            "priority": "high/medium/low"
+          }
+          todo_items.append(todo_item)
+
+  execution_strategies:
+    simple_sequential:
+      complexity_range: [1, 2]
+      todo_structure: "linear_task_list"
+      execution_pattern: "task1 → task2 → task3"
+      parallel_support: false
+
+    mixed_execution:
+      complexity_range: [3, 4]
+      todo_structure: "phased_execution_with_parallel_blocks"
+      execution_pattern: "phase1(parallel) → phase2(sequential) → phase3(parallel)"
+      parallel_support: true
+
+    complex_coordination:
+      complexity_range: [5, 10]
+      todo_structure: "multi_layered_dependency_graph"
+      execution_pattern: "dynamic_execution_with_adaptive_coordination"
+      parallel_support: true
+      dependency_tracking: true
+
+# Task() Delegation System
+task_delegation_system:
+  implementation: |
+    # Automatic Task() Delegation Algorithm
+    INPUT: todo_item, agent_assignment, execution_context
+    OUTPUT: delegation_result, execution_status
+
+    DELEGATION_PROCESS:
+    1. Pre-execution Validation:
+       - Validate agent availability
+       - Check Task() system readiness
+       - Verify task requirements clarity
+       - Confirm resource availability
+
+    2. Task() Parameter Construction:
+       task_params = {
+         "subagent_type": determine_agent_type(agent_assignment),
+         "description": create_task_description(todo_item),
+         "prompt": create_comprehensive_prompt(todo_item, execution_context)
+       }
+
+    3. Execution with Error Handling:
+       TRY:
+          result = Task(**task_params)
+          update_todo_status(todo_item.id, "completed")
+          log_execution_success(todo_item, result)
+          RETURN {success: true, result: result}
+       CATCH delegation_error:
+          handle_delegation_failure(todo_item, delegation_error)
+          RETURN {success: false, error: delegation_error}
+
+    4. Post-execution Processing:
+       - Validate result quality
+       - Update TodoWrite progress
+       - Trigger dependent tasks if ready
+       - Log performance metrics
+
+  agent_type_mapping:
+    # Pseudocode for agent type determination
+    determine_agent_type(agent_assignment):
+      base_capabilities = agent_assignment.capabilities
+      domain_specialization = agent_assignment.domain
+
+      IF "research" in base_capabilities:
+         RETURN "deep-research-agent"
+      ELIF "architecture" in domain_specialization:
+         RETURN "backend-architect" OR "frontend-architect"
+      ELIF "development" in base_capabilities:
+         IF "frontend" in domain_specialization:
+            RETURN "frontend-developer"
+         ELIF "backend" in domain_specialization:
+            RETURN "backend-developer"
+      # ... additional mappings
+
+      DEFAULT: "general-purpose"
+
+# Progress Tracking System
+progress_tracking:
+  implementation: |
+    # Real-time Progress Tracking Algorithm
+    INPUT: active_todo_items, execution_results, system_events
+    OUTPUT: progress_summary, status_updates, completion_metrics
+
+    TRACKING_DATA_STRUCTURES:
+    execution_state = {
+      "total_tasks": count,
+      "completed_tasks": count,
+      "failed_tasks": count,
+      "in_progress_tasks": count,
+      "blocked_tasks": count,
+      "overall_progress": percentage,
+      "estimated_completion_time": timestamp,
+      "current_phase": "phase_name"
+    }
+
+    task_status_map = {
+      "todo_id": {
+        "status": "pending/in_progress/completed/failed/blocked",
+        "start_time": timestamp,
+        "end_time": timestamp,
+        "assigned_agent": "agent_name",
+        "execution_attempts": count,
+        "result_quality_score": float,
+        "dependencies_satisfied": boolean
+      }
+    }
+
+    PROGRESS_MONITORING:
+    1. Real-time Updates:
+       - Update TodoWrite after each task completion
+       - Calculate overall progress percentage
+       - Estimate remaining time based on current velocity
+       - Detect potential bottlenecks or delays
+
+    2. Dependency Tracking:
+       - Monitor task dependencies
+       - Automatically unblock tasks when dependencies complete
+       - Handle circular dependency detection
+       - Optimize execution order based on dependencies
+
+    3. Performance Metrics:
+       - Track Task() delegation success rates
+       - Monitor agent performance by task type
+       - Calculate execution velocity by complexity
+       - Record failure patterns and recovery success
+
+# Intelligent Failure Recovery
+failure_recovery_system:
+  implementation: |
+    # Intelligent Failure Recovery Algorithm
+    INPUT: failed_todo_item, failure_context, available_recovery_options
+    OUTPUT: recovery_strategy, recovery_execution_result
+
+    FAILURE_CLASSIFICATION:
+    1. Agent-related Failures:
+       - Agent unavailable → Select alternative agent
+       - Agent capability mismatch → Re-analyze requirements
+       - Agent timeout → Increase timeout or select faster agent
+
+    2. Task-related Failures:
+       - Ambiguous requirements → Trigger clarification workflow
+       - Insufficient resources → Scale down task or wait for resources
+       - Dependency failures → Resolve dependencies first
+
+    3. System-related Failures:
+       - Task() system unavailable → Fallback to direct execution
+       - Network issues → Retry with exponential backoff
+       - Resource exhaustion → Free resources or simplify task
+
+    RECOVERY_STRATEGIES:
+    1. Agent Substitution:
+       SELECT alternative_agent FROM available_agents
+       WHERE agent.capabilities CONTAINS failed_task.requirements
+       ORDER BY agent.success_rate DESC, agent.performance_score DESC
+       LIMIT 1
+
+    2. Task Decomposition:
+       IF task.complexity > threshold:
+          subtask_list = decompose_task(failed_task)
+          FOR subtask in subtask_list:
+             execute_subtask_with_higher_priority(subtask)
+
+    3. Escalation Handling:
+       IF failure_count > max_retry_attempts:
+          escalate_to_human_operator(failed_task, failure_context)
+          OR mark_task_as_blocked(failed_task)
+
+    4. Adaptive Learning:
+       UPDATE failure_patterns_database(failure_context, recovery_result)
+       UPDATE agent_performance_metrics(failed_agent, failure_type)
+       ADJUST future_agent_selection_weights()
+
+# Result Synthesis Integration
+result_synthesis_integration:
+  implementation: |
+    # Result Synthesis for Completed TODO Lists
+    INPUT: completed_task_results, original_request_context, execution_metadata
+    OUTPUT: synthesized_result, quality_assessment, performance_report
+
+    SYNTHESIS_PROCESS:
+    1. Result Collection:
+       - Gather all completed task results
+       - Validate result quality and completeness
+       - Standardize result formats for processing
+       - Identify gaps or inconsistencies
+
+    2. Quality Assessment:
+       FOR each result:
+          quality_score = calculate_result_quality(result, original_requirements)
+          completeness_score = assess_result_completeness(result, expected_scope)
+          consistency_score = check_result_consistency(result, other_results)
+
+    3. Synthesis Strategy Selection:
+       IF results_have_conflicts:
+          USE conflict_resolution_synthesis()
+       ELIF results_are_complementary:
+          USE complementary_integration_synthesis()
+       ELSE:
+          USE straightforward_aggregation_synthesis()
+
+    4. Final Result Construction:
+       synthesized_result = {
+         "main_response": primary_content,
+         "supporting_details": supplementary_information,
+         "confidence_assessment": overall_confidence_score,
+         "quality_metrics": quality_assessment_data,
+         "execution_summary": performance_summary
+       }
+
+# Integration with Existing Systems
+integration_points:
+  with_tfidf_system:
+    trigger: "tfidf_analysis_completed"
+    input_data: "categorization_results, similarity_scores"
+    output_data: "agent_assignments_for_todo_items"
+    coordination: "use tfidf results for optimal agent selection"
+
+  with_parallel_coordination:
+    trigger: "parallel_execution_required"
+    input_data: "dependency_graph, parallel_blocks"
+    output_data: "execution_sequence_with_task_delegation"
+    coordination: "coordinate parallel Task() execution"
+
+  with_clarification_system:
+    trigger: "clarification_completed"
+    input_data: "clarified_requirements, refined_context"
+    output_data: "updated_todo_plan_with_clarified_tasks"
+    coordination: "regenerate todo plan based on clarification"
+
+  with_performance_tracking:
+    trigger: "task_execution_completed"
+    input_data: "execution_metrics, quality_scores"
+    output_data: "updated_agent_performance_data"
+    coordination: "continuous learning and optimization"
+
+# Quality Assurance and Monitoring
+quality_assurance:
+  validation_gates:
+    pre_execution_validation:
+      - agent_availability_check: "Verify selected agents are available"
+      - task_requirements_clarity: "Ensure task descriptions are clear"
+      - resource_sufficiency: "Confirm adequate resources for execution"
+      - dependency_satisfaction: "Verify all dependencies are resolvable"
+
+    post_execution_validation:
+      - result_quality_check: "Validate Task() execution results"
+      - todo_status_consistency: "Ensure TodoWrite status is accurate"
+      - performance_metric_recording: "Record execution performance data"
+      - learning_data_extraction: "Extract data for system improvement"
+
+    synthesis_validation:
+      - result_completeness: "Ensure all aspects are covered"
+      - consistency_check: "Verify no contradictions in results"
+      - user_satisfaction_potential: "Assess likely user satisfaction"
+      - system_learning_integration: "Update system models"
+
+  monitoring_metrics:
+    execution_efficiency:
+      - task_completion_rate: "Percentage of tasks completed successfully"
+      - average_execution_time: "Mean time per task completion"
+      - agent_utilization: "How effectively agents are utilized"
+      - parallel_efficiency: "Speed improvement from parallel execution"
+
+    quality_metrics:
+      - result_quality_score: "Average quality of completed results"
+      - user_satisfaction_prediction: "Predicted user satisfaction"
+      - system_accuracy: "Accuracy of agent selection and task routing"
+      - learning_effectiveness: "Improvement rate over time"
+
+    reliability_metrics:
+      - system_uptime: "Percentage of time system is operational"
+      - failure_recovery_success: "Success rate of failure recovery"
+      - task_delegation_reliability: "Reliability of Task() delegation"
+      - error_rate: "Rate of errors in execution"
+
+# Configuration and Tuning
+configuration_parameters:
+  execution_thresholds:
+    min_complexity_for_todo_planning: 2
+    max_parallel_tasks: 5
+    max_retry_attempts: 3
+    task_timeout_seconds: 300
+    quality_threshold_min: 0.7
+
+  learning_rates:
+    agent_performance_update_rate: 0.1
+    tfidf_weight_adjustment_rate: 0.05
+    failure_pattern_learning_rate: 0.15
+    user_feedback_integration_rate: 0.2
+
+  performance_targets:
+    task_completion_success_rate: 0.95
+    average_task_completion_time: 180  # seconds
+    user_satisfaction_target: 0.85
+    system_overhead_target: 0.1  # 10% overhead acceptable
+
+# Error Handling and Edge Cases
+error_handling:
+  critical_system_failures:
+    task_system_unavailable:
+      fallback_strategy: "direct_execution_with_native_capabilities"
+      escalation_trigger: "multiple_continuous_failures"
+      recovery_actions: ["restart_task_system", "fallback_to_native", "escalate_to_human"]
+
+    agent_discovery_failure:
+      fallback_strategy: "use_hardcoded_agent_list"
+      recovery_actions: ["reload_agent_configurations", "use_backup_agents", "manual_agent_selection"]
+
+    configuration_corruption:
+      fallback_strategy: "use_last_known_good_configuration"
+      recovery_actions: ["restore_from_backup", "reinitialize_system", "safe_mode_operation"]
+
+  edge_case_handling:
+    ambiguous_task_requirements:
+      handling_strategy: "trigger_clarification_workflow"
+      user_interaction: "request_specific_requirements"
+      system_behavior: "pause_execution_until_clarified"
+
+    circular_dependencies:
+      detection_method: "dependency_graph_analysis"
+      resolution_strategy: "break_circular_dependency_arbitrarily"
+      user_notification: "inform_about_dependency_resolution"
+
+    resource_exhaustion:
+      detection_method: "monitor_resource_usage"
+      handling_strategy: "scale_down_execution_or_queue_tasks"
+      recovery_actions: ["free_unused_resources", "prioritize_critical_tasks"]
+
+# Documentation and Examples
+usage_examples:
+  simple_task_execution:
+    input: "Fix CSS styling issue"
+    todo_plan_generated:
+      - content: "Analyze CSS styling requirements"
+        status: "pending"
+        agent_assignment: "frontend-developer"
+        estimated_time: "5 minutes"
+      - content: "Implement CSS fixes"
+        status: "pending"
+        agent_assignment: "frontend-developer"
+        estimated_time: "10 minutes"
+    execution_flow: "sequential_task_delegation"
+
+  complex_project_coordination:
+    input: "Implement authentication system"
+    todo_plan_generated:
+      phase_1_parallel:
+        - content: "Design authentication architecture"
+          agent_assignment: "backend-architect"
+        - content: "Design login UI components"
+          agent_assignment: "frontend-developer"
+      phase_2_sequential:
+        - content: "Implement JWT middleware"
+          agent_assignment: "backend-developer"
+          dependencies: ["architecture_design_complete"]
+        - content: "Implement login forms"
+          agent_assignment: "frontend-developer"
+          dependencies: ["ui_components_design_complete"]
+    execution_flow: "phased_execution_with_parallel_and_sequential_tasks"
+
+  research_and_synthesis:
+    input: "Research latest React best practices"
+    todo_plan_generated:
+      - content: "Search React documentation and updates"
+        agent_assignment: "deep-research-agent"
+      - content: "Analyze community best practices"
+        agent_assignment: "deep-research-agent"
+      - content: "Synthesize findings into recommendations"
+        agent_assignment: "technical-writer"
+        dependencies: ["research_complete"]
+    execution_flow: "parallel_research_sequential_synthesis"

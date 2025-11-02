@@ -5,8 +5,8 @@
     "email": "pomazan.bohdan@gmail.com"
   },
   "metadata": {
-    "description": "Dynamic orchestration system v3.6.2 - Critical bug fixes, filesystem-based agent discovery, enhanced error handling, and robust initialization fallbacks",
-    "version": "3.6.2"
+    "description": "Dynamic orchestration system v3.6.3 - Integrated TODO-EXECUTION engine with automatic Task() delegation, real-time progress tracking, and intelligent failure recovery",
+    "version": "3.6.3"
   },
   "plugins": [
     {
@@ -89,7 +89,17 @@
         "agent-name-validation",
         "error-prevention",
         "name-resolution",
-        "registry-validation"
+        "registry-validation",
+        "todo-execution-engine",
+        "automatic-task-delegation",
+        "real-time-progress-tracking",
+        "intelligent-failure-recovery",
+        "todo-write-integration",
+        "task-delegation-automation",
+        "execution-workflow",
+        "progress-monitoring-advanced",
+        "failure-recovery-intelligent",
+        "automatic-plan-execution"
       ],
       "source": "./",
       "agents": [

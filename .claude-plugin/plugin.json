@@ -1,7 +1,7 @@
 {
   "name": "master",
-  "version": "3.6.2",
-  "description": "Dynamic orchestration system v3.6.2 - Critical bug fixes, filesystem-based agent discovery, enhanced error handling, and robust initialization fallbacks",
+  "version": "3.6.3",
+  "description": "Dynamic orchestration system v3.6.3 - Integrated TODO-EXECUTION engine with automatic Task() delegation, real-time progress tracking, and intelligent failure recovery",
   "author": {
     "name": "Bohdan",
     "email": "pomazan.bohdan@gmail.com"
