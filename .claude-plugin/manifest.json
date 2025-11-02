@@ -1,7 +1,7 @@
 {
   "name": "subagent-master",
-  "version": "3.0.0",
-  "description": "Advanced orchestration system v3.0.0 - Intelligent task delegation with agent compatibility matrix and comprehensive error handling",
+  "version": "3.1.0",
+  "description": "Fully dynamic orchestration system v3.1.0 - Template-based agent creation with ML optimization and complete environment independence",
   "author": "Bohdan <pomazan.bohdan@gmail.com>",
   "license": "MIT",
   "keywords": [

@@ -9,20 +9,21 @@ version: "3.0.0"
 
 # 🧠 Intelligent Task Orchestrator
 
-**Master Agent System v3.0.0** - Advanced orchestration with intelligent delegation and agent compatibility matrix
+**Master Agent System v3.1.0** - Fully dynamic orchestration with template-based agent creation and ML optimization
 
 ## 🎯 **System Overview**
 
 I am your intelligent coordinator for task orchestration, agent selection, and parallel execution management.
 
-**✅ System capabilities (v3.0.0):**
+**✅ System capabilities (v3.1.0):**
 - 🧠 Dynamic task complexity analysis (1-5 scale) with automatic execution triggers
-- 🔄 Parallel initialization with TodoWrite tracking and progress monitoring
-- 📋 Intelligent agent selection with compatibility matrix and weighted scoring
-- 🎯 Advanced Task() delegation mechanism with retry logic and timeout handling
-- ⚡ Parallel execution coordination with failure recovery and result synchronization
-- 🔍 Interactive clarification and task refinement with conflict resolution
-- 🛠️ Integration with modular implementation components and performance monitoring
+- 🔄 Fully dynamic agent discovery and registration from templates and projects
+- 📋 ML-based dynamic categorization with automatic category creation and evolution
+- 🎯 Template-based agent creation with on-demand configuration and learning
+- ⚡ Parallel execution coordination with dynamic compatibility matrix and real-time optimization
+- 🔍 Conflict resolution engine with weighted voting and expertise-based selection
+- 🛠️ Complete dynamic architecture independent of environment or project context
+- 🎲 Reinforcement learning for continuous system optimization and adaptation
 
 ## 🎮 **When to Use This Agent**
 
@@ -99,8 +100,7 @@ subagent-master/
 │   │   ├── loader.py              # Dynamic loading
 │   │   └── hot_reload.py          # Hot reload system
 │   └── utils/                     # Utilities and monitoring
-│       ├── monitoring.py          # Performance monitoring
-│       └── performance.py         # Performance analysis
+│       └── monitoring.py          # System monitoring and performance tracking
 ├── config/                        # Configuration files
 │   ├── workflows/                 # System workflows
 │   ├── rules/                     # Selection rules
@@ -122,6 +122,43 @@ Located in: `src/orchestration/complexity.py`
 3. **analyze_task_context(task_description)** - Deep context analysis
 4. **Automatic execution trigger** - Execute automatically for complexity ≥ 2
 
+**Complexity Evaluation Criteria (1-5 Scale):**
+
+**Score 1 - Trivial:**
+- Single clear requirement
+- No dependencies or external systems
+- Standard, well-documented operations
+- <2 hours estimated completion time
+- *Examples: "Fix button text", "Add validation rule", "Update dependency version"*
+
+**Score 2 - Simple:**
+- 2-3 related requirements
+- Minor dependencies or configurations
+- Some research required
+- 2-4 hours estimated completion time
+- *Examples: "Add user registration", "Create REST endpoint", "Implement caching"*
+
+**Score 3 - Moderate:**
+- Multiple interrelated requirements
+- Cross-system dependencies
+- Design decisions needed
+- 4-8 hours estimated completion time
+- *Examples: "Build authentication system", "Design database schema", "Create API architecture"*
+
+**Score 4 - Complex:**
+- Complex requirements with trade-offs
+- Multiple system integrations
+- Significant architectural decisions
+- 8-16 hours estimated completion time
+- *Examples: "Migrate legacy system", "Implement microservices", "Design scalable architecture"*
+
+**Score 5 - Very Complex:**
+- Highly complex requirements
+- Multiple external system integrations
+- Major architectural redesign
+- >16 hours estimated completion time
+- *Examples: "Build enterprise platform", "Complete system modernization", "Multi-cloud migration"*
+
 **Usage:** `analyze_task_complexity("Create authentication system")` → Returns score 4
 
 ### **Algorithm 2: Agent Compatibility Matrix**
@@ -129,15 +166,34 @@ Located in: `src/agent_matrix/compatibility.py`
 
 **Process:**
 1. **initialize_task_matrix_system(categories_data)** - Build compatibility matrix
-2. **calculate_agent_score(agent, task_context)** - Weighted scoring:
-   - Capability score: 40%
-   - Performance score: 30%
-   - Expertise score: 20%
-   - Complexity score: 10%
+2. **calculate_agent_score(agent, task_context)** - Weighted scoring formula:
+   ```
+   Total Score = (Capability_Score × 0.40) + (Performance_Score × 0.30) + (Expertise_Score × 0.20) + (Complexity_Score × 0.10)
+
+   Where:
+   - Capability_Score = Σ(capability_match × weight) / Σ(weights)
+   - Performance_Score = (success_rate × 0.7) + (avg_completion_time × 0.3)
+   - Expertise_Score = domain_expertise_level × relevance_factor
+   - Complexity_Score = (5 - task_complexity) / 5 (inverted - lower complexity = higher score)
+   ```
 3. **select_top_candidates(matrix, filters)** - Choose top 3 agents
 4. **validate_agent_selection(agents, task)** - Validate selection
 
 **Usage:** `initialize_task_matrix_system(categories) → calculate_agent_score(backend-architect, auth_task)`
+
+**Example Calculation:**
+```
+Task: "Implement JWT authentication" (Complexity: 4)
+Agent: backend-architect
+
+Capability_Score = 0.92 (security: 0.95, api: 0.88, database: 0.93)
+Performance_Score = (0.89 × 0.7) + (0.85 × 0.3) = 0.878
+Expertise_Score = 0.90 (backend specialist, security focus)
+Complexity_Score = (5 - 4) / 5 = 0.20
+
+Total Score = (0.92 × 0.40) + (0.878 × 0.30) + (0.90 × 0.20) + (0.20 × 0.10)
+Total Score = 0.368 + 0.263 + 0.180 + 0.020 = 0.831
+```
 
 ### **Algorithm 3: Task Delegation System**
 Located in: `src/delegation/task_delegation.py`
@@ -158,9 +214,63 @@ Located in: `src/parallel/monitoring.py`
 2. **wait_for_parallel_completion()** - Synchronize parallel execution
 3. **handle_partial_parallel_failure()** - Handle partial failures
 4. **Retry logic with exponential backoff** - Maximum 2 retry attempts
+   - **Base delay**: 1 second
+   - **Maximum delay**: 30 seconds
+   - **Multiplier**: 2.0 (doubling)
+   - **Jitter**: ±25% randomization
+   - **Formula**: `delay = min(base_delay × (multiplier ^ attempt), max_delay) × (1 + jitter)`
 5. **Timeout management** - 30 minutes default timeout
 
 **Usage:** `track_progress("task_123") → wait_for_completion() → retry_if_failed()`
+
+### **Algorithm 4.1: Partial Parallel Failure Handler**
+Located in: `src/parallel/monitoring.py`
+
+**Process:**
+1. **analyze_failure_scope(failed_tasks, successful_tasks)** - Categorize failure patterns
+2. **check_dependency_impact(failed_tasks)** - Assess downstream task impact
+3. **determine_recovery_strategy(failure_analysis)** - Choose recovery approach:
+   - **Retry failed components** with alternative agents
+   - **Continue with partial results** if success rate > 60%
+   - **Restart failed workflows** with updated parameters
+4. **synthesize_available_results(successful_tasks)** - Combine available outputs
+5. **generate_failure_report(failure_analysis, recovery_actions)** - Document issues
+
+**Configuration Parameters:**
+- **Minimum success threshold**: 60% (configurable)
+- **Failure pattern analysis**: ML-based categorization
+- **Recovery timeout**: 15 minutes (configurable)
+
+### **Algorithm 4.2: Task ID Generation System**
+Located in: `src/parallel/coordination.py`
+
+**Process:**
+1. **generate_unique_task_id(task_description, timestamp)** - Create base identifier
+2. **add_context_hash(task_context, agent_list)** - Include execution context
+3. **append_execution_metadata(priority, complexity)** - Add metadata
+4. **validate_uniqueness(task_id)** - Ensure no duplicates exist
+5. **register_task_tracking(task_id, initial_status)** - Initialize monitoring
+
+**Format:** `task_{timestamp}_{hash}_{complexity}_{priority}`
+**Example:** `task_20250802_143022_a7f8b3_c4_p2`
+
+### **Algorithm 4.3: Conflict Resolution Engine**
+Located in: `src/parallel/synchronization.py`
+
+**Process:**
+1. **detect_result_conflicts(parallel_results)** - Identify contradictions
+2. **classify_conflict_type(conflict_analysis)** - Categorize conflicts:
+   - **Data conflicts**: Different data values
+   - **Approach conflicts**: Different solution methods
+   - **Conclusion conflicts**: Different final recommendations
+3. **apply_resolution_strategy(conflict_type, agent_weights)**:
+   - **Weighted voting** for data conflicts
+   - **Expertise-based selection** for approach conflicts
+   - **Hybrid synthesis** for conclusion conflicts
+4. **validate_resolved_output(resolution_result)** - Ensure consistency
+5. **document_resolution_process(conflict_log)** - Track decisions
+
+**Success Criteria:** >85% conflict resolution rate
 
 ## 📋 **Enhanced Processing Workflow**
 
@@ -271,11 +381,13 @@ Located in: `src/parallel/monitoring.py`
    - Generate readiness report
 
 ### **Configuration Dependencies**
-- `config/workflows/initialization.yaml` - Process definition
-- `config/agent_matrix/compatibility.yaml` - Compatibility matrix configuration
-- `config/delegation/task_delegation.yaml` - Delegation rules and timeouts
-- `config/rules/scoring_rules.yaml` - Agent scoring criteria
-- `config/dynamic/agent_registry.yaml` - Agent definitions and capabilities
+- `config/workflows/initialization.yaml` - Dynamic initialization process
+- `config/dynamic/agent_registry_enhanced.yaml` - Dynamic agent registration and discovery
+- `config/dynamic/categorization_engine.yaml` - ML-based dynamic categorization
+- `config/dynamic/performance_monitoring_enhanced.yaml` - Real-time performance tracking
+- `config/dynamic/hot_reload_system.yaml` - Dynamic configuration loading
+- `config/agents/master_agents_template.yaml` - Template-based dynamic agent creation
+- `config/dynamic/enhanced_agent_registry.yaml` - Dynamic category creation and learning
 
 ## 🔧 **Enhanced Implementation Modules**
 
