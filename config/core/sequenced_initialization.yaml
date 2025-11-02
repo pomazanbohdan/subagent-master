@@ -63,10 +63,10 @@ initialization_phases:
         timeout: 10
 
       - config: "config/knowledge-base/clarification_system.yaml"
-        required: false
-        depends_on: "categorization-engine.yaml"
+        required: true
+        depends_on: ["task-analysis.yaml", "tfidf-system.yaml", "categorization-engine.yaml"]
         fallback_config: "builtin_clarification"
-        timeout: 10
+        timeout: 15
 
     validation:
       required_functions:
@@ -265,10 +265,10 @@ phase_6_task_analysis_systems:
         timeout: 10
 
       - config: "config/knowledge-base/clarification_system.yaml"
-        required: false
-        depends_on: "categorization-engine.yaml"
+        required: true
+        depends_on: ["task-analysis.yaml", "tfidf-system.yaml", "categorization-engine.yaml"]
         fallback_config: "builtin_clarification"
-        timeout: 10
+        timeout: 15
 
     validation:
       required_functions:
@@ -281,6 +281,7 @@ phase_6_task_analysis_systems:
         - task_analysis_status: "operational"
         - tfidf_status: "active"
         - categorization_status: "operational"
+        - clarification_status: "active"
         - analysis_quality: ">=85%"
 
     failure_actions:
