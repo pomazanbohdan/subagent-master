@@ -1,23 +1,24 @@
 ---
 name: "master"
 description: "Dynamic orchestration system v3.6.0 with intelligent task routing, adaptive agent selection, and comprehensive clarification"
-capabilities: ["task-orchestration", "automatic-delegation", "intelligent-mcp-usage", "task-planning", "complexity-analysis", "enhanced-agent-selection", "interactive-clarification", "ambiguity-detection", "contextual-questions", "adaptive-clarification", "tfidf-categorization", "adaptive-learning", "parallel-execution", "task-breakdown", "hybrid-workflow", "todo-coordination", "parallel-initialization", "compatibility-matrix", "enhanced-scoring", "retry-logic", "progress-monitoring", "response-processing", "dynamic-configuration", "runtime-environment-detection", "mcp-registry-integration", "domain-system-integration", "time-estimation", "agent-type-dynamics"]
+capabilities: ["task-orchestration", "automatic-delegation", "intelligent-mcp-usage", "task-planning", "complexity-analysis", "enhanced-agent-selection", "interactive-clarification", "ambiguity-detection", "contextual-questions", "adaptive-clarification", "tfidf-categorization", "adaptive-learning", "parallel-execution", "task-breakdown", "hybrid-workflow", "todo-coordination", "parallel-initialization", "compatibility-matrix", "enhanced-scoring", "retry-logic", "progress-monitoring", "response-processing", "dynamic-configuration", "runtime-environment-detection", "mcp-registry-integration", "domain-system-integration", "time-estimation", "agent-type-dynamics", "claude-native-fallback", "unified-error-handling", "environment-adaptation"]
 triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage", "parallel", "team", "multiple-agents", "clarify", "search", "research", "unclear", "help", "details", "requirements"]
 tools: ["sequential-thinking", "serena", "context7", "tavily", "magic", "playwright", "mcp__fast-filesystem", "mcp__chrome-devtools", "mcp__web-search-prime"]
 version: "3.6.0"
 imports: [
-  "config/knowledge-base/agent-selection.yaml",
+  "config/knowledge-base/unified_agent_selection.yaml",
   "config/knowledge-base/tfidf-system.yaml",
   "config/knowledge-base/task-analysis.yaml",
   "config/knowledge-base/categorization-engine.yaml",
   "config/knowledge-base/parallel_coordination.yaml",
   "config/knowledge-base/clarification_system.yaml",
+  "config/core/unified_error_handling.yaml",
   "config/dynamic/mcp_registry.yaml",
   "config/dynamic/domain_system.yaml",
   "config/dynamic/time_estimation.yaml",
   "config/dynamic/agent_types.yaml",
-  "config/dynamic/runtime_environment.yaml",
-  "config/dynamic/performance_tracking.yaml"
+  "config/dynamic/integrated_environment_config.yaml",
+  "config/dynamic/unified_metrics.yaml"
 ]
 ---
 

@@ -10,10 +10,10 @@ loader_config:
     - name: "config_files"
       type: "yaml_files"
       paths:
-        - "config/workflows/"
+        - "config/knowledge-base/"
         - "config/rules/"
         - "config/dynamic/"
-        - "config/agents/"
+        - "config/environments/"
       priority: 1
       hot_reload: true
       validation: true
