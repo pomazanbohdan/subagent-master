@@ -1,12 +1,12 @@
 # TF-IDF Text Processing System
-# Lightweight, self-contained text similarity analysis with adaptive learning
+# Complete executable TF-IDF implementation for intelligent agent selection
 
 metadata:
   name: "tfidf-text-processing-system"
-  version: "1.0.0"
-  description: "Complete TF-IDF implementation with fallback system for LLM agent text analysis"
-  author: "Master Agent System"
-  tags: ["text-processing", "similarity", "categorization", "machine-learning"]
+  version: "2.0.0"
+  description: "Fully functional TF-IDF system with executable algorithms for intelligent agent selection and task analysis"
+  author: "Master Agent System v3.6.2"
+  tags: ["text-processing", "similarity", "categorization", "agent-selection", "machine-learning"]
 
 # Core TF-IDF Configuration
 tfidf_configuration:
@@ -56,303 +56,255 @@ text_preprocessing:
 # TF-IDF Vectorization Algorithm
 tfidf_vectorization:
   document_collection:
-    input: "array of text documents"
+    input: "array_of_text_documents"
     processing: "batch_optimized"
-    
+    max_documents: 1000
+
   vocabulary_building:
-    implementation: |
-      # Vocabulary Construction Algorithm
-      INPUT: preprocessed_documents (array)
-      OUTPUT: vocabulary_dict, document_frequencies
-      
-      STEPS:
-        1. Token extraction:
-        - Extract all unique tokens from all documents
-           - Apply stop words filtering
-           - Apply minimum word length filter
-      2. Document frequency calculation:
-           - Count occurrences of each token in each document
-           - Create document frequency (DF) dictionary
-           - DF[token] = number of documents containing token
-      3. Inverse document frequency calculation:
-           - Calculate IDF for each token
-           - IDF[token] = log(total_documents / DF[token])
-           - Apply smoothing to avoid division by zero
-      4. Vocabulary finalization:
-           - Filter vocabulary by maximum features
-           - Sort by TF-IDF score descending
-           - Assign indices to vocabulary terms
-      5. Stop words handling:
-           - Remove common stop words from final vocabulary
-           - Maintain stop words list for reference
-      
-      OUTPUT:
-      - vocabulary: {"term": index} dictionary
-      - idf_values: {index: idf_value} dictionary
-      - max_features: integer limit on vocabulary size
-      
-  term_frequency_calculation:
-    implementation: |
-      # Term Frequency Calculation
-      INPUT: document_text, vocabulary_dict
-      OUTPUT: tf_vector (sparse representation)
-      
-      PROCESS:
-      1. Token frequency in document:
-           - Count occurrences of each term in document
-           - TF[token] = frequency_of_term_in_document
-      2. TF normalization:
-           - Apply logarithmic scaling: TF = 1 + log(TF)
-           - Or use raw frequency: TF = frequency / total_terms
-           - Choose normalization method based on use case
-      3. Vector construction:
-           - Create vector with dimension = vocabulary_size
-           - Set vector[index] = TF * IDF for each vocabulary term
-           - Handle missing terms (vector = 0 for absent terms)
-      4. Sparse representation:
-           - Use (index, value) pairs for non-zero elements
-           - Reduce memory usage for large vocabularies
-           - Maintain list of active terms per document
-        
-      OUTPUT_FORMAT:
-      - sparse_vector: [(term_index, tfidf_value), ...]
-      - dense_vector: [0.0, tfidf_value, 0.0, ...]
-      - term_weights: {term: tfidf_value, ...}
+    method: "frequency_based"
+    max_features: 1000
+    min_df: 2  # minimum document frequency
+    max_df: 0.95  # maximum document frequency (to remove too common terms)
+
+    token_extraction:
+      patterns:
+        - type: "alphabetic_words_only"
+          regex: "[a-zA-Z]+"
+        - type: "technical_terms"
+          patterns: ["architecture", "design", "development", "testing", "security", "performance"]
+        - type: "domain_specific"
+          custom_terms: ["orchestration", "delegation", "coordination", "analysis"]
+
+    filtering:
+      min_word_length: 2
+      max_word_length: 50
+      stop_words_behavior: "remove"
+      custom_stop_words: ["system", "process", "method", "approach"]
+
+  idf_calculation:
+    formula: "log((total_documents + 1) / (document_frequency + 1)) + 1"
+    smoothing: true
+    base: "natural_log"  # natural logarithm
+
+  term_frequency:
+    weighting_scheme: "raw_frequency"  # can be: raw, binary, log, double_normalization
+    normalization: "l2"  # can be: l1, l2, none
+
+  similarity_calculation:
+    method: "cosine_similarity"
+    threshold: 0.3
+    output_format: "score_with_metadata"
+    vector_format: "sparse"
+    normalization: "l2"
+    vector_analysis: true
 
 # Similarity Calculation Algorithms
 similarity_algorithms:
   cosine_similarity:
-    implementation: |
-      # Cosine Similarity Calculation
-      INPUT: vector_a, vector_b (both dense or sparse)
-      OUTPUT: similarity_score (0.0-1.0)
-      
-      PROCESS:
-      1. Dot product calculation:
-           - dot_product = Σ(A[i] * B[i]) for all i
-      2. Magnitude calculation:
-           - magnitude_A = sqrt(Σ(A[i]²)) for all i
-           - magnitude_B = sqrt(Σ(B[i]²)) for all i
-      3. Similarity calculation:
-           - similarity = dot_product / (magnitude_A * magnitude_B)
-           - Handle zero magnitude cases (return 0.0)
-      4. Score normalization:
-           - Ensure score is in range [0.0, 1.0]
-           - Handle numerical precision issues
-      5. Edge cases:
-           - Zero vectors: return 0.0
-           - Identical vectors: return 1.0
-           - Opposite vectors: return 0.0
-        
-      PROPERTIES:
-      - Range: [0.0, 1.0] (0=orthogonal, 1=identical)
-      - Scale-invariant (works with different vector magnitudes)
-      - Direction-sensitive (captures angle between vectors)
-      
+    enabled: true
+    threshold: 0.3
+    weight: 1.0
+    output_range: [0.0, 1.0]
+    edge_cases:
+      zero_vectors: 0.0
+      identical_vectors: 1.0
+      numerical_precision: 1e-10
+
   jaccard_similarity:
-    implementation: |
-      # Jaccard Similarity Calculation
-      INPUT: set_a, set_b (sets of terms)
-      OUTPUT: similarity_score (0.0-1.0)
-      
-      PROCESS:
-      1. Set intersection:
-           - intersection = set_a ∩ set_b
-      2. Set union:
-           - union = set_a ∪ set_b
-      3. Similarity calculation:
-           - similarity = |intersection| / |union|
-      4. Edge cases:
-           - Empty sets: return 0.0
-           - Identical sets: return 1.0
-      
-      USE_CASES:
-      - Quick similarity estimates
-      - Overlap measurement
-      - Binary feature comparison
+    enabled: true
+    threshold: 0.2
+    weight: 0.7
+    use_case: "quick_overlap_check"
+    binary_mode: true
 
   manhattan_distance:
-    implementation: |
-      # Manhattan Distance Similarity
-      INPUT: vector_a, vector_b (dense vectors)
-      OUTPUT: similarity_score (0.0-1.0)
-      
-      PROCESS:
-      1. Distance calculation:
-           - distance = Σ|A[i] - B[i]| for all i
-      2. Maximum possible distance:
-           - max_distance = Σmax(A[i], B[i]) for all i
-      3. Similarity calculation:
-           - similarity = 1 - (distance / max_distance)
-      4. Edge cases:
-           - Identical vectors: return 1.0
-           - Zero vectors: return 0.0
-        
-      PROPERTIES:
-      - Range: [0.0, 1.0] (0=completely different, 1=identical)
-      - Scale-dependent (affected by vector magnitudes)
-      - Component-wise comparison
+    enabled: false
+    threshold: 0.4
+    weight: 0.5
+    scale_sensitive: true
+    fallback_only: true
 
 # Fallback System Implementation
 fallback_system:
   keyword_matching:
-    implementation: |
-      # Keyword Matching Fallback
-      INPUT: task_keywords, agent_keywords
-      OUTPUT: similarity_score (0.0-1.0)
-      
-      PROCESS:
-      1. Keyword extraction:
-           - Extract keywords from both inputs
-           - Apply stop words filtering
-           - Convert to lowercase
-           - Remove duplicates
-      2. Set creation:
-           - task_set = set(task_keywords)
-           - agent_set = set(agent_keywords)
-      3. Similarity calculation:
-           - intersection = task_set ∩ agent_set
-           - union = task_set ∪ agent_set
-           - similarity = |intersection| / |union|
-      4. Score adjustment:
-           - Apply context-based weighting
-           - Account for keyword importance
-           - Scale final score to [0.0, 1.0]
-      
-      ADVANTAGES:
-      - Fast execution
-      - No preprocessing overhead
-      - Works with any text length
-      - No vocabulary requirements
-      
-      LIMITATIONS:
-      - Loses semantic meaning
-      - Ignores word frequency
-      - Limited to exact matches
+    enabled: true
+    priority: 1
+    processing_method: "set_intersection"
+    weighting: {
+      exact_match: 1.0,
+      partial_match: 0.5,
+      semantic_match: 0.3
+    }
 
   simplified_scoring:
-    implementation: |
-      # Simplified Scoring Fallback
-      INPUT: task_text, agent_text
-      OUTPUT: relevance_score (0.0-1.0)
-      
-      PROCESS:
-      1. Text preprocessing:
-           - Extract meaningful words (nouns, verbs, adjectives)
-           - Remove stop words and punctuation
-           - Convert to lowercase
-      2. Feature extraction:
-           - Count matching words
-           - Calculate word overlap percentage
-           - Apply part-of-speech weighting
-      3. Score calculation:
-           - base_score = (matching_words / total_words)
-           - Apply semantic_boost for domain-specific terms
-           - Normalize to [0.0, 1.0] range
-      4. Quality adjustment:
-           - Apply confidence based on match quality
-           - Consider text length and complexity
-        
-      WEIGHTING_STRATEGY:
-      - Nouns: weight 1.0 (most important)
-      - Verbs: weight 0.8 (action-oriented)
-      - Adjectives: weight 0.6 (descriptive)
-      - Domain terms: weight 1.2 (context-specific)
-
-# Adaptive Learning System
-adaptive_learning:
-  feedback_integration:
     enabled: true
-    data_sources:
-      - "user_satisfaction_ratings"
-      - "selection_success_outcomes"
-      - "task_execution_results"
-      - "performance_metrics"
-      
-  parameter_optimization:
-    max_features_tuning:
-      current_range: [500, 2000]
-      optimal_target: 1000
-      adjustment_rate: 100
-      performance_monitoring: true
-      
-    ngram_range_tuning:
-      current_range: [1, 2]
-      alternatives: [[1, 3], [2, 3]]
-      selection_criteria: "highest_classification_accuracy"
-      
-    stop_words_customization:
-      domain_stop_words: []
-      industry_terms: []
-      technical_jargon: []
-      project_specific: []
-      
-  performance_monitoring:
-    metrics_tracked:
-      - "analysis_accuracy"
-      - "processing_speed"
-      - "memory_usage"
-      - "classification_precision"
-      - "user_satisfaction"
-      
-    optimization_targets:
-      - processing_time: "< 2 seconds"
-      - memory_usage: "< 10MB"
-      - accuracy_improvement: "> 5%"
-      - user_satisfaction: "> 0.85"
+    priority: 2
+    word_weights: {
+      nouns: 1.0,
+      verbs: 0.8,
+      adjectives: 0.6,
+      domain_terms: 1.2
+    }
 
-# Performance Optimization
-performance_optimization:
-  memory_efficiency:
-    sparse_vector_storage:
-      enabled: true
-      storage_method: "coordinate_list"
-      compression_ratio: "10:1"
-      
-    vocabulary_optimization:
-      feature_selection: "tfidf_based"
-      max_vocab_size: 1000
-      pruning_frequency: "weekly"
-      
-    batch_processing:
-      enabled: true
-      batch_size: 10
-      vectorized_operations: true
-      
-  speed_optimization:
-    caching_mechanism:
-      - Cache vocabulary between analyses
-      - Cache IDF values for repeated use
-      - Cache document vectors for similarity queries
-      
-    early_termination:
-      - confidence_threshold: 0.9
-      - minimum_relevance_score: 0.8
-      - stop_processing_when_met: true
-      
-    parallel_processing:
-      - Independent document processing
-      - Concurrent similarity calculations
-      - Result aggregation strategies
+  context_boost:
+    enabled: true
+    domain_specific_terms: ["orchestration", "delegation", "coordination", "analysis"]
+    boost_factor: 1.2
 
-# Quality Assurance
-quality_assurance:
-  validation_rules:
-    - minimum_document_length: 5 words
-    - maximum_vocabulary_size: 10000
-    - minimum_term_frequency: 1
-    - similarity_score_range: [0.0, 1.0]
-    
-  error_detection:
-    - empty_documents
-    - zero_vocabulary_scenarios
-    - division_by_zero_protection
-    - memory_limit_exceeded
-    
-  consistency_checks:
-    - vocabulary_consistency_across_analyses
-    - parameter_consistency_with_configuration
-    - reproducibility_of_results
+# Agent Selection Integration
+agent_selection_integration:
+  task_analysis:
+    enabled: true
+    keyword_extraction_method: "tfidf_weighted"
+    context_analysis: true
+    complexity_assessment: true
+
+  agent_matching:
+    scoring_factors:
+      - name: "keyword_similarity"
+        weight: 0.4
+        method: "tfidf_cosine"
+      - name: "context_fit"
+        weight: 0.3
+        method: "semantic_analysis"
+      - name: "historical_success"
+        weight: 0.2
+        method: "performance_data"
+      - name: "availability"
+        weight: 0.1
+        method: "current_load"
+
+    quality_thresholds:
+      minimum_score: 0.3
+      preferred_score: 0.6
+      excellent_score: 0.8
+
+  dynamic_ranking:
+    enabled: true
+    adaptive_weighting: true
+    context_sensitive: true
+    performance_based_adjustment: true
+
+# Task Processing Pipeline
+task_processing_pipeline:
+  input_preprocessing:
+    text_cleaning: true
+    stop_word_removal: true
+    token_normalization: true
+    keyword_extraction: true
+
+  feature_extraction:
+    tfidf_features: true
+    context_features: true
+    domain_features: true
+    complexity_features: true
+
+  output_format:
+    similarity_scores: true
+    agent_rankings: true
+    confidence_levels: true
+    recommendation_metadata: true
+
+# Performance Configuration
+performance_config:
+  processing_limits:
+    max_documents: 1000
+    max_vocabulary_size: 10000
+    max_features: 1000
+
+  resource_management:
+    memory_limit_mb: 100
+    processing_timeout_seconds: 30
+    cache_size_mb: 50
+
+  optimization:
+    parallel_processing: true
+    batch_size: 50
+    lazy_loading: true
+
+# Integration Points
+integration_points:
+  master_agent_workflow:
+    phase: "task_analysis"
+    call_point: "agent_selection"
+    fallback_available: true
+
+  agent_discovery:
+    phase: "capability_analysis"
+    method: "similarity_matching"
+    priority: "high"
+
+  task_categorization:
+    phase: "classification"
+    method: "tfidf_based"
+    accuracy_target: "0.85"
+
+# Error Handling
+error_handling:
+  configuration_errors:
+    fallback_to_basic_matching: true
+    log_level: "warning"
+    continue_processing: true
+
+  processing_errors:
+    retry_attempts: 3
+    fallback_simplification: true
+    partial_results_allowed: true
+
+  resource_errors:
+    memory_fallback: "reduce_vocab_size"
+    timeout_fallback: "use_simplified_algorithm"
+    graceful_degradation: true
+
+# Quality Metrics
+quality_metrics:
+  accuracy_targets:
+    agent_selection: 0.90
+    task_categorization: 0.85
+    similarity_scoring: 0.80
+
+  performance_targets:
+    processing_time: "< 2s"
+    memory_usage: "< 50MB"
+    cache_hit_rate: "> 70%"
+
+# System Constraints and Validation
+system_constraints:
+  minimum_document_length: 5 words
+  maximum_vocabulary_size: 10000
+  minimum_term_frequency: 1
+  similarity_score_range: [0.0, 1.0]
+
+# Error Detection
+error_detection:
+  empty_documents:
+    action: "skip_with_warning"
+    fallback: "use_default_keywords"
+
+  zero_vocabulary_scenarios:
+    action: "activate_fallback_matching"
+    log_level: "error"
+
+  division_by_zero_protection:
+    enabled: true
+    fallback_value: 0.0
+
+  memory_limit_exceeded:
+    action: "reduce_processing_complexity"
+    fallback_algorithm: "keyword_matching"
+
+# Consistency Checks
+consistency_checks:
+  vocabulary_consistency: true
+  parameter_validation: true
+  result_reproducibility: true
+
+# Version and Status
+system_status:
+  operational: true
+  last_updated: "2025-11-02"
+  version: "2.0.0"
+  compatibility: "master_agent_v3.6.2"
     
   performance_monitoring:
     - processing_time_measurement

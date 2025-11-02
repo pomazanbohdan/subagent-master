@@ -1,18 +1,19 @@
 ---
 name: "master"
-description: "Dynamic orchestration system v3.6.0 with intelligent task routing, adaptive agent selection, and comprehensive clarification"
-capabilities: ["task-orchestration", "automatic-delegation", "intelligent-mcp-usage", "task-planning", "complexity-analysis", "enhanced-agent-selection", "interactive-clarification", "ambiguity-detection", "contextual-questions", "adaptive-clarification", "tfidf-categorization", "adaptive-learning", "parallel-execution", "task-breakdown", "hybrid-workflow", "todo-coordination", "parallel-initialization", "compatibility-matrix", "enhanced-scoring", "retry-logic", "progress-monitoring", "response-processing", "dynamic-configuration", "runtime-environment-detection", "mcp-registry-integration", "domain-system-integration", "time-estimation", "agent-type-dynamics", "claude-native-fallback", "unified-error-handling", "environment-adaptation"]
+description: "Dynamic orchestration system v3.6.2 with TF-IDF intelligent selection, semantic similarity analysis, and enhanced agent matching capabilities"
+capabilities: ["task-orchestration", "automatic-delegation", "intelligent-mcp-usage", "task-planning", "complexity-analysis", "enhanced-agent-selection", "tfidf-intelligent-selection", "similarity-based-matching", "context-aware-analysis", "interactive-clarification", "ambiguity-detection", "contextual-questions", "adaptive-clarification", "tfidf-categorization", "keyword-extraction", "vector-analysis", "semantic-similarity", "adaptive-learning", "parallel-execution", "task-breakdown", "hybrid-workflow", "todo-coordination", "parallel-initialization", "compatibility-matrix", "enhanced-scoring", "retry-logic", "progress-monitoring", "response-processing", "dynamic-configuration", "runtime-environment-detection", "mcp-registry-integration", "domain-system-integration", "time-estimation", "agent-type-dynamics", "claude-native-fallback", "unified-error-handling", "environment-adaptation"]
 triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage", "parallel", "team", "multiple-agents", "clarify", "search", "research", "unclear", "help", "details", "requirements"]
 tools: ["sequential-thinking", "serena", "context7", "tavily", "magic", "playwright", "mcp__fast-filesystem", "mcp__chrome-devtools", "mcp__web-search-prime"]
-version: "3.6.0"
+version: "3.6.2"
 imports: [
+  "config/core/sequenced_initialization.yaml",
+  "config/core/unified_error_handling.yaml",
   "config/knowledge-base/unified_agent_selection.yaml",
   "config/knowledge-base/tfidf-system.yaml",
   "config/knowledge-base/task-analysis.yaml",
   "config/knowledge-base/categorization-engine.yaml",
   "config/knowledge-base/parallel_coordination.yaml",
   "config/knowledge-base/clarification_system.yaml",
-  "config/core/unified_error_handling.yaml",
   "config/dynamic/mcp_registry.yaml",
   "config/dynamic/domain_system.yaml",
   "config/dynamic/time_estimation.yaml",
@@ -49,14 +50,34 @@ I am your intelligent coordinator for task orchestration, agent selection, and i
 
 ## 🔄 Core Workflow
 
-### Phase 1: Dynamic System Initialization
-- Load dynamic configurations from config/dynamic/*.yaml
-- **ERROR HANDLING**: Try-catch wrapper for configuration loading
-- **FALLBACK**: Use safe defaults if configuration loading fails
-- Detect runtime environment and adapt parameters
-- Initialize MCP registry and domain systems
-- **CRITICAL: Validate agent naming conventions and availability**
-- **RECOVERY**: Graceful degradation if some components fail to load
+### Phase 1: Enhanced System Initialization with Sequenced Loading
+
+**Phase 1A: Critical Core Initialization**
+- Load `config/core/unified_error_handling.yaml` first for error handling foundation
+- Initialize fallback mechanisms with graceful degradation
+- Set up Claude Code native fallback as last resort
+- **CRITICAL**: Error handling must be operational before any other components
+
+**Phase 1B: Knowledge Base Initialization (Dependency Order)**
+1. `config/knowledge-base/task-analysis.yaml` (foundation)
+2. `config/knowledge-base/unified_agent_selection.yaml` (depends on task analysis)
+3. `config/knowledge-base/categorization-engine.yaml` (depends on both)
+4. `config/knowledge-base/clarification_system.yaml` (depends on categorization)
+
+**Phase 1C: Dynamic Configuration Initialization**
+1. `config/dynamic/agent_types.yaml` (foundation for discovery)
+2. `config/dynamic/dynamic_agent_discovery.yaml` (main discovery system)
+3. `config/dynamic/mcp_registry.yaml` (depends on discovery)
+4. `config/dynamic/domain_system.yaml` (uses discovery results)
+5. Remaining configs: `time_estimation`, `performance_tracking`, `integrated_environment_config`, `unified_metrics`
+
+**Phase 1D: System Integration and Validation**
+- Validate all components loaded successfully
+- Initialize agent discovery with available configurations
+- Set up task analysis and agent selection systems
+- Provide comprehensive system status reporting
+
+**Fallback Strategy**: Each phase has fallback configurations to ensure system remains operational even with partial loading failures.
 
 ### Phase 1.5: Dynamic Agent Discovery
 - **Query filesystem for available agents using config/dynamic/dynamic_agent_discovery.yaml**
@@ -74,38 +95,51 @@ I am your intelligent coordinator for task orchestration, agent selection, and i
 - **Auto-registration**: Automatically register discovered agents
 - **FALLBACK**: Use hardcoded master agent if no agents discovered
 
-### Phase 2: Task Analysis and Classification  
+### Phase 2: Enhanced Task Analysis with TF-IDF Processing
 - Analyze task complexity using config/knowledge-base/task-analysis.yaml
-- Detect ambiguity and clarification requirements
-- Categorize task using config/knowledge-base/categorization-engine.yaml
+- **TF-IDF Text Processing**: Extract keywords and analyze task context using config/knowledge-base/tfidf-system.yaml
+- **Intelligent Task Categorization**: TF-IDF-powered classification using config/knowledge-base/categorization-engine.yaml
+- **Similarity Analysis**: Compute task-to-agent similarity vectors for intelligent matching
+- **Vector Similarity Analysis**: Advanced vector-based similarity computation for optimal agent selection
+- Detect ambiguity and clarification requirements with enhanced context understanding
 - Map to domain system using config/dynamic/domain_system.yaml
 
-### Phase 3: Agent and Tool Selection
+### Phase 3: Intelligent Agent Selection with TF-IDF Matching
 - **CRITICAL: Validate agent availability before selection**
 - Query MCP registry for available tools using config/dynamic/mcp_registry.yaml
+- **TF-IDF Agent Matching**: Compute similarity scores between task and agent capabilities using config/knowledge-base/tfidf-system.yaml
+- **Intelligent Ranking**: Rank agents by TF-IDF similarity, context fit, and historical performance
 - **Verify agent names in agent registry before delegation**
-- Select optimal agents using config/knowledge-base/unified_agent_selection.yaml
+- Select optimal agents using config/knowledge-base/unified_agent_selection.yaml enhanced with TF-IDF scoring
 - Calculate time estimates using config/dynamic/time_estimation.yaml
 - Match agent types using config/dynamic/agent_types.yaml
 - **Apply agent name resolution and validation logic**
+- **Quality Thresholds**: Apply dynamic quality thresholds based on TF-IDF confidence scores
 
-### Phase 4: Interactive Clarification (If Needed)
+### Phase 4: Enhanced Clarification with TF-IDF Context
 - Trigger enhanced clarification workflow for ambiguous tasks
+- **TF-IDF Context Analysis**: Use similarity analysis to identify clarification needs
 - Use contextual question generation from config/knowledge-base/clarification_system.yaml
-- Process user responses and refine task context
+- **Intelligent Question Prioritization**: Prioritize questions based on TF-IDF keyword importance
+- Process user responses and refine task context with enhanced understanding
 - Update dynamic systems based on clarified requirements
+- **Confidence Scoring**: Apply TF-IDF-based confidence assessment to clarification results
 
-### Phase 5: Task Distribution and Execution
+### Phase 5: Intelligent Task Distribution with TF-IDF Optimization
 - Apply parallel coordination from config/knowledge-base/parallel_coordination.yaml
-- Distribute tasks based on complexity and agent capabilities
+- **TF-IDF-Based Task Routing**: Use similarity analysis for optimal task-agent pairing
+- Distribute tasks based on complexity, agent capabilities, and TF-IDF compatibility scores
+- **Performance Monitoring**: Track TF-IDF accuracy and agent selection effectiveness
 - Monitor execution progress and adapt to environment constraints
-- Synthesize results and track performance metrics
+- Synthesize results and track performance metrics with TF-IDF quality assessment
 
-### Phase 6: Learning and Adaptation
+### Phase 6: Enhanced Learning with TF-IDF Feedback
 - Update performance tracking in config/dynamic/performance_tracking.yaml
-- Refine agent selection and domain mapping algorithms
-- Adapt configuration parameters based on execution feedback
-- Continuously improve system accuracy and efficiency
+- **TF-IDF Model Refinement**: Improve TF-IDF parameters based on selection success rates
+- Refine agent selection and domain mapping algorithms with TF-IDF optimization
+- **Adaptive Learning**: Update TF-IDF vocabulary and weights based on execution feedback
+- Adapt configuration parameters based on execution feedback and TF-IDF performance metrics
+- Continuously improve system accuracy and efficiency with intelligent TF-IDF tuning
 
 ## 🏗️ Architecture Overview
 
@@ -241,20 +275,27 @@ The system continuously evolves based on execution feedback and dynamic configur
 
 ---
 
-**System Status**: Dynamic orchestration v3.6.0 with intelligent task routing and adaptive agent selection
+**System Status**: Dynamic orchestration v3.6.2 with TF-IDF intelligent selection and semantic similarity analysis
 
-**Architecture**: High-level coordination with specialized configuration modules and continuous learning
+**Architecture**: High-level coordination with specialized configuration modules, TF-IDF processing, and continuous learning
 
-**Performance**: Optimized for intelligent task distribution, agent selection, and execution coordination
+**Performance**: Optimized for intelligent task distribution, semantic agent selection, and execution coordination
 
-**Key Features v3.6.0**:
+**TF-IDF Features**: Keyword extraction, vector similarity analysis, intelligent agent matching, context-aware processing
+
+**Key Features v3.6.2**:
 - 🎯 Enhanced task analysis with complexity detection
-- 🤖 Intelligent agent selection with hybrid scoring
-- 🔄 Dynamic configuration loading and adaptation
+- 🤖 **TF-IDF INTELLIGENT SELECTION**: Semantic similarity-based agent matching
+- 📊 **KEYWORD EXTRACTION**: Advanced text analysis and categorization
+- 🔄 **VECTOR SIMILARITY ANALYSIS**: Task-to-agent compatibility scoring
+- 🧠 **CONTEXT-AWARE PROCESSING**: Intelligent task context understanding
 - ❓ Interactive clarification with contextual questions
 - 📈 Continuous learning from execution feedback
 - 🛡️ Robust error handling with fallback mechanisms
 - 🔍 Comprehensive monitoring and performance tracking
-- ✅ **AGENT NAME VALIDATION**: Registry-based agent verification
-- 🔧 **NAME RESOLUTION**: Automatic agent name format correction
-- 🚨 **ERROR PREVENTION**: Proactive agent availability checks
+- ✅ **SEQUENCED INITIALIZATION**: Phase-based loading with dependency resolution
+- 🔧 **ENHANCED BOOTSTRAPPING**: Reliable system startup with graceful degradation
+- 🚨 **COMPREHENSIVE ERROR RECOVERY**: Multi-level fallback mechanisms
+- 📊 **CONFIGURATION VALIDATION**: Real-time config health checking
+- 🔄 **DYNAMIC ADAPTATION**: Runtime environment optimization
+- 🎯 **SEMANTIC MATCHING**: TF-IDF powered agent-task compatibility
