@@ -166,20 +166,39 @@ LLM Orchestrator v2.2.0
 ```
 Process User Request
 ├── Is System Ready?
-│   ├── Yes → Continue
-│   └── No → Run Initialization
+│   ├── Yes → Continue to Task Analysis
+│   └── No → Run 8-Step Parallel Initialization
+│       ├── TodoWrite: Create initialization tasks
+│       ├── Launch parallel tasks from config/workflows/parallel_initialization.yaml
+│       ├── Synchronize with 80% success threshold
+│       └── Validate system readiness
 ├── Analyze Task Complexity (Dynamic Categorization)
-│   ├── Complex (≥0.6)
-│   │   ├── Create TODO-based Task Plan
-│   │   ├── Check for Error Return Conditions
-│   │   ├── Should Auto-execute?
-│   │   │   ├── Yes → Execute Plan with Error Monitoring
-│   │   │   └── No → Request Clarification
-│   │   └── Delegate to Agents with Error Handling
-│   └── Simple (≤0.6)
-│       ├── Select Optimal Agent (Dynamic Scoring)
-│       ├── Check Error Return Conditions
-│       └── Delegate Task with Error Reporting
+│   ├── Assess Parallel Potential
+│   │   ├── High (>0.7) → Parallel Decomposition & Execution
+│   │   │   ├── Create parallel task breakdown
+│   │   │   ├── Execute parallel tasks with coordination
+│   │   │   ├── Synchronize results (timeout: 30s)
+│   │   │   └── Integrate parallel results
+│   │   ├── Medium (0.4-0.7) → Competitive Execution
+│   │   │   ├── Select 2+ optimal agents
+│   │   │   ├── Execute tasks in parallel
+│   │   │   ├── Select best competitive result
+│   │   │   └── Calculate selection confidence
+│   │   └── Low (<0.4) → Sequential Execution
+│   │       ├── Select single optimal agent
+│   │       ├── Execute task sequentially
+│   │       └── Monitor for errors
+│   └── Complex (≥0.6) or Simple (≤0.6) based on parallel strategy
+│       ├── Create TODO-based Task Plan
+│       ├── Check for Error Return Conditions
+│       ├── Handle Partial Parallel Failures (if parallel)
+│       ├── Should Auto-execute?
+│       │   ├── Yes → Execute Plan with Error Monitoring
+│       │   └── No → Request Clarification
+│       └── Delegate to Agents with Error Handling
+│           ├── Parallel execution with coordination
+│           ├── Competitive execution with best result selection
+│           └── Sequential execution with fallback
 ```
 
 ### Enhanced Decision Logic with Error Handling:
@@ -600,21 +619,97 @@ IF success_rate < target_threshold:
 
 ## 🚀 Usage Process
 
-### 1. Initialization
+### 1. Parallel System Initialization
 ```yaml
-# Автоматично виконується при першому запиті
-- Check system status
-- Load configurations from config/
-- Initialize agent capabilities
-- Set up selection rules
+# Автоматично виконується при першому запиті з TodoWrite відстеженням
+System Readiness Check:
+├── Is System Ready?
+│   ├── Yes → Continue to Request Processing
+│   └── No → Run 8-Step Parallel Initialization
+│       └── TodoWrite: Create initialization task list
+│
+Parallel Initialization (8 concurrent tasks):
+├── Task 1: Configuration Validation (config/ YAML files)
+├── Task 2: Agent Registry Initialization (dynamic/agent_registry.yaml)
+├── Task 3: Dynamic Components Setup (categorization_engine.yaml)
+├── Task 4: Performance Monitoring Setup (performance_monitoring.yaml)
+├── Task 5: Selection Rules Loading (rules/selection_rules.yaml)
+├── Task 6: Variable Manager Initialization
+├── Task 7: Parallel Coordination Setup (parallel_coordination.yaml)
+└── Task 8: System Readiness Validation
+    └── Success threshold: 80% tasks completed
 ```
 
-### 2. Request Processing
+### 2. Request Processing with Parallel Execution
 ```
-User Request → Task Analysis → Agent Selection → Delegation → Results
+User Request → System Readiness Check → Task Analysis →
+Parallel Potential Assessment → Strategy Selection:
+├── High (>0.7): Parallel Decomposition & Execution
+├── Medium (0.4-0.7): Competitive Execution (2+ agents)
+└── Low (<0.4): Sequential Execution
+→ Results Integration → Final Output
 ```
 
-### 3. Example Scenarios:
+### 3. Detailed Parallel Initialization with TodoWrite
+
+```python
+# TodoWrite інтеграція для відстеження ініціалізації
+def run_parallel_initialization():
+    TodoWrite([
+        {"content": "Validate YAML configurations", "status": "pending", "activeForm": "Configuration validation"},
+        {"content": "Initialize agent registry", "status": "pending", "activeForm": "Agent registry setup"},
+        {"content": "Setup dynamic components", "status": "pending", "activeForm": "Dynamic components initialization"},
+        {"content": "Activate performance monitoring", "status": "pending", "activeForm": "Performance monitoring setup"},
+        {"content": "Load selection rules", "status": "pending", "activeForm": "Selection rules loading"},
+        {"content": "Initialize variable manager", "status": "pending", "activeForm": "Variable manager setup"},
+        {"content": "Setup parallel coordination", "status": "pending", "activeForm": "Parallel coordination configuration"},
+        {"content": "Validate system readiness", "status": "pending", "activeForm": "System readiness check"}
+    ])
+
+    # Запуск 8 паралельних завдань через parallel_coordination.yaml
+    launch_parallel_tasks_from_config("config/workflows/parallel_initialization.yaml")
+
+    # Синхронізація з 80% порогом успішності
+    synchronize_parallel_results(success_threshold=0.8)
+```
+
+### 4. Parallel Execution Functions (Restored from backup)
+
+```python
+# Відновлені функції паралельного виконання
+def execute_parallel_tasks_with_coordination(parallel_tasks):
+    """Координоване паралельне виконання з синхронізацією"""
+    results = {}
+
+    for task in parallel_tasks:
+        # Launch in parallel
+        results[task.id] = launch_task_async(task)
+
+    # Synchronize with timeout handling
+    return synchronize_parallel_results(results, timeout=30)
+
+def select_best_competitive_result(competitive_results):
+    """Вибір найкращого результату з конкурентного виконання"""
+    best_result = None
+    best_score = 0
+
+    for result in competitive_results:
+        score = calculate_result_quality(result)
+        if score > best_score:
+            best_score = score
+            best_result = result
+
+    return best_result, calculate_selection_confidence(best_score, competitive_results)
+
+def handle_partial_parallel_failure(failed_tasks, successful_results):
+    """Обробка часткових невдач в паралельному виконанні"""
+    if len(successful_results) >= len(failed_tasks):
+        return synthesize_partial_results(successful_results)
+    else:
+        return fallback_to_sequential_execution(failed_tasks)
+```
+
+### 5. Example Scenarios:
 
 **Simple Task**: "Fix authentication bug"
 - Complexity: Low (0.3)

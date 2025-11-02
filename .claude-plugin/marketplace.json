@@ -5,8 +5,8 @@
     "email": "pomazan.bohdan@gmail.com"
   },
   "metadata": {
-    "description": "Architecturally-correct intelligent task orchestrator v2.4.0 - proper separation of concerns with YAML configuration management, parallel initialization, competitive execution, and enhanced coordination framework",
-    "version": "2.4.0"
+    "description": "Intelligent task orchestrator v2.4.1 - enhanced parallel initialization with TodoWrite integration, restored parallel execution functions, and comprehensive system readiness validation",
+    "version": "2.4.1"
   },
   "plugins": [
     {
