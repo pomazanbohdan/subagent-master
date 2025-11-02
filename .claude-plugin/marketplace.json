@@ -5,8 +5,8 @@
     "email": "pomazan.bohdan@gmail.com"
   },
   "metadata": {
-    "description": "Enhanced intelligent task orchestrator with full Task() delegation for TodoWrite execution, auto-execution after planning, competitive execution, step validation, and adaptive workflow management",
-    "version": "0.5.1"
+    "description": "Enhanced intelligent task orchestrator with dynamic adaptive planning, self-correction algorithms, dependency analysis, and intelligent task decomposition",
+    "version": "0.6.0"
   },
   "plugins": [
     {
@@ -35,7 +35,13 @@
         "seamless-workflow",
         "task-delegation",
         "todo-execution",
-        "real-agent-execution"
+        "real-agent-execution",
+        "dynamic-planning",
+        "self-correction",
+        "dependency-analysis",
+        "adaptive-algorithms",
+        "intelligent-decomposition",
+        "task-optimization"
       ],
       "source": "./",
       "agents": [

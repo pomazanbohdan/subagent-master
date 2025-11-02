@@ -2600,26 +2600,30 @@ def extract_contextual_keywords(task_description):
 ```python
 def analyze_task_complexity(task_description):
     """
-    Analyze task complexity for delegation decision making
+    Enhanced dynamic task complexity analysis with adaptive planning
     """
-    # Динамічний аналіз ключових слів з контекстом
+    # Extract core task components
     task_keywords = extract_task_keywords(task_description)
     task_context = analyze_task_context(task_description)
 
-    # Динамічне визначення вагових коефіцієнтів
-    complexity_weights = calculate_dynamic_weights(task_context)
+    # Analyze task dependencies and resource requirements
+    dependencies = analyze_task_dependencies(task_description, task_context)
+    resource_requirements = estimate_execution_resources(task_description, dependencies)
 
-    # Контекстуальний аналіз складності
-    base_complexity = 0
-    for keyword in task_keywords:
-        weight = complexity_weights.get(keyword, 1.0)
-        base_complexity += weight
+    # Dynamic complexity calculation with dependency analysis
+    base_complexity = calculate_base_complexity(task_keywords, task_context)
 
-    # Динамічна оцінка кількості кроків
-    steps = estimate_dynamic_task_steps(task_description, task_context)
-    base_complexity += min(steps // 2, 3)
+    # Adjust complexity based on dependencies
+    dependency_factor = calculate_dependency_complexity(dependencies)
+    resource_factor = calculate_resource_complexity(resource_requirements)
 
-    return min(base_complexity, 3)
+    # Adaptive step estimation
+    estimated_steps = estimate_adaptive_task_steps(task_description, task_context, dependencies)
+
+    # Final complexity calculation
+    total_complexity = base_complexity + dependency_factor + resource_factor + min(estimated_steps // 2, 3)
+
+    return min(total_complexity, 5)  # Increased max complexity for better granularity
 
 def check_specialization_requirement(task_description, task_context):
     """
@@ -2668,6 +2672,173 @@ def calculate_dynamic_weights(task_context):
         "performance": 1.2 if task_context["urgency"] == "high" else 1.0
     }
     return domain_weights
+
+def analyze_task_dependencies(task_description, task_context):
+    """
+    Analyze task dependencies and resource requirements
+    """
+    dependencies = {
+        "sequential": [],  # Tasks that must be done in order
+        "parallel": [],    # Tasks that can be done simultaneously
+        "external": [],    # External dependencies
+        "blocking": []     # Tasks that block other tasks
+    }
+
+    # Extract dependency indicators from task description
+    dependency_patterns = [
+        ("before", "sequential"),
+        ("after", "sequential"),
+        ("then", "sequential"),
+        ("simultaneously", "parallel"),
+        ("in parallel", "parallel"),
+        ("depends on", "external"),
+        ("requires", "external"),
+        ("blocks", "blocking")
+    ]
+
+    description_lower = task_description.lower()
+    for pattern, dep_type in dependency_patterns:
+        if pattern in description_lower:
+            dependencies[dep_type].append(pattern)
+
+    return dependencies
+
+def estimate_execution_resources(task_description, dependencies):
+    """
+    Estimate resource requirements based on task and dependencies
+    """
+    resource_requirements = {
+        "computational": "medium",
+        "memory": "medium",
+        "time": "medium",
+        "agents_needed": 1,
+        "parallelizable": len(dependencies.get("parallel", [])) > 0
+    }
+
+    # Analyze task complexity indicators
+    complexity_indicators = ["large", "complex", "multiple", "comprehensive"]
+    description_lower = task_description.lower()
+
+    complexity_score = sum(1 for indicator in complexity_indicators if indicator in description_lower)
+
+    if complexity_score >= 3:
+        resource_requirements.update({
+            "computational": "high",
+            "memory": "high",
+            "time": "high",
+            "agents_needed": 3
+        })
+    elif complexity_score >= 1:
+        resource_requirements.update({
+            "computational": "medium",
+            "memory": "medium",
+            "time": "medium",
+            "agents_needed": 2
+        })
+
+    return resource_requirements
+
+def calculate_base_complexity(task_keywords, task_context):
+    """
+    Calculate base complexity from keywords and context
+    """
+    base_complexity = 0
+
+    # Keyword-based complexity
+    complexity_keywords = {
+        "simple": 1, "basic": 1, "quick": 1,
+        "moderate": 2, "standard": 2, "normal": 2,
+        "complex": 3, "advanced": 3, "detailed": 3,
+        "comprehensive": 4, "extensive": 4, "thorough": 4
+    }
+
+    for keyword in task_keywords:
+        if keyword.lower() in complexity_keywords:
+            base_complexity += complexity_keywords[keyword.lower()]
+
+    # Context-based complexity
+    if task_context.get("scope") == "system":
+        base_complexity += 1
+    if task_context.get("domain") in ["financial", "security", "healthcare"]:
+        base_complexity += 1
+    if task_context.get("urgency") == "high":
+        base_complexity += 0.5
+
+    return base_complexity
+
+def calculate_dependency_complexity(dependencies):
+    """
+    Calculate complexity factor based on dependencies
+    """
+    dependency_complexity = 0
+
+    # Sequential dependencies increase complexity
+    dependency_complexity += len(dependencies.get("sequential", [])) * 0.5
+
+    # External dependencies increase complexity more
+    dependency_complexity += len(dependencies.get("external", [])) * 1.0
+
+    # Blocking dependencies significantly increase complexity
+    dependency_complexity += len(dependencies.get("blocking", [])) * 1.5
+
+    # Parallel dependencies can reduce complexity
+    if dependencies.get("parallel"):
+        dependency_complexity -= len(dependencies["parallel"]) * 0.2
+
+    return max(0, dependency_complexity)
+
+def calculate_resource_complexity(resource_requirements):
+    """
+    Calculate complexity factor based on resource requirements
+    """
+    resource_complexity = 0
+
+    # Computational requirements
+    if resource_requirements["computational"] == "high":
+        resource_complexity += 1.0
+    elif resource_requirements["computational"] == "medium":
+        resource_complexity += 0.5
+
+    # Time requirements
+    if resource_requirements["time"] == "high":
+        resource_complexity += 0.8
+    elif resource_requirements["time"] == "medium":
+        resource_complexity += 0.4
+
+    # Number of agents needed
+    resource_complexity += (resource_requirements["agents_needed"] - 1) * 0.3
+
+    return resource_complexity
+
+def estimate_adaptive_task_steps(task_description, task_context, dependencies):
+    """
+    Adaptive step estimation based on task analysis
+    """
+    base_steps = 1  # Always at least one step
+
+    # Analyze task description for step indicators
+    step_indicators = [
+        ("multiple", 2), ("several", 3), ("various", 3),
+        ("comprehensive", 4), ("complete", 3), ("full", 2),
+        ("step by step", 4), ("phase", 3), ("stage", 2)
+    ]
+
+    description_lower = task_description.lower()
+    for indicator, steps in step_indicators:
+        if indicator in description_lower:
+            base_steps = max(base_steps, steps)
+
+    # Adjust based on dependencies
+    base_steps += len(dependencies.get("sequential", []))
+    base_steps += len(dependencies.get("external", [])) * 0.5
+
+    # Adjust based on task context
+    if task_context.get("scope") == "system":
+        base_steps += 1
+    if task_context.get("domain") in ["financial", "security"]:
+        base_steps += 1
+
+    return int(base_steps)
 ```
 
 ### **Agent Selection Algorithm:**
@@ -5073,35 +5244,319 @@ def integrate_parallel_with_existing_hooks(existing_hooks):
 4. **Monitor progress** through TodoWrite updates
 
 # ========================================
+# 🔄 ADAPTIVE VALIDATION & SELF-CORRECTION FUNCTIONS
+# ========================================
+
+def adaptive_validation_after_step(step_result, step, execution_plan):
+    """
+    Adaptive validation function that analyzes step results and determines need for plan changes
+    """
+    validation_result = {
+        'step_successful': False,
+        'should_adapt_plan': False,
+        'adaptation_type': None,
+        'new_steps_needed': [],
+        'steps_to_modify': [],
+        'confidence_score': 0.0
+    }
+
+    # Basic success validation
+    if step_result.get('success', False):
+        validation_result['step_successful'] = True
+        validation_result['confidence_score'] = 0.7
+
+    # Analyze result quality and completeness
+    if 'execution_result' in step_result:
+        result_analysis = analyze_execution_result_quality(step_result['execution_result'], step)
+        validation_result['confidence_score'] += result_analysis['quality_score'] * 0.3
+
+        # Check for unexpected discoveries
+        if result_analysis.get('unexpected_complexity', False):
+            validation_result['should_adapt_plan'] = True
+            validation_result['adaptation_type'] = 'complexity_increase'
+            validation_result['new_steps_needed'].append('complexity_analysis')
+
+        # Check for new requirements discovered
+        if result_analysis.get('new_requirements', []):
+            validation_result['should_adapt_plan'] = True
+            validation_result['adaptation_type'] = 'requirement_expansion'
+            validation_result['new_steps_needed'].extend(result_analysis['new_requirements'])
+
+    # Check for dependency changes
+    dependency_analysis = analyze_dependency_changes(step_result, execution_plan)
+    if dependency_analysis['changes_detected']:
+        validation_result['should_adapt_plan'] = True
+        validation_result['adaptation_type'] = 'dependency_adaptation'
+        validation_result['steps_to_modify'].extend(dependency_analysis['affected_steps'])
+
+    return validation_result
+
+def analyze_execution_result_quality(execution_result, step):
+    """
+    Analyze the quality and completeness of execution results
+    """
+    analysis = {
+        'quality_score': 0.5,
+        'unexpected_complexity': False,
+        'new_requirements': [],
+        'missing_components': []
+    }
+
+    if isinstance(execution_result, dict):
+        # Check for expected components
+        expected_components = step.get('expected_outputs', [])
+        for component in expected_components:
+            if component not in execution_result:
+                analysis['missing_components'].append(component)
+                analysis['quality_score'] -= 0.1
+
+        # Look for complexity indicators
+        complexity_indicators = ['multiple approaches needed', 'requires additional analysis', 'dependency discovered']
+        result_text = str(execution_result).lower()
+        for indicator in complexity_indicators:
+            if indicator in result_text:
+                analysis['unexpected_complexity'] = True
+                analysis['quality_score'] -= 0.1
+
+        # Look for new requirements
+        requirement_patterns = ['also need', 'requirement identified', 'missing component', 'additional step']
+        for pattern in requirement_patterns:
+            if pattern in result_text:
+                analysis['new_requirements'].append('additional_requirement_analysis')
+
+    elif isinstance(execution_result, str):
+        # Text analysis for string results
+        if len(execution_result.strip()) < 50:
+            analysis['quality_score'] -= 0.2
+            analysis['missing_components'].append('detailed_analysis')
+
+    return analysis
+
+def analyze_dependency_changes(step_result, execution_plan):
+    """
+    Analyze if step results indicate changes in dependencies
+    """
+    dependency_analysis = {
+        'changes_detected': False,
+        'new_dependencies': [],
+        'resolved_dependencies': [],
+        'affected_steps': []
+    }
+
+    # Check result for dependency indicators
+    result_text = str(step_result.get('execution_result', '')).lower()
+
+    # New dependency patterns
+    new_dep_patterns = ['depends on', 'requires', 'needs', 'blocked by']
+    for pattern in new_dep_patterns:
+        if pattern in result_text:
+            dependency_analysis['changes_detected'] = True
+            dependency_analysis['new_dependencies'].append(pattern)
+
+    # Resolved dependency patterns
+    resolved_patterns = ['completed', 'resolved', 'finished', 'done']
+    for pattern in resolved_patterns:
+        if pattern in result_text:
+            dependency_analysis['resolved_dependencies'].append(pattern)
+
+    # Determine which steps are affected
+    if dependency_analysis['changes_detected']:
+        # This would need to be implemented based on the specific execution plan structure
+        dependency_analysis['affected_steps'].extend(execution_plan.get('remaining_steps', []))
+
+    return dependency_analysis
+
+def adaptive_plan_correction(execution_plan, validation_result, current_step_id):
+    """
+    Adaptively correct the execution plan based on validation results
+    """
+    corrected_plan = execution_plan.copy()
+
+    if validation_result['should_adapt_plan']:
+        adaptation_type = validation_result['adaptation_type']
+
+        if adaptation_type == 'complexity_increase':
+            # Add complexity analysis steps
+            new_steps = create_complexity_analysis_steps(validation_result['new_steps_needed'])
+            corrected_plan = insert_steps_after_current(corrected_plan, current_step_id, new_steps)
+
+        elif adaptation_type == 'requirement_expansion':
+            # Add requirement analysis steps
+            new_steps = create_requirement_analysis_steps(validation_result['new_steps_needed'])
+            corrected_plan = insert_steps_after_current(corrected_plan, current_step_id, new_steps)
+
+        elif adaptation_type == 'dependency_adaptation':
+            # Modify steps affected by dependency changes
+            corrected_plan = modify_dependency_affected_steps(corrected_plan, validation_result['steps_to_modify'])
+
+        # Update validation points after plan changes
+        corrected_plan = update_validation_points_after_correction(corrected_plan, validation_result)
+
+    return corrected_plan
+
+def create_complexity_analysis_steps(complexity_indicators):
+    """
+    Create steps for handling unexpected complexity
+    """
+    steps = []
+    step_id = 1
+
+    for indicator in complexity_indicators:
+        steps.append({
+            'step_id': f'complexity_analysis_{step_id}',
+            'name': f'Complexity Analysis: {indicator}',
+            'description': f'Analyze and handle complexity related to: {indicator}',
+            'required_capabilities': ['analysis'],
+            'validation_point': True,
+            'correction_allowed': True,
+            'adaptive_step': True
+        })
+        step_id += 1
+
+    return steps
+
+def create_requirement_analysis_steps(requirement_indicators):
+    """
+    Create steps for handling new requirements
+    """
+    steps = []
+    step_id = 1
+
+    for indicator in requirement_indicators:
+        steps.append({
+            'step_id': f'requirement_analysis_{step_id}',
+            'name': f'Requirement Analysis: {indicator}',
+            'description': f'Analyze and incorporate new requirement: {indicator}',
+            'required_capabilities': ['analysis', 'implementation'],
+            'validation_point': True,
+            'correction_allowed': True,
+            'adaptive_step': True
+        })
+        step_id += 1
+
+    return steps
+
+def insert_steps_after_current(plan, current_step_id, new_steps):
+    """
+    Insert new steps after the current step in the execution plan
+    """
+    if 'execution_plan' in plan:
+        current_steps = plan['execution_plan']
+
+        # Find the position of current step
+        current_position = None
+        for i, step in enumerate(current_steps):
+            if step.get('step_id') == current_step_id:
+                current_position = i
+                break
+
+        if current_position is not None:
+            # Insert new steps after current step
+            updated_steps = current_steps[:current_position + 1]
+
+            # Update step IDs for new steps
+            base_id = current_step_id + 1
+            for i, new_step in enumerate(new_steps):
+                new_step['step_id'] = base_id + i
+                updated_steps.append(new_step)
+
+            # Update IDs for remaining steps
+            for remaining_step in current_steps[current_position + 1:]:
+                remaining_step['step_id'] += len(new_steps)
+                updated_steps.append(remaining_step)
+
+            plan['execution_plan'] = updated_steps
+
+    return plan
+
+def modify_dependency_affected_steps(plan, affected_steps):
+    """
+    Modify steps that are affected by dependency changes
+    """
+    if 'execution_plan' in plan:
+        current_steps = plan['execution_plan']
+
+        for step_id in affected_steps:
+            for step in current_steps:
+                if step.get('step_id') == step_id:
+                    # Add dependency validation to this step
+                    step['validation_point'] = True
+                    step['correction_allowed'] = True
+                    step['dependency_validation'] = True
+
+    return plan
+
+def update_validation_points_after_correction(plan, validation_result):
+    """
+    Update validation points after plan correction
+    """
+    # Add additional validation points for the adaptations made
+    new_validation_points = []
+
+    if validation_result['adaptation_type'] == 'complexity_increase':
+        new_validation_points.append({
+            'phase': 'post_complexity_analysis',
+            'description': 'Validate complexity analysis results',
+            'criteria': ['complexity_understood', 'mitigation_planned']
+        })
+
+    elif validation_result['adaptation_type'] == 'requirement_expansion':
+        new_validation_points.append({
+            'phase': 'post_requirement_analysis',
+            'description': 'Validate new requirement analysis',
+            'criteria': ['requirements_complete', 'impact_assessed']
+        })
+
+    # Add new validation points to existing ones
+    if 'validation_points' in plan:
+        plan['validation_points'].extend(new_validation_points)
+    else:
+        plan['validation_points'] = new_validation_points
+
+    return plan
+
+# ========================================
 # 🛠️ HELPER FUNCTIONS FOR AUTO-EXECUTION
 # ========================================
 
 def create_structured_plan(user_request, task_context):
     """
-    Create structured plan for auto-execution
+    Enhanced adaptive plan creation with dynamic strategy selection
     """
+    # Enhanced complexity analysis
     task_complexity = analyze_task_complexity(user_request)
 
-    # Determine execution mode
-    if task_complexity >= 3:
-        execution_mode = 'parallel'
-    elif task_complexity >= 2:
-        execution_mode = 'sequential'
-    else:
-        execution_mode = 'simple'
+    # Analyze dependencies and resources
+    dependencies = analyze_task_dependencies(user_request, task_context)
+    resource_requirements = estimate_execution_resources(user_request, dependencies)
 
+    # Adaptive execution mode selection
+    execution_mode = adaptive_strategy_selection(user_request, task_context, dependencies, resource_requirements)
+
+    # Create dynamic plan structure
     plan = {
         'main_task': user_request,
         'execution_mode': execution_mode,
         'complexity': task_complexity,
         'task_context': task_context,
-        'created_at': time.time()
+        'dependencies': dependencies,
+        'resource_requirements': resource_requirements,
+        'created_at': time.time(),
+        'adaptive': True,
+        'validation_points': [],
+        'correction_points': []
     }
 
-    if execution_mode == 'parallel':
-        plan['blocks'] = create_parallel_blocks(user_request, task_context)
-    elif execution_mode == 'sequential':
-        plan['execution_plan'] = create_sequential_execution_steps(user_request, task_context)
+    # Generate execution plan based on selected mode
+    if execution_mode == 'adaptive_parallel':
+        plan['blocks'] = create_adaptive_parallel_blocks(user_request, task_context, dependencies)
+    elif execution_mode == 'adaptive_sequential':
+        plan['execution_plan'] = create_adaptive_sequential_steps(user_request, task_context, dependencies)
+    else:
+        plan['execution_plan'] = create_simple_execution_steps(user_request, task_context)
+
+    # Add validation and correction points
+    plan = add_adaptive_validation_points(plan, dependencies)
 
     return plan
 
@@ -5149,6 +5604,189 @@ def create_sequential_execution_steps(user_request, task_context):
             'dependencies': [2]
         }
     ]
+
+def adaptive_strategy_selection(user_request, task_context, dependencies, resource_requirements):
+    """
+    Adaptive strategy selection based on comprehensive analysis
+    """
+    # Base strategy selection factors
+    complexity_score = len(analyze_task_dependencies(user_request, task_context).get("sequential", []))
+    parallel_score = len(dependencies.get("parallel", []))
+    resource_score = resource_requirements["agents_needed"]
+
+    # Determine optimal strategy
+    if resource_score >= 3 and parallel_score >= 1:
+        return 'adaptive_parallel'
+    elif complexity_score >= 2 or dependencies.get("external"):
+        return 'adaptive_sequential'
+    else:
+        return 'simple'
+
+def create_adaptive_parallel_blocks(user_request, task_context, dependencies):
+    """
+    Create adaptive parallel execution blocks with dependency awareness
+    """
+    blocks = []
+
+    # Analysis block
+    blocks.append({
+        'name': 'Adaptive Analysis',
+        'description': 'Analyze requirements, dependencies, and resource needs',
+        'agent_type': 'analyst',
+        'priority': 1,
+        'dependencies': [],
+        'outputs': ['requirements', 'dependency_map', 'resource_plan']
+    })
+
+    # Parallel execution blocks based on dependencies
+    if dependencies.get("parallel"):
+        for i, parallel_task in enumerate(dependencies["parallel"]):
+            blocks.append({
+                'name': f'Parallel Task {i+1}',
+                'description': f'Execute {parallel_task} in parallel',
+                'agent_type': 'implementer',
+                'priority': 2,
+                'dependencies': ['Adaptive Analysis'],
+                'parallel_group': 1,
+                'outputs': [f'{parallel_task}_result']
+            })
+
+    # Implementation block
+    blocks.append({
+        'name': 'Integration & Implementation',
+        'description': 'Integrate results and implement solution',
+        'agent_type': 'implementer',
+        'priority': 3,
+        'dependencies': ['Adaptive Analysis'] + [f'Parallel Task {i+1}' for i in range(len(dependencies.get("parallel", [])))],
+        'outputs': ['integrated_solution']
+    })
+
+    return blocks
+
+def create_adaptive_sequential_steps(user_request, task_context, dependencies):
+    """
+    Create adaptive sequential execution steps with validation points
+    """
+    steps = []
+    step_id = 1
+
+    # Initial analysis step
+    steps.append({
+        'step_id': step_id,
+        'name': 'Comprehensive Analysis',
+        'description': 'Analyze requirements and dependencies',
+        'required_capabilities': ['analysis'],
+        'dependencies': [],
+        'validation_point': True,
+        'correction_allowed': True
+    })
+    step_id += 1
+
+    # Sequential dependency steps
+    for dep in dependencies.get("sequential", []):
+        steps.append({
+            'step_id': step_id,
+            'name': f'Dependency Resolution: {dep}',
+            'description': f'Resolve {dep} dependency',
+            'required_capabilities': ['implementation'],
+            'dependencies': [step_id - 1],
+            'validation_point': True,
+            'correction_allowed': True
+        })
+        step_id += 1
+
+    # External dependency handling
+    if dependencies.get("external"):
+        steps.append({
+            'step_id': step_id,
+            'name': 'External Dependency Management',
+            'description': 'Handle external dependencies',
+            'required_capabilities': ['coordination'],
+            'dependencies': [step_id - 1],
+            'validation_point': True,
+            'correction_allowed': False
+        })
+        step_id += 1
+
+    # Final implementation
+    steps.append({
+        'step_id': step_id,
+        'name': 'Final Implementation',
+        'description': 'Complete implementation with all dependencies resolved',
+        'required_capabilities': ['implementation'],
+        'dependencies': [step_id - 1],
+        'validation_point': True,
+        'correction_allowed': True
+    })
+
+    return steps
+
+def create_simple_execution_steps(user_request, task_context):
+    """
+    Create simple execution steps for straightforward tasks
+    """
+    return [
+        {
+            'step_id': 1,
+            'name': 'Task Execution',
+            'description': f'Execute: {user_request}',
+            'required_capabilities': ['implementation'],
+            'dependencies': [],
+            'validation_point': True,
+            'correction_allowed': True
+        }
+    ]
+
+def add_adaptive_validation_points(plan, dependencies):
+    """
+    Add validation and correction points to the plan
+    """
+    validation_points = []
+    correction_points = []
+
+    # Add validation points for each major phase
+    if plan['execution_mode'] == 'adaptive_parallel':
+        # After analysis phase
+        validation_points.append({
+            'phase': 'post_analysis',
+            'description': 'Validate analysis results before parallel execution',
+            'criteria': ['requirements_clear', 'dependencies_mapped', 'resources_planned']
+        })
+
+        # After parallel execution
+        validation_points.append({
+            'phase': 'post_parallel',
+            'description': 'Validate parallel execution results',
+            'criteria': ['all_blocks_completed', 'no_conflicts', 'results_consistent']
+        })
+
+    elif plan['execution_mode'] == 'adaptive_sequential':
+        # After each sequential step
+        for i, dep in enumerate(dependencies.get("sequential", [])):
+            validation_points.append({
+                'phase': f'post_step_{i+2}',
+                'description': f'Validate {dep} resolution',
+                'criteria': ['dependency_resolved', 'no_blockers']
+            })
+
+    # Add correction points
+    correction_points.extend([
+        {
+            'phase': 'contingency_planning',
+            'description': 'Alternative strategies if primary approach fails',
+            'alternatives': ['reduce_scope', 'change_approach', 'additional_resources']
+        },
+        {
+            'phase': 'error_recovery',
+            'description': 'Error recovery procedures',
+            'strategies': ['rollback', 'retry', 'escalate']
+        }
+    ])
+
+    plan['validation_points'] = validation_points
+    plan['correction_points'] = correction_points
+
+    return plan
 
 def execute_block_with_agent(block, execution_context):
     """
