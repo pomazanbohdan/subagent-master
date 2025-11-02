@@ -1,7 +1,7 @@
 {
   "name": "subagent-master",
-  "version": "2.2.1",
-  "description": "Hybrid intelligent task orchestrator v2.2.1 - consolidate YAML configuration with algorithmic processing, dynamic agent registration, variable management system and complete initialization workflow documentation",
+  "version": "2.4.0",
+  "description": "Architecturally-correct intelligent task orchestrator v2.4.0 - proper separation of concerns with YAML configuration management, parallel initialization, competitive execution, and enhanced coordination framework",
   "author": "Bohdan <pomazan.bohdan@gmail.com>",
   "license": "MIT",
   "keywords": [

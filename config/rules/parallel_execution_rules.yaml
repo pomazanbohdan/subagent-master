@@ -1,0 +1,179 @@
+# Parallel Execution Rules
+# Правила прийняття рішень про паралельне виконання задач
+
+ruleset:
+  name: "parallel_execution_decision"
+  version: "2.3.0"
+  description: "Rules for determining parallel execution strategy"
+
+# Критерії оцінки паралельного потенціалу
+parallel_potential_assessment:
+  indicators:
+    multiple_domains:
+      weight: 0.25
+      description: "Task spans multiple technical/business domains"
+      check: "len(task_context.identified_domains) > 1"
+
+    complex_scope:
+      weight: 0.20
+      description: "System-level or project-level scope"
+      check: "task_context.scope in ['system', 'project']"
+
+    sufficient_agents:
+      weight: 0.20
+      description: "Enough compatible agents available"
+      check: "len(compatible_agents) >= 2"
+
+    independent_components:
+      weight: 0.20
+      description: "Task can be decomposed into independent parts"
+      check: "has_independent_components(task_description)"
+
+    resource_intensive:
+      weight: 0.15
+      description: "High complexity requiring significant resources"
+      check: "task_context.complexity in ['high', 'critical']"
+
+  # Порогові значення для прийняття рішень
+  thresholds:
+    parallel_execution:
+      min_score: 0.6
+      description: "Minimum score to consider parallel execution"
+
+    competitive_execution:
+      min_score: 0.4
+      max_score: 0.7
+      description: "Score range for competitive execution"
+
+    sequential_execution:
+      max_score: 0.4
+      description: "Maximum score for sequential execution"
+
+# Стратегії декомпозиції задач
+decomposition_strategies:
+  parallel_decomposition:
+    trigger_score: "> 0.7"
+    description: "Break task into independent subtasks for parallel execution"
+    approach: "domain_based_clustering"
+    max_subtasks: 4
+    coordination_required: true
+
+  competitive_approach:
+    trigger_score: "0.4 - 0.7"
+    description: "Multiple agents execute same task, select best result"
+    approach: "quality_competition"
+    max_competitors: 3
+    selection_criteria: "综合质量评分"
+
+  sequential_fallback:
+    trigger_score: "< 0.4"
+    description: "Execute sequentially with optimal agent"
+    approach: "single_agent_optimal"
+    coordination_required: false
+
+# Правила групування компонентів
+component_grouping:
+  domain_based:
+    description: "Group by technical/business domains"
+    examples:
+      - "backend_architecture + api_design"
+      - "frontend_development + ux_design"
+      - "security_analysis + performance_optimization"
+
+  agent_specialization:
+    description: "Group by agent expertise areas"
+    mapping:
+      backend_architect: ["api_design", "database_design", "microservices"]
+      frontend_architect: ["ui_design", "ux_optimization", "accessibility"]
+      performance_engineer: ["optimization", "bottleneck_analysis", "monitoring"]
+      security_engineer: ["security_audit", "vulnerability_assessment", "compliance"]
+
+# Правила координації паралельних процесів
+coordination_rules:
+  dependency_management:
+    description: "Handle dependencies between parallel subtasks"
+    strategies:
+      independent: "Execute simultaneously, no coordination needed"
+      sequential_dependency: "Execute in dependency order"
+      shared_resources: "Coordinate access to shared resources"
+
+  synchronization_points:
+    description: "Points where parallel tasks must synchronize"
+    types:
+      completion_sync: "Wait for all tasks to complete"
+      intermediate_sync: "Synchronize at key milestones"
+      result_merge: "Synchronize when merging results"
+
+  conflict_resolution:
+    description: "Resolve conflicts between parallel results"
+    strategies:
+      priority_based: "Higher priority task wins"
+      merit_based: "Best quality result wins"
+      hybrid: "Combine best elements from multiple results"
+
+# Правила якості та валідації
+quality_rules:
+  result_validation:
+    description: "Validate results from parallel execution"
+    criteria:
+      completeness: "All required components present"
+      consistency: "No contradictions between results"
+      quality_threshold: "Minimum quality score met"
+
+  selection_criteria:
+    competitive_mode:
+      metrics:
+        - "accuracy_score"
+        - "completeness_score"
+        - "efficiency_score"
+        - "innovation_score"
+      weights:
+        accuracy: 0.35
+        completeness: 0.25
+        efficiency: 0.25
+        innovation: 0.15
+
+  fallback_conditions:
+    description: "When to fall back to sequential execution"
+    triggers:
+      parallel_failure_rate: "> 30%"
+      quality_inconsistency: "high variance in results"
+      resource_exhaustion: "insufficient resources for parallel"
+      timeout_exceeded: "parallel execution exceeds time limit"
+
+# Правила моніторингу та адаптації
+adaptive_rules:
+  learning_enabled: true
+  feedback_integration:
+    description: "Learn from execution results to improve future decisions"
+    data_points:
+      - execution_success_rate
+      - quality_scores
+      - timing_metrics
+      - resource_utilization
+
+  threshold_adjustment:
+    description: "Adjust thresholds based on historical performance"
+    adjustment_frequency: "weekly"
+    min_data_points: 50
+
+  strategy_optimization:
+    description: "Optimize strategy selection based on context"
+    optimization_criteria:
+      - success_rate_improvement
+      - quality_improvement
+      - time_reduction
+      - resource_efficiency
+
+# Інтеграція з іншими правилами
+integration:
+  depends_on:
+    - "config/rules/selection_rules.yaml"
+    - "config/rules/competitive_execution.yaml"
+
+  provides_input_to:
+    - "config/dynamic/parallel_coordination.yaml"
+    - "config/dynamic/task_management.yaml"
+
+  conflict_resolution:
+    priority: 2  # Lower than critical rules, higher than optional rules
