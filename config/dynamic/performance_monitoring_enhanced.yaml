@@ -1,0 +1,677 @@
+name: "Enhanced Performance Monitoring System"
+description: "Advanced real-time performance monitoring with adaptive thresholds and intelligent alerting"
+version: "2.5.0"
+configuration_type: "performance_monitoring"
+
+# Enhanced Performance Monitoring Architecture
+performance_monitoring_system:
+  # Core monitoring configuration
+  monitoring_strategy: "real_time_with_adaptive_thresholds"
+  data_retention_period: 86400  # 24 hours in seconds
+  sampling_interval: 5  # seconds
+  aggregation_intervals: [60, 300, 900, 3600]  # 1min, 5min, 15min, 1hour
+
+  # Performance metrics to track
+  metrics_tracked:
+    # System-level metrics
+    system_metrics:
+      - name: "cpu_usage"
+        type: "gauge"
+        unit: "percent"
+        description: "CPU utilization percentage"
+        collection_method: "system_info"
+
+      - name: "memory_usage"
+        type: "gauge"
+        unit: "percent"
+        description: "Memory utilization percentage"
+        collection_method: "system_info"
+
+      - name: "disk_io"
+        type: "counter"
+        unit: "bytes_per_second"
+        description: "Disk I/O operations"
+        collection_method: "system_stats"
+
+    # Agent-specific metrics
+    agent_metrics:
+      - name: "task_execution_time"
+        type: "histogram"
+        unit: "seconds"
+        buckets: [0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 30.0, 60.0, 300.0]
+        description: "Time taken to execute tasks"
+        labels: ["agent_id", "task_type", "success"]
+
+      - name: "agent_success_rate"
+        type: "gauge"
+        unit: "percent"
+        description: "Success rate for agent tasks"
+        labels: ["agent_id", "time_window"]
+
+      - name: "agent_throughput"
+        type: "counter"
+        unit: "tasks_per_second"
+        description: "Number of tasks completed per second"
+        labels: ["agent_id", "task_type"]
+
+      - name: "agent_error_rate"
+        type: "gauge"
+        unit: "percent"
+        description: "Error rate for agent tasks"
+        labels: ["agent_id", "error_type"]
+
+      - name: "agent_response_time_p95"
+        type: "gauge"
+        unit: "seconds"
+        description: "95th percentile response time"
+        labels: ["agent_id"]
+
+      - name: "concurrent_tasks"
+        type: "gauge"
+        unit: "count"
+        description: "Number of concurrent tasks"
+        labels: ["agent_id"]
+
+    # Configuration system metrics
+    configuration_metrics:
+      - name: "config_load_time"
+        type: "histogram"
+        unit: "seconds"
+        buckets: [0.01, 0.05, 0.1, 0.5, 1.0, 2.0, 5.0]
+        description: "Time to load configuration"
+        labels: ["config_type", "config_path"]
+
+      - name: "config_validation_time"
+        type: "histogram"
+        unit: "seconds"
+        buckets: [0.01, 0.05, 0.1, 0.5, 1.0, 2.0]
+        description: "Time to validate configuration"
+        labels: ["config_type"]
+
+      - name: "cache_hit_rate"
+        type: "gauge"
+        unit: "percent"
+        description: "Configuration cache hit rate"
+        labels: ["config_type"]
+
+      - name: "hot_reload_frequency"
+        type: "counter"
+        unit: "count_per_hour"
+        description: "Number of hot reloads"
+        labels: ["config_type"]
+
+      - name: "reload_success_rate"
+        type: "gauge"
+        unit: "percent"
+        description: "Success rate of configuration reloads"
+        labels: ["config_type"]
+
+    # Parallel execution metrics
+    parallel_execution_metrics:
+      - name: "parallel_task_start_time"
+        type: "counter"
+        unit: "count_per_second"
+        description: "Rate of parallel task starts"
+        labels: ["execution_strategy"]
+
+      - name: "parallel_task_completion_time"
+        type: "histogram"
+        unit: "seconds"
+        buckets: [0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 20.0, 60.0, 120.0]
+        description: "Time to complete parallel tasks"
+        labels: ["task_count", "success"]
+
+      - name: "parallel_efficiency_ratio"
+        type: "gauge"
+        unit: "ratio"
+        description: "Efficiency ratio vs sequential execution"
+        labels: ["task_complexity"]
+
+      - name: "resource_contention_rate"
+        type: "gauge"
+        unit: "percent"
+        description: "Resource contention during parallel execution"
+        labels: ["resource_type"]
+
+# Adaptive Threshold System
+adaptive_thresholds:
+  # Dynamic threshold calculation
+  threshold_calculation:
+    implementation: |
+      class AdaptiveThresholdManager:
+          def __init__(self):
+              self.baseline_window = 3600  # 1 hour
+              self.adaptation_factor = 0.1
+              self.min_data_points = 20
+
+          def calculate_adaptive_threshold(self, metric_name, historical_data):
+              """
+              Calculate adaptive threshold based on historical data
+              """
+              if len(historical_data) < self.min_data_points:
+                  return self._get_default_threshold(metric_name)
+
+              # Calculate statistical baseline
+              values = [point['value'] for point in historical_data]
+
+              # Calculate percentiles
+              p50 = np.percentile(values, 50)
+              p90 = np.percentile(values, 90)
+              p95 = np.percentile(values, 95)
+              p99 = np.percentile(values, 99)
+
+              # Calculate adaptive thresholds
+              thresholds = {
+                  'warning_threshold': p90 + (p95 - p90) * 0.5,
+                  'critical_threshold': p95 + (p99 - p95) * 0.3,
+                  'baseline': p50,
+                  'upper_bound': p99 + (p99 - p95) * 0.5
+              }
+
+              # Apply safety margins
+              thresholds['warning_threshold'] *= 1.1
+              thresholds['critical_threshold'] *= 1.2
+
+              return thresholds
+
+          def update_thresholds(self, metric_name, new_data_point):
+              """
+              Update thresholds with new data point
+              """
+              # Add to historical data
+              self._add_data_point(metric_name, new_data_point)
+
+              # Recalculate thresholds if enough data
+              if self._should_recalculate_thresholds(metric_name):
+                  new_thresholds = self.calculate_adaptive_threshold(
+                      metric_name,
+                      self._get_historical_data(metric_name)
+                  )
+                  self._update_threshold_store(metric_name, new_thresholds)
+
+  # Threshold categories
+  threshold_categories:
+    performance_thresholds:
+      agent_response_time:
+        default_warning: 5.0
+        default_critical: 10.0
+        adaptive: true
+        min_value: 0.1
+        max_value: 300.0
+
+      task_success_rate:
+        default_warning: 0.85
+        default_critical: 0.7
+        adaptive: true
+        min_value: 0.0
+        max_value: 1.0
+
+      system_cpu_usage:
+        default_warning: 0.7
+        default_critical: 0.85
+        adaptive: true
+        min_value: 0.0
+        max_value: 1.0
+
+    reliability_thresholds:
+      error_rate:
+        default_warning: 0.05
+        default_critical: 0.1
+        adaptive: true
+        min_value: 0.0
+        max_value: 1.0
+
+      uptime_percentage:
+        default_warning: 0.95
+        default_critical: 0.9
+        adaptive: true
+        min_value: 0.0
+        max_value: 1.0
+
+# Intelligent Alerting System
+intelligent_alerting:
+  # Alert correlation and deduplication
+  alert_correlation:
+    implementation: |
+      class AlertCorrelationEngine:
+          def __init__(self):
+              self.active_alerts = {}
+              self.alert_history = []
+              self.correlation_window = 300  # 5 minutes
+              self.deduplication_window = 60  # 1 minute
+
+          def process_metric_alert(self, metric_name, current_value, threshold_info):
+              """
+              Process metric alert with correlation and deduplication
+              """
+              alert_key = self._generate_alert_key(metric_name, threshold_info['severity'])
+
+              # Check for deduplication
+              if self._is_duplicate_alert(alert_key, metric_name, current_value):
+                  return None
+
+              # Check for correlation with existing alerts
+              correlated_alerts = self._find_correlated_alerts(
+                  metric_name, threshold_info['severity']
+              )
+
+              # Create alert
+              alert = {
+                  'alert_id': self._generate_alert_id(),
+                  'alert_key': alert_key,
+                  'metric_name': metric_name,
+                  'current_value': current_value,
+                  'threshold_info': threshold_info,
+                  'severity': threshold_info['severity'],
+                  'timestamp': time.time(),
+                  'correlated_alerts': correlated_alerts,
+                  'recommended_actions': self._generate_recommendations(
+                      metric_name, current_value, threshold_info
+                  )
+              }
+
+              # Store alert
+              self.active_alerts[alert_key] = alert
+              self.alert_history.append(alert)
+
+              # Trigger notification
+              self._trigger_alert_notification(alert)
+
+              return alert
+
+          def _find_correlated_alerts(self, metric_name, severity):
+              """
+              Find alerts that are correlated with this metric alert
+              """
+              correlated_alerts = []
+              current_time = time.time()
+
+              for alert_key, alert in self.active_alerts.items():
+                  # Check time window
+                  if current_time - alert['timestamp'] > self.correlation_window:
+                      continue
+
+                  # Check correlation rules
+                  if self._is_metric_correlated(metric_name, alert['metric_name']):
+                      correlated_alerts.append(alert_key)
+
+              return correlated_alerts
+
+  # Smart alert escalation
+  escalation_system:
+    implementation: |
+      class AlertEscalationManager:
+          def __init__(self):
+              self.escalation_rules = self._load_escalation_rules()
+              self.escalation_history = []
+
+          def evaluate_alert_escalation(self, alert):
+              """
+              Evaluate if alert should be escalated
+              """
+              escalation_level = self._determine_escalation_level(alert)
+
+              if escalation_level > alert.get('current_escalation_level', 0):
+                  # Create escalated alert
+                  escalated_alert = self._create_escalated_alert(alert, escalation_level)
+
+                  # Update alert
+                  alert['current_escalation_level'] = escalation_level
+                  alert['escalation_history'] = alert.get('escalation_history', [])
+                  alert['escalation_history'].append({
+                      'timestamp': time.time(),
+                      'level': escalation_level,
+                      'reason': self._get_escalation_reason(alert, escalation_level)
+                  })
+
+                  # Trigger escalation notification
+                  self._trigger_escalation_notification(escalated_alert)
+
+                  return escalated_alert
+
+              return None
+
+          def _determine_escalation_level(self, alert):
+              """
+              Determine appropriate escalation level for alert
+              """
+              base_severity = alert['severity']
+              time_active = time.time() - alert['timestamp']
+              correlation_count = len(alert.get('correlated_alerts', []))
+
+              # Escalation factors
+              time_factor = self._calculate_time_escalation_factor(time_active)
+              correlation_factor = self._calculate_correlation_escalation_factor(correlation_count)
+
+              base_level = self._get_base_escalation_level(base_severity)
+              escalation_bonus = time_factor + correlation_factor
+
+              return min(base_level + int(escalation_bonus), 5)  # Max level 5
+
+# Performance Analytics Engine
+performance_analytics:
+  # Trend analysis
+  trend_analysis:
+    implementation: |
+      class TrendAnalysisEngine:
+          def __init__(self):
+              self.analysis_window = 86400  # 24 hours
+              self.trend_detection_sensitivity = 0.1
+
+          def analyze_performance_trends(self, metric_name, time_series_data):
+              """
+              Analyze performance trends and detect anomalies
+              """
+              if len(time_series_data) < 10:
+                  return self._get_default_trend_analysis()
+
+              # Calculate trend
+              trend = self._calculate_trend(time_series_data)
+
+              # Detect anomalies
+              anomalies = self._detect_anomalies(time_series_data)
+
+              # Predictive analysis
+              prediction = self._predict_next_values(time_series_data)
+
+              # Statistical analysis
+              stats = self._calculate_statistics(time_series_data)
+
+              analysis_result = {
+                  'metric_name': metric_name,
+                  'analysis_timestamp': time.time(),
+                  'trend': {
+                      'direction': trend['direction'],
+                      'slope': trend['slope'],
+                      'confidence': trend['confidence'],
+                      'description': self._generate_trend_description(trend)
+                  },
+                  'anomalies': anomalies,
+                  'prediction': prediction,
+                  'statistics': stats,
+                  'recommendations': self._generate_trend_recommendations(trend, anomalies)
+              }
+
+              return analysis_result
+
+          def _calculate_trend(self, time_series_data):
+              """
+              Calculate trend using linear regression
+              """
+              import numpy as np
+              from scipy import stats
+
+              timestamps = [point['timestamp'] for point in time_series_data]
+              values = [point['value'] for point in time_series_data]
+
+              if len(timestamps) < 2:
+                  return {'direction': 'stable', 'slope': 0, 'confidence': 0}
+
+              # Linear regression
+              slope, intercept, r_value, p_value, std_err = stats.linregress(timestamps, values)
+
+              # Determine trend direction
+              if abs(slope) < self.trend_detection_sensitivity:
+                  direction = 'stable'
+              elif slope > 0:
+                  direction = 'increasing'
+              else:
+                  direction = 'decreasing'
+
+              return {
+                  'direction': direction,
+                  'slope': slope,
+                  'confidence': abs(r_value),
+                  'r_squared': r_value ** 2,
+                  'p_value': p_value
+              }
+
+          def _detect_anomalies(self, time_series_data):
+              """
+              Detect anomalies using statistical methods
+              """
+              import numpy as np
+
+              values = [point['value'] for point in time_series_data]
+
+              if len(values) < 10:
+                  return []
+
+              # Calculate moving average and standard deviation
+              window_size = min(10, len(values) // 2)
+              moving_avg = self._calculate_moving_average(values, window_size)
+              moving_std = self._calculate_moving_std(values, window_size)
+
+              anomalies = []
+              for i, (timestamp, value) in enumerate(time_series_data):
+                  if i >= window_size:
+                      expected_value = moving_avg[i]
+                      std_dev = moving_std[i]
+
+                      # Check for anomaly (3 sigma rule)
+                      if std_dev > 0:
+                          z_score = abs(value - expected_value) / std_dev
+                          if z_score > 3:
+                              anomalies.append({
+                                  'timestamp': timestamp,
+                                  'value': value,
+                                  'expected_value': expected_value,
+                                  'z_score': z_score,
+                                  'anomaly_type': 'statistical_outlier'
+                              })
+
+              return anomalies
+
+  # Performance optimization recommendations
+  optimization_recommendations:
+    implementation: |
+      class OptimizationRecommendationEngine:
+          def __init__(self):
+              self.recommendation_rules = self._load_recommendation_rules()
+              self.performance_benchmarks = self._load_performance_benchmarks()
+
+          def generate_optimization_recommendations(self, performance_data):
+              """
+              Generate performance optimization recommendations
+              """
+              recommendations = []
+
+              # Analyze agent performance
+              agent_recommendations = self._analyze_agent_performance(performance_data)
+              recommendations.extend(agent_recommendations)
+
+              # Analyze system performance
+              system_recommendations = self._analyze_system_performance(performance_data)
+              recommendations.extend(system_recommendations)
+
+              # Analyze configuration performance
+              config_recommendations = self._analyze_configuration_performance(performance_data)
+              recommendations.extend(config_recommendations)
+
+              # Prioritize recommendations
+              prioritized_recommendations = self._prioritize_recommendations(recommendations)
+
+              return {
+                  'recommendations': prioritized_recommendations,
+                  'summary': self._generate_recommendations_summary(prioritized_recommendations),
+                  'estimated_impact': self._estimate_recommendation_impact(prioritized_recommendations),
+                  'implementation_complexity': self._assess_implementation_complexity(prioritized_recommendations)
+              }
+
+          def _analyze_agent_performance(self, performance_data):
+              """
+              Analyze agent performance and generate recommendations
+              """
+              recommendations = []
+
+              for agent_id, agent_data in performance_data.get('agents', {}).items():
+                  # Check response time
+                  avg_response_time = agent_data.get('avg_response_time', 0)
+                  if avg_response_time > 5.0:
+                      recommendations.append({
+                          'type': 'performance',
+                          'agent_id': agent_id,
+                          'issue': 'slow_response_time',
+                          'current_value': avg_response_time,
+                          'target_value': 3.0,
+                          'recommendation': 'Optimize agent algorithm or increase resources',
+                          'priority': 'medium',
+                          'estimated_impact': 'high'
+                      })
+
+                  # Check success rate
+                  success_rate = agent_data.get('success_rate', 0)
+                  if success_rate < 0.8:
+                      recommendations.append({
+                          'type': 'reliability',
+                          'agent_id': agent_id,
+                          'issue': 'low_success_rate',
+                          'current_value': success_rate,
+                          'target_value': 0.9,
+                          'recommendation': 'Review agent logic and improve error handling',
+                          'priority': 'high',
+                          'estimated_impact': 'high'
+                      })
+
+                  # Check concurrency
+                  max_concurrent = agent_data.get('max_concurrent_tasks', 1)
+                  current_load = agent_data.get('current_load', 0)
+                  if current_load >= max_concurrent * 0.8:
+                      recommendations.append({
+                          'type': 'capacity',
+                          'agent_id': agent_id,
+                          'issue': 'high_load',
+                          'current_value': current_load,
+                          'max_value': max_concurrent,
+                          'recommendation': 'Consider scaling agent or optimizing task distribution',
+                          'priority': 'medium',
+                          'estimated_impact': 'medium'
+                      })
+
+              return recommendations
+
+# Real-time Dashboard Data
+dashboard_data:
+  # Dashboard metrics aggregation
+  metrics_aggregation:
+    implementation: |
+      class DashboardDataAggregator:
+          def __init__(self):
+              self.aggregation_intervals = [60, 300, 900]  # 1min, 5min, 15min
+              self.cache = {}
+              self.last_update = 0
+
+          def get_dashboard_metrics(self, time_range=300):
+              """
+              Get aggregated metrics for dashboard
+              """
+              current_time = time.time()
+
+              # Check cache
+              if current_time - self.last_update < 30:  # 30 second cache
+                  return self.cache.get('dashboard_metrics', {})
+
+              # Aggregate metrics
+              dashboard_metrics = {
+                  'timestamp': current_time,
+                  'time_range': time_range,
+                  'system_overview': self._get_system_overview(),
+                  'agent_performance': self._get_agent_performance_summary(),
+                  'trend_analysis': self._get_trend_analysis_summary(),
+                  'alerts_summary': self._get_alerts_summary(),
+                  'performance_indicators': self._get_key_performance_indicators()
+              }
+
+              # Cache results
+              self.cache['dashboard_metrics'] = dashboard_metrics
+              self.last_update = current_time
+
+              return dashboard_metrics
+
+          def _get_system_overview(self):
+              """
+              Get system overview metrics
+              """
+              return {
+                  'total_agents': self._count_active_agents(),
+                  'active_tasks': self._count_active_tasks(),
+                  'system_health': self._calculate_system_health(),
+                  'resource_utilization': self._get_resource_utilization(),
+                  'throughput_metrics': self._get_throughput_metrics()
+              }
+
+          def _get_agent_performance_summary(self):
+              """
+              Get agent performance summary
+              """
+              agent_performance = {}
+
+              for agent_id in self._get_active_agent_ids():
+                  metrics = self._get_agent_metrics(agent_id)
+
+                  agent_performance[agent_id] = {
+                      'success_rate': metrics.get('success_rate', 0),
+                      'avg_response_time': metrics.get('avg_response_time', 0),
+                      'tasks_completed': metrics.get('tasks_completed', 0),
+                      'current_load': metrics.get('current_load', 0),
+                      'status': self._get_agent_status(agent_id)
+                  }
+
+              return agent_performance
+
+          def _get_trend_analysis_summary(self):
+              """
+              Get trend analysis summary
+              """
+              trends = {}
+
+              for metric_name in ['response_time', 'success_rate', 'throughput']:
+                  trend_data = self._get_metric_trend_data(metric_name)
+                  if trend_data:
+                      trends[metric_name] = {
+                          'direction': trend_data.get('direction', 'stable'),
+                          'slope': trend_data.get('slope', 0),
+                          'confidence': trend_data.get('confidence', 0)
+                      }
+
+              return trends
+
+# Integration Configuration
+integration:
+  # API endpoints for monitoring data
+  api_endpoints:
+    get_metrics:
+      method: "GET"
+      path: "/api/metrics"
+      description: "Get current metrics"
+      parameters: ["metric_name", "time_range", "aggregation"]
+
+    get_dashboard_data:
+      method: "GET"
+      path: "/api/dashboard"
+      description: "Get dashboard data"
+      parameters: ["time_range"]
+
+    get_alerts:
+      method: "GET"
+      path: "/api/alerts"
+      description: "Get active alerts"
+      parameters: ["severity", "status"]
+
+    get_trends:
+      method: "GET"
+      path: "/api/trends"
+      description: "Get trend analysis"
+      parameters: ["metric_name", "time_range"]
+
+  # Webhook notifications
+  webhook_configurations:
+    performance_alerts:
+      url: "https://example.com/webhooks/performance"
+      events: ["threshold_exceeded", "anomaly_detected", "trend_change"]
+      retry_policy: "exponential_backoff"
+
+    system_health:
+      url: "https://example.com/webhooks/health"
+      events: ["system_degraded", "agent_failure", "resource_exhaustion"]
+      retry_policy: "fixed_interval"

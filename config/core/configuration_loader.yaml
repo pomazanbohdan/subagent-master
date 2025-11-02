@@ -1,0 +1,374 @@
+name: "Dynamic Configuration Loader"
+description: "Advanced configuration loading system with hot reload and validation"
+version: "2.5.0"
+configuration_type: "core_loader"
+
+# Dynamic Configuration Loading System
+configuration_loader:
+  # Core loading architecture
+  architecture:
+    loading_strategy: "lazy_initialization_with_caching"
+    cache_strategy: "memory_with_file_system_validation"
+    validation_strategy: "schema_based_with_custom_validators"
+    reload_strategy: "file_system_watcher_based"
+
+  # Performance optimization
+  performance:
+    max_concurrent_loads: 5
+    cache_size_limit: "100MB"
+    cache_ttl: 3600  # 1 hour
+    validation_timeout: 30  # seconds
+    reload_debounce_time: 2  # seconds
+
+  # Error handling
+  error_handling:
+    fallback_to_last_valid: true
+    partial_load_recovery: true
+    validation_error_isolation: true
+    error_reporting_level: "detailed"
+
+# Configuration Schema Definitions
+schemas:
+  # Agent configuration schema
+  agent_schema:
+    required_fields:
+      - name
+      - description
+      - capabilities
+      - competencies
+      - performance
+      - capacity
+
+    field_validations:
+      name:
+        type: "string"
+        min_length: 1
+        max_length: 100
+        pattern: "^[a-zA-Z0-9_-]+$"
+
+      description:
+        type: "string"
+        min_length: 10
+        max_length: 500
+
+      capabilities:
+        type: "array"
+        min_items: 1
+        max_items: 20
+        item_type: "string"
+
+      competencies:
+        type: "object"
+        validation: "competency_score_validation"
+
+      performance:
+        type: "object"
+        required_subfields:
+          - success_rate
+          - avg_response_time
+          - reliability
+        validation: "performance_metrics_validation"
+
+      capacity:
+        type: "object"
+        required_subfields:
+          - max_concurrent_tasks
+          - current_load
+          - load_factor
+        validation: "capacity_validation"
+
+# Dynamic Loading Functions
+loading_functions:
+  # Primary configuration loader
+  load_configuration:
+    description: "Load and validate configuration from file"
+    parameters:
+      config_path: "string"
+      config_type: "string"
+      validate_immediately: "boolean"
+      cache_result: "boolean"
+
+    implementation: |
+      def load_configuration(config_path, config_type, validate_immediately=True, cache_result=True):
+          """
+          Load configuration with dynamic validation and caching
+          """
+          try:
+              # Check cache first
+              if cache_result:
+                  cached_config = get_cached_config(config_path)
+                  if cached_config and not is_config_stale(cached_config):
+                      return cached_config
+
+              # Load from file system
+              raw_config = load_yaml_file(config_path)
+
+              # Parse and validate
+              if validate_immediately:
+                  validated_config = validate_configuration(raw_config, config_type)
+              else:
+                  validated_config = raw_config
+
+              # Cache the result
+              if cache_result:
+                  cache_configuration(config_path, validated_config)
+
+              # Setup file watcher for hot reload
+              setup_file_watcher(config_path, config_type)
+
+              return validated_config
+
+          except Exception as e:
+              handle_configuration_error(e, config_path, config_type)
+              return get_fallback_configuration(config_path, config_type)
+
+  # Hot reload mechanism
+  setup_hot_reload:
+    description: "Setup file system watcher for configuration hot reload"
+    parameters:
+      config_path: "string"
+      config_type: "string"
+      reload_callback: "function"
+
+    implementation: |
+      def setup_hot_reload(config_path, config_type, reload_callback=None):
+          """
+          Setup file system watcher for automatic configuration reload
+          """
+          try:
+              # Initialize file watcher
+              watcher = FileWatcher()
+
+              # Add path to watcher
+              watcher.add_path(config_path)
+
+              # Define reload handler
+              def reload_handler(event):
+                  if event.event_type == 'modified':
+                      # Debounce rapid changes
+                      if can_reload_config(config_path):
+                          try:
+                              # Reload configuration
+                              new_config = load_configuration(
+                                  config_path,
+                                  config_type,
+                                  validate_immediately=True
+                              )
+
+                              # Apply new configuration
+                              apply_new_configuration(config_path, config_type, new_config)
+
+                              # Execute callback if provided
+                              if reload_callback:
+                                  reload_callback(config_path, config_type, new_config)
+
+                          except Exception as reload_error:
+                              handle_reload_error(reload_error, config_path, config_type)
+
+              # Setup event handler
+              watcher.on_file_change(reload_handler)
+
+              # Start watching
+              watcher.start()
+
+              return watcher
+
+          except Exception as e:
+              log_error("Failed to setup hot reload", config_path=config_path, error=str(e))
+              return None
+
+# Configuration Validation Framework
+validation_framework:
+  # Custom validators
+  custom_validators:
+    competency_score_validation:
+      description: "Validate competency scores are within valid ranges"
+      implementation: |
+        def validate_competency_scores(competencies):
+          """
+          Validate that all competency scores are between 0.0 and 1.0
+          """
+          for skill, score in competencies.items():
+              if not isinstance(score, (int, float)):
+                  raise ValidationError(f"Competency score for {skill} must be numeric")
+              if not 0.0 <= score <= 1.0:
+                  raise ValidationError(f"Competency score for {skill} must be between 0.0 and 1.0")
+          return True
+
+    performance_metrics_validation:
+      description: "Validate performance metrics are realistic"
+      implementation: |
+        def validate_performance_metrics(performance):
+          """
+          Validate performance metrics are within realistic bounds
+          """
+          required_metrics = ['success_rate', 'avg_response_time', 'reliability']
+
+          for metric in required_metrics:
+              if metric not in performance:
+                  raise ValidationError(f"Missing required performance metric: {metric}")
+
+          # Validate ranges
+          if not 0.0 <= performance['success_rate'] <= 1.0:
+              raise ValidationError("Success rate must be between 0.0 and 1.0")
+
+          if performance['avg_response_time'] <= 0 or performance['avg_response_time'] > 300:
+              raise ValidationError("Average response time must be between 0 and 300 seconds")
+
+          if not 0.0 <= performance['reliability'] <= 1.0:
+              raise ValidationError("Reliability must be between 0.0 and 1.0")
+
+          return True
+
+    capacity_validation:
+      description: "Validate capacity settings are logical"
+      implementation: |
+        def validate_capacity(capacity):
+          """
+          Validate capacity settings are logical and consistent
+          """
+          if 'max_concurrent_tasks' not in capacity:
+              raise ValidationError("Missing max_concurrent_tasks in capacity")
+
+          if capacity['max_concurrent_tasks'] <= 0:
+              raise ValidationError("max_concurrent_tasks must be positive")
+
+          if 'current_load' in capacity and capacity['current_load'] > capacity['max_concurrent_tasks']:
+              raise ValidationError("Current load cannot exceed max concurrent tasks")
+
+          if 'load_factor' in capacity:
+              if not 0.1 <= capacity['load_factor'] <= 5.0:
+                  raise ValidationError("Load factor must be between 0.1 and 5.0")
+
+          return True
+
+  # Schema validation
+  schema_validation:
+    description: "Validate configuration against predefined schemas"
+    implementation: |
+      def validate_configuration_schema(config, schema_name):
+          """
+          Validate configuration against predefined schema
+          """
+          schema = get_schema(schema_name)
+
+          # Validate required fields
+          for field in schema['required_fields']:
+              if field not in config:
+                  raise ValidationError(f"Missing required field: {field}")
+
+          # Validate field types and constraints
+          for field, rules in schema['field_validations'].items():
+              if field in config:
+                  validate_field(config[field], rules, field)
+
+          # Run custom validators
+          for validator_name, validator_config in schema.get('custom_validators', {}).items():
+              if validator_config['enabled']:
+                  validator_func = get_custom_validator(validator_name)
+                  validator_func(config.get(validator_config['field']))
+
+          return True
+
+# Cache Management System
+cache_management:
+  cache_config:
+    cache_type: "memory_with_file_backup"
+    max_size: "100MB"
+    ttl: 3600  # 1 hour
+    backup_interval: 300  # 5 minutes
+
+  cache_functions:
+    cache_configuration:
+      description: "Cache loaded configuration with metadata"
+      implementation: |
+        def cache_configuration(config_path, config_data):
+            """
+            Cache configuration with metadata for future retrieval
+            """
+            cache_entry = {
+                'data': config_data,
+                'loaded_at': time.time(),
+                'file_hash': calculate_file_hash(config_path),
+                'config_type': determine_config_type(config_path),
+                'size': len(json.dumps(config_data))
+            }
+
+            # Store in memory cache
+            memory_cache.set(config_path, cache_entry)
+
+            # Backup to file if enabled
+            if should_backup_to_file(config_path):
+                backup_cache_to_file(config_path, cache_entry)
+
+    get_cached_config:
+      description: "Retrieve cached configuration if valid"
+      implementation: |
+        def get_cached_config(config_path):
+            """
+            Retrieve cached configuration if still valid
+            """
+            cache_entry = memory_cache.get(config_path)
+
+            if not cache_entry:
+                # Try to load from file backup
+                cache_entry = load_cache_from_file(config_path)
+                if cache_entry:
+                    memory_cache.set(config_path, cache_entry)
+
+            if cache_entry:
+                # Check if cache is still valid
+                if not is_config_stale(cache_entry):
+                    return cache_entry['data']
+                else:
+                    # Remove stale cache
+                    memory_cache.delete(config_path)
+                    remove_cache_file_backup(config_path)
+
+            return None
+
+# Error Handling and Recovery
+error_handling:
+  error_recovery_strategies:
+    configuration_load_error:
+      description: "Handle errors during configuration loading"
+      recovery_steps:
+        - "Log detailed error information"
+        - "Attempt to load from cache"
+        - "Try to load fallback configuration"
+        - "Notify system administrator"
+        - "Continue with degraded functionality if possible"
+
+    validation_error:
+      description: "Handle configuration validation errors"
+      recovery_steps:
+        - "Log validation error details"
+        - "Identify problematic configuration sections"
+        - "Attempt partial configuration loading"
+        - "Use default values for invalid sections"
+        - "Report validation issues to administrator"
+
+    hot_reload_error:
+      description: "Handle errors during hot reload"
+      recovery_steps:
+        - "Log hot reload error"
+        - "Maintain current valid configuration"
+        - "Schedule retry with exponential backoff"
+        - "Fall back to manual reload if needed"
+
+# Monitoring and Metrics
+monitoring:
+  metrics_to_track:
+    - "configuration_load_time"
+    - "validation_time"
+    - "cache_hit_rate"
+    - "reload_success_rate"
+    - "error_frequency"
+    - "memory_usage"
+
+  alert_thresholds:
+    configuration_load_time: 5.0  # seconds
+    validation_time: 2.0  # seconds
+    cache_hit_rate: 0.8  # 80%
+    reload_success_rate: 0.95  # 95%
+    error_frequency: 0.05  # 5% of operations

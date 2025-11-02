@@ -1,0 +1,717 @@
+name: "Enhanced Agent Registry System"
+description: "Advanced agent discovery, registration, and capability matching system"
+version: "2.5.0"
+configuration_type: "enhanced_agent_registry"
+
+# Enhanced Agent Registry Architecture
+agent_registry_system:
+  # Core registry configuration
+  registry_type: "dynamic_with_discovery"
+  auto_discovery: true
+  registration_validation: true
+  capability_matching: true
+  performance_tracking: true
+
+  # Discovery mechanisms
+  discovery_mechanisms:
+    - name: "file_system_scan"
+      description: "Scan configuration files for agent definitions"
+      enabled: true
+      scan_paths:
+        - "config/agents/"
+        - "config/dynamic/"
+      scan_patterns: ["*.yaml", "*.yml"]
+      scan_interval: 60  # seconds
+
+    - name: "mcp_server_discovery"
+      description: "Discover agents through MCP server integration"
+      enabled: true
+      servers_to_scan:
+        - "context7"
+        - "magic"
+        - "playwright"
+        - "sequential"
+        - "serena"
+        - "tavily"
+      discovery_method: "capability_query"
+
+    - name: "runtime_registration"
+      description: "Allow agents to register themselves at runtime"
+      enabled: true
+      registration_endpoint: "/api/agents/register"
+      validation_required: true
+      auto_approval: false
+
+# Agent Registration Framework
+registration_framework:
+  # Registration validation
+  validation_rules:
+    required_fields:
+      - name
+      - description
+      - capabilities
+      - competencies
+      - version
+
+    field_validation:
+      name:
+        type: "string"
+        min_length: 1
+        max_length: 100
+        pattern: "^[a-zA-Z0-9_-]+$"
+        uniqueness_check: true
+
+      capabilities:
+        type: "array"
+        min_items: 1
+        max_items: 50
+        item_validation:
+          type: "string"
+          allowed_sources: ["predefined", "custom", "discovered"]
+
+      competencies:
+        type: "object"
+        validation: "competency_score_validation"
+        score_range: [0.0, 1.0]
+
+      version:
+        type: "string"
+        pattern: "^\\d+\\.\\d+\\.\\d+$"
+        semantic_validation: true
+
+  # Registration process
+  registration_process:
+    step_1_validation:
+      description: "Validate registration request"
+      timeout: 30
+      retry_attempts: 3
+
+    step_2_capability_analysis:
+      description: "Analyze agent capabilities and competencies"
+      capability_matching: true
+      duplicate_detection: true
+
+    step_3_performance_assessment:
+      description: "Assess initial performance metrics"
+      baseline_establishment: true
+      performance_monitoring: true
+
+    step_4_registry_update:
+      description: "Update agent registry with new agent"
+      dependency_analysis: true
+      conflict_resolution: true
+
+    step_5_notification:
+      description: "Notify system of new agent registration"
+      event_broadcasting: true
+      integration_updates: true
+
+# Dynamic Agent Discovery
+agent_discovery:
+  # File system discovery
+  file_system_discovery:
+    description: "Discover agents from configuration files"
+    implementation: |
+      class FileSystemAgentDiscovery:
+          def __init__(self):
+              self.scanned_agents = {}
+              self.last_scan_time = 0
+
+          def discover_agents(self):
+              """
+              Scan configuration files for agent definitions
+              """
+              current_time = time.time()
+              if current_time - self.last_scan_time < 60:  # 1 minute cooldown
+                  return self.scanned_agents
+
+              discovered_agents = {}
+
+              # Scan agent configuration files
+              for config_file in self._find_agent_config_files():
+                  try:
+                      agent_data = self._parse_agent_config(config_file)
+                      if self._validate_agent_discovery(agent_data):
+                          agent_id = self._generate_agent_id(agent_data)
+                          discovered_agents[agent_id] = {
+                              'source': 'file_system',
+                              'config_file': config_file,
+                              'discovery_time': current_time,
+                              'data': agent_data
+                          }
+                  except Exception as e:
+                      log_warning(f"Failed to parse agent config {config_file}: {e}")
+
+              # Scan MCP server configurations
+              for server_config in self._scan_mcp_configurations():
+                  try:
+                      mcp_agents = self._discover_mcp_agents(server_config)
+                      discovered_agents.update(mcp_agents)
+                  except Exception as e:
+                      log_warning(f"Failed to discover MCP agents: {e}")
+
+              self.scanned_agents = discovered_agents
+              self.last_scan_time = current_time
+              return discovered_agents
+
+  # MCP server discovery
+  mcp_discovery:
+    description: "Discover agents through MCP server capabilities"
+    implementation: |
+      class MCPAgentDiscovery:
+          def __init__(self):
+              self.mcp_servers = {}
+              self.discovered_capabilities = {}
+
+          def discover_mcp_agents(self):
+              """
+              Discover agents based on MCP server capabilities
+              """
+              discovered_agents = {}
+
+              for server_name in ["context7", "magic", "playwright", "sequential", "serena", "tavily"]:
+                  try:
+                      server_capabilities = self._query_mcp_server_capabilities(server_name)
+                      agent_definition = self._create_agent_from_capabilities(
+                          server_name, server_capabilities
+                      )
+
+                      if agent_definition:
+                          agent_id = f"mcp_{server_name}"
+                          discovered_agents[agent_id] = {
+                              'source': 'mcp_server',
+                              'server_name': server_name,
+                              'discovery_time': time.time(),
+                              'data': agent_definition,
+                              'capabilities': server_capabilities
+                          }
+                  except Exception as e:
+                      log_error(f"Failed to discover MCP agent {server_name}: {e}")
+
+              return discovered_agents
+
+          def _create_agent_from_capabilities(self, server_name, capabilities):
+              """
+              Create agent definition from MCP server capabilities
+              """
+              capability_mapping = {
+                  'context7': {
+                      'primary_domain': 'documentation',
+                      'capabilities': ['documentation_lookup', 'library_search', 'framework_patterns'],
+                      'competencies': {'documentation': 0.9, 'research': 0.8, 'framework_knowledge': 0.85}
+                  },
+                  'magic': {
+                      'primary_domain': 'frontend_development',
+                      'capabilities': ['ui_generation', 'component_creation', 'design_system'],
+                      'competencies': {'ui_design': 0.9, 'component_architecture': 0.85, 'modern_frameworks': 0.95}
+                  },
+                  'playwright': {
+                      'primary_domain': 'testing',
+                      'capabilities': ['browser_testing', 'e2e_testing', 'accessibility_testing'],
+                      'competencies': {'testing': 0.9, 'automation': 0.85, 'quality_assurance': 0.8}
+                  },
+                  'sequential': {
+                      'primary_domain': 'analysis',
+                      'capabilities': ['complex_reasoning', 'multi_step_analysis', 'hypothesis_testing'],
+                      'competencies': {'analysis': 0.95, 'problem_solving': 0.9, 'logical_reasoning': 0.85}
+                  },
+                  'serena': {
+                      'primary_domain': 'project_management',
+                      'capabilities': ['memory_management', 'symbol_operations', 'session_persistence'],
+                      'competencies': {'coordination': 0.9, 'memory': 0.95, 'project_tracking': 0.85}
+                  },
+                  'tavily': {
+                      'primary_domain': 'research',
+                      'capabilities': ['web_search', 'information_gathering', 'real_time_data'],
+                      'competencies': {'research': 0.9, 'information_synthesis': 0.85, 'current_events': 0.95}
+                  }
+              }
+
+              mapping = capability_mapping.get(server_name)
+              if not mapping:
+                  return None
+
+              return {
+                  'name': f"MCP {server_name.title()} Agent",
+                  'description': f"Agent leveraging {server_name} MCP server capabilities",
+                  'type': 'mcp_integrated',
+                  'capabilities': mapping['capabilities'],
+                  'competencies': mapping['competencies'],
+                  'specialization': {
+                      'primary_domain': mapping['primary_domain'],
+                      'experience_level': 'expert',
+                      'mcp_server': server_name
+                  },
+                  'technical': {
+                      'engine_type': 'mcp_integrated',
+                      'mcp_server': server_name,
+                      'dependencies': [server_name]
+                  },
+                  'discovery_metadata': {
+                      'discovery_method': 'mcp_capabilities',
+                      'server_capabilities': capabilities,
+                      'integration_complexity': 'medium'
+                  }
+              }
+
+# Capability Matching System
+capability_matching:
+  # Matching algorithms
+  matching_algorithms:
+    competency_based_matching:
+      description: "Match agents based on competency scores"
+      weight: 0.4
+      implementation: |
+        def calculate_competency_match(task_requirements, agent_competencies):
+            """
+            Calculate competency-based matching score
+            """
+            required_skills = task_requirements.get('required_skills', [])
+            preferred_skills = task_requirements.get('preferred_skills', [])
+
+            score = 0.0
+            total_weight = 0.0
+
+            # Required skills (higher weight)
+            for skill, importance in required_skills:
+                if skill in agent_competencies:
+                    score += agent_competencies[skill] * importance
+                total_weight += importance
+
+            # Preferred skills (lower weight)
+            for skill, importance in preferred_skills:
+                if skill in agent_competencies:
+                    score += agent_competencies[skill] * importance * 0.5
+                total_weight += importance * 0.5
+
+            return score / total_weight if total_weight > 0 else 0.0
+
+    capability_based_matching:
+      description: "Match agents based on capability lists"
+      weight: 0.3
+      implementation: |
+        def calculate_capability_match(task_capabilities, agent_capabilities):
+            """
+            Calculate capability-based matching score
+            """
+            if not task_capabilities or not agent_capabilities:
+                return 0.0
+
+            # Calculate intersection
+            task_set = set(task_capabilities)
+            agent_set = set(agent_capabilities)
+            intersection = task_set.intersection(agent_set)
+
+            # Calculate Jaccard similarity
+            union = task_set.union(agent_set)
+            similarity = len(intersection) / len(union) if union else 0.0
+
+            # Bonus for exact matches
+            exact_match_bonus = 0.0
+            for capability in task_capabilities:
+                if capability in agent_capabilities:
+                    exact_match_bonus += 0.1
+
+            return min(similarity + exact_match_bonus, 1.0)
+
+    performance_based_matching:
+      description: "Match agents based on historical performance"
+      weight: 0.2
+      implementation: |
+        def calculate_performance_match(task_context, agent_performance):
+            """
+            Calculate performance-based matching score
+            """
+            task_type = task_context.get('task_type', 'general')
+            task_complexity = task_context.get('complexity', 'medium')
+
+            # Base performance score
+            base_score = agent_performance.get('success_rate', 0.5)
+
+            # Recent performance adjustment
+            recent_performance = agent_performance.get('recent_performance', {})
+            if recent_performance:
+                recent_score = recent_performance.get('avg_success_rate', base_score)
+                # Weight recent performance more heavily
+                score = (base_score * 0.3) + (recent_score * 0.7)
+            else:
+                score = base_score
+
+            # Task type specialization bonus
+            task_type_performance = agent_performance.get('task_type_performance', {})
+            if task_type in task_type_performance:
+                specialization_bonus = task_type_performance[task_type] * 0.1
+                score += specialization_bonus
+
+            return min(score, 1.0)
+
+    availability_based_matching:
+      description: "Match agents based on current availability and load"
+      weight: 0.1
+      implementation: |
+        def calculate_availability_match(agent_capacity):
+            """
+            Calculate availability-based matching score
+            """
+            max_tasks = agent_capacity.get('max_concurrent_tasks', 1)
+            current_load = agent_capacity.get('current_load', 0)
+
+            if max_tasks <= 0:
+                return 0.0
+
+            availability_ratio = (max_tasks - current_load) / max_tasks
+
+            # Apply sigmoid function for smooth scoring
+            score = 1 / (1 + math.exp(-10 * (availability_ratio - 0.5)))
+
+            return score
+
+  # Matching engine
+  matching_engine:
+    description: "Advanced agent matching engine"
+    implementation: |
+      class AgentMatchingEngine:
+          def __init__(self):
+              self.algorithms = [
+                  competency_based_matching,
+                  capability_based_matching,
+                  performance_based_matching,
+                  availability_based_matching
+              ]
+              self.weights = [0.4, 0.3, 0.2, 0.1]
+
+          def find_best_agent(self, task_requirements, available_agents):
+              """
+              Find the best agent for given task requirements
+              """
+              if not available_agents:
+                  return None
+
+              agent_scores = []
+
+              for agent_id, agent_data in available_agents.items():
+                  total_score = 0.0
+                  score_components = {}
+
+                  # Apply each matching algorithm
+                  for i, algorithm in enumerate(self.algorithms):
+                      try:
+                          algorithm_score = algorithm(
+                              task_requirements,
+                              agent_data
+                          )
+                          total_score += algorithm_score * self.weights[i]
+                          score_components[algorithm.__name__] = algorithm_score
+                      except Exception as e:
+                          log_warning(f"Matching algorithm {algorithm.__name__} failed: {e}")
+                          continue
+
+                  agent_scores.append({
+                      'agent_id': agent_id,
+                      'total_score': total_score,
+                      'score_components': score_components,
+                      'agent_data': agent_data
+                  })
+
+              # Sort by total score
+              agent_scores.sort(key=lambda x: x['total_score'], reverse=True)
+
+              return agent_scores[0] if agent_scores else None
+
+          def find_multiple_agents(self, task_requirements, available_agents, max_agents=3):
+              """
+              Find multiple suitable agents for collaborative tasks
+              """
+              if not available_agents:
+                  return []
+
+              agent_scores = []
+
+              for agent_id, agent_data in available_agents.items():
+                  total_score = 0.0
+                  score_components = {}
+
+                  # Apply each matching algorithm
+                  for i, algorithm in enumerate(self.algorithms):
+                      try:
+                          algorithm_score = algorithm(
+                              task_requirements,
+                              agent_data
+                          )
+                          total_score += algorithm_score * self.weights[i]
+                          score_components[algorithm.__name__] = algorithm_score
+                      except Exception as e:
+                          log_warning(f"Matching algorithm {algorithm.__name__} failed: {e}")
+                          continue
+
+                  agent_scores.append({
+                      'agent_id': agent_id,
+                      'total_score': total_score,
+                      'score_components': score_components,
+                      'agent_data': agent_data
+                  })
+
+              # Sort by total score and return top agents
+              agent_scores.sort(key=lambda x: x['total_score'], reverse=True)
+              return agent_scores[:max_agents]
+
+# Agent Performance Tracking
+performance_tracking:
+  # Performance metrics collection
+  metrics_collection:
+    execution_metrics:
+      - "task_completion_time"
+      - "success_rate"
+      - "error_rate"
+      - "resource_usage"
+      - "user_satisfaction"
+
+    learning_metrics:
+      - "improvement_rate"
+      - "adaptation_speed"
+      - "knowledge_retention"
+      - "collaboration_effectiveness"
+
+    availability_metrics:
+      - "uptime_percentage"
+      - "response_time_p95"
+      - "concurrent_task_capacity"
+      - "load_distribution"
+
+  # Performance analysis
+  performance_analysis:
+    implementation: |
+      class AgentPerformanceAnalyzer:
+          def __init__(self):
+              self.metrics_storage = MetricsStorage()
+              self.analysis_engine = AnalysisEngine()
+
+          def analyze_agent_performance(self, agent_id, time_window=86400):
+              """
+              Analyze agent performance over specified time window
+              """
+              # Collect metrics
+              metrics = self.metrics_storage.get_agent_metrics(
+                  agent_id, time_window
+              )
+
+              if not metrics:
+                  return self._get_default_performance_analysis(agent_id)
+
+              # Calculate performance indicators
+              analysis = {
+                  'agent_id': agent_id,
+                  'time_window': time_window,
+                  'analysis_timestamp': time.time(),
+                  'performance_indicators': {
+                      'overall_success_rate': self._calculate_success_rate(metrics),
+                      'average_response_time': self._calculate_avg_response_time(metrics),
+                      'reliability_score': self._calculate_reliability(metrics),
+                      'efficiency_score': self._calculate_efficiency(metrics),
+                      'user_satisfaction': self._calculate_satisfaction(metrics)
+                  },
+                  'trend_analysis': self._analyze_performance_trends(metrics),
+                  'comparative_analysis': self._compare_with_peers(agent_id, metrics),
+                  'recommendations': self._generate_performance_recommendations(agent_id, metrics)
+              }
+
+              return analysis
+
+          def _calculate_success_rate(self, metrics):
+              """Calculate success rate from metrics"""
+              completed_tasks = metrics.get('completed_tasks', 0)
+              failed_tasks = metrics.get('failed_tasks', 0)
+              total_tasks = completed_tasks + failed_tasks
+
+              if total_tasks == 0:
+                  return 0.0
+
+              return completed_tasks / total_tasks
+
+          def _calculate_avg_response_time(self, metrics):
+              """Calculate average response time"""
+              response_times = metrics.get('response_times', [])
+
+              if not response_times:
+                  return 0.0
+
+              return sum(response_times) / len(response_times)
+
+          def _calculate_reliability(self, metrics):
+              """Calculate reliability score based on consistency"""
+              success_rate = self._calculate_success_rate(metrics)
+              uptime = metrics.get('uptime_percentage', 1.0)
+
+              # Combine success rate and uptime
+              return (success_rate * 0.7) + (uptime * 0.3)
+
+# Agent Registry State Management
+state_management:
+  # Registry persistence
+  persistence:
+    description: "Persist agent registry state for recovery"
+    implementation: |
+      class AgentRegistryStateManager:
+          def __init__(self):
+              self.state_file = "config/state/agent_registry_state.json"
+              self.backup_interval = 300  # 5 minutes
+
+          def save_registry_state(self, registry_data):
+              """
+              Save current registry state to disk
+              """
+              state_snapshot = {
+                  'timestamp': time.time(),
+                  'version': '2.5.0',
+                  'registry_data': registry_data,
+                  'performance_metrics': self._collect_performance_metrics(),
+                  'discovery_metadata': self._collect_discovery_metadata()
+              }
+
+              # Save primary state
+              self._save_state_to_file(state_snapshot, self.state_file)
+
+              # Create backup
+              backup_file = f"{self.state_file}.backup"
+              self._save_state_to_file(state_snapshot, backup_file)
+
+          def load_registry_state(self):
+              """
+              Load registry state from disk
+              """
+              try:
+                  with open(self.state_file, 'r') as f:
+                      state_data = json.load(f)
+
+                  # Validate state version compatibility
+                  if not self._is_state_compatible(state_data):
+                      log_warning("Registry state version incompatible, starting fresh")
+                      return self._get_default_registry_state()
+
+                  return state_data['registry_data']
+
+              except FileNotFoundError:
+                  log_info("No registry state found, starting fresh")
+                  return self._get_default_registry_state()
+              except Exception as e:
+                  log_error(f"Failed to load registry state: {e}")
+                  return self._get_default_registry_state()
+
+  # State synchronization
+  synchronization:
+    description: "Synchronize registry state across multiple instances"
+    implementation: |
+      class RegistrySynchronizer:
+          def __init__(self):
+              self.sync_lock = threading.Lock()
+              self.last_sync_time = 0
+              self.sync_interval = 60  # 1 minute
+
+          def synchronize_registry(self, local_registry, remote_registry_url=None):
+              """
+              Synchronize local registry with remote state
+              """
+              with self.sync_lock:
+                  current_time = time.time()
+
+                  # Check if sync is needed
+                  if current_time - self.last_sync_time < self.sync_interval:
+                      return True
+
+                  try:
+                      # Get remote registry state if URL provided
+                      if remote_registry_url:
+                          remote_state = self._fetch_remote_registry(remote_registry_url)
+                          merged_state = self._merge_registry_states(local_registry, remote_state)
+                      else:
+                          merged_state = local_registry
+
+                      # Validate merged state
+                      if self._validate_registry_state(merged_state):
+                          # Apply merged state
+                          self._apply_registry_state(merged_state)
+                          self.last_sync_time = current_time
+                          return True
+                      else:
+                          log_error("Registry state validation failed")
+                          return False
+
+                  except Exception as e:
+                      log_error(f"Registry synchronization failed: {e}")
+                      return False
+
+# Monitoring and Alerting
+monitoring:
+  # Registry health monitoring
+  health_checks:
+    registry_integrity:
+      description: "Check registry data integrity"
+      check_function: "verify_registry_integrity"
+
+    agent_availability:
+      description: "Check agent availability and responsiveness"
+      check_function: "check_agent_availability"
+
+    performance_thresholds:
+      description: "Check if performance metrics are within thresholds"
+      check_function: "verify_performance_thresholds"
+
+  # Alerting system
+  alerting:
+    alert_triggers:
+      - "agent_registration_failure"
+      - "performance_degradation"
+      - "registry_corruption"
+      - "discovery_failure"
+
+    notification_channels:
+      - "log_notifications"
+      - "system_notifications"
+      - "webhook_notifications"
+
+# Integration with Existing System
+integration:
+  # API endpoints
+  api_endpoints:
+    register_agent:
+      method: "POST"
+      path: "/api/agents/register"
+      description: "Register new agent"
+
+    discover_agents:
+      method: "GET"
+      path: "/api/agents/discover"
+      description: "Trigger agent discovery"
+
+    get_agent_info:
+      method: "GET"
+      path: "/api/agents/{agent_id}"
+      description: "Get detailed agent information"
+
+    update_agent:
+      method: "PUT"
+      path: "/api/agents/{agent_id}"
+      description: "Update agent configuration"
+
+    find_best_agent:
+      method: "POST"
+      path: "/api/agents/find-best"
+      description: "Find best agent for task"
+
+  # Event system
+  events:
+    agent_registered:
+      description: "Fired when new agent is registered"
+      data: ["agent_id", "agent_data", "registration_source"]
+
+    agent_updated:
+      description: "Fired when agent is updated"
+      data: ["agent_id", "old_data", "new_data", "changes"]
+
+    agent_discovered:
+      description: "Fired when new agent is discovered"
+      data: ["agent_id", "discovery_method", "agent_data"]
+
+    performance_updated:
+      description: "Fired when agent performance metrics are updated"
+      data: ["agent_id", "performance_data", "updates"]

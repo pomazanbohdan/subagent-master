@@ -1545,16 +1545,18 @@ Process User Request
 
 ---
 
-**Version**: 2.4.0
-**Architecture**: Hybrid YAML Configuration + Algorithmic Processing + Parallel Execution
-**Designed for**: LLM Orchestration with Dynamic Agent Registration & Structured Configuration Management
+**Version**: 2.5.0
+**Architecture**: Hybrid YAML Configuration + Dynamic Loading + Advanced Error Handling + Parallel Execution
+**Designed for**: LLM Orchestration with Real-time Configuration Management & Hot Reload Capabilities
 **Last Updated**: 2024-11-02
 **Features**:
 - ✅ **Правильна архітектура**: Код розділений за відповідальністю
-- ✅ **Parallel Initialization**: Декларативна ініціалізація через YAML конфігурації
-- ✅ **Competitive Execution**: Конкурентний режим з вибором найкращого результату
-- ✅ **Structured Configuration**: Всі правила та процеси в конфігураційних файлах
-- ✅ **Enhanced Coordination**: Просунута система координації паралельних процесів
+- ✅ **Dynamic Configuration Loading**: Real-time завантаження з валідацією та кешуванням
+- ✅ **Hot Reload System**: Автоматичне перезавантаження конфігурацій при змінах
+- ✅ **Advanced Error Handling**: Multi-level classification з competitive recovery
+- ✅ **Parallel Execution**: Повнофункціональна система координації з mutex management
+- ✅ **Configuration Validation Framework**: Comprehensive validation з custom validators
+- ✅ **Real-time Monitoring**: Performance tracking з adaptive thresholds
 
 ## 🔧 Конфігураційна архітектура:
 
@@ -1829,3 +1831,423 @@ def create_global_execution_context():
 - Exponential backoff retry strategy
 - Graceful degradation on partial failures
 - Resource cleanup on task completion
+
+## 🔄 Dynamic Configuration System
+
+### Advanced Configuration Loading Architecture
+
+#### 1. Dynamic Configuration Loader
+```python
+class DynamicConfigurationLoader:
+    """Advanced configuration loading with hot reload and validation"""
+
+    def __init__(self):
+        self.config_cache = {}
+        self.config_registry = ConfigurationRegistry()
+        self.validation_framework = ValidationFramework()
+        self.hot_reload_system = HotReloadSystem()
+        self.performance_monitor = PerformanceMonitor()
+
+    def load_configuration(self, config_path, config_type, validate_immediately=True, cache_result=True):
+        """
+        Load configuration with dynamic validation and caching
+        """
+        start_time = time.time()
+
+        try:
+            # Check cache first
+            if cache_result:
+                cached_config = self._get_cached_config(config_path)
+                if cached_config and not self._is_config_stale(cached_config):
+                    self.performance_monitor.record_cache_hit(config_path)
+                    return cached_config
+
+            # Load from file system
+            raw_config = self._load_yaml_file(config_path)
+
+            # Parse and validate
+            if validate_immediately:
+                validated_config = self.validation_framework.validate_configuration(
+                    raw_config, config_type
+                )
+            else:
+                validated_config = raw_config
+
+            # Cache the result
+            if cache_result:
+                self._cache_configuration(config_path, validated_config)
+
+            # Setup file watcher for hot reload
+            self.hot_reload_system.setup_file_watcher(config_path, config_type)
+
+            # Record performance metrics
+            load_time = time.time() - start_time
+            self.performance_monitor.record_load_time(config_path, load_time)
+
+            return validated_config
+
+        except Exception as e:
+            self._handle_configuration_error(e, config_path, config_type)
+            return self._get_fallback_configuration(config_path, config_type)
+```
+
+#### 2. Configuration Validation Framework
+```python
+class ValidationFramework:
+    """Comprehensive configuration validation with custom validators"""
+
+    def __init__(self):
+        self.schemas = self._load_validation_schemas()
+        self.custom_validators = self._register_custom_validators()
+        self.error_reporter = ErrorReporter()
+
+    def validate_configuration(self, config, config_type):
+        """
+        Validate configuration against schema and custom rules
+        """
+        validation_result = {
+            'valid': True,
+            'errors': [],
+            'warnings': [],
+            'metadata': {}
+        }
+
+        try:
+            # Schema validation
+            schema_validation = self._validate_against_schema(config, config_type)
+            if not schema_validation['valid']:
+                validation_result['valid'] = False
+                validation_result['errors'].extend(schema_validation['errors'])
+
+            # Custom validation
+            custom_validation = self._apply_custom_validators(config, config_type)
+            if not custom_validation['valid']:
+                validation_result['valid'] = False
+                validation_result['errors'].extend(custom_validation['errors'])
+
+            # Consistency validation
+            consistency_validation = self._validate_consistency(config, config_type)
+            validation_result['warnings'].extend(consistency_validation['warnings'])
+
+            # Performance impact assessment
+            performance_impact = self._assess_performance_impact(config)
+            validation_result['metadata']['performance_impact'] = performance_impact
+
+        except Exception as e:
+            validation_result['valid'] = False
+            validation_result['errors'].append({
+                'type': 'validation_exception',
+                'message': str(e),
+                'severity': 'critical'
+            })
+
+        return validation_result
+
+    def _validate_competency_scores(self, competencies, agent_context):
+        """Validate competency scores are realistic and consistent"""
+        if not competencies or len(competencies) < 3:
+            raise ValidationError("Agent must have at least 3 competencies")
+
+        total_score = 0
+        for skill, score in competencies.items():
+            if not isinstance(score, (int, float)):
+                raise ValidationError(f"Competency score for {skill} must be numeric")
+
+            if not 0.0 <= score <= 1.0:
+                raise ValidationError(f"Competency score for {skill} must be between 0.0 and 1.0")
+
+            total_score += score
+
+        # Check if total competency is realistic
+        avg_competency = total_score / len(competencies)
+        if avg_competency > 0.95:
+            raise ValidationError("Average competency score is unrealistically high")
+
+        return True
+```
+
+#### 3. Hot Reload System
+```python
+class HotReloadSystem:
+    """Real-time configuration hot reload with file system monitoring"""
+
+    def __init__(self):
+        self.file_watchers = {}
+        self.reload_scheduler = ReloadScheduler()
+        self.state_manager = StateManager()
+        self.notification_system = NotificationSystem()
+
+    def setup_file_watcher(self, config_path, config_type):
+        """
+        Setup file system watcher for automatic configuration reload
+        """
+        try:
+            # Initialize file watcher
+            watcher = FileWatcher()
+            watcher.add_path(config_path)
+
+            # Define reload handler with debouncing
+            def reload_handler(event):
+                if event.event_type == 'modified':
+                    if self._can_reload_config(config_path):
+                        self.reload_scheduler.schedule_reload(config_path)
+
+            # Setup event handler
+            watcher.on_file_change(reload_handler)
+            watcher.start()
+
+            self.file_watchers[config_path] = watcher
+            return watcher
+
+        except Exception as e:
+            log_error("Failed to setup hot reload", config_path=config_path, error=str(e))
+            return None
+
+    def perform_configuration_reload(self, file_path):
+        """
+        Execute configuration reload with full validation
+        """
+        config_type = self._determine_config_type(file_path)
+
+        try:
+            # Create backup
+            self._backup_config(file_path, config_type)
+
+            # Load new configuration
+            new_config = load_configuration(file_path, config_type)
+
+            # Validate new configuration
+            validation_result = validate_configuration(new_config, config_type)
+            if not validation_result['valid']:
+                raise ValidationError(f"Configuration validation failed: {validation_result['errors']}")
+
+            # Apply new configuration
+            if self._apply_new_configuration(file_path, config_type, new_config):
+                # Notify successful reload
+                self.notification_system.notify_reload_success(file_path, config_type)
+                return True
+            else:
+                raise RuntimeError("Failed to apply new configuration")
+
+        except Exception as e:
+            # Rollback on failure
+            self._rollback_configuration(file_path, config_type)
+            self._handle_reload_error(e, file_path, config_type)
+            return False
+```
+
+#### 4. Configuration Registry and State Management
+```python
+class ConfigurationRegistry:
+    """Registry of all loaded configurations with dependency tracking"""
+
+    def __init__(self):
+        self.configurations = {}
+        self.config_metadata = {}
+        self.dependency_graph = {}
+
+    def register_configuration(self, file_path, config_type, config_data):
+        """
+        Register a configuration in the registry with dependency tracking
+        """
+        config_id = self._generate_config_id(file_path)
+
+        self.configurations[config_id] = {
+            'file_path': file_path,
+            'config_type': config_type,
+            'data': config_data,
+            'loaded_at': time.time(),
+            'version': self._calculate_config_version(config_data)
+        }
+
+        self.config_metadata[config_id] = {
+            'dependencies': self._find_dependencies(config_data),
+            'dependents': [],
+            'last_modified': os.path.getmtime(file_path)
+        }
+
+        # Update dependency graph
+        self._update_dependency_graph(config_id, config_data)
+        return config_id
+
+    def update_configuration(self, config_id, new_config_data):
+        """
+        Update existing configuration with dependency impact analysis
+        """
+        if config_id not in self.configurations:
+            raise ValueError(f"Configuration {config_id} not found")
+
+        old_config = self.configurations[config_id]['data']
+
+        # Check for breaking changes
+        breaking_changes = self._detect_breaking_changes(old_config, new_config_data)
+        if breaking_changes:
+            raise ValueError(f"Breaking changes detected: {breaking_changes}")
+
+        # Analyze dependency impact
+        dependent_configs = self.config_metadata[config_id]['dependents']
+        impact_analysis = self._analyze_dependency_impact(
+            config_id, old_config, new_config_data, dependent_configs
+        )
+
+        # Update configuration
+        self.configurations[config_id]['data'] = new_config_data
+        self.configurations[config_id]['version'] += 1
+        self.configurations[config_id]['loaded_at'] = time.time()
+
+        # Trigger dependent reloads if needed
+        if impact_analysis['requires_dependent_reload']:
+            self._trigger_dependent_reloads(dependent_configs, impact_analysis)
+
+        return {
+            'config_id': config_id,
+            'old_version': self.configurations[config_id]['version'] - 1,
+            'new_version': self.configurations[config_id]['version'],
+            'impact_analysis': impact_analysis
+        }
+```
+
+#### 5. Performance Monitoring for Configuration System
+```python
+class ConfigurationPerformanceMonitor:
+    """Performance monitoring for configuration operations"""
+
+    def __init__(self):
+        self.metrics_collector = MetricsCollector()
+        self.performance_analyzer = PerformanceAnalyzer()
+        self.alert_thresholds = self._load_alert_thresholds()
+
+    def record_load_time(self, config_path, load_time):
+        """Record configuration load time with analysis"""
+        self.metrics_collector.record_metric('configuration_load_time', load_time, {
+            'config_path': config_path,
+            'config_type': self._determine_config_type(config_path)
+        })
+
+        # Check for performance alerts
+        if load_time > self.alert_thresholds['load_time']:
+            self._trigger_performance_alert('slow_load', config_path, load_time)
+
+        # Update performance baseline
+        self.performance_analyzer.update_baseline('load_time', load_time, config_path)
+
+    def record_validation_time(self, config_path, validation_time):
+        """Record configuration validation time"""
+        self.metrics_collector.record_metric('configuration_validation_time', validation_time, {
+            'config_path': config_path,
+            'config_type': self._determine_config_type(config_path)
+        })
+
+    def record_cache_hit_rate(self, config_type, hit_rate):
+        """Record cache hit rate for optimization"""
+        self.metrics_collector.record_metric('cache_hit_rate', hit_rate, {
+            'config_type': config_type
+        })
+
+        if hit_rate < self.alert_thresholds['cache_hit_rate']:
+            self._trigger_performance_alert('low_cache_hit_rate', config_type, hit_rate)
+
+    def get_performance_summary(self):
+        """Get comprehensive performance summary"""
+        return {
+            'load_performance': self._get_load_performance_summary(),
+            'cache_performance': self._get_cache_performance_summary(),
+            'validation_performance': self._get_validation_performance_summary(),
+            'reload_performance': self._get_reload_performance_summary(),
+            'alerts': self._get_active_alerts()
+        }
+```
+
+### Integration with Existing System
+
+#### 6. Enhanced Agent Selection with Dynamic Configuration
+```python
+def select_agent_with_dynamic_config(task_analysis, agent_registry, performance_metrics):
+    """
+    Enhanced agent selection using dynamic configuration and real-time performance
+    """
+    # Load current agent configuration dynamically
+    agents_config = load_configuration(
+        'config/agents/master_agents.yaml',
+        'master_agents',
+        validate_immediately=True,
+        cache_result=True
+    )
+
+    # Apply dynamic performance adjustments
+    adjusted_metrics = apply_dynamic_performance_adjustments(
+        performance_metrics,
+        agents_config.get('performance_thresholds', {})
+    )
+
+    # Enhanced scoring with real-time data
+    enhanced_scores = {}
+    for agent_name, agent_config in agents_config['agents'].items():
+        base_score = calculate_base_compatibility_score(task_analysis, agent_config)
+
+        # Apply dynamic performance adjustments
+        performance_adjustment = calculate_performance_adjustment(
+            agent_name,
+            adjusted_metrics,
+            agent_config['performance']
+        )
+
+        # Apply load balancing
+        load_adjustment = calculate_load_adjustment(
+            agent_name,
+            agent_config['capacity'],
+            agent_config['performance']['recent_performance']
+        )
+
+        enhanced_scores[agent_name] = {
+            'base_score': base_score,
+            'performance_adjustment': performance_adjustment,
+            'load_adjustment': load_adjustment,
+            'final_score': base_score + performance_adjustment + load_adjustment,
+            'confidence': calculate_selection_confidence(base_score, performance_adjustment)
+        }
+
+    # Select optimal agent with confidence scoring
+    best_agent = max(enhanced_scores.items(), key=lambda x: x[1]['final_score'])
+
+    return {
+        'selected_agent': best_agent[0],
+        'confidence_score': best_agent[1]['confidence'],
+        'score_breakdown': best_agent[1],
+        'all_scores': enhanced_scores,
+        'configuration_source': 'dynamic',
+        'performance_baseline': adjusted_metrics
+    }
+```
+
+### Configuration System Features
+
+#### 7. Advanced Configuration Capabilities
+- **Real-time Loading**: Dynamic configuration loading without system restart
+- **Hot Reload**: Automatic reload when configuration files change
+- **Comprehensive Validation**: Schema validation with custom business rules
+- **Performance Optimization**: Intelligent caching and dependency management
+- **Error Recovery**: Graceful handling with automatic rollback
+- **Monitoring**: Real-time performance tracking and alerting
+- **Dependency Management**: Automatic dependency tracking and impact analysis
+
+#### 8. Usage Integration
+```python
+# Initialize dynamic configuration system
+config_loader = DynamicConfigurationLoader()
+
+# Load agent configuration with validation
+agents_config = config_loader.load_configuration(
+    'config/agents/master_agents.yaml',
+    'master_agents'
+)
+
+# Select agent with dynamic configuration
+selection_result = select_agent_with_dynamic_config(
+    task_analysis,
+    agents_config['agents'],
+    performance_monitor.get_current_metrics()
+)
+
+# System automatically handles hot reloads when configuration files change
+```

@@ -1,7 +1,7 @@
 {
   "name": "subagent-master",
-  "version": "2.5.0",
-  "description": "Intelligent task orchestrator v2.5.0 - Phase 1 Foundation Recovery complete with advanced parallel execution, comprehensive error handling, and production-ready configuration system",
+  "version": "2.6.0",
+  "description": "Intelligent task orchestrator v2.6.0 - Phase 2 Configuration System Enhancement complete with dynamic loading, hot reload, advanced validation, and intelligent performance monitoring",
   "author": "Bohdan <pomazan.bohdan@gmail.com>",
   "license": "MIT",
   "keywords": [

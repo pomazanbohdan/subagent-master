@@ -1,0 +1,239 @@
+name: "Dynamic Configuration Loader"
+description: "Core configuration loading system with hot reload and validation capabilities"
+version: "1.0.0"
+author: "Subagent-Master Team"
+
+# Core Loader Architecture
+loader_config:
+  # Configuration Sources Priority (highest to lowest)
+  sources:
+    - name: "config_files"
+      type: "yaml_files"
+      paths:
+        - "config/workflows/"
+        - "config/rules/"
+        - "config/dynamic/"
+        - "config/agents/"
+      priority: 1
+      hot_reload: true
+      validation: true
+      backup: true
+
+    - name: "environment_variables"
+      type: "env_vars"
+      prefix: "SUBAGENT_"
+      priority: 2
+      hot_reload: true
+      validation: false
+
+    - name: "runtime_config"
+      type: "memory"
+      priority: 3
+      hot_reload: false
+      persistence: true
+
+    - name: "default_values"
+      type: "embedded"
+      priority: 4
+      hot_reload: false
+
+# Loading Strategy
+loading_strategy:
+  # Parallel Loading Configuration
+  parallel_loading:
+    enabled: true
+    max_concurrent_loaders: 4
+    timeout_per_source: 5000  # milliseconds
+    failure_threshold: 0.3    # 30% failure tolerance
+
+  # Dependency Resolution
+  dependency_resolution:
+    enabled: true
+    auto_discover: true
+    circular_dependency_detection: true
+    resolution_order: ["config_files", "environment_variables", "runtime_config"]
+
+  # Merge Strategy
+  merge_strategy:
+    array_merge: "append"  # append|replace|merge
+    object_merge: "deep"   # deep|shallow|replace
+    conflict_resolution: "higher_priority_wins"
+
+# Caching Configuration
+caching:
+  # Multi-level Cache
+  levels:
+    - name: "memory_cache"
+      type: "lru"
+      max_size: 100
+      ttl: 300  # 5 minutes
+      enabled: true
+
+    - name: "disk_cache"
+      type: "file"
+      location: ".cache/config/"
+      max_size: "10MB"
+      ttl: 3600  # 1 hour
+      enabled: true
+
+    - name: "validation_cache"
+      type: "memory"
+      max_size: 50
+      ttl: 1800  # 30 minutes
+      enabled: true
+
+# Configuration Watcher
+file_watcher:
+  enabled: true
+  watch_patterns:
+    - "config/**/*.yaml"
+    - "config/**/*.yml"
+    - ".env"
+    - "*.json"
+
+  ignore_patterns:
+    - "*.tmp"
+    - "*.bak"
+    - ".git/**"
+    - "node_modules/**"
+
+  debounce_delay: 500  # milliseconds
+  batch_events: true
+
+# Hot Reload Configuration
+hot_reload:
+  enabled: true
+  strategies:
+    - name: "immediate"
+      trigger: "file_change"
+      conditions:
+        - config_type: "rules"
+          severity: "low"
+        - config_type: "workflows"
+          severity: "medium"
+
+    - name: "validated"
+      trigger: "validation_success"
+      conditions:
+        - config_type: "agents"
+          severity: "high"
+        - config_type: "dynamic"
+          severity: "critical"
+
+    - name: "scheduled"
+      trigger: "timer"
+      interval: 60000  # 1 minute
+      conditions:
+        - config_type: "performance_monitoring"
+
+# Loader Components
+components:
+  # File System Loader
+  file_system_loader:
+    enabled: true
+    supported_formats: ["yaml", "yml", "json"]
+    encoding: "utf-8"
+    max_file_size: "1MB"
+
+  # Environment Loader
+  environment_loader:
+    enabled: true
+    prefix: "SUBAGENT_"
+    separator: "_"
+    type_inference: true
+
+  # Remote Loader (Future)
+  remote_loader:
+    enabled: false
+    endpoints: []
+    authentication: null
+    timeout: 10000
+
+# Error Handling
+error_handling:
+  # Loading Errors
+  loading_errors:
+    file_not_found: "use_default"
+    parse_error: "log_and_skip"
+    validation_error: "log_and_use_previous"
+    permission_error: "log_and_skip"
+
+  # Hot Reload Errors
+  reload_errors:
+    validation_failure: "rollback"
+    dependency_conflict: "queue_reload"
+    system_overload: "defer_reload"
+
+  # Recovery Strategies
+  recovery:
+    max_retries: 3
+    backoff_strategy: "exponential"
+    fallback_to_cache: true
+    alert_threshold: 5
+
+# Performance Monitoring
+performance:
+  # Metrics Collection
+  metrics:
+    - "load_time"
+    - "validation_time"
+    - "cache_hit_rate"
+    - "reload_frequency"
+    - "error_rate"
+
+  # Alerts
+  alerts:
+    slow_load_threshold: 2000  # milliseconds
+    high_error_rate: 0.1       # 10%
+    cache_miss_rate: 0.8       # 80%
+
+  # Optimization
+  optimization:
+    lazy_loading: true
+    preloading: ["config/workflows/", "config/rules/"]
+    compression: true
+    parallel_validation: true
+
+# Integration Points
+integration:
+  # System Components
+  components:
+    - name: "agent_registry"
+      config_paths: ["config/dynamic/agent_registry.yaml"]
+      reload_behavior: "restart_registry"
+
+    - name: "categorization_engine"
+      config_paths: ["config/dynamic/categorization_engine.yaml"]
+      reload_behavior: "update_categories"
+
+    - name: "performance_monitoring"
+      config_paths: ["config/dynamic/performance_monitoring.yaml"]
+      reload_behavior: "update_metrics"
+
+  # External Systems
+  external:
+    - name: "serena_memory"
+      interface: "mcp"
+      config_sync: true
+
+    - name: "sequential_thinking"
+      interface: "mcp"
+      config_sync: false
+
+# Development Mode
+development:
+  debug_mode: false
+  verbose_logging: false
+  config_validation_strict: true
+  hot_reload_aggressive: false
+  performance_profiling: false
+
+# Production Mode
+production:
+  debug_mode: false
+  verbose_logging: false
+  config_validation_strict: true
+  hot_reload_conservative: true
+  performance_monitoring: true
+  backup_on_change: true
+  rollback_on_failure: true

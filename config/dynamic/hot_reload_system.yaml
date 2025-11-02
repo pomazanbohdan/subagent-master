@@ -1,0 +1,479 @@
+name: "Hot Reload System"
+description: "Real-time configuration hot reload with file system monitoring"
+version: "2.5.0"
+configuration_type: "hot_reload_system"
+
+# Hot Reload Architecture
+hot_reload_system:
+  # Core configuration
+  enabled: true
+  strategy: "file_system_watcher_based"
+  debounce_time: 2  # seconds
+  max_reload_attempts: 3
+  reload_timeout: 30  # seconds
+
+  # Watcher configuration
+  file_watcher:
+    watch_recursive: true
+    ignore_patterns:
+      - "*.tmp"
+      - "*.bak"
+      - ".git/*"
+      - "__pycache__/*"
+      - "*.pyc"
+      - ".DS_Store"
+
+    file_types_to_watch:
+      - "*.yaml"
+      - "*.yml"
+      - "*.json"
+
+    events_to_monitor:
+      - "modified"
+      - "created"
+      - "deleted"
+      - "moved"
+
+  # Reload policies
+  reload_policies:
+    automatic_reload: true
+    validation_required: true
+    backup_before_reload: true
+    rollback_on_failure: true
+    notification_on_reload: true
+
+# File System Monitoring
+file_system_monitoring:
+  # Monitoring configuration
+  monitor_paths:
+    - path: "config/"
+      recursive: true
+      file_patterns: ["*.yaml", "*.yml"]
+      reload_callback: "configuration_reload_handler"
+
+    - path: "agents/"
+      recursive: false
+      file_patterns: ["*.md"]
+      reload_callback: "agent_definition_reload_handler"
+
+  # Event handlers
+  event_handlers:
+    file_modified:
+      description: "Handle file modification events"
+      implementation: |
+        def handle_file_modified(file_path, event_type):
+            """
+            Handle file modification events with debouncing
+            """
+            if should_ignore_file(file_path):
+                return
+
+            # Debounce rapid changes
+            if is_reload_pending(file_path):
+                schedule_reload(file_path, delay=debounce_time)
+                return
+
+            # Validate file before reload
+            if not is_valid_config_file(file_path):
+                log_warning(f"Invalid config file modified: {file_path}")
+                return
+
+            # Schedule reload
+            schedule_configuration_reload(file_path)
+
+    file_created:
+      description: "Handle new file creation events"
+      implementation: |
+        def handle_file_created(file_path, event_type):
+            """
+            Handle new configuration file creation
+            """
+            config_type = determine_config_type(file_path)
+
+            if config_type:
+                # Load and validate new configuration
+                try:
+                    new_config = load_configuration(file_path, config_type)
+                    register_configuration(file_path, config_type, new_config)
+                    notify_configuration_added(file_path, config_type)
+                except Exception as e:
+                    handle_configuration_error(e, file_path, config_type)
+
+    file_deleted:
+      description: "Handle file deletion events"
+      implementation: |
+        def handle_file_deleted(file_path, event_type):
+            """
+            Handle configuration file deletion
+            """
+            config_type = get_registered_config_type(file_path)
+
+            if config_type:
+                # Unregister configuration
+                unregister_configuration(file_path, config_type)
+                notify_configuration_removed(file_path, config_type)
+
+# Reload Management
+reload_management:
+  # Reload scheduling
+  reload_scheduling:
+    description: "Schedule configuration reloads with debouncing"
+    implementation: |
+      class ReloadScheduler:
+          def __init__(self):
+              self.pending_reloads = {}
+              self.reload_timers = {}
+
+          def schedule_reload(self, file_path, delay=None):
+              """
+              Schedule configuration reload with optional delay
+              """
+              if delay is None:
+                  delay = debounce_time
+
+              # Cancel existing timer for this file
+              if file_path in self.reload_timers:
+                  self.reload_timers[file_path].cancel()
+
+              # Schedule new reload
+              timer = Timer(delay, self.execute_reload, args=[file_path])
+              self.reload_timers[file_path] = timer
+              timer.start()
+
+          def execute_reload(self, file_path):
+              """
+              Execute the actual configuration reload
+              """
+              try:
+                  # Remove from pending
+                  self.reload_timers.pop(file_path, None)
+                  self.pending_reloads.pop(file_path, None)
+
+                  # Execute reload
+                  perform_configuration_reload(file_path)
+
+              except Exception as e:
+                  handle_reload_error(e, file_path)
+
+  # Reload execution
+  reload_execution:
+    description: "Execute configuration reload with validation"
+    implementation: |
+      def perform_configuration_reload(file_path):
+          """
+          Perform configuration reload with full validation
+          """
+          config_type = determine_config_type(file_path)
+
+          if not config_type:
+              log_error(f"Unknown configuration type for file: {file_path}")
+              return False
+
+          try:
+              # Create backup
+              backup_config(file_path, config_type)
+
+              # Load new configuration
+              new_config = load_configuration(file_path, config_type)
+
+              # Validate new configuration
+              validation_result = validate_configuration(new_config, config_type)
+              if not validation_result['valid']:
+                  raise ValidationError(f"Configuration validation failed: {validation_result['errors']}")
+
+              # Apply new configuration
+              if apply_new_configuration(file_path, config_type, new_config):
+                  # Notify successful reload
+                  notify_reload_success(file_path, config_type)
+
+                  # Update cache
+                  update_configuration_cache(file_path, new_config)
+
+                  return True
+              else:
+                  raise RuntimeError("Failed to apply new configuration")
+
+          except Exception as e:
+              # Rollback on failure
+              rollback_configuration(file_path, config_type)
+              handle_reload_error(e, file_path, config_type)
+              return False
+
+# Configuration State Management
+state_management:
+  # Configuration registry
+  configuration_registry:
+    description: "Registry of all loaded configurations"
+    implementation: |
+      class ConfigurationRegistry:
+          def __init__(self):
+              self.configurations = {}
+              self.config_metadata = {}
+              self.dependency_graph = {}
+
+          def register_configuration(self, file_path, config_type, config_data):
+              """
+              Register a configuration in the registry
+              """
+              config_id = generate_config_id(file_path)
+
+              self.configurations[config_id] = {
+                  'file_path': file_path,
+                  'config_type': config_type,
+                  'data': config_data,
+                  'loaded_at': time.time(),
+                  'version': calculate_config_version(config_data)
+              }
+
+              self.config_metadata[config_id] = {
+                  'dependencies': find_dependencies(config_data),
+                  'dependents': [],
+                  'last_modified': os.path.getmtime(file_path)
+              }
+
+              # Update dependency graph
+              self.update_dependency_graph(config_id, config_data)
+
+          def update_configuration(self, config_id, new_config_data):
+              """
+              Update existing configuration
+              """
+              if config_id not in self.configurations:
+                  raise ValueError(f"Configuration {config_id} not found")
+
+              old_config = self.configurations[config_id]['data']
+
+              # Check for breaking changes
+              breaking_changes = detect_breaking_changes(old_config, new_config_data)
+              if breaking_changes:
+                  raise ValueError(f"Breaking changes detected: {breaking_changes}")
+
+              # Update configuration
+              self.configurations[config_id]['data'] = new_config_data
+              self.configurations[config_id]['version'] += 1
+              self.configurations[config_id]['loaded_at'] = time.time()
+
+              # Update dependency graph
+              self.update_dependency_graph(config_id, new_config_data)
+
+  # State persistence
+  state_persistence:
+    description: "Persist configuration state for recovery"
+    implementation: |
+      def persist_configuration_state():
+          """
+          Persist current configuration state to disk
+          """
+          state_snapshot = {
+              'timestamp': time.time(),
+              'configurations': {},
+              'metadata': {}
+          }
+
+          for config_id, config_info in configuration_registry.configurations.items():
+              state_snapshot['configurations'][config_id] = {
+                  'file_path': config_info['file_path'],
+                  'config_type': config_info['config_type'],
+                  'version': config_info['version'],
+                  'loaded_at': config_info['loaded_at']
+              }
+
+          for config_id, metadata in configuration_registry.config_metadata.items():
+              state_snapshot['metadata'][config_id] = metadata
+
+          # Save state to file
+          save_state_to_file(state_snapshot)
+
+      def load_configuration_state():
+          """
+          Load configuration state from disk
+          """
+          try:
+              state_snapshot = load_state_from_file()
+
+              # Restore configurations
+              for config_id, config_info in state_snapshot['configurations'].items():
+                  try:
+                      config_data = load_configuration(
+                          config_info['file_path'],
+                          config_info['config_type']
+                      )
+                      configuration_registry.register_configuration(
+                          config_info['file_path'],
+                          config_info['config_type'],
+                          config_data
+                      )
+                  except Exception as e:
+                      log_error(f"Failed to restore configuration {config_id}: {e}")
+
+          except FileNotFoundError:
+              log_info("No previous state found, starting fresh")
+
+# Error Handling and Recovery
+error_handling:
+  # Reload error handling
+  reload_error_handling:
+    description: "Handle errors during configuration reload"
+    implementation: |
+      def handle_reload_error(error, file_path, config_type=None):
+          """
+          Handle errors during configuration reload
+          """
+          error_info = {
+              'timestamp': time.time(),
+              'file_path': file_path,
+              'config_type': config_type,
+              'error_type': type(error).__name__,
+              'error_message': str(error),
+              'stack_trace': traceback.format_exc()
+          }
+
+          # Log error details
+          log_error("Configuration reload failed", **error_info)
+
+          # Attempt recovery
+          recovery_success = attempt_reload_recovery(file_path, config_type, error)
+
+          # Notify error
+          notify_reload_error(error_info, recovery_success)
+
+          # Track error metrics
+          track_reload_error_metrics(error_info)
+
+  # Recovery strategies
+  recovery_strategies:
+    validation_failure:
+      description: "Recover from configuration validation failures"
+      steps:
+        - "Log validation errors"
+        - "Attempt to fix minor issues automatically"
+        - "Rollback to last known good configuration"
+        - "Notify administrator with detailed error report"
+
+    load_failure:
+      description: "Recover from configuration loading failures"
+      steps:
+        - "Check file permissions and accessibility"
+        - "Attempt to load from backup"
+        - "Use cached configuration if available"
+        - "Notify administrator about persistent issues"
+
+    apply_failure:
+      description: "Recover from configuration application failures"
+      steps:
+        - "Rollback to previous configuration"
+        - "Identify conflicting settings"
+        - "Attempt partial application"
+        - "Report detailed failure analysis"
+
+# Monitoring and Metrics
+monitoring:
+  # Reload metrics
+  reload_metrics:
+    reload_attempts:
+      description: "Number of reload attempts"
+      type: "counter"
+      labels: ["config_type", "file_path"]
+
+    reload_success_rate:
+      description: "Success rate of configuration reloads"
+      type: "gauge"
+      labels: ["config_type"]
+
+    reload_duration:
+      description: "Time taken for configuration reloads"
+      type: "histogram"
+      buckets: [0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 30.0]
+
+    validation_errors:
+      description: "Number of validation errors"
+      type: "counter"
+      labels: ["config_type", "error_type"]
+
+  # Health checks
+  health_checks:
+    file_watcher_health:
+      description: "Check if file watcher is running properly"
+      check_function: "check_file_watcher_health"
+
+    configuration_integrity:
+      description: "Check integrity of loaded configurations"
+      check_function: "check_configuration_integrity"
+
+    reload_system_health:
+      description: "Check overall health of reload system"
+      check_function: "check_reload_system_health"
+
+# Notification System
+notification_system:
+  # Notification channels
+  notification_channels:
+    log_notifications:
+      enabled: true
+      level: "INFO"
+      format: "structured"
+
+    system_notifications:
+      enabled: true
+      events:
+        - "configuration_reloaded"
+        - "reload_failed"
+        - "validation_error"
+        - "configuration_added"
+        - "configuration_removed"
+
+    webhook_notifications:
+      enabled: false
+      url: "https://example.com/webhook"
+      events:
+        - "reload_failed"
+        - "critical_validation_error"
+
+  # Notification templates
+  notification_templates:
+    reload_success:
+      title: "Configuration Reloaded Successfully"
+      message: "Configuration {config_type} reloaded from {file_path}"
+      severity: "INFO"
+
+    reload_failure:
+      title: "Configuration Reload Failed"
+      message: "Failed to reload {config_type} from {file_path}: {error}"
+      severity: "ERROR"
+
+    validation_error:
+      title: "Configuration Validation Failed"
+      message: "Validation errors in {config_type}: {errors}"
+      severity: "WARNING"
+
+# Performance Optimization
+performance_optimization:
+  # Caching strategies
+  caching:
+    configuration_cache:
+      enabled: true
+      ttl: 3600  # 1 hour
+      max_size: "100MB"
+
+    validation_cache:
+      enabled: true
+      ttl: 1800  # 30 minutes
+      max_size: "50MB"
+
+    dependency_cache:
+      enabled: true
+      ttl: 7200  # 2 hours
+      max_size: "20MB"
+
+  # Batch processing
+  batch_processing:
+    batch_size: 10
+    batch_timeout: 5  # seconds
+    max_concurrent_batches: 3
+
+  # Resource limits
+  resource_limits:
+    max_concurrent_reloads: 5
+    max_reload_queue_size: 100
+    max_validation_time: 30  # seconds
+    max_file_size: "10MB"
