@@ -1,7 +1,7 @@
 {
   "name": "subagent-master",
-  "version": "2.9.0",
-  "description": "Clean modular orchestration system v2.9.0 - Separated architecture with modular implementation and improved maintainability",
+  "version": "3.0.0",
+  "description": "Advanced orchestration system v3.0.0 - Intelligent task delegation with agent compatibility matrix and comprehensive error handling",
   "author": "Bohdan <pomazan.bohdan@gmail.com>",
   "license": "MIT",
   "keywords": [
@@ -45,7 +45,16 @@
     "modular-design",
     "agent-selection",
     "task-planning",
-    "performance-monitoring"
+    "performance-monitoring",
+    "compatibility-matrix",
+    "task-scoring",
+    "retry-logic",
+    "progress-monitoring",
+    "timeout-management",
+    "intelligent-delegation",
+    "agent-matrix",
+    "complexity-analysis",
+    "error-resilience"
   ],
   "homepage": "https://github.com/pomazanbohdan/subagent-master",
   "repository": "https://github.com/pomazanbohdan/subagent-master.git",

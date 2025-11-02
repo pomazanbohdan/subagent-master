@@ -5,8 +5,8 @@
     "email": "pomazan.bohdan@gmail.com"
   },
   "metadata": {
-    "description": "Clean modular orchestration system v2.9.0 - Separated architecture with modular implementation and improved maintainability",
-    "version": "2.9.0"
+    "description": "Advanced orchestration system v3.0.0 - Intelligent task delegation with agent compatibility matrix and comprehensive error handling",
+    "version": "3.0.0"
   },
   "plugins": [
     {
