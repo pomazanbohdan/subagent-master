@@ -45,41 +45,344 @@ domain_registry:
         average_completion_time: "float"
         user_satisfaction: "float"
 
-# Base Domains Configuration
+# Base Domains Configuration - Integrated with Agent Categories
 base_domains:
+  # Orchestration Domains (from agent category: orchestration)
+  coordination_management:
+    domain_id: "coordination_management"
+    domain_name: "Coordination & Management"
+    description: "Task orchestration, agent coordination, and workflow management"
+
+    agent_category_source: "orchestration"
+    confidence_boost: 0.3
+
+    base_keywords:
+      - "orchestrate"
+      - "coordinate"
+      - "manage"
+      - "delegate"
+      - "workflow"
+      - "coordination"
+      - "team"
+      - "parallel"
+      - "task-orchestration"
+      - "agent-selection"
+
+    base_patterns:
+      - "orchestrate.*task"
+      - "coordinate.*agent"
+      - "manage.*workflow"
+      - "delegate.*responsibility"
+
+    characteristics:
+      complexity_tendency: 2.5-4.0
+      typical_effort: "6-12 hours"
+      required_skills: ["coordination", "planning", "communication"]
+
+    evolution_enabled: true
+    learning_priority: "high"
+
+  task_orchestration:
+    domain_id: "task_orchestration"
+    domain_name: "Task Orchestration"
+    description: "Intelligent task distribution and execution coordination"
+
+    agent_category_source: "orchestration"
+    confidence_boost: 0.3
+
+    base_keywords:
+      - "task"
+      - "orchestration"
+      - "distribution"
+      - "execution"
+      - "coordination"
+      - "delegation"
+
+    base_patterns:
+      - "distribute.*task"
+      - "orchestrate.*execution"
+      - "coordinate.*distribution"
+
+    characteristics:
+      complexity_tendency: 3.0-4.5
+      typical_effort: "8-16 hours"
+      required_skills: ["orchestration", "coordination", "planning"]
+
+    evolution_enabled: true
+    learning_priority: "high"
+
+  # Development Domains (from agent category: development)
+  frontend_development:
+    domain_id: "frontend_development"
+    domain_name: "Frontend Development"
+    description: "Client-side development, user interfaces, and user experience"
+
+    agent_category_source: "development"
+    confidence_boost: 0.25
+
+    base_keywords:
+      - "frontend"
+      - "ui"
+      - "ux"
+      - "react"
+      - "vue"
+      - "angular"
+      - "web"
+      - "css"
+      - "javascript"
+      - "html"
+      - "responsive"
+      - "component"
+      - "interface"
+      - "user.*experience"
+
+    base_patterns:
+      - "build.*ui"
+      - "design.*frontend"
+      - "create.*web.*app"
+      - "implement.*react"
+      - "style.*component"
+      - "develop.*interface"
+
+    characteristics:
+      complexity_tendency: 2.0-3.5
+      typical_effort: "4-10 hours"
+      required_skills: ["frontend_frameworks", "design_principles", "user_experience"]
+
+    evolution_enabled: true
+    learning_priority: "high"
+
   backend_development:
     domain_id: "backend_development"
     domain_name: "Backend Development"
     description: "Server-side development, APIs, databases, and infrastructure"
-    
+
+    agent_category_source: "development"
+    confidence_boost: 0.25
+
     base_keywords:
       - "api"
       - "backend"
       - "server"
       - "database"
       - "microservice"
-      - "infrastructure"
       - "rest"
       - "graphql"
       - "sql"
       - "nosql"
       - "authentication"
       - "authorization"
-      
+      - "server.*development"
+
     base_patterns:
       - "build.*api"
       - "design.*backend"
       - "create.*server"
       - "implement.*database"
-      - "setup.*infrastructure"
-      
+      - "setup.*auth"
+
     characteristics:
       complexity_tendency: 2.0-3.5
       typical_effort: "4-10 hours"
       required_skills: ["programming", "system_design", "database_knowledge"]
-      
+
     evolution_enabled: true
     learning_priority: "high"
+
+  # Architecture Domains (from agent category: architecture)
+  system_architecture:
+    domain_id: "system_architecture"
+    domain_name: "System Architecture"
+    description: "System design, architectural patterns, and scalability planning"
+
+    agent_category_source: "architecture"
+    confidence_boost: 0.2
+
+    base_keywords:
+      - "architecture"
+      - "design"
+      - "system"
+      - "scalability"
+      - "patterns"
+      - "structure"
+      - "technical.*design"
+      - "system.*design"
+
+    base_patterns:
+      - "design.*system"
+      - "architect.*solution"
+      - "plan.*architecture"
+      - "define.*structure"
+
+    characteristics:
+      complexity_tendency: 3.0-4.5
+      typical_effort: "8-16 hours"
+      required_skills: ["architecture", "system_design", "scalability"]
+
+    evolution_enabled: true
+    learning_priority: "medium"
+
+  # Security Domains (from agent category: security)
+  security_analysis:
+    domain_id: "security_analysis"
+    domain_name: "Security Analysis"
+    description: "Security assessment, vulnerability analysis, and protection strategies"
+
+    agent_category_source: "security"
+    confidence_boost: 0.25
+
+    base_keywords:
+      - "security"
+      - "authentication"
+      - "authorization"
+      - "vulnerability"
+      - "protection"
+      - "assessment"
+      - "penetration"
+      - "threat"
+
+    base_patterns:
+      - "analyze.*security"
+      - "assess.*vulnerability"
+      - "implement.*protection"
+      - "test.*security"
+
+    characteristics:
+      complexity_tendency: 2.5-4.0
+      typical_effort: "6-12 hours"
+      required_skills: ["security_analysis", "risk_assessment", "protection_strategies"]
+
+    evolution_enabled: true
+    learning_priority: "high"
+
+  # Testing Domains (from agent category: testing)
+  quality_assurance:
+    domain_id: "quality_assurance"
+    domain_name: "Quality Assurance"
+    description: "Testing strategies, quality validation, and automation"
+
+    agent_category_source: "testing"
+    confidence_boost: 0.2
+
+    base_keywords:
+      - "testing"
+      - "quality"
+      - "validation"
+      - "automation"
+      - "qa"
+      - "verification"
+      - "test.*automation"
+
+    base_patterns:
+      - "test.*system"
+      - "validate.*quality"
+      - "automate.*testing"
+      - "ensure.*quality"
+
+    characteristics:
+      complexity_tendency: 2.0-3.5
+      typical_effort: "4-10 hours"
+      required_skills: ["testing_strategies", "automation", "quality_assurance"]
+
+    evolution_enabled: true
+    learning_priority: "medium"
+
+  # Research Domains (from agent category: research)
+  research_analysis:
+    domain_id: "research_analysis"
+    domain_name: "Research & Analysis"
+    description: "Information research, analysis, and knowledge synthesis"
+
+    agent_category_source: "research"
+    confidence_boost: 0.2
+
+    base_keywords:
+      - "research"
+      - "analysis"
+      - "investigation"
+      - "discovery"
+      - "exploration"
+      - "knowledge"
+      - "information"
+      - "study"
+
+    base_patterns:
+      - "research.*topic"
+      - "analyze.*information"
+      - "investigate.*subject"
+      - "discover.*knowledge"
+
+    characteristics:
+      complexity_tendency: 2.0-3.0
+      typical_effort: "3-8 hours"
+      required_skills: ["research_methods", "analysis", "knowledge_synthesis"]
+
+    evolution_enabled: true
+    learning_priority: "medium"
+
+  # Performance Domains (from agent category: performance)
+  performance_optimization:
+    domain_id: "performance_optimization"
+    domain_name: "Performance Optimization"
+    description: "System performance analysis, optimization, and tuning"
+
+    agent_category_source: "performance"
+    confidence_boost: 0.15
+
+    base_keywords:
+      - "performance"
+      - "optimization"
+      - "speed"
+      - "efficiency"
+      - "tuning"
+      - "monitoring"
+      - "improvement"
+
+    base_patterns:
+      - "optimize.*performance"
+      - "improve.*speed"
+      - "tune.*system"
+      - "monitor.*performance"
+
+    characteristics:
+      complexity_tendency: 2.5-3.5
+      typical_effort: "4-8 hours"
+      required_skills: ["performance_analysis", "optimization", "monitoring"]
+
+    evolution_enabled: true
+    learning_priority: "low"
+
+  # Infrastructure Domains (from agent category: infrastructure)
+  infrastructure_management:
+    domain_id: "infrastructure_management"
+    domain_name: "Infrastructure Management"
+    description: "Infrastructure setup, deployment, and operations"
+
+    agent_category_source: "infrastructure"
+    confidence_boost: 0.2
+
+    base_keywords:
+      - "infrastructure"
+      - "deployment"
+      - "operations"
+      - "devops"
+      - "system.*admin"
+      - "environment"
+      - "setup"
+
+    base_patterns:
+      - "setup.*infrastructure"
+      - "deploy.*system"
+      - "manage.*operations"
+      - "configure.*environment"
+
+    characteristics:
+      complexity_tendency: 2.5-4.0
+      typical_effort: "6-12 hours"
+      required_skills: ["infrastructure", "deployment", "operations"]
+
+    evolution_enabled: true
+    learning_priority: "medium"
     
   frontend_development:
     domain_id: "frontend_development"
@@ -619,6 +922,139 @@ performance_monitoring:
       - "domain_pruning"
       - "relationship_optimization"
 
+# Integration with Agent Discovery System
+agent_discovery_integration:
+  enabled: true
+  integration_type: "bidirectional"
+
+  # Input from Agent Discovery System
+  agent_category_input:
+    source: "config/dynamic/dynamic_agent_discovery.yaml"
+    data_source: "step_4_name_registration.results"
+
+    # Agent Categories to Domain Mapping
+    category_domain_mapping:
+      orchestration:
+        target_domains: ["coordination_management", "task_orchestration", "agent_coordination"]
+        confidence_boost: 0.3
+        evolution_priority: "high"
+
+      development:
+        target_domains: ["frontend_development", "backend_development", "fullstack_development"]
+        confidence_boost: 0.25
+        evolution_priority: "high"
+
+      architecture:
+        target_domains: ["system_architecture", "technical_design", "scalability_planning"]
+        confidence_boost: 0.2
+        evolution_priority: "medium"
+
+      security:
+        target_domains: ["security_analysis", "vulnerability_assessment", "security_engineering"]
+        confidence_boost: 0.25
+        evolution_priority: "high"
+
+      testing:
+        target_domains: ["quality_assurance", "testing_automation", "validation_engineering"]
+        confidence_boost: 0.2
+        evolution_priority: "medium"
+
+      research:
+        target_domains: ["research_analysis", "investigation_discovery", "knowledge_synthesis"]
+        confidence_boost: 0.2
+        evolution_priority: "medium"
+
+      performance:
+        target_domains: ["performance_optimization", "efficiency_analysis", "system_tuning"]
+        confidence_boost: 0.15
+        evolution_priority: "low"
+
+      infrastructure:
+        target_domains: ["infrastructure_management", "devops_engineering", "operations_automation"]
+        confidence_boost: 0.2
+        evolution_priority: "medium"
+
+      general:
+        target_domains: ["general_purpose", "versatile_tasks", "adaptive_solutions"]
+        confidence_boost: 0.1
+        evolution_priority: "low"
+
+    # Real-time Category Updates
+    real_time_updates:
+      enabled: true
+      update_frequency: "on_agent_discovery"
+      invalidate_cache: true
+      propagate_changes: true
+
+  # Output to Agent Discovery System
+  domain_feedback_output:
+    destination: "config/dynamic/dynamic_agent_discovery.yaml"
+    feedback_method: "enhance_categorization"
+
+    # Domain Evolution Feedback to Agent Categories
+    domain_enhanced_categorization:
+      algorithm: "domain_informed_category_detection"
+
+      # Enhancement Rules
+      enhancement_rules:
+        - rule: "domain_confidence_boost"
+          condition: "high_domain_confidence > 0.8"
+          action: "boost_agent_category_confidence by 0.15"
+
+        - rule: "cross_domain_influence"
+          condition: "multiple_related_domains_detected"
+          action: "create_hybrid_agent_category"
+
+        - rule: "emerging_domain_detection"
+          condition: "new_domain_pattern_detected"
+          action: "propose_new_agent_category"
+
+        - rule: "category_refinement"
+          condition: "domain_evolution_observed"
+          action: "refine_agent_category_classification"
+
+    # Feedback Data Structure
+    feedback_data:
+      domain_insights:
+        - "domain_confidence_scores"
+        - "cross_domain_relationships"
+        - "evolution_patterns"
+        - "performance_correlations"
+
+      agent_recommendations:
+        - "category_adjustments"
+        - "new_category_proposals"
+        - "confidence_updates"
+        - "capability_refinements"
+
+  # Unified Classification Algorithm
+  unified_classification:
+    enabled: true
+    algorithm: "hybrid_agent_domain_classifier"
+
+    # Weight Configuration
+    classification_weights:
+      agent_category_input: 0.4
+      traditional_classification: 0.35
+      user_feedback: 0.15
+      performance_history: 0.1
+
+    # Confidence Calculation
+    confidence_calculation:
+      formula: "weighted_average + category_boost + domain_confirmation"
+      minimum_threshold: 0.6
+      maximum_threshold: 0.95
+
+    # Conflict Resolution
+    conflict_resolution:
+      strategy: "agent_category_priority_with_domain_validation"
+
+      resolution_rules:
+        - "trust_agent_category_when_confidence > 0.8"
+        - "use_domain_validation_for_ambiguous_cases"
+        - "propose_unified_category_when_strong_disagreement"
+        - "escalate_to_user_for_critical_conflicts"
+
 # Integration Points
 integration:
   data_sources:
@@ -626,15 +1062,19 @@ integration:
     - "user_feedback_data"
     - "performance_metrics"
     - "historical_task_data"
-    
+    - "agent_discovery_results"  # New: Agent Discovery Integration
+    - "agent_category_updates"    # New: Real-time Category Updates
+
   output_destinations:
     - "dynamic_domain_registry"
     - "classification_engine"
     - "learning_system"
     - "performance_monitoring"
-    
+    - "agent_discovery_system"   # New: Feedback to Agent Discovery
+
   api_endpoints:
     domain_registry: "/api/domains"
     classification: "/api/classify"
     evolution: "/api/evolve"
+    agent_integration: "/api/agent-domain-integration"  # New: Integration endpoint
     relationships: "/api/relationships"

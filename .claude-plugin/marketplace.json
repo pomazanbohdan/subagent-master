@@ -5,8 +5,8 @@
     "email": "pomazan.bohdan@gmail.com"
   },
   "metadata": {
-    "description": "Dynamic orchestration system v3.6.5 - Integrated TODO-EXECUTION engine with automatic Task() delegation, real-time progress tracking, and intelligent failure recovery",
-    "version": "3.6.5"
+    "description": "Dynamic orchestration system v3.6.6 - Complete 10-phase initialization with dynamic agent name resolution, automatic categorization, and @agent-{name} support",
+    "version": "3.6.6"
   },
   "plugins": [
     {
@@ -99,7 +99,21 @@
         "execution-workflow",
         "progress-monitoring-advanced",
         "failure-recovery-intelligent",
-        "automatic-plan-execution"
+        "automatic-plan-execution",
+        "dynamic-name-resolution",
+        "agent-categorization",
+        "automatic-category-detection",
+        "agent-prefix-resolution",
+        "name-format-generation",
+        "category-agent-mapping",
+        "dynamic-agent-registration",
+        "semantic-name-analysis",
+        "capability-based-categorization",
+        "trigger-based-categorization",
+        "tool-based-categorization",
+        "name-cache-system",
+        "fallback-resolution",
+        "agent-prefix-support"
       ],
       "source": "./",
       "agents": [

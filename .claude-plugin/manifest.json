@@ -1,7 +1,7 @@
 {
   "name": "subagent-master",
-  "version": "3.6.5",
-  "description": "Dynamic orchestration system v3.6.5 - Complete 10-phase initialization system with comprehensive component orchestration, TF-IDF integration, and robust error handling",
+  "version": "3.6.6",
+  "description": "Dynamic orchestration system v3.6.6 - Complete 10-phase initialization with dynamic agent name resolution, automatic categorization, and @agent-{name} support",
   "author": "Bohdan <pomazan.bohdan@gmail.com>",
   "license": "MIT",
   "keywords": [
@@ -109,7 +109,21 @@
     "execution-workflow",
     "progress-monitoring-advanced",
     "failure-recovery-intelligent",
-    "automatic-plan-execution"
+    "automatic-plan-execution",
+    "dynamic-name-resolution",
+    "agent-categorization",
+    "automatic-category-detection",
+    "agent-prefix-resolution",
+    "name-format-generation",
+    "category-agent-mapping",
+    "dynamic-agent-registration",
+    "semantic-name-analysis",
+    "capability-based-categorization",
+    "trigger-based-categorization",
+    "tool-based-categorization",
+    "name-cache-system",
+    "fallback-resolution",
+    "agent-prefix-support"
   ],
   "homepage": "https://github.com/pomazanbohdan/subagent-master",
   "repository": "https://github.com/pomazanbohdan/subagent-master.git",

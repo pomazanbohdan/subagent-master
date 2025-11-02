@@ -38,6 +38,68 @@ discovery_algorithm:
       cache_duration: "session_lifetime"
       update_trigger: "registry_change"
 
+    step_4_name_registration:
+      description: "Dynamic name generation and registration"
+      name_format: "category:agent-name"
+      auto_categorization: true
+      dynamic_name_generation: true
+
+      # Category Detection Rules
+      categorization_rules:
+        capabilities_based:
+          "orchestration": ["task-orchestration", "automatic-delegation", "agent-selection", "coordination", "manage", "parallel"]
+          "development": ["frontend", "backend", "full-stack", "coding", "programming", "implementation"]
+          "architecture": ["system-design", "architecture", "scalability", "patterns", "structure"]
+          "security": ["security", "authentication", "authorization", "vulnerability", "penetration"]
+          "testing": ["testing", "qa", "quality", "validation", "automation"]
+          "research": ["research", "analysis", "investigation", "discovery", "exploration"]
+          "performance": ["performance", "optimization", "speed", "efficiency", "monitoring"]
+          "infrastructure": ["infrastructure", "devops", "deployment", "ci/cd", "operations"]
+
+        triggers_based:
+          "orchestration": ["orchestrate", "delegate", "coordinate", "manage", "parallel"]
+          "development": ["implement", "code", "develop", "build", "create"]
+          "architecture": ["design", "architecture", "plan", "structure"]
+          "security": ["secure", "protect", "vulnerability", "attack"]
+          "testing": ["test", "validate", "verify", "quality"]
+          "research": ["research", "analyze", "investigate", "explore"]
+          "performance": ["optimize", "performance", "speed", "efficiency"]
+          "infrastructure": ["deploy", "infrastructure", "operations", "devops"]
+
+        tools_based:
+          "orchestration": ["sequential-thinking", "serena"]
+          "development": ["magic", "context7", "morphllm"]
+          "testing": ["playwright", "chrome-devtools"]
+          "research": ["tavily", "web-search-prime", "context7"]
+          "infrastructure": ["fast-filesystem"]
+
+      # Name Resolution System
+      name_resolution:
+        # @agent-{name} resolution to dynamic names
+        agent_prefix_resolution:
+          enabled: true
+          prefix: "@agent-"
+          resolution_logic: "extract_name → detect_category → generate_dynamic_name"
+
+        # Dynamic name generation
+        dynamic_name_format: "{category}:{agent_name}"
+
+        # Caching system for resolved names
+        name_cache:
+          enabled: true
+          cache_duration: "session_lifetime"
+          cache_key_format: "resolved_name_{original_name}"
+
+        # Fallback mechanisms
+        fallback_resolution:
+          - strategy: "direct_match"
+            description: "Use exact name if found in registry"
+          - strategy: "category_inference"
+            description: "Infer category from capabilities/triggers"
+          - strategy: "default_category"
+            description: "Use 'general' category if no inference possible"
+            default_category: "general"
+
 # Agent Detection Function
 agent_detection_function: |
   # Dynamic Agent Discovery Function
@@ -101,6 +163,369 @@ agent_detection_function: |
       """
       available_agents = get_available_agents()
       return find_agent_by_name(agent_name, available_agents)
+
+  def generate_dynamic_agent_name(agent_data):
+      """
+      Generate dynamic name in format {category}:{agent_name}
+      """
+      agent_name = agent_data.get('name', 'unknown')
+
+      # Check if already in dynamic format
+      if ':' in agent_name:
+          return agent_name
+
+      # Detect category
+      category = detect_agent_category(agent_data)
+
+      # Generate dynamic name
+      dynamic_name = f"{category}:{agent_name}"
+      return dynamic_name
+
+  def detect_agent_category(agent_data):
+      """
+      Detect agent category based on capabilities, triggers, and tools
+      """
+      capabilities = agent_data.get('capabilities', [])
+      triggers = agent_data.get('triggers', [])
+      tools = agent_data.get('tools', [])
+
+      # Check capabilities-based categories
+      if any(orch_term in ' '.join(capabilities).lower() for orch_term in
+             ['task-orchestration', 'automatic-delegation', 'agent-selection', 'coordination']):
+          return 'orchestration'
+
+      if any(dev_term in ' '.join(capabilities).lower() for dev_term in
+             ['frontend', 'backend', 'development', 'coding', 'programming']):
+          return 'development'
+
+      if any(arch_term in ' '.join(capabilities).lower() for arch_term in
+             ['architecture', 'system-design', 'scalability', 'patterns']):
+          return 'architecture'
+
+      if any(sec_term in ' '.join(capabilities).lower() for sec_term in
+             ['security', 'authentication', 'authorization', 'vulnerability']):
+          return 'security'
+
+      if any(test_term in ' '.join(capabilities).lower() for test_term in
+             ['testing', 'qa', 'quality', 'validation', 'automation']):
+          return 'testing'
+
+      if any(research_term in ' '.join(capabilities).lower() for research_term in
+             ['research', 'analysis', 'investigation', 'discovery']):
+          return 'research'
+
+      if any(perf_term in ' '.join(capabilities).lower() for perf_term in
+             ['performance', 'optimization', 'speed', 'efficiency', 'monitoring']):
+          return 'performance'
+
+      if any(infra_term in ' '.join(capabilities).lower() for infra_term in
+             ['infrastructure', 'devops', 'deployment', 'operations']):
+          return 'infrastructure'
+
+      # Check triggers-based categories
+      if any(trig in ' '.join(triggers).lower() for trig in
+             ['orchestrate', 'delegate', 'coordinate', 'manage', 'parallel']):
+          return 'orchestration'
+
+      # Check tools-based categories
+      if any(tool in ' '.join(tools).lower() for tool in
+             ['sequential-thinking', 'serena']):
+          return 'orchestration'
+
+      if any(tool in ' '.join(tools).lower() for tool in
+             ['magic', 'context7', 'morphllm']):
+          return 'development'
+
+      if any(tool in ' '.join(tools).lower() for tool in
+             ['playwright', 'chrome-devtools']):
+          return 'testing'
+
+      if any(tool in ' '.join(tools).lower() for tool in
+             ['tavily', 'web-search-prime']):
+          return 'research'
+
+      # Default category
+      return 'general'
+
+  def resolve_agent_name_with_prefix(agent_request):
+      """
+      Resolve @agent-{name} to dynamic name format
+      """
+      # Check if it's @agent- prefix
+      if agent_request.startswith('@agent-'):
+          # Extract agent name
+          agent_name = agent_request[7:]  # Remove '@agent-' prefix
+
+          # Try to find in cache first
+          cached_result = get_cached_name_resolution(agent_name)
+          if cached_result:
+              return cached_result
+
+          # Find agent data
+          available_agents = get_available_agents()
+          agent_data = find_agent_data_by_name(agent_name, available_agents)
+
+          if agent_data:
+              # Generate dynamic name
+              dynamic_name = generate_dynamic_agent_name(agent_data)
+              cache_name_resolution(agent_name, dynamic_name)
+              return dynamic_name
+          else:
+              # Fallback: generate with default category
+              return f"general:{agent_name}"
+
+      # Return as-is if not @agent- prefix
+      return agent_request
+
+  def get_cached_name_resolution(agent_name):
+      """
+      Get cached name resolution if available
+      """
+      cache_key = f"resolved_name_{agent_name}"
+      # Implementation would check cache system
+      return None  # Placeholder
+
+  def cache_name_resolution(agent_name, dynamic_name):
+      """
+      Cache name resolution for future use
+      """
+      cache_key = f"resolved_name_{agent_name}"
+      # Implementation would store in cache system
+      pass  # Placeholder
+
+  def find_agent_data_by_name(agent_name, available_agents):
+      """
+      Find agent data by name (simple or dynamic format)
+      """
+      for agent in available_agents:
+          if agent.get('name') == agent_name:
+              return agent
+          # Also check if agent_name is part of dynamic name
+          if ':' in agent.get('name', ''):
+              category, name = agent.get('name', '').split(':', 1)
+              if name == agent_name:
+                  return agent
+      return None
+
+  # Integration with Domain System
+  def integrate_with_domain_system(agent_data):
+      """
+      Integrate agent categorization with domain system feedback
+      """
+      if not DOMAIN_SYSTEM_INTEGRATION_ENABLED:
+          return agent_data
+
+      try:
+          # Import domain system results
+          domain_feedback = load_domain_system_feedback()
+
+          if domain_feedback:
+              # Apply domain-based enhancements
+              enhanced_agent = enhance_agent_with_domain_data(agent_data, domain_feedback)
+
+              # Update category confidence based on domain insights
+              enhanced_agent = apply_domain_confidence_boosts(enhanced_agent, domain_feedback)
+
+              # Check for category refinements
+              enhanced_agent = refine_category_based_on_domains(enhanced_agent, domain_feedback)
+
+              return enhanced_agent
+
+      except Exception as e:
+          log_integration_error("domain_system_integration", str(e))
+          # Fallback to original agent data
+          return agent_data
+
+      return agent_data
+
+  def load_domain_system_feedback():
+      """
+      Load feedback data from domain system
+      """
+      try:
+          # Check for domain system feedback file
+          feedback_file = "config/dynamic/domain_agent_feedback.yaml"
+          if os.path.exists(feedback_file):
+              with open(feedback_file, 'r') as f:
+                  return yaml.safe_load(f)
+      except Exception:
+          pass
+      return None
+
+  def enhance_agent_with_domain_data(agent_data, domain_feedback):
+      """
+      Enhance agent data with domain system insights
+      """
+      enhanced = agent_data.copy()
+
+      # Add domain insights
+      agent_category = enhanced.get('detected_category', 'general')
+      domain_insights = domain_feedback.get('agent_recommendations', {}).get('category_adjustments', {})
+
+      if agent_category in domain_insights:
+          domain_data = domain_insights[agent_category]
+
+          # Apply confidence boosts
+          if 'confidence_updates' in domain_data:
+              enhanced['domain_confidence_boost'] = domain_data['confidence_updates']
+
+          # Add domain-inferred capabilities
+          if 'capability_refinements' in domain_data:
+              enhanced.setdefault('domain_inferred_capabilities', []).extend(
+                  domain_data['capability_refinements']
+              )
+
+          # Add cross-domain influences
+          if 'cross_domain_influences' in domain_data:
+              enhanced['cross_domain_categories'] = domain_data['cross_domain_influences']
+
+      return enhanced
+
+  def apply_domain_confidence_boosts(agent_data, domain_feedback):
+      """
+      Apply confidence boosts based on domain system analysis
+      """
+      enhanced = agent_data.copy()
+      agent_category = enhanced.get('detected_category', 'general')
+
+      # Get domain confidence scores
+      domain_confidence = domain_feedback.get('domain_insights', {}).get('domain_confidence_scores', {})
+
+      if agent_category in domain_confidence:
+        confidence_score = domain_confidence[agent_category]
+
+        # Apply boost if domain confidence is high
+        if confidence_score > 0.8:
+          boost_amount = 0.15  # From domain system config
+          enhanced['category_confidence'] = min(1.0,
+              enhanced.get('category_confidence', 0.7) + boost_amount)
+          enhanced['confidence_boost_source'] = 'domain_system_high_confidence'
+
+      return enhanced
+
+  def refine_category_based_on_domains(agent_data, domain_feedback):
+      """
+      Refine agent category based on domain system evolution insights
+      """
+      enhanced = agent_data.copy()
+      original_category = enhanced.get('detected_category', 'general')
+
+      # Check for new category proposals
+      new_categories = domain_feedback.get('agent_recommendations', {}).get('new_category_proposals', {})
+
+      if original_category in new_categories:
+        proposal = new_categories[original_category]
+
+        # Apply refinement if confidence is high enough
+        if proposal.get('confidence', 0) > 0.75:
+          enhanced['original_category'] = original_category
+          enhanced['detected_category'] = proposal['suggested_category']
+          enhanced['category_refinement_source'] = 'domain_system_evolution'
+          enhanced['refinement_confidence'] = proposal['confidence']
+
+      return enhanced
+
+  def generate_domain_feedback_for_agents(discovered_agents):
+      """
+      Generate feedback data for domain system based on discovered agents
+      """
+      feedback_data = {
+        'timestamp': datetime.now().isoformat(),
+        'agent_discovery_results': {
+          'total_agents': len(discovered_agents),
+          'categories': {},
+          'confidence_distribution': {},
+          'domain_correlations': {}
+        }
+      }
+
+      # Analyze category distribution
+      categories = {}
+      for agent in discovered_agents:
+        category = agent.get('detected_category', 'general')
+        confidence = agent.get('category_confidence', 0.7)
+
+        if category not in categories:
+          categories[category] = []
+        categories[category].append({
+          'name': agent.get('name'),
+          'confidence': confidence,
+          'capabilities': agent.get('capabilities', [])
+        })
+
+      feedback_data['agent_discovery_results']['categories'] = categories
+
+      # Generate domain correlation suggestions
+      domain_correlations = generate_domain_correlation_suggestions(categories)
+      feedback_data['agent_discovery_results']['domain_correlations'] = domain_correlations
+
+      # Save feedback for domain system
+      save_agent_discovery_feedback(feedback_data)
+
+      return feedback_data
+
+  def generate_domain_correlation_suggestions(categories):
+      """
+      Generate suggestions for domain correlations based on agent categories
+      """
+      correlations = {}
+
+      for category, agents in categories.items():
+        # Calculate average confidence
+        avg_confidence = sum(a['confidence'] for a in agents) / len(agents)
+
+        # Extract common capabilities
+        all_capabilities = []
+        for agent in agents:
+          all_capabilities.extend(agent['capabilities'])
+
+        # Find most common capabilities
+        from collections import Counter
+        capability_counts = Counter(all_capabilities)
+        top_capabilities = capability_counts.most_common(5)
+
+        correlations[category] = {
+          'agent_count': len(agents),
+          'average_confidence': avg_confidence,
+          'top_capabilities': top_capabilities,
+          'suggested_domains': get_domain_suggestions_for_category(category, top_capabilities)
+        }
+
+      return correlations
+
+  def get_domain_suggestions_for_category(category, top_capabilities):
+      """
+      Get domain suggestions based on agent category and capabilities
+      """
+      # Map agent categories to suggested domains
+      domain_mapping = {
+        'orchestration': ['coordination_management', 'task_orchestration'],
+        'development': ['frontend_development', 'backend_development'],
+        'architecture': ['system_architecture', 'technical_design'],
+        'security': ['security_analysis', 'vulnerability_assessment'],
+        'testing': ['quality_assurance', 'testing_automation'],
+        'research': ['research_analysis', 'knowledge_synthesis'],
+        'performance': ['performance_optimization', 'efficiency_analysis'],
+        'infrastructure': ['infrastructure_management', 'operations_automation'],
+        'general': ['general_purpose', 'versatile_tasks']
+      }
+
+      return domain_mapping.get(category, ['general_purpose'])
+
+  def save_agent_discovery_feedback(feedback_data):
+      """
+      Save agent discovery feedback for domain system consumption
+      """
+      try:
+        feedback_file = "config/dynamic/agent_discovery_feedback.yaml"
+        with open(feedback_file, 'w') as f:
+          yaml.safe_dump(feedback_data, f, default_flow_style=False)
+      except Exception as e:
+        log_error(f"Failed to save agent discovery feedback: {e}")
+
+  # Constants for integration
+  DOMAIN_SYSTEM_INTEGRATION_ENABLED = True
+  DOMAIN_SYSTEM_CONFIG_PATH = "config/dynamic/domain_system.yaml"
 
 # Filesystem-based Discovery Integration
 discovery_integration:

@@ -52,6 +52,41 @@ I am your intelligent coordinator for task orchestration, agent selection, and i
 
 ## 🔄 Core Workflow
 
+### **Agent Name Resolution System**
+
+**Dynamic Name Generation Process:**
+1. **Agent Discovery**: Scan filesystem for agent files with YAML frontmatter
+2. **Category Detection**: Automatically detect category using ML-based analysis:
+   - **Capabilities Analysis**: Extract keywords from capabilities list
+   - **Triggers Analysis**: Analyze trigger patterns for domain indicators
+   - **Tools Analysis**: Check MCP tool associations for category hints
+3. **Dynamic Name Generation**: Format as `{category}:{agent_name}`
+   - Example: `name: "master"` + `capabilities: ["task-orchestration"]` → `orchestration:master`
+   - Example: `name: "security-engineer"` + `tools: ["penetration-testing"]` → `security:security-engineer`
+4. **Resolution Caching**: Cache resolved names for session performance
+5. **@agent-{name} Support**: Resolve `@agent-master` → `orchestration:master` automatically
+
+**Category Detection Algorithm:**
+```yaml
+Orchestration: task-orchestration, automatic-delegation, agent-selection, coordination
+Development: frontend, backend, coding, programming, implementation
+Architecture: system-design, architecture, scalability, patterns
+Security: security, authentication, authorization, vulnerability
+Testing: testing, qa, quality, validation, automation
+Research: research, analysis, investigation, discovery
+Performance: performance, optimization, speed, efficiency
+Infrastructure: infrastructure, devops, deployment, operations
+```
+
+**Name Resolution Flow:**
+- **Input**: `@agent-master`
+- **Extract**: `master` (remove @agent- prefix)
+- **Find Agent**: Locate agent data with name "master"
+- **Detect Category**: Analyze capabilities → "orchestration"
+- **Generate**: `orchestration:master`
+- **Cache Result**: Store for future requests
+- **Return**: `orchestration:master` (valid Task() agent type)
+
 ### **Complete System Initialization (Phase 1-10)**
 
 **Phase 1: Core Systems Initialization**
@@ -88,6 +123,9 @@ I am your intelligent coordinator for task orchestration, agent selection, and i
 - **ERROR RECOVERY**: Continue even if agent discovery fails
 - **Dynamically discover agents from filesystem and built-in defaults**
 - **Validate agent name format: simple-name (from YAML frontmatter)**
+- **DYNAMIC NAME REGISTRATION**: Generate {category}:{agent-name} format automatically
+- **AUTOMATIC CATEGORIZATION**: Detect category based on capabilities, triggers, and tools
+- **@agent-{name} RESOLUTION**: Resolve @agent-{prefix} to dynamic names
 - **Provide fallback suggestions for invalid agent names**
 - **FALLBACK AGENT**: Always have master agent available as last resort**
 
@@ -97,6 +135,8 @@ I am your intelligent coordinator for task orchestration, agent selection, and i
 - **Real-time Validation**: Validate agent availability and capabilities
 - **Caching System**: Cache discovered agents for session performance
 - **Auto-registration**: Automatically register discovered agents
+- **DYNAMIC NAME GENERATION**: Convert simple names to {category}:{agent-name} format
+- **RESOLUTION SYSTEM**: Support @agent-{name} → dynamic name resolution
 - **FALLBACK**: Use hardcoded master agent if no agents discovered
 
 ### Phase 6: Task Analysis and TF-IDF Systems Initialization
@@ -165,6 +205,43 @@ subagent-master/
 ```
 
 ## 🚀 Usage Patterns
+
+### Agent Name Resolution Examples
+
+**@agent-{name} Resolution:**
+```yaml
+Input: "@agent-master"
+Process:
+  - Extract name: "master"
+  - Find agent data from agents/master.md
+  - Analyze capabilities: ["task-orchestration", "automatic-delegation", ...]
+  - Detect category: "orchestration" (based on orchestration keywords)
+  - Generate dynamic name: "orchestration:master"
+  - Return: "orchestration:master" (valid for Task() delegation)
+
+Input: "@agent-security-engineer"
+Process:
+  - Extract name: "security-engineer"
+  - Find agent with security capabilities
+  - Detect category: "security"
+  - Generate: "security:security-engineer"
+  - Return: "security:security-engineer"
+```
+
+**Dynamic Agent Registration:**
+```yaml
+Agent File: agents/frontend-developer.md
+name: "frontend-developer"
+capabilities: ["react", "vue", "css", "javascript", "ui-development"]
+
+Process:
+  - Discover agent file
+  - Extract capabilities
+  - Detect category: "development" (frontend keywords)
+  - Generate dynamic name: "development:frontend-developer"
+  - Register in system: "development:frontend-developer"
+  - Support @agent-frontend-developer → "development:frontend-developer"
+```
 
 ### Simple Task Delegation with TODO-EXECUTION
 ```yaml
