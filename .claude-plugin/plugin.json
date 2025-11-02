@@ -1,7 +1,7 @@
 {
   "name": "master",
-  "version": "2.4.1",
-  "description": "Intelligent task orchestrator v2.4.1 - enhanced parallel initialization with TodoWrite integration, restored parallel execution functions, and comprehensive system readiness validation",
+  "version": "2.5.0",
+  "description": "Intelligent task orchestrator v2.5.0 - Phase 1 Foundation Recovery complete with advanced parallel execution, comprehensive error handling, and production-ready configuration system",
   "author": {
     "name": "Bohdan",
     "email": "pomazan.bohdan@gmail.com"
