@@ -1,0 +1,371 @@
+name: "Performance Monitoring System"
+description: "Real-time performance monitoring and analytics for dynamic agent system"
+version: "2.2.0"
+last_updated: "2024-01-01"
+
+# Monitoring Configuration
+monitoring_config:
+  # Data collection settings
+  data_collection:
+    enabled: true
+    collection_interval: 60  # seconds
+    batch_size: 100
+    retention_period: 90  # days
+    compression: true
+
+  # Real-time monitoring
+  realtime_monitoring:
+    enabled: true
+    alert_thresholds:
+      response_time: 30.0  # seconds
+      success_rate: 0.7
+      error_rate: 0.3
+      load_percentage: 0.9
+
+    dashboard_refresh_rate: 5  # seconds
+    alert_cooldown: 300  # seconds
+
+# Performance Metrics
+metrics_tracked:
+  # Task Execution Metrics
+  task_metrics:
+    - name: "task_completion_time"
+      type: "timing"
+      unit: "seconds"
+      aggregation: ["avg", "min", "max", "p50", "p95", "p99"]
+      window: "1h,6h,24h,7d"
+
+    - name: "success_rate"
+      type: "ratio"
+      calculation: "successful_tasks / total_tasks"
+      window: "1h,6h,24h,7d"
+
+    - name: "task_throughput"
+      type: "counter"
+      unit: "tasks/hour"
+      window: "1h"
+
+    - name: "error_rate"
+      type: "ratio"
+      calculation: "failed_tasks / total_tasks"
+      window: "1h,6h,24h,7d"
+
+  # Agent Performance Metrics
+  agent_metrics:
+    - name: "agent_response_time"
+      type: "timing"
+      unit: "seconds"
+      aggregation: ["avg", "min", "max", "p50", "p95"]
+      per_agent: true
+
+    - name: "agent_success_rate"
+      type: "ratio"
+      calculation: "successful_tasks_by_agent / total_tasks_by_agent"
+      per_agent: true
+      window: "1h,6h,24h,7d"
+
+    - name: "agent_utilization"
+      type: "percentage"
+      calculation: "current_load / max_capacity"
+      per_agent: true
+      real_time: true
+
+    - name: "agent_reliability"
+      type: "score"
+      calculation: "weighted_avg_of_recent_performance"
+      per_agent: true
+      window: "24h"
+
+  # System Performance Metrics
+  system_metrics:
+    - name: "overall_system_health"
+      type: "score"
+      calculation: "weighted_average_of_all_metrics"
+      range: [0.0, 1.0]
+      real_time: true
+
+    - name: "agent_load_balance"
+      type: "distribution"
+      calculation: "standard_deviation_of_loads"
+      ideal_range: [0.0, 0.3]
+
+    - name: "selection_efficiency"
+      type: "score"
+      calculation: "success_rate_of_selected_agents"
+      range: [0.0, 1.0]
+
+    - name: "categorization_accuracy"
+      type: "ratio"
+      calculation: "correct_categorizations / total_categorizations"
+      window: "1h,6h,24h"
+
+# Data Collection Points
+data_collection_points:
+  # Task lifecycle events
+  task_events:
+    - event: "task_started"
+      timestamp: true
+      data: ["task_id", "agent_id", "task_type", "complexity", "priority"]
+
+    - event: "task_completed"
+      timestamp: true
+      data: ["task_id", "agent_id", "completion_time", "success_status", "quality_score"]
+
+    - event: "task_failed"
+      timestamp: true
+      data: ["task_id", "agent_id", "failure_reason", "error_type", "time_to_failure"]
+
+    - event: "task_cancelled"
+      timestamp: true
+      data: ["task_id", "agent_id", "cancellation_reason", "time_cancellation"]
+
+  # Agent lifecycle events
+  agent_events:
+    - event: "agent_registered"
+      timestamp: true
+      data: ["agent_id", "capabilities", "initial_metrics"]
+
+    - event: "agent_updated"
+      timestamp: true
+      data: ["agent_id", "updated_fields"]
+
+    - event: "agent_unavailable"
+      timestamp: true
+      data: ["agent_id", "unavailability_reason", "duration"]
+
+    - "event: "agent_available"
+      timestamp: true
+      data: ["agent_id", "availability_status"]
+
+  # System events
+  system_events:
+    - event: "system_initialized"
+      timestamp: true
+      data: ["initialization_time", "agents_registered"]
+
+    - event: "configuration_updated"
+      timestamp: true
+      data: ["configuration_type", "update_details"]
+
+    - event: "performance_alert"
+      timestamp: true
+      data: ["alert_type", "metric_value", "threshold"]
+
+# Alert System
+alert_system:
+  # Alert rules
+  alert_rules:
+    - name: "high_response_time"
+      condition: "avg_response_time > 30.0"
+      severity: "warning"
+      notification_channels: ["dashboard", "log"]
+
+    - name: "low_success_rate"
+      condition: "success_rate < 0.7"
+      severity: "critical"
+      notification_channels: ["dashboard", "email", "slack"]
+
+    - name: "high_error_rate"
+      condition: "error_rate > 0.3"
+      severity: "warning"
+      notification_channels: ["dashboard", "log"]
+
+    - name: "agent_overload"
+      condition: "agent_utilization > 0.9"
+      severity: "warning"
+      per_agent: true
+      notification_channels: ["dashboard", "log"]
+
+    - name: "system_health_degradation"
+      condition: "system_health_score < 0.7"
+      severity: "critical"
+      notification_channels: ["dashboard", "email", "slack"]
+
+  # Notification channels
+  notification_channels:
+    dashboard:
+      enabled: true
+      real_time: true
+      persistence: true
+
+    email:
+      enabled: true
+      recipients: ["admin@example.com"]
+      severity_threshold: "warning"
+
+    slack:
+      enabled: false
+      webhook_url: ""
+      channel: "#performance-alerts"
+
+    log:
+      enabled: true
+      level: "info"
+      format: "structured"
+
+# Analytics and Reporting
+analytics:
+  # Dashboard configuration
+  dashboard:
+    refresh_interval: 5  # seconds
+    widgets:
+      - name: "System Health Overview"
+        type: "gauge"
+        metric: "system_health_score"
+        range: [0.0, 1.0]
+
+      - name: "Agent Performance"
+        type: "table"
+        metrics: ["agent_name", "success_rate", "avg_response_time", "current_load"]
+        sort_by: "success_rate"
+
+      - name: "Task Throughput"
+        type: "chart"
+        metric: "task_throughput"
+        time_range: "24h"
+
+      - name: "Error Analysis"
+        type: "chart"
+        metric: "error_rate"
+        time_range: "24h"
+
+  # Reporting configuration
+  reporting:
+    automated_reports:
+      - name: "daily_performance_summary"
+        schedule: "0 6 * * *"
+        recipients: ["admin@example.com"]
+        format: "html"
+
+      - name: "weekly_performance_report"
+        schedule: "0 6 * * 1"
+        recipients: ["admin@example.com"]
+        format: "pdf"
+
+      - name: "monthly_performance_analysis"
+        schedule: "0 6 1 * *"
+        recipients: ["admin@example.com"]
+        format: "pdf"
+
+# Performance Analytics
+performance_analytics:
+  # Trend analysis
+  trend_analysis:
+    enabled: true
+    time_windows: ["7d", "30d", "90d"]
+    metrics_analyzed: ["success_rate", "response_time", "throughput", "error_rate"]
+    prediction_models: ["linear", "polynomial", "exponential"]
+
+  # Correlation analysis
+  correlation_analysis:
+    enabled: true
+    metrics_correlated:
+      - ["agent_load", "response_time"]
+      - ["task_complexity", "completion_time"]
+      - ["agent_experience", "success_rate"]
+      - ["selection_accuracy", "task_success"]
+
+  # Anomaly detection
+  anomaly_detection:
+    enabled: true
+    algorithms: ["statistical", "ml_based", "pattern_based"]
+    sensitivity: "medium"
+    alert_on_anomaly: true
+
+  # Performance optimization insights
+  optimization_insights:
+    enabled: true
+    analysis_frequency: "daily"
+    insights_generated:
+      - "bottleneck_identification"
+      - "performance_degradation_trends"
+      - "agent_effectiveness_ranking"
+      - "system_capacity_planning"
+
+# Data Storage
+data_storage:
+  # Time series database
+  timeseries_db:
+    enabled: true
+    retention_period: "90 days"
+    compression: "gzip"
+    aggregation_levels: ["1m", "5m", "1h", "1d"]
+
+  # Historical data archive
+  archive_db:
+    enabled: true
+    retention_period: "1 year"
+    compression: "gzip"
+    query_optimization: true
+
+  # Real-time cache
+  cache:
+    enabled: true
+    size: "1GB"
+    ttl: "1h"
+    eviction_policy: "lru"
+
+# Integration Points
+integration:
+  # Agent Registry integration
+  agent_registry:
+    sync_interval: 300  # seconds
+    real_time_updates: true
+    agent_registration_events: true
+
+  # Categorization Engine integration
+  categorization_engine:
+    performance_tracking: true
+    accuracy_monitoring: true
+    learning_effectiveness: true
+
+  # Learning System integration
+  learning_system:
+    feedback_collection: true
+    model_performance_tracking: true
+    adaptation_effectiveness: true
+
+# API Endpoints
+api_endpoints:
+  # Metrics retrieval
+  "GET /metrics/system": "Get system performance metrics"
+  "GET /metrics/agents": "Get agent performance metrics"
+  "GET /metrics/tasks": "Get task execution metrics"
+  "GET /metrics/realtime": "Get real-time metrics"
+
+  # Analytics
+  "GET /analytics/trends": "Get performance trends"
+  "GET /analytics/correlations": "Get correlation analysis"
+  "GET /analytics/insights": "Get optimization insights"
+
+  # Alerts
+  "GET /alerts": "Get active alerts"
+  "POST /alerts/subscribe": "Subscribe to alert notifications"
+  "DELETE /alerts/{alert_id}": "Dismiss alert"
+
+  # Configuration
+  "GET /config/monitoring": "Get monitoring configuration"
+  "PUT /config/monitoring": "Update monitoring configuration"
+
+# Security and Access Control
+security:
+  authentication:
+    required: true
+    token_based: true
+    api_keys: true
+
+  authorization:
+    role_based_access: true
+    read_only_roles: ["viewer", "analyst"]
+    admin_roles: ["admin", "operator"]
+
+  data_privacy:
+    anonymization: true
+    data_retention_policy: true
+    gdpr_compliance: true
+
+  audit_logging:
+    enabled: true
+    log_all_api_calls: true
+    log_data_access: true
+    log_configuration_changes: true

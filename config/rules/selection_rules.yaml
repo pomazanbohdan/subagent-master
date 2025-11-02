@@ -1,6 +1,6 @@
 name: "Agent Selection Rules"
-description: "Comprehensive rules for intelligent agent selection based on task analysis"
-version: "1.0"
+description: "Comprehensive rules for intelligent agent selection with error handling and TODO framework integration"
+version: "2.1.0"
 
 selection_criteria:
   complexity_thresholds:
@@ -55,6 +55,16 @@ task_analysis_rules:
       primary: ["coordinate", "orchestrate", "manage", "organize", "lead"]
       secondary: ["supervise", "direct", "guide", "facilitate"]
       weight: 0.8
+
+    error_handling:
+      primary: ["error", "fix", "debug", "troubleshoot", "recover", "resolve"]
+      secondary: ["issue", "problem", "failure", "crash", "exception"]
+      weight: 1.0
+
+    task_continuation:
+      primary: ["continue", "resume", "proceed", "advance", "progress"]
+      secondary: ["complete", "finish", "wrap up", "conclude"]
+      weight: 0.9
 
   # Complexity indicators
   complexity_indicators:
@@ -283,3 +293,166 @@ integrity_monitoring:
     - pattern_correction: true
     - system_state_restoration: true
     - emergency_fallback_activation: true
+
+error_handling_rules:
+  # Rules for error detection and delegation
+  error_detection:
+    syntax_errors:
+      triggers: ["parse errors", "format errors", "structure errors", "template errors"]
+      detection_keywords: ["syntax", "format", "structure", "parse", "template"]
+      priority: "medium"
+      return_condition: "on_significant_syntax_error"
+
+    logic_errors:
+      triggers: ["algorithm errors", "logic flow errors", "decision errors", "reasoning errors"]
+      detection_keywords: ["logic", "algorithm", "reasoning", "decision", "flow"]
+      priority: "high"
+      return_condition: "on_logic_inconsistency"
+
+    runtime_errors:
+      triggers: ["execution errors", "timeout errors", "resource errors", "performance errors"]
+      detection_keywords: ["runtime", "execution", "timeout", "performance", "resource"]
+      priority: "high"
+      return_condition: "on_performance_threshold_exceeded"
+
+    resource_errors:
+      triggers: ["api errors", "connection errors", "data access errors", "service errors"]
+      detection_keywords: ["api", "connection", "database", "service", "external"]
+      priority: "critical"
+      return_condition: "on_service_unavailable"
+
+    integration_errors:
+      triggers: ["interface errors", "compatibility errors", "system errors", "coordination errors"]
+      detection_keywords: ["interface", "compatibility", "integration", "coordination"]
+      priority: "high"
+      return_condition: "on_integration_failure"
+
+  error_delegation:
+    delegation_rules:
+      primary_strategy: "specialized_error_agent"
+      fallback_strategy: "domain_expert_agent"
+      last_resort: "general_purpose_agent"
+
+    agent_selection_for_errors:
+      syntax_errors:
+        primary: "general-purpose"
+        fallback: "error-recovery-specialist"
+        reasoning: "Pattern recognition and template correction"
+
+      logic_errors:
+        primary: "agent_with_domain_expertise"
+        fallback: "error-recovery-specialist"
+        reasoning: "Domain-specific logic understanding"
+
+      runtime_errors:
+        primary: "performance-engineer"
+        fallback: "error-recovery-specialist"
+        reasoning: "Performance and resource optimization"
+
+      resource_errors:
+        primary: "backend-architect"
+        fallback: "error-recovery-specialist"
+        reasoning: "Infrastructure and system understanding"
+
+      integration_errors:
+        primary: "agent_with_integration_expertise"
+        fallback: "error-recovery-specialist"
+        reasoning: "System integration and interface knowledge"
+
+  task_continuation:
+    continuation_strategies:
+      auto_continue:
+        condition: "error_fixed_and_state_preserved"
+        action: "resume_from_failed_step"
+        requirements: ["error_resolution", "state_preservation"]
+
+      manual_review:
+        condition: "security_or_critical_errors"
+        action: "require_human_approval_before_continuation"
+        requirements: ["error_resolution", "human_approval"]
+
+      restart_required:
+        condition: "state_corrupted_or_unrecoverable"
+        action: "restart_task_from_beginning"
+        requirements: ["fresh_start", "error_prevention"]
+
+      delegate_different_agent:
+        condition: "original_agent_unable_to_continue"
+        action: "assign_to_alternative_agent"
+        requirements: ["agent_selection", "context_transfer"]
+
+    state_preservation:
+      checkpoint_requirements:
+        - "completed_steps_list"
+        - "partial_results_snapshot"
+        - "context_state_preservation"
+        - "dependencies_tracking"
+        - "return_requirements_specification"
+
+  error_return_conditions:
+    condition_evaluation:
+      critical_errors:
+        threshold: "blocks_task_completion"
+        action: "immediate_error_reporting"
+        notification: "escalate_to_orchestrator"
+
+      security_errors:
+        threshold: "security_policy_violation"
+        action: "specialist_review_required"
+        notification: "security_team_alert"
+
+      performance_errors:
+        threshold: "performance_limits_exceeded"
+        action: "optimization_required"
+        notification: "performance_monitoring"
+
+      user_specified:
+        threshold: "user_defined_condition_met"
+        action: "follow_user_instructions"
+        notification: "custom_user_notification"
+
+  error_recovery_workflow:
+    recovery_steps:
+      1. "Detect and classify error"
+      2. "Check error_return_conditions"
+      3. "Create comprehensive_error_report"
+      4. "Select appropriate_error_recovery_agent"
+      5. "Delegate error_resolution_task"
+      6. "Monitor error_fixing_progress"
+      7. "Validate_error_resolution"
+      8. "Determine_task_continuation_strategy"
+      9. "Restore_original_agent_or_delegate_to_alternative"
+      10. "Update_performance_metrics_and_learning"
+
+    validation_checkpoints:
+      - error_classification_accuracy
+      - agent_selection_appropriateness
+      - resolution_effectiveness
+      - continuation_strategy_validity
+      - overall_workflow_success
+
+  todo_framework_integration:
+    error_handling_in_todos:
+      todo_state_transitions:
+        pending → in_progress → error_detected → error_reporting → error_delegated → error_resolved → in_progress → completed
+        pending → in_progress → failed → error_reporting → error_delegated → error_resolved → restart_from_pending
+
+      error_return_conditions_in_todos:
+        todo_item_specification:
+          error_return_condition: "specific_error_criteria"
+          error_handling_strategy: "delegate_to_error_recovery_agent"
+          continuation_plan: "resume_or_restart_after_fix"
+
+      error_monitoring_in_todos:
+        progress_monitoring:
+          - check_for_errors_during_execution
+          - monitor_timeout_conditions
+          - validate_intermediate_results
+          - track_dependency_satisfaction
+
+        error_detection_triggers:
+          - execution_timeout
+          - validation_failure
+          - dependency_unavailable
+          - resource_constraints
+          - user_interruption

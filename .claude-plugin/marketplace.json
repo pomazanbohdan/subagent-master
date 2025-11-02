@@ -5,8 +5,8 @@
     "email": "pomazan.bohdan@gmail.com"
   },
   "metadata": {
-    "description": "Hybrid intelligent task orchestrator with YAML configuration and Behavior Trees architecture for modular, scalable agent coordination",
-    "version": "2.0.0"
+    "description": "Hybrid intelligent task orchestrator v2.2.1 - consolidate YAML configuration with algorithmic processing, dynamic agent registration, variable management system and complete initialization workflow documentation",
+    "version": "2.2.1"
   },
   "plugins": [
     {
@@ -29,14 +29,20 @@
         "step-validation",
         "adaptive-workflow",
         "error-handling",
+        "error-delegation",
+        "error-recovery",
+        "task-continuation",
+        "error-return-conditions",
         "quality-assessment",
         "auto-execution",
         "planning-mode",
         "seamless-workflow",
         "task-delegation",
         "todo-execution",
+        "todo-state-management",
         "real-agent-execution",
         "dynamic-planning",
+        "dynamic-categorization",
         "self-correction",
         "dependency-analysis",
         "adaptive-algorithms",
@@ -45,6 +51,9 @@
         "hybrid-architecture",
         "yaml-configuration",
         "behavior-trees",
+        "dynamic-agent-registration",
+        "variable-management-system",
+        "algorithmic-processing",
         "modular-design",
         "agent-selection",
         "task-planning",

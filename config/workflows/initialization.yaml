@@ -1,6 +1,6 @@
 name: "System Initialization Workflow"
-description: "5 sequential stages to prepare the master agent system for operation"
-version: "1.0"
+description: "8 sequential stages to prepare the master agent system for operation with error handling and TODO framework"
+version: "2.1.0"
 author: "Master Agent System"
 
 metadata:
@@ -36,7 +36,6 @@ stages:
       success_criteria: ["config_loaded == true", "config_validated == true"]
       fallback_action: "use_default_configurations"
     required_files:
-      - "config/agents/master_agents.yaml"
       - "config/rules/selection_rules.yaml"
 
   - id: "stage_3"
@@ -85,11 +84,46 @@ stages:
     timeout_seconds: 45
     required_resources: ["cpu", "memory"]
     inputs: ["filters_data"]
-    outputs: ["clarification_system", "system_fully_ready"]
+    outputs: ["clarification_system", "basic_system_ready"]
     dependencies: ["stage_5"]
     validation:
-      success_criteria: ["clarification_system.enabled == true", "system_fully_ready == true"]
+      success_criteria: ["clarification_system.enabled == true", "basic_system_ready == true"]
       fallback_action: "activate_basic_clarification"
+
+  - id: "stage_7"
+    name: "Initialize Error Delegation System"
+    description: "Set up error handling, delegation chain, and task continuation protocols"
+    action: "initialize_error_delegation_system"
+    timeout_seconds: 60
+    required_resources: ["cpu", "memory"]
+    inputs: ["clarification_system", "basic_system_ready"]
+    outputs: ["error_delegation_system", "error_handlers_ready", "task_continuation_enabled"]
+    dependencies: ["stage_6"]
+    validation:
+      success_criteria: ["error_delegation_system.enabled == true", "error_handlers_ready == true"]
+      fallback_action: "activate_basic_error_handling"
+    error_handling_config:
+      error_types: ["syntax_errors", "logic_errors", "runtime_errors", "resource_errors", "integration_errors"]
+      delegation_protocols: ["error_reporting", "agent_selection", "task_continuation"]
+      recovery_strategies: ["auto_continue", "manual_review", "restart_required", "delegate_different_agent"]
+
+  - id: "stage_8"
+    name: "Configure TODO Execution Framework"
+    description: "Initialize TODO-based task decomposition and execution monitoring"
+    action: "initialize_todo_framework"
+    timeout_seconds: 45
+    required_resources: ["cpu", "memory"]
+    inputs: ["error_delegation_system", "task_continuation_enabled"]
+    outputs: ["todo_framework", "system_fully_ready", "dynamic_categorization_enabled"]
+    dependencies: ["stage_7"]
+    validation:
+      success_criteria: ["todo_framework.enabled == true", "system_fully_ready == true"]
+      fallback_action: "activate_basic_todo_system"
+    todo_config:
+      execution_modes: ["sequential", "parallel", "mixed"]
+      state_management: ["pending", "in_progress", "completed", "failed", "blocked"]
+      error_integration: true
+      progress_tracking: true
 
   
 error_handling:

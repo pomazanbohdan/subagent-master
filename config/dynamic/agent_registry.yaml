@@ -1,0 +1,251 @@
+name: "Agent Registry Configuration"
+description: "Dynamic agent discovery and registration system"
+version: "2.2.0"
+last_updated: "2024-01-01"
+
+registry_config:
+  # Discovery methods for finding agents
+  discovery_methods:
+    - name: "claude_code_agents"
+      description: "Discover Claude Code agents in system"
+      enabled: true
+      scan_paths:
+        - "/home/user/.claude/agents/"
+        - "./custom_agents/"
+        - "/usr/local/share/claude/agents/"
+      file_patterns:
+        - "*.md"
+        - "*.yaml"
+        - "*.json"
+      exclusion_patterns:
+        - ".*"  # hidden files
+        - "*~" # temporary files
+
+    - name: "project_based_agents"
+      description: "Discover agents in user projects"
+      enabled: true
+      scan_patterns:
+        - "agents/**"
+        - ".claude/agents/**"
+        - "subagents/**"
+        - "bot-agents/**"
+      file_types:
+        - markdown
+        - yaml
+        - json
+
+    - name: "system_agents"
+      description: "Discover system-level agents"
+      enabled: true
+      scan_paths:
+        - "/etc/claude/agents/"
+        - "/opt/claude/agents/"
+      file_patterns:
+        - "*.md"
+        - "*.yaml"
+
+  # Agent registration process
+  registration_process:
+    auto_discovery:
+      enabled: true
+      scan_interval: 300  # 5 minutes
+      background_processing: true
+
+    validation:
+      required_fields:
+        - name
+        - description
+        - capabilities
+        - competencies
+      optional_fields:
+        - specialization
+        - performance_history
+        - availability
+        - cost_per_hour
+
+    categorization:
+      auto_detect_specialization: true
+      dynamic_competency_scoring: true
+      contextual_categorization: true
+
+# Agent template structure
+agent_template:
+  # Required fields
+  required:
+    name: "string"  # Human readable name
+    description: "string"  # What the agent does
+    capabilities: ["list"]  # List of capabilities
+    competencies:
+      skill_name: "float"  # 0.0 - 1.0
+
+  # Performance metrics (learned over time)
+  performance:
+    success_rate: "float"  # Current success rate
+    avg_response_time: "float"  # Average response time in seconds
+    reliability: "float"  # Reliability score
+    total_tasks_completed: "integer"
+    recent_performance: "object"  # Last N tasks performance
+
+  # Capacity and availability
+  capacity:
+    max_concurrent_tasks: "integer"
+    current_load: "integer"
+    availability_schedule: "object"
+
+  # Specialization and expertise
+  specialization:
+    primary_domain: "string"
+    secondary_domains: ["list"]
+    experience_level: "beginner|intermediate|advanced|expert"
+
+  # Cost and business info
+  business:
+    cost_per_hour: "float"
+    availability_timezone: "string"
+    working_hours: "string"
+
+  # Technical details
+  technical:
+    version: "string"
+    engine_type: "claude|external|hybrid"
+    dependencies: ["list"]
+    requirements: ["list"]
+
+  # Error handling capabilities
+  error_handling:
+    error_types: ["list"]  # Types of errors agent can handle
+    recovery_strategies: ["list"]
+    error_return_conditions: ["list"]
+
+# Dynamic categorization rules
+categorization_rules:
+  # Automatically detect agent specializations
+  specialization_detection:
+    keywords_to_domains:
+      # Backend development
+      - keywords: ["api", "backend", "server", "database", "microservice", "infrastructure"]
+        domain: "backend_development"
+
+      # Frontend development
+      - keywords: ["frontend", "ui", "ux", "react", "vue", "angular", "web"]
+        domain: "frontend_development"
+
+      # DevOps & Infrastructure
+      - keywords: ["devops", "infrastructure", "deployment", "ci/cd", "docker", "kubernetes"]
+        domain: "devops_infrastructure"
+
+      # Security
+      - keywords: ["security", "vulnerability", "penetration", "compliance", "audit"]
+        domain: "security"
+
+      # Testing & QA
+      - keywords: ["testing", "qa", "quality", "automation", "test"]
+        domain: "testing_quality"
+
+      # Data Science
+      - keywords: ["data", "analytics", "machine learning", "statistics", "visualization"]
+        domain: "data_science"
+
+      # Documentation
+      - keywords: ["documentation", "writing", "technical", "api docs", "manual"]
+        domain: "documentation"
+
+      # Project Management
+      - keywords: ["project", "management", "planning", "coordination", "agile"]
+        domain: "project_management"
+
+  # Dynamic competency scoring based on analysis
+  competency_analysis:
+    analysis_methods:
+      - keyword_frequency: 0.3
+      - capability_coverage: 0.4
+      - specialization_alignment: 0.3
+
+    scoring_factors:
+      - depth_of_expertise: 0.4
+      - breadth_of_knowledge: 0.3
+      - proven_experience: 0.3
+
+    learning_weights:
+      initial_score: 0.7  # Base score from analysis
+      historical_performance: 0.3  # Adjust based on actual results
+
+# Performance monitoring and learning
+performance_tracking:
+  metrics_collection:
+    enabled: true
+    collection_interval: 60  # 1 minute
+
+  metrics_tracked:
+    - task_completion_time
+    - success_rate
+    - user_satisfaction
+    - resource_efficiency
+    - error_recovery_success_rate
+
+  learning_algorithms:
+    competency_adaptation:
+      enabled: true
+      learning_rate: 0.1
+      min_samples: 5
+      max_learning: 0.3
+
+    performance_prediction:
+      enabled: true
+      prediction_window: 10  # Predict next 10 task outcomes
+      confidence_threshold: 0.7
+
+    pattern_recognition:
+      enabled: true
+      success_pattern_analysis: true
+      failure_pattern_detection: true
+
+# Registry maintenance
+maintenance:
+  cleanup:
+    inactive_agent_timeout: 86400  # 24 hours
+    stale_data_cleanup: true
+    performance_data_retention: 7776000  # 90 days
+
+  updates:
+    auto_refresh_agent_data: true
+    refresh_interval: 3600  # 1 hour
+    performance_metric_updates: true
+
+  validation:
+    agent_health_checks: true
+    performance_threshold_enforcement: true
+    competency_validation: true
+
+# Registry API
+api_endpoints:
+  # Agent discovery
+  "GET /agents": "List all registered agents"
+  "GET /agents/search": "Search agents by criteria"
+  "GET /agents/{agent_id}": "Get agent details"
+
+  # Registration
+  "POST /agents": "Register new agent"
+  "PUT /agents/{agent_id}": "Update agent registration"
+  "DELETE /agents/{agent_id}": "Unregister agent"
+
+  # Performance
+  "GET /agents/{agent_id}/performance": "Get agent performance metrics"
+  "POST /agents/{agent_id}/feedback": "Submit performance feedback"
+
+  # Categorization
+  "GET /categories": "Get agent categories"
+  "POST /categorize/task": "Categorize task and get suitable agents"
+  "GET /compatibility/{agent_id}/{task_type}": "Check compatibility"
+
+# Error handling
+error_handling:
+  registry_errors:
+    agent_not_found: "Return available alternatives"
+    validation_failed: "Log error and exclude agent"
+    performance_issues: "Flag for review and temporary exclusion"
+
+  fallback_strategies:
+    - Use general-purpose agents as fallback
+    - Maintain basic functionality during registry issues
+    - Graceful degradation with reduced capabilities

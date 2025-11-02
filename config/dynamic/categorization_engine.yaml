@@ -1,0 +1,315 @@
+name: "Dynamic Categorization Engine"
+description: "ML-powered dynamic task categorization and analysis system"
+version: "2.2.0"
+last_updated: "2024-01-01"
+
+# Dynamic categorization configuration
+categorization_config:
+  # Analysis methods
+  analysis_methods:
+    keyword_based:
+      enabled: true
+      weight: 0.3
+      confidence_threshold: 0.6
+
+    semantic_analysis:
+      enabled: true
+      weight: 0.4
+      confidence_threshold: 0.7
+      embedding_model: "text-embedding-ada-002"
+
+    pattern_recognition:
+      enabled: true
+      weight: 0.2
+      confidence_threshold: 0.5
+      pattern_library: "config/dynamic/patterns/"
+
+    contextual_analysis:
+      enabled: true
+      weight: 0.1
+      confidence_threshold: 0.8
+      context_sources: ["user_history", "project_context", "system_state"]
+
+  # Confidence scoring
+  confidence_scoring:
+    minimum_confidence: 0.6
+    weighted_average: true
+    ensemble_voting: true
+    fallback_to_highest: true
+
+# Task dimensions for analysis
+task_dimensions:
+  # Domain dimension
+  domain_analysis:
+    domains:
+      - name: "backend_development"
+        keywords: ["api", "backend", "server", "database", "microservice", "infrastructure", "rest", "graphql", "sql", "nosql"]
+        patterns: ["build.*api", "design.*backend", "create.*server", "implement.*database"]
+        weight: 1.0
+
+      - name: "frontend_development"
+        keywords: ["frontend", "ui", "ux", "react", "vue", "angular", "web", "css", "javascript", "html", "responsive"]
+        patterns: ["build.*ui", "design.*frontend", "create.*web.*app", "implement.*react"]
+        weight: 1.0
+
+      - name: "devops_infrastructure"
+        keywords: ["devops", "infrastructure", "deployment", "ci/cd", "docker", "kubernetes", "terraform", "jenkins", "pipeline"]
+        patterns: ["deploy.*application", "setup.*ci", "configure.*kubernetes", "implement.*pipeline"]
+        weight: 1.0
+
+      - name: "security"
+        keywords: ["security", "vulnerability", "penetration", "compliance", "audit", "authentication", "authorization", "encryption"]
+        patterns: ["security.*audit", "penetration.*test", "implement.*security", "compliance.*check"]
+        weight: 1.0
+
+      - name: "testing_quality"
+        keywords: ["testing", "qa", "quality", "automation", "test", "validate", "verify", "inspect"]
+        patterns: ["write.*test", "automate.*testing", "quality.*assurance", "validate.*functionality"]
+        weight: 1.0
+
+      - name: "data_science"
+        keywords: ["data", "analytics", "machine", "learning", "statistics", "visualization", "python", "r", "sql"]
+        patterns: ["analyze.*data", "build.*model", "visualize.*insights", "process.*statistics"]
+        weight: 1.0
+
+      - name: "documentation"
+        keywords: ["documentation", "writing", "technical", "api.*docs", "manual", "readme", "guide"]
+        patterns: ["write.*documentation", "create.*guide", "update.*readme", "document.*process"]
+        weight: 0.8
+
+      - name: "project_management"
+        keywords: ["project", "management", "planning", "coordination", "agile", "scrum", "kanban", "timeline"]
+        patterns: ["plan.*project", "coordinate.*team", "manage.*timeline", "implement.*agile"]
+        weight: 0.8
+
+      - name: "optimization"
+        keywords: ["optimize", "performance", "improve", "enhance", "speed", "efficiency", "bottleneck"]
+        patterns: ["optimize.*performance", "improve.*efficiency", "reduce.*bottleneck", "enhance.*speed"]
+        weight: 0.9
+
+  # Complexity dimension
+  complexity_analysis:
+    complexity_levels:
+      - level: "simple"
+        indicators:
+          - keywords: ["simple", "basic", "quick", "minor", "small", "easy", "straightforward"]
+          - patterns: ["fix.*bug", "update.*file", "change.*setting", "add.*feature"]
+          - score_range: [0.0, 0.3]
+          - estimated_effort: "0.5-2 hours"
+
+      - level: "medium"
+        indicators:
+          - keywords: ["create", "build", "develop", "implement", "configure", "setup"]
+          - patterns: ["create.*module", "build.*component", "implement.*feature"]
+          - score_range: [0.3, 0.6]
+          - estimated_effort: "2-6 hours"
+
+      - level: "complex"
+        indicators:
+          - keywords: ["design", "architecture", "system", "integrate", "optimize", "refactor"]
+          - patterns: ["design.*system", "architect.*solution", "integrate.*systems", "optimize.*architecture"]
+          - score_range: [0.6, 0.8]
+          - estimated_effort: "6-16 hours"
+
+      - level: "very_complex"
+        indicators:
+          - keywords: ["enterprise", "scalable", "distributed", "multi.*system", "comprehensive", "end.*to.*end"]
+          - patterns: ["design.*enterprise.*solution", "implement.*distributed.*system", "build.*scalable.*platform"]
+          - score_range: [0.8, 1.0]
+          - estimated_effort: "16+ hours"
+
+  # Priority dimension
+  priority_analysis:
+    priority_levels:
+      - level: "critical"
+        indicators:
+          - keywords: ["urgent", "critical", "blocker", "production", "security", "compliance"]
+          - patterns: ["fix.*production.*issue", "address.*security.*vulnerability", "resolve.*blocking.*problem"]
+          - weight: 2.0
+
+      - level: "high"
+        indicators:
+          - keywords: ["high", "priority", "important", "major", "significant"]
+          - patterns: ["implement.*high.*priority", "address.*major.*issue", "complete.*important.*task"]
+          - weight: 1.5
+
+      - level: "medium"
+        indicators:
+          - keywords: ["medium", "normal", "regular", "standard"]
+          - patterns: ["implement.*medium.*priority", "address.*standard.*task"]
+          - weight: 1.0
+
+      - level: "low"
+        indicators:
+          - keywords: ["low", "minor", "nice.*to.*have", "optional", "enhancement"]
+          - patterns: ["implement.*low.*priority", "add.*nice.*feature", "create.*enhancement"]
+          - weight: 0.5
+
+  # Resource requirements dimension
+  resource_analysis:
+    resource_types:
+      - type: "human"
+        indicators: ["manual", "review", "approval", "decision", "human.*interaction"]
+        weight: 1.5
+
+      - type: "computational"
+        indicators: ["compute", "process", "analyze", "calculate", "algorithm"]
+        weight: 1.0
+
+      - type: "data"
+        indicators: ["data", "information", "dataset", "database", "storage"]
+        weight: 1.2
+
+      type: "external"
+        indicators: ["api", "external", "third.*party", "integration", "service"]
+        weight: 1.3
+
+      - type: "creative"
+        indicators: ["design", "creative", "innovative", "brainstorm", "ideate"]
+        weight: 0.8
+
+# ML Model Configuration
+ml_models:
+  # Text embedding model for semantic analysis
+  text_embedding:
+    model: "text-embedding-ada-002"
+    api_endpoint: "https://api.openai.com/v1/embeddings"
+    max_tokens: 8191
+    batch_size: 10
+    cache_enabled: true
+    cache_ttl: 3600  # 1 hour
+
+  # Classification model for task categorization
+  classification:
+    model_type: "ensemble"  # ensemble of multiple methods
+    base_models:
+      - "keyword_based"
+      - "semantic_similarity"
+      - "pattern_matching"
+    training_data_source: "config/dynamic/training_data/"
+    model_update_frequency: "daily"
+    confidence_threshold: 0.7
+
+  # Pattern recognition for task patterns
+  pattern_recognition:
+    algorithm: "sequence_pattern_matcher"
+    pattern_library: "config/dynamic/patterns/"
+    similarity_threshold: 0.8
+    learning_enabled: true
+    new_pattern_threshold: 3  # Create new pattern after 3 similar occurrences
+
+# Learning and Adaptation
+learning_config:
+  # Continuous learning from task outcomes
+  outcome_based_learning:
+    enabled: true
+    learning_rate: 0.1
+    min_samples_for_learning: 5
+    max_learning_rate: 0.3
+    feedback_weight: 0.2
+
+  # Pattern learning
+  pattern_learning:
+    enabled: true
+    pattern_discovery_threshold: 3
+    pattern_confidence_threshold: 0.8
+    pattern_retention_period: 30  # days
+
+  # User feedback integration
+  feedback_integration:
+    enabled: true
+    feedback_sources:
+      - "user_corrections"
+      - "satisfaction_ratings"
+      - "task_completion_feedback"
+    feedback_weight: 0.3
+    adaptation_speed: "moderate"
+
+# Real-time Analysis
+realtime_analysis:
+  # Stream processing configuration
+  stream_processing:
+    enabled: true
+    batch_size: 5
+    processing_timeout: 30  # seconds
+    parallel_processing: true
+
+  # Caching
+  caching:
+    enabled: true
+    cache_size: 1000
+    cache_ttl: 1800  # 30 minutes
+    cache_key_format: "task_hash:{task_content}"
+
+  # Performance optimization
+  optimization:
+    precomputed_categories: true
+    fast_path_threshold: 0.9
+    complexity_estimation: true
+    early_termination: true
+
+# Output Configuration
+output_config:
+  # Categorization result format
+  result_format:
+    include_confidence: true
+    include_reasoning: true
+    include_alternatives: true
+    include_metrics: true
+
+  # Result structure
+  result_structure:
+    task_id: "string"
+    primary_category: "object"
+    secondary_categories: ["array"]
+    confidence_score: "float"
+    complexity_score: "float"
+    priority_score: "float"
+    resource_requirements: "object"
+    recommended_agents: ["array"]
+    reasoning: "string"
+    metrics: "object"
+    alternatives: ["array"]
+
+# Quality Assurance
+quality_assurance:
+  # Validation rules
+  validation_rules:
+    minimum_confidence: 0.6
+    require_multiple_methods: true
+    cross_validation: true
+
+  # Quality metrics
+  quality_metrics:
+    accuracy_tracking: true
+    consistency_validation: true
+    performance_monitoring: true
+
+  # Error handling
+  error_handling:
+    fallback_strategies:
+      - "use_keyword_only"
+      - "use_historical_data"
+      - "manual_classification"
+    error_logging: true
+    error_recovery: true
+
+# Integration Points
+integration:
+  # Agent Selection System
+  agent_selection:
+    compatibility_scoring: true
+    performance_weighting: true
+    dynamic_filtering: true
+
+  # Performance Monitoring
+  performance_monitoring:
+    categorization_speed: true
+    accuracy_tracking: true
+    learning_effectiveness: true
+
+  # Learning System
+  learning_system:
+    feedback_integration: true
+    pattern_learning: true
+    model_updates: true
