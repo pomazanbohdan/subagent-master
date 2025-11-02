@@ -1,0 +1,285 @@
+name: "Agent Selection Rules"
+description: "Comprehensive rules for intelligent agent selection based on task analysis"
+version: "1.0"
+
+selection_criteria:
+  complexity_thresholds:
+    simple: 0.3
+    medium: 0.6
+    complex: 0.8
+    very_complex: 1.0
+
+  performance_thresholds:
+    min_success_rate: 0.7
+    max_response_time: 10.0
+    min_reliability: 0.8
+
+  availability_thresholds:
+    max_load_ratio: 0.8
+    min_availability: 0.2
+
+task_analysis_rules:
+  # Keyword-based task classification
+  keywords:
+    analysis:
+      primary: ["analyze", "analysis", "investigate", "review", "examine", "study", "research"]
+      secondary: ["understand", "evaluate", "assess", "audit"]
+      weight: 1.0
+
+    design:
+      primary: ["design", "architecture", "plan", "structure", "blueprint"]
+      secondary: ["specify", "define", "outline", "schema"]
+      weight: 1.0
+
+    implementation:
+      primary: ["implement", "create", "build", "develop", "code", "program"]
+      secondary: ["write", "construct", "assemble", "fabricate"]
+      weight: 1.0
+
+    testing:
+      primary: ["test", "testing", "validate", "verify", "check", "qa"]
+      secondary: ["ensure", "confirm", "inspect", "examine"]
+      weight: 1.0
+
+    optimization:
+      primary: ["optimize", "optimization", "improve", "enhance", "boost"]
+      secondary: ["speed", "performance", "efficiency", "tune"]
+      weight: 0.9
+
+    security:
+      primary: ["security", "secure", "protect", "safeguard", "harden"]
+      secondary: ["vulnerability", "threat", "risk", "compliance"]
+      weight: 1.0
+
+    coordination:
+      primary: ["coordinate", "orchestrate", "manage", "organize", "lead"]
+      secondary: ["supervise", "direct", "guide", "facilitate"]
+      weight: 0.8
+
+  # Complexity indicators
+  complexity_indicators:
+    very_complex:
+      keywords: ["enterprise", "scalable", "distributed", "multi-system", "architecture", "comprehensive"]
+      patterns: ["multiple", "several", "various", "integrated", "end-to-end"]
+      weight: 1.0
+
+    complex:
+      keywords: ["design", "implement", "optimize", "integrate", "system"]
+      patterns: ["complex", "advanced", "sophisticated"]
+      weight: 0.8
+
+    medium:
+      keywords: ["create", "build", "develop", "configure", "setup"]
+      patterns: ["basic", "standard", "typical"]
+      weight: 0.6
+
+    simple:
+      keywords: ["fix", "update", "modify", "adjust", "simple"]
+      patterns: ["quick", "minor", "small", "basic"]
+      weight: 0.3
+
+agent_scoring_rules:
+  # Scoring algorithm weights
+  weights:
+    competency_match: 0.35
+    performance_history: 0.25
+    current_load: 0.20
+    availability: 0.15
+    cost_efficiency: 0.05
+
+  # Competency scoring rules
+  competency_scoring:
+    exact_match: 1.0
+    partial_match: 0.7
+    related_match: 0.4
+    no_match: 0.0
+
+  # Performance scoring adjustments
+  performance_adjustments:
+    high_success_rate_bonus: 0.1  # bonus for success_rate > 0.9
+    low_load_bonus: 0.05         # bonus for load_ratio < 0.3
+    reliability_bonus: 0.1       # bonus for reliability > 0.95
+    response_time_penalty: 0.1   # penalty for avg_response_time > 5.0
+
+selection_strategies:
+  # Different strategies for different scenarios
+  strategies:
+    performance_first:
+      name: "Performance First"
+      weights:
+        competency_match: 0.4
+        performance_history: 0.4
+        current_load: 0.1
+        availability: 0.05
+        cost_efficiency: 0.05
+      use_case: "Critical tasks where quality is paramount"
+
+    availability_first:
+      name: "Availability First"
+      weights:
+        competency_match: 0.3
+        performance_history: 0.2
+        current_load: 0.3
+        availability: 0.2
+        cost_efficiency: 0.0
+      use_case: "Time-sensitive tasks requiring immediate attention"
+
+    cost_optimized:
+      name: "Cost Optimized"
+      weights:
+        competency_match: 0.3
+        performance_history: 0.2
+        current_load: 0.2
+        availability: 0.1
+        cost_efficiency: 0.2
+      use_case: "Budget-conscious scenarios with acceptable quality trade-offs"
+
+    balanced:
+      name: "Balanced Approach"
+      weights:
+        competency_match: 0.35
+        performance_history: 0.25
+        current_load: 0.20
+        availability: 0.15
+        cost_efficiency: 0.05
+      use_case: "Default strategy for most scenarios"
+
+fallback_rules:
+  # Rules for handling selection failures
+  no_suitable_agent:
+    action: "expand_search_criteria"
+    options:
+      - lower_competency_threshold: 0.1
+      - increase_load_tolerance: 0.1
+      - consider_backup_agents: true
+      - enable_cross_domain_fallback: true
+      - use_general_purpose_as_last_resort: true
+
+  all_agents_busy:
+    action: "intelligent_queue_management"
+    options:
+      - priority_queue: true
+      - wait_time_limit: 300  # 5 minutes
+      - escalation_threshold: 2
+      - preempt_low_priority_tasks: true
+      - notify_user_of_delay: true
+
+  selection_timeout:
+    action: "emergency_selection_protocol"
+    options:
+      - ignore_load_constraints: true
+      - minimum_acceptance_score: 0.3
+      - select_least_loaded_available: true
+      - log_selection_difficulty: true
+
+  no_competency_match:
+    action: "competency_expansion"
+    options:
+      - consider_related_competencies: true
+      - use_partial_matches: true
+      - enable_learning_from_similar_tasks: true
+      - create_custom_agent_combination: true
+
+  critical_task_no_agent:
+    action: "resource_reallocation"
+    options:
+      - preempt_non_critical_tasks: true
+      - increase_agent_capacity_temporarily: true
+      - use_parallel_agent_combination: true
+      - notify_administrator: true
+
+dynamic_adjustments:
+  # Rules for dynamic threshold adjustments based on system state
+  system_load_adjustments:
+    high_load:
+      load_threshold: 0.8
+      adjustments:
+        - lower_performance_requirements: 0.1
+        - increase_load_tolerance: 0.2
+        - prioritize_availability: true
+
+    low_performance:
+      performance_threshold: 0.7
+      adjustments:
+        - increase_performance_weight: 0.1
+        - add_retry_logic: true
+        - enable_monitoring: true
+
+  time_based_adjustments:
+    business_hours:
+      timezone: "UTC"
+      hours: "9-17"
+      days: "Monday-Friday"
+      adjustments:
+        - prioritize_quality: true
+        - increase_timeout_tolerance: 1.5
+
+    after_hours:
+      timezone: "UTC"
+      hours: "17-9"
+      days: "Friday-Monday"
+      adjustments:
+        - prioritize_availability: true
+        - use_fallback_agents: true
+
+selection_validation:
+  # Validation rules for selection decisions
+  pre_selection_checks:
+    - validate_task_requirements: true
+    - check_agent_availability: true
+    - verify_compatibility_matrix: true
+    - ensure_minimum_criteria_met: true
+
+  post_selection_validation:
+    - validate_selection_rationale: true
+    - check_load_balance_impact: true
+    - verify_resource_availability: true
+    - ensure_selection_consistency: true
+
+  consistency_checks:
+    - cross_validate_with_history: true
+    - check_selection_bias: true
+    - validate_performance_predictions: true
+    - ensure_fair_resource_distribution: true
+
+learning_rules:
+  # Rules for learning from selection outcomes
+  success_learning:
+    trigger: "task_completed_successfully"
+    actions:
+      - increase_agent_competency: 0.05
+      - reinforce_selection_pattern: true
+      - update_performance_metrics: true
+      - log_successful_pattern: true
+
+  failure_learning:
+    trigger: "task_completed_with_failure"
+    actions:
+      - decrease_agent_competency: 0.02
+      - analyze_failure_reason: true
+      - adjust_selection_criteria: true
+      - identify_pattern_corrections: true
+      - update_risk_assessment: true
+
+  feedback_loop:
+    frequency: "daily"
+    actions:
+      - analyze_selection_patterns: true
+      - update_competency_scores: true
+      - optimize_thresholds: true
+      - generate_performance_report: true
+      - validate_selection_logic: true
+
+integrity_monitoring:
+  # Monitoring for selection system integrity
+  anomaly_detection:
+    - unusual_selection_patterns: true
+    - performance_degradation: true
+    - competency_score_anomalies: true
+    - load_imbalance_alerts: true
+
+  self_healing:
+    - automatic_threshold_adjustment: true
+    - pattern_correction: true
+    - system_state_restoration: true
+    - emergency_fallback_activation: true

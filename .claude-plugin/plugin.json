@@ -1,7 +1,7 @@
 {
   "name": "master",
-  "version": "0.7.0",
-  "description": "Enhanced intelligent task orchestrator with dynamic adaptive planning, self-correction algorithms, dependency analysis, and intelligent task decomposition",
+  "version": "2.0.0",
+  "description": "Hybrid intelligent task orchestrator with YAML configuration and Behavior Trees architecture for modular, scalable agent coordination",
   "author": {
     "name": "Bohdan",
     "email": "pomazan.bohdan@gmail.com"
@@ -32,6 +32,13 @@
     "dependency-analysis",
     "adaptive-algorithms",
     "intelligent-decomposition",
-    "task-optimization"
+    "task-optimization",
+    "hybrid-architecture",
+    "yaml-configuration",
+    "behavior-trees",
+    "modular-design",
+    "agent-selection",
+    "task-planning",
+    "performance-monitoring"
   ]
 }
