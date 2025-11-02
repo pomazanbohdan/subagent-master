@@ -27,7 +27,7 @@ stages:
     name: "Configuration Loading and Validation"
     description: "Load and validate all configuration files"
     action: "load_and_validate_configurations"
-    timeout_seconds: 45
+    №2
     required_resources: ["cpu", "memory"]
     inputs: ["system_check_passed"]
     outputs: ["config_loaded", "config_validated", "agent_capabilities"]

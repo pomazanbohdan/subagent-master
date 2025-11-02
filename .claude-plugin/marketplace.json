@@ -5,8 +5,8 @@
     "email": "pomazan.bohdan@gmail.com"
   },
   "metadata": {
-    "description": "Fully dynamic orchestration system v3.1.0 - Template-based agent creation with ML optimization and complete environment independence",
-    "version": "3.1.0"
+    "description": "Enhanced orchestration system v3.3.0 - Intelligent MCP integration, enhanced TF-IDF categorization with fallback system, and adaptive agent selection",
+    "version": "3.3.0"
   },
   "plugins": [
     {
@@ -57,7 +57,20 @@
         "modular-design",
         "agent-selection",
         "task-planning",
-        "performance-monitoring"
+        "performance-monitoring",
+        "tfidf-fallback-system",
+        "lightweight-tfidf",
+        "adaptive-parameters",
+        "cosine-similarity",
+        "keyword-extraction",
+        "feedback-learning",
+        "parameter-tuning",
+        "hybrid-scoring-advanced",
+        "confidence-calculation",
+        "relevance-thresholds",
+        "category-insights",
+        "performance-tracking",
+        "llm-environment-optimization"
       ],
       "source": "./",
       "agents": [
