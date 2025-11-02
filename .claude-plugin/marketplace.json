@@ -5,8 +5,8 @@
     "email": "pomazan.bohdan@gmail.com"
   },
   "metadata": {
-    "description": "Dynamic orchestration system v3.6.3 - Integrated TODO-EXECUTION engine with automatic Task() delegation, real-time progress tracking, and intelligent failure recovery",
-    "version": "3.6.3"
+    "description": "Dynamic orchestration system v3.6.5 - Integrated TODO-EXECUTION engine with automatic Task() delegation, real-time progress tracking, and intelligent failure recovery",
+    "version": "3.6.5"
   },
   "plugins": [
     {

@@ -92,26 +92,32 @@ initialization_phases:
     description: "Initialize dynamic agent discovery and system configuration"
 
     load_order:
+      - config: "config/dynamic/runtime_environment.yaml"
+        required: true
+        fallback_config: "builtin_runtime_environment"
+        timeout: 10
+
       - config: "config/dynamic/agent_types.yaml"
         required: true
+        depends_on: "runtime_environment.yaml"
         fallback_config: "builtin_agent_types"
         timeout: 10
 
       - config: "config/dynamic/dynamic_agent_discovery.yaml"
         required: true
-        depends_on: "agent_types.yaml"
+        depends_on: ["runtime_environment.yaml", "agent_types.yaml"]
         fallback_config: "builtin_discovery"
         timeout: 15
 
       - config: "config/dynamic/mcp_registry.yaml"
         required: true
-        depends_on: "dynamic_agent_discovery.yaml"
+        depends_on: ["runtime_environment.yaml", "dynamic_agent_discovery.yaml"]
         fallback_config: "builtin_mcp_registry"
         timeout: 10
 
       - config: "config/dynamic/domain_system.yaml"
         required: false
-        depends_on: "dynamic_agent_discovery.yaml"
+        depends_on: ["runtime_environment.yaml", "dynamic_agent_discovery.yaml"]
         fallback_config: "builtin_domain_system"
         timeout: 10
 
@@ -264,24 +270,16 @@ phase_6_task_analysis_systems:
         fallback_config: "builtin_categorization"
         timeout: 10
 
-      - config: "config/knowledge-base/clarification_system.yaml"
-        required: true
-        depends_on: ["task-analysis.yaml", "tfidf-system.yaml", "categorization-engine.yaml"]
-        fallback_config: "builtin_clarification"
-        timeout: 15
-
     validation:
       required_functions:
         - "task_analysis_ready"
         - "tfidf_processing_active"
         - "categorization_operational"
-        - "clarification_available"
 
       success_criteria:
         - task_analysis_status: "operational"
         - tfidf_status: "active"
         - categorization_status: "operational"
-        - clarification_status: "active"
         - analysis_quality: ">=85%"
 
     failure_actions:

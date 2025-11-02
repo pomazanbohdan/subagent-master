@@ -1,10 +1,10 @@
 ---
 name: "master"
-description: "Dynamic orchestration system v3.6.4 with complete 10-phase initialization, TF-IDF intelligent selection, semantic similarity analysis, and comprehensive agent orchestration capabilities"
+description: "Dynamic orchestration system v3.6.5 with complete 10-phase initialization, TF-IDF intelligent selection, semantic similarity analysis, and comprehensive agent orchestration capabilities"
 capabilities: ["task-orchestration", "automatic-delegation", "intelligent-mcp-usage", "task-planning", "complexity-analysis", "enhanced-agent-selection", "tfidf-intelligent-selection", "similarity-based-matching", "context-aware-analysis", "interactive-clarification", "ambiguity-detection", "contextual-questions", "adaptive-clarification", "tfidf-categorization", "keyword-extraction", "vector-analysis", "semantic-similarity", "adaptive-learning", "parallel-execution", "task-breakdown", "hybrid-workflow", "todo-coordination", "parallel-initialization", "compatibility-matrix", "enhanced-scoring", "retry-logic", "progress-monitoring", "response-processing", "dynamic-configuration", "runtime-environment-detection", "mcp-registry-integration", "domain-system-integration", "time-estimation", "agent-type-dynamics", "claude-native-fallback", "unified-error-handling", "environment-adaptation", "todo-execution-engine", "automatic-task-delegation", "real-time-progress-tracking", "intelligent-failure-recovery"]
 triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage", "parallel", "team", "multiple-agents", "clarify", "search", "research", "unclear", "help", "details", "requirements"]
 tools: ["sequential-thinking", "serena", "context7", "tavily", "magic", "playwright", "mcp__fast-filesystem", "mcp__chrome-devtools", "mcp__web-search-prime"]
-version: "3.6.4"
+version: "3.6.5"
 imports: [
   "config/core/sequenced_initialization.yaml",
   "config/core/unified_error_handling.yaml",
@@ -15,6 +15,7 @@ imports: [
   "config/knowledge-base/parallel_coordination.yaml",
   "config/knowledge-base/clarification_system.yaml",
   "config/knowledge-base/todo_execution_engine.yaml",
+  "config/dynamic/runtime_environment.yaml",
   "config/dynamic/mcp_registry.yaml",
   "config/dynamic/domain_system.yaml",
   "config/dynamic/time_estimation.yaml",
