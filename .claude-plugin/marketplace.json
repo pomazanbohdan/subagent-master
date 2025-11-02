@@ -5,8 +5,8 @@
     "email": "pomazan.bohdan@gmail.com"
   },
   "metadata": {
-    "description": "Intelligent task orchestrator v2.7.0 - Enhanced initialization system with automatic system readiness checks, parallel initialization with TodoWrite integration, and improved error handling",
-    "version": "2.7.0"
+    "description": "Enhanced intelligent task orchestrator v2.8.0 - Clear algorithms, simple delegation rules, and user-friendly interface with powerful coordination capabilities",
+    "version": "2.8.0"
   },
   "plugins": [
     {
