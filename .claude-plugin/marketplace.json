@@ -5,8 +5,8 @@
     "email": "pomazan.bohdan@gmail.com"
   },
   "metadata": {
-    "description": "Enhanced orchestration system v3.3.0 - Intelligent MCP integration, enhanced TF-IDF categorization with fallback system, and adaptive agent selection",
-    "version": "3.3.0"
+    "description": "Dynamic orchestration system v3.6.0 - Runtime configuration loading, intelligent MCP integration, adaptive learning, and comprehensive environment adaptation",
+    "version": "3.6.0"
   },
   "plugins": [
     {
@@ -70,7 +70,22 @@
         "relevance-thresholds",
         "category-insights",
         "performance-tracking",
-        "llm-environment-optimization"
+        "llm-environment-optimization",
+        "dynamic-configuration",
+        "runtime-environment-detection",
+        "mcp-registry-integration",
+        "domain-system-integration",
+        "time-estimation",
+        "agent-type-dynamics",
+        "live-configuration-updates",
+        "environment-adaptation",
+        "fallback-mechanisms",
+        "real-time-monitoring",
+        "dynamic-learning",
+        "configuration-hot-reload",
+        "performance-optimization",
+        "resource-awareness",
+        "adaptive-systems"
       ],
       "source": "./",
       "agents": [

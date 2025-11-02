@@ -1,7 +1,7 @@
 {
   "name": "subagent-master",
-  "version": "3.3.0",
-  "description": "Enhanced orchestration system v3.3.0 - Intelligent MCP integration, enhanced TF-IDF categorization with fallback system, and adaptive agent selection",
+  "version": "3.6.0",
+  "description": "Dynamic orchestration system v3.6.0 - Runtime configuration loading, intelligent MCP integration, adaptive learning, and comprehensive environment adaptation",
   "author": "Bohdan <pomazan.bohdan@gmail.com>",
   "license": "MIT",
   "keywords": [
@@ -80,7 +80,22 @@
     "relevance-thresholds",
     "category-insights",
     "performance-tracking",
-    "llm-environment-optimization"
+    "llm-environment-optimization",
+    "dynamic-configuration",
+    "runtime-environment-detection",
+    "mcp-registry-integration",
+    "domain-system-integration",
+    "time-estimation",
+    "agent-type-dynamics",
+    "live-configuration-updates",
+    "environment-adaptation",
+    "fallback-mechanisms",
+    "real-time-monitoring",
+    "dynamic-learning",
+    "configuration-hot-reload",
+    "performance-optimization",
+    "resource-awareness",
+    "adaptive-systems"
   ],
   "homepage": "https://github.com/pomazanbohdan/subagent-master",
   "repository": "https://github.com/pomazanbohdan/subagent-master.git",

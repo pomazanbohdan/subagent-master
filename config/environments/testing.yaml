@@ -1,0 +1,398 @@
+# Testing Environment Configuration
+# Optimized for comprehensive testing and validation scenarios
+
+metadata:
+  name: "testing-environment"
+  version: "1.0.0"
+  description: "Testing environment configuration optimized for automated testing and validation"
+  environment_type: "testing"
+  author: "Master Agent System v3.5.0"
+
+# Environment Characteristics
+environment_characteristics:
+  primary_goals:
+    - "comprehensive_testing"
+    - "automated_validation"
+    - "performance_benchmarking"
+    - "regression_testing"
+    - "quality_assurance"
+    
+  operational_mode: "controlled_validation"
+  stability_priority: "high"
+  performance_priority: "medium"
+  security_priority: "medium"
+  
+  behavioral_patterns:
+    error_handling: "testing_friendly_with_assertions"
+    retry_logic: "deterministic_retry"
+    timeout_handling: "controlled_timeouts"
+    resource_usage: "test_optimized"
+
+# Resource Configuration
+resource_configuration:
+  computational_resources:
+    cpu_allocation:
+      max_cores: "auto_detect"
+      priority: "normal"
+      burst_allowance: 1.5
+      
+    memory_allocation:
+      max_memory: "auto_detect"
+      cache_size: "moderate"
+      gc_aggressiveness: "medium"
+      
+    disk_allocation:
+      temp_directory: "/tmp/master_agent_test"
+      max_temp_size: "5GB"
+      cleanup_policy: "per_test"
+      
+  network_resources:
+    connection_limits:
+      max_concurrent_connections: 15
+      connection_timeout: 15
+      read_timeout: 45
+      
+    rate_limiting:
+      enabled: true
+      api_calls_per_minute: 200
+      
+  concurrency_settings:
+    max_parallel_tasks: 8
+    max_concurrent_agents: 5
+    task_queue_size: 50
+    thread_pool_size: "controlled"
+
+# Performance Targets
+performance_targets:
+  response_time_targets:
+    simple_tasks: "< 3 seconds"
+    complex_tasks: "< 20 seconds"
+    very_complex_tasks: "< 90 seconds"
+    
+  accuracy_targets:
+    task_completion_accuracy: "> 0.85"
+    classification_accuracy: "> 0.80"
+    estimation_accuracy: "> 0.75"
+    
+  reliability_targets:
+    system_availability: "> 0.95"
+    error_recovery_rate: "> 0.85"
+    graceful_degradation: "enabled"
+    
+  efficiency_targets:
+    resource_utilization: "> 0.70"
+    test_throughput: "optimized_for_test_coverage"
+    learning_efficiency: "> 0.80"
+
+# Behavioral Configuration
+behavioral_configuration:
+  error_handling:
+    strategy: "testing_aware"
+    detailed_error_messages: true
+    stack_trace_inclusion: true
+    error_recovery_attempts: 2
+    
+  logging_configuration:
+    log_level: "INFO"
+    structured_logging: true
+    log_rotation: true
+    log_format: "test_friendly_with_timestamps"
+    
+    log_destinations:
+      - "console"
+      - "file:logs/master_agent_test.log"
+      - "test_results"
+      
+    log_categories:
+      system_operations: "INFO"
+      agent_communication: "DEBUG"
+      mcp_interactions: "INFO"
+      learning_activities: "INFO"
+      performance_metrics: "INFO"
+      test_execution: "DEBUG"
+      
+  testing_features:
+    enabled: true
+    features:
+      - "test_execution_tracking"
+      - "assertion_validation"
+      - "performance_benchmarking"
+      - "regression_detection"
+      
+  mock_services:
+    enabled: true
+    mock_mcp_servers: true
+    mock_agent_responses: true
+    deterministic_behavior: true
+
+# Testing-Specific Settings
+testing_settings:
+  test_execution:
+    parallel_test_execution: true
+    max_parallel_tests: 4
+    test_timeout_multiplier: 1.5
+    
+    test_categories:
+      unit_tests:
+        enabled: true
+        timeout: 30  # seconds
+        retry_count: 1
+        
+      integration_tests:
+        enabled: true
+        timeout: 120  # seconds
+        retry_count: 2
+        
+      performance_tests:
+        enabled: true
+        timeout: 300  # seconds
+        retry_count: 1
+        
+      end_to_end_tests:
+        enabled: true
+        timeout: 600  # seconds
+        retry_count: 1
+        
+  test_data_management:
+    test_data_cleanup: true
+    test_isolation: true
+    deterministic_test_data: true
+    
+  coverage_requirements:
+    minimum_coverage: 0.80
+    branch_coverage: 0.70
+    function_coverage: 0.90
+
+# Adaptation Strategies
+adaptation_strategies:
+  testing_adaptation:
+    enabled: true
+    adaptation_frequency: "per_test_cycle"
+    optimization_targets:
+      - "test_execution_speed"
+      - "test_reliability"
+      - "coverage_maximization"
+      
+  resource_adaptation:
+    enabled: true
+    adaptation_triggers:
+      - "test_memory_leak_detected"
+      - "test_timeout_exceeded"
+      - "resource_exhaustion"
+      
+    adaptation_actions:
+      - "restart_test_environment"
+      - "increase_test_timeouts"
+      - "reduce_test_parallelism"
+
+# Monitoring and Observability
+monitoring_configuration:
+  metrics_collection:
+    enabled: true
+    collection_interval: 15  # seconds
+    
+    metrics_tracked:
+      test_metrics:
+        - "test_execution_time"
+        - "test_success_rate"
+        - "test_coverage"
+        - "assertion_count"
+        
+      performance_metrics:
+        - "cpu_usage"
+        - "memory_usage"
+        - "response_time"
+        - "throughput"
+        
+      quality_metrics:
+        - "defect_density"
+        - "regression_detection"
+        - "test_stability"
+        
+  test_reporting:
+    enabled: true
+    report_formats:
+      - "junit_xml"
+      - "html_report"
+      - "json_summary"
+      - "coverage_report"
+      
+    reporting_frequency: "per_test_suite"
+
+# Integration Configuration
+integration_settings:
+  test_mcp_configuration:
+    mock_mcp_servers:
+      sequential-thinking:
+        response_time: 100  # ms
+        success_rate: 1.0
+        deterministic_responses: true
+        
+      serena:
+        response_time: 200  # ms
+        success_rate: 1.0
+        deterministic_responses: true
+        
+      context7:
+        response_time: 150  # ms
+        success_rate: 1.0
+        deterministic_responses: true
+        
+  agent_behavior:
+    default_timeout: 45  # seconds
+    max_execution_time: 180  # seconds
+    retry_delay: 1  # seconds
+    
+    testing_behavior:
+      deterministic_mode: true
+      random_seed_control: true
+      reproducible_results: true
+
+# Security Configuration (Testing)
+security_configuration:
+  authentication:
+    enabled: false
+    mock_authentication: true
+    
+  authorization:
+    enabled: false
+    permissive_testing_mode: true
+    
+  encryption:
+    transit_encryption: false
+    rest_encryption: false
+    
+  security_testing:
+    enabled: true
+    vulnerability_scanning: true
+    penetration_testing: false
+
+# Quality Assurance
+quality_assurance:
+  validation:
+    strict_validation: true
+    permissive_mode: false
+    detailed_error_reporting: true
+    
+  testing:
+    auto_validation: true
+    integration_tests: true
+    performance_tests: true
+    security_tests: true
+    regression_tests: true
+    
+  code_quality:
+    strict_mode: true
+    warning_level: "normal"
+    optimization_enabled: false
+
+# Test Data Management
+test_data_configuration:
+  data_generation:
+    automated_generation: true
+    realistic_data: true
+    edge_case_coverage: true
+    
+  data_isolation:
+    test_database_isolation: true
+    file_system_isolation: true
+    network_isolation: true
+    
+  data_cleanup:
+    automatic_cleanup: true
+    cleanup_frequency: "per_test"
+    backup_test_data: false
+
+# Environment Detection
+environment_detection:
+  indicators:
+    file_based:
+      - "pytest.ini exists"
+      - "jest.config.js exists"
+      - "test/ directory exists"
+      - "Dockerfile.test exists"
+      
+    environment_variable_based:
+      - "NODE_ENV=test"
+      - "FLASK_ENV=testing"
+      - "TEST_MODE=true"
+      - "CI=true"
+      
+    system_based:
+      - "running_in_test_directory"
+      - "test_runners_active"
+      - "mock_services_enabled"
+      
+  detection_confidence_threshold: 0.8
+  auto_switch: true
+
+# Performance Optimization (Testing)
+performance_optimization:
+  caching:
+    enabled: true
+    test_data_caching: true
+    result_caching: true
+    cache_size: "moderate"
+    
+  parallel_processing:
+    enabled: true
+    max_parallelism: "controlled_for_testing"
+    load_balancing: "round_robin"
+    
+  resource_management:
+    optimistic_allocation: false
+    controlled_limits: true
+    cleanup_between_tests: true
+
+# Test Execution Framework
+test_framework:
+  test_runners:
+    unit_tests:
+      framework: "pytest"
+      configuration: "pytest.ini"
+      plugins: ["pytest-cov", "pytest-mock"]
+      
+    integration_tests:
+      framework: "pytest"
+      configuration: "integration_test.ini"
+      plugins: ["pytest-integration"]
+      
+    performance_tests:
+      framework: "pytest-benchmark"
+      configuration: "benchmark.ini"
+      
+  test_suites:
+    smoke_tests:
+      description: "Basic functionality tests"
+      priority: "critical"
+      timeout: 300  # seconds
+      
+    regression_tests:
+      description: "Comprehensive regression testing"
+      priority: "high"
+      timeout: 1800  # seconds
+      
+    performance_tests:
+      description: "Performance benchmarking"
+      priority: "medium"
+      timeout: 600  # seconds
+
+# Continuous Integration
+ci_configuration:
+  automated_testing:
+    enabled: true
+    trigger_on_commit: true
+    trigger_on_pull_request: true
+    
+  test_pipeline:
+    stages:
+      - "static_analysis"
+      - "unit_tests"
+      - "integration_tests"
+      - "performance_tests"
+      - "security_tests"
+      
+  quality_gates:
+    test_coverage_minimum: 0.80
+    test_success_rate_minimum: 0.95
+    performance_regression_threshold: 0.10
