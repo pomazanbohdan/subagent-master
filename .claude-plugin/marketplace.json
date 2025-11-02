@@ -5,8 +5,8 @@
     "email": "pomazan.bohdan@gmail.com"
   },
   "metadata": {
-    "description": "Intelligent task orchestrator v2.6.0 - Phase 2 Configuration System Enhancement complete with dynamic loading, hot reload, advanced validation, and intelligent performance monitoring",
-    "version": "2.6.0"
+    "description": "Intelligent task orchestrator v2.7.0 - Enhanced initialization system with automatic system readiness checks, parallel initialization with TodoWrite integration, and improved error handling",
+    "version": "2.7.0"
   },
   "plugins": [
     {

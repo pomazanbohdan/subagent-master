@@ -81,13 +81,60 @@ LLM Orchestrator v2.2.0
 
 ### **🚀 Parallel Initialization System**
 
-**Декларативна паралельна ініціалізація** через `config/workflows/parallel_initialization.yaml`
+**Автоматична перевірка готовності та ініціалізація системи при кожному запиті**
+
+#### **Функція перевірки готовності системи:**
+```python
+def is_system_ready():
+    """Check if master agent system is ready for task processing"""
+    checks = {
+        'config_loaded': check_configurations_loaded(),
+        'agents_registered': check_agent_registry_ready(),
+        'compatibility_matrix': check_compatibility_matrix_ready(),
+        'error_system': check_error_system_active(),
+        'clarification_system': check_clarification_ready(),
+        'todo_framework': check_todo_system_ready()
+    }
+
+    ready_score = sum(checks.values()) / len(checks)
+    return ready_score >= 0.8, checks
+```
+
+#### **Функція паралельної ініціалізації:**
+```python
+def run_parallel_initialization():
+    """Execute 8-step parallel initialization with TodoWrite tracking"""
+
+    # Create initialization TODOs
+    TodoWrite([
+        {"content": "Validate YAML configurations", "status": "pending", "activeForm": "Configuration validation"},
+        {"content": "Initialize agent registry", "status": "pending", "activeForm": "Agent registry setup"},
+        {"content": "Setup dynamic components", "status": "pending", "activeForm": "Dynamic components initialization"},
+        {"content": "Activate performance monitoring", "status": "pending", "activeForm": "Performance monitoring setup"},
+        {"content": "Load selection rules", "status": "pending", "activeForm": "Selection rules loading"},
+        {"content": "Initialize variable manager", "status": "pending", "activeForm": "Variable manager setup"},
+        {"content": "Setup parallel coordination", "status": "pending", "activeForm": "Parallel coordination configuration"},
+        {"content": "Validate system readiness", "status": "pending", "activeForm": "System readiness check"}
+    ])
+
+    # Launch 8 parallel tasks from config/workflows/parallel_initialization.yaml
+    parallel_tasks = launch_parallel_tasks_from_config("config/workflows/parallel_initialization.yaml")
+
+    # Synchronize with 80% success threshold
+    sync_result = synchronize_parallel_results(success_threshold=0.8)
+
+    if sync_result.success_rate >= 0.8:
+        return {"status": "ready", "success_rate": sync_result.success_rate}
+    else:
+        return {"status": "degraded", "success_rate": sync_result.success_rate}
+```
 
 #### **Принцип роботи:**
-1. **8 паралельних завдань** запускаються одночасно
-2. **Координація** через `config/dynamic/parallel_coordination.yaml`
-3. **Синхронізація** з порогом успішності 80%
-4. **Кешування** готових компонентів для негайної готовності
+1. **Автоматична перевірка** готовності системи при кожному запиті
+2. **8 паралельних завдань** запускаються при непрацездатності системи
+3. **Координація** через `config/dynamic/parallel_coordination.yaml`
+4. **Синхронізація** з порогом успішності 80%
+5. **Кешування** готових компонентів для негайної готовності
 
 #### **Конфігураційні файли ініціалізації:**
 - **`config/workflows/parallel_initialization.yaml`** - Декларативний опис процесу
@@ -164,8 +211,20 @@ LLM Orchestrator v2.2.0
 ### Decision Tree Structure:
 
 ```
+# Master Agent Auto-Initialization Check
+def process_user_request(user_input):
+    # AUTOMATIC SYSTEM CHECK
+    system_ready, readiness_checks = is_system_ready()
+
+    if not system_ready:
+        init_result = run_parallel_initialization()
+        if init_result["status"] == "degraded":
+            log_warning(f"System initialized in degraded mode: {init_result['success_rate']}%")
+
+    # Continue with normal processing...
+
 Process User Request
-├── Is System Ready?
+├── Is System Ready? (AUTOMATIC CHECK)
 │   ├── Yes → Continue to Task Analysis
 │   └── No → Run 8-Step Parallel Initialization
 │       ├── TodoWrite: Create initialization tasks
@@ -2250,4 +2309,68 @@ selection_result = select_agent_with_dynamic_config(
 )
 
 # System automatically handles hot reloads when configuration files change
+```
+
+## 🚀 Usage Process
+
+### **Основний процес роботи агента:**
+
+#### **1. Автоматична ініціалізація при старті:**
+```python
+# При першому зверненні до агента автоматично виконується:
+system_ready, checks = is_system_ready()
+if not system_ready:
+    run_parallel_initialization()
+```
+
+#### **2. Стандартний процес обробки запиту:**
+1. **Перевірка готовності системи** (автоматично)
+2. **Аналіз складності задачі** через динамічну категоризацію
+3. **Оцінка паралельного потенціалу** та вибір стратегії
+4. **Створення плану виконання** з TODO структурою
+5. **Делегування агентам** з координацією та моніторингом
+6. **Синхронізація результатів** та інтеграція
+
+#### **3. Приклади використання:**
+
+**Проста задача:**
+```python
+# Автоматичний вибір оптимального агента
+result = master_agent.process("Оптимізуй швидкість запитів до бази даних")
+# → Делегування до performance-engineer з автоматичною ініціалізацією
+```
+
+**Складна багатокомпонентна задача:**
+```python
+# Автоматична декомпозиція та паралельне виконання
+result = master_agent.process("Розроби мікросервіс архітектуру з автентифікацією")
+# → Паралельне делегування: backend-architect + security-engineer + frontend-architect
+```
+
+**Конкурентне виконання:**
+```python
+# Декілька агентів виконують одночасно → вибір найкращого результату
+result = master_agent.process("Проаналізуй ризики безпеки цієї архітектури")
+# → Паралельне: security-engineer + backend-architect + quality-engineer
+```
+
+### **Ключові переваги:**
+
+- **🔄 Автоматична ініціалізація** - система готова до роботи без ручного налаштування
+- **⚡ Паралельне виконання** - максимальна швидкість через декомпозицію задач
+- **🎯 Інтелектуальний вибір агентів** - динамічна оцінка сумісності
+- **📊 TODO моніторинг** - відстеження прогресу в реальному часі
+- **🔄 Самовідновлення** - автоматична обробка помилок та делегування
+- **📈 Навчання** - система покращується на основі результатів виконання
+
+### **Моніторинг стану системи:**
+```python
+# Перевірка готовності системи
+ready_status = is_system_ready()
+
+# Моніторинг продуктивності
+metrics = get_performance_metrics()
+
+# Статистика виконання задач
+stats = get_execution_statistics()
 ```
