@@ -98,6 +98,37 @@ error_classification:
         handling_strategy: "agent_substitution_with_fallback"
         recovery_actions:
           - "select_alternative_agent_based_on_capabilities"
+          - "use_master_agent_as_last_resort"
+          - "log_agent_performance_for_future_selection"
+          - "update_agent_availability_status"
+
+      task_delegation_failure:
+        detection_criteria: "todo_execution_engine_delegation_failure"
+        handling_strategy: "delegation_retry_with_alternative_strategy"
+        recovery_actions:
+          - "analyze_delegation_failure_type"
+          - "apply_todo_delegation_rules_fallback"
+          - "retry_with_different_agent_selection"
+          - "decompose_complex_task_into_simpler_subtasks"
+          - "escalate_to_master_agent_execution"
+
+      todo_plan_generation_failure:
+        detection_criteria: "todo_execution_engine_plan_generation_failure"
+        handling_strategy: "simplified_planning_with_manual_override"
+        recovery_actions:
+          - "fallback_to_simple_sequential_plan"
+          - "reduce_task_complexity_threshold"
+          - "activate_manual_planning_mode"
+          - "log_planning_failure_pattern_for_learning"
+
+      progress_tracking_failure:
+        detection_criteria: "todo_execution_engine_progress_tracking_failure"
+        handling_strategy: "basic_progress_estimation_with_fallback"
+        recovery_actions:
+          - "activate_simple_progress_counter"
+          - "disable_advanced_progress_features"
+          - "fallback_to_time_based_estimates"
+          - "log_tracking_failure_for_system_improvement"
           - "use_general_purpose_agent_as_fallback"
           - "retry_with_different_parameters"
           - "escalate_to_manual_selection"

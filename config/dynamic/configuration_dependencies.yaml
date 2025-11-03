@@ -71,10 +71,15 @@ dependency_graph:
 
     config/knowledge-base/todo_execution_engine.yaml:
       level: 1
-      dependencies: ["config/knowledge-base/task-analysis.yaml"]
-      priority: "medium"
-      load_timeout: 4000
-      retry_count: 2
+      dependencies: [
+        "config/knowledge-base/task-analysis.yaml",
+        "config/knowledge-base/unified_agent_selection.yaml",
+        "config/knowledge-base/tfidf-system.yaml",
+        "config/knowledge-base/categorization-engine.yaml"
+      ]
+      priority: "high"
+      load_timeout: 6000
+      retry_count: 3
 
     # Rules (Level 1 - Depends on Core)
     config/rules/parallel_execution_rules.yaml:
@@ -82,6 +87,16 @@ dependency_graph:
       dependencies: ["config/core/unified_error_handling.yaml"]
       priority: "high"
       load_timeout: 4000
+      retry_count: 2
+
+    config/rules/todo_delegation_rules.yaml:
+      level: 1
+      dependencies: [
+        "config/core/unified_error_handling.yaml",
+        "config/knowledge-base/todo_execution_engine.yaml"
+      ]
+      priority: "high"
+      load_timeout: 5000
       retry_count: 2
 
     # Dynamic Configuration (Level 2 - Depends on Knowledge Base)

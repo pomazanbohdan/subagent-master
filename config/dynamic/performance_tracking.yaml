@@ -98,6 +98,53 @@ metrics_collection:
       target: "< 0.15"
       
     learning_effectiveness:
+      description: "System learning and adaptation rate"
+      calculation: "performance_improvement_rate"
+      target: "positive trend"
+
+  # TODO-EXECUTION Engine Specific Metrics
+  todo_execution_engine_metrics:
+    todo_plan_generation_success_rate:
+      description: "Success rate of TODO plan generation"
+      calculation: "successful_plans / total_planning_attempts"
+      weight: 0.3
+      target: "> 0.90"
+
+    task_delegation_success_rate:
+      description: "Success rate of Task() delegation"
+      calculation: "successful_delegations / total_delegation_attempts"
+      weight: 0.4
+      target: "> 0.95"
+
+    average_delegation_time:
+      description: "Average time for Task() delegation"
+      calculation: "sum(delegation_times) / delegation_count"
+      weight: 0.2
+      target: "< 30 seconds"
+
+    progress_tracking_accuracy:
+      description: "Accuracy of progress tracking estimates"
+      calculation: "estimated_vs_actual_time_correlation"
+      weight: 0.2
+      target: "> 0.85 correlation"
+
+    result_synthesis_quality:
+      description: "Quality of synthesized results from delegated tasks"
+      calculation: "synthesis_quality_scores / synthesis_count"
+      weight: 0.3
+      target: "> 0.80"
+
+    delegation_retry_rate:
+      description: "Frequency of delegation retries"
+      calculation: "retry_attempts / total_delegations"
+      weight: -0.2  # negative weight - lower is better
+      target: "< 0.10"
+
+    multi_agent_coordination_efficiency:
+      description: "Efficiency of multi-agent coordination"
+      calculation: "parallel_execution_speedup / expected_speedup"
+      weight: 0.25
+      target: "> 0.75"
       description: "Effectiveness of learning algorithms"
       calculation: "performance_improvement_rate"
       target: "> 0.2 improvement per week"

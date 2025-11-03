@@ -31,22 +31,47 @@ todo_execution_engine:
 # TodoWrite Plan Generation
 todo_plan_generation:
   implementation: |
-    # TODO Plan Generation Algorithm
+    # LLM-Interpretable TODO Plan Generation Algorithm
     INPUT: task_analysis, tfidf_results, agent_mapping, complexity_score
     OUTPUT: todo_write_plan, execution_strategy
 
-    ALGORITHM:
-    1. Task Decomposition:
+    LLM_PROCESSING_INSTRUCTIONS:
+    1. Analyze Task Structure:
+       - Parse task_analysis.complexity_assessment
+       - Extract tfidf_results.categorization_vector
+       - Review agent_mapping.compatibility_matrix
+       - Identify domain_specialization_requirements
+       - Determine parallel_execution_possibilities
+
+    2. Task Decomposition Logic:
        IF complexity_score >= 4:
-          - Generate multi-phase plan with dependencies
-          - Create parallel execution blocks where possible
-          - Identify critical path for sequential execution
+          - Create multi_phase_execution_structure
+          - Identify dependency_graph_components
+          - Generate parallel_execution_blocks
+          - Establish critical_path_sequence
+          - Create cross_phase_integration_points
        ELIF complexity_score >= 2:
-          - Generate structured plan with 3-7 tasks
-          - Mix parallel and sequential execution
+          - Generate structured_task_sequence (3-7 tasks)
+          - Identify parallel_execution_opportunities
+          - Create dependency_relationships
+          - Set priority_level_assignments
        ELSE:
-          - Generate simple 1-2 task plan
-          - Sequential execution only
+          - Create simple_linear_plan (1-2 tasks)
+          - Sequential_execution_only
+          - Single_agent_assignment
+
+    3. TodoWrite Item Construction:
+       FOR each identified_subtask:
+          todo_item_structure = {
+            "content": extract_actionable_description(subtask),
+            "status": "pending",
+            "activeForm": generate_verb_phrase(subtask.purpose),
+            "agent_assignment": select_optimal_agent(subtask.requirements),
+            "estimated_time": calculate_time_estimate(subtask.complexity),
+            "dependencies": identify_dependency_list(subtask),
+            "priority": assign_priority_level(subtask.importance),
+            "required_capabilities": extract_capability_requirements(subtask)
+          }
 
     2. Agent Assignment:
        FOR each task in plan:
@@ -94,39 +119,57 @@ todo_plan_generation:
 # Task() Delegation System
 task_delegation_system:
   implementation: |
-    # Automatic Task() Delegation Algorithm
+    # LLM-Interpretable Task() Delegation Algorithm
     INPUT: todo_item, agent_assignment, execution_context
     OUTPUT: delegation_result, execution_status
 
-    DELEGATION_PROCESS:
-    1. Pre-execution Validation:
-       - Validate agent availability
-       - Check Task() system readiness
-       - Verify task requirements clarity
-       - Confirm resource availability
+    LLM_DELEGATION_INSTRUCTIONS:
+    1. Pre-execution Validation Protocol:
+       - Check agent_availability_status in dynamic_agent_registry
+       - Validate Task() system_readiness through mcp_registry
+       - Verify task_requirements_clarity from todo_item.content
+       - Confirm resource_allocation_sufficiency
+       - Assess dependency_satisfaction_status
 
-    2. Task() Parameter Construction:
-       task_params = {
-         "subagent_type": determine_agent_type_from_registry(todo_item, execution_context),
-         "description": create_task_description(todo_item),
-         "prompt": create_comprehensive_prompt(todo_item, execution_context)
+    2. Task() Parameter Construction Algorithm:
+       delegation_parameters = {
+         "subagent_type": resolve_agent_identifier(todo_item.agent_assignment),
+         "description": generate_concise_task_description(todo_item),
+         "prompt": construct_comprehensive_execution_prompt(todo_item, execution_context)
        }
 
-    3. Execution with Error Handling:
-       TRY:
-          result = Task(**task_params)
-          update_todo_status(todo_item.id, "completed")
-          log_execution_success(todo_item, result)
-          RETURN {success: true, result: result}
-       CATCH delegation_error:
-          handle_delegation_failure(todo_item, delegation_error)
-          RETURN {success: false, error: delegation_error}
+       PROMPT_CONSTRUCTION_RULES:
+       - Include original_task_context from execution_context
+       - Add tfidf_analysis_results for agent guidance
+       - Specify expected_output_format requirements
+       - Include dependency_information if relevant
+       - Set quality_assessment_criteria
+       - Define success_evaluation_metrics
 
-    4. Post-execution Processing:
-       - Validate result quality
-       - Update TodoWrite progress
-       - Trigger dependent tasks if ready
-       - Log performance metrics
+    3. Execution Protocol with Error Handling:
+       LLM_EXECUTION_STEPS:
+       1. Initialize Task() call with constructed parameters
+       2. Monitor execution_progress through performance_tracking
+       3. Update todo_item.status to "in_progress"
+       4. Capture execution_result with metadata
+       5. Update todo_item.status to "completed" if successful
+       6. Log performance_metrics for system_learning
+
+       ERROR_HANDLING_PROTOCOL:
+       IF delegation_failure_detected:
+          - Classify_failure_type (agent_unavailable, task_complexity, system_error)
+          - Apply appropriate_recovery_strategy
+          - Update todo_item.status with failure_context
+          - Initiate fallback_execution_procedure
+          RETURN delegation_result_with_error_context
+
+    4. Post-execution Processing Workflow:
+       - Validate result_quality against predefined_criteria
+       - Update TodoWrite_progress_status
+       - Check and trigger dependent_tasks if conditions_met
+       - Record performance_metrics in performance_tracking
+       - Update agent_performance_data for future_selections
+       - Extract learning_data for system_improvement
 
   # Dynamic Agent Selection Integration
 # Integration with existing dynamic_agent_discovery.yaml system
@@ -233,33 +276,77 @@ agent_selection_from_registry:
 # Progress Tracking System
 progress_tracking:
   implementation: |
-    # Real-time Progress Tracking Algorithm
+    # LLM-Interpretable Real-time Progress Tracking Algorithm
     INPUT: active_todo_items, execution_results, system_events
     OUTPUT: progress_summary, status_updates, completion_metrics
 
-    TRACKING_DATA_STRUCTURES:
-    execution_state = {
-      "total_tasks": count,
-      "completed_tasks": count,
-      "failed_tasks": count,
-      "in_progress_tasks": count,
-      "blocked_tasks": count,
-      "overall_progress": percentage,
-      "estimated_completion_time": timestamp,
-      "current_phase": "phase_name"
-    }
+    LLM_TRACKING_INSTRUCTIONS:
+    1. Initialize Tracking Data Structures:
+       execution_state_monitor = {
+         "total_task_count": calculate_total_tasks(todo_list),
+         "completed_task_count": count_completed_tasks(),
+         "failed_task_count": count_failed_tasks(),
+         "in_progress_task_count": count_active_tasks(),
+         "blocked_task_count": count_blocked_tasks(),
+         "overall_progress_percentage": calculate_completion_percentage(),
+         "estimated_completion_timestamp": project_completion_time(),
+         "current_execution_phase": identify_current_phase(),
+         "execution_velocity": calculate_tasks_per_hour()
+       }
 
-    task_status_map = {
-      "todo_id": {
-        "status": "pending/in_progress/completed/failed/blocked",
-        "start_time": timestamp,
-        "end_time": timestamp,
-        "assigned_agent": "agent_name",
-        "execution_attempts": count,
-        "result_quality_score": float,
-        "dependencies_satisfied": boolean
-      }
-    }
+       individual_task_tracking = {}
+       FOR each todo_item in active_todo_items:
+          individual_task_tracking[todo_item.id] = {
+            "current_status": todo_item.status,
+            "execution_start_time": todo_item.start_timestamp,
+            "execution_end_time": todo_item.completion_timestamp,
+            "assigned_agent_identifier": todo_item.agent_assignment,
+            "execution_attempt_count": todo_item.retry_count,
+            "result_quality_assessment": todo_item.quality_score,
+            "dependency_satisfaction_status": check_dependencies(todo_item),
+            "estimated_remaining_time": calculate_remaining_time(todo_item)
+          }
+
+    2. Real-time Progress Monitoring Protocol:
+       CONTINUOUS_MONITORING_TASKS:
+       - Monitor TodoWrite status changes in real-time
+       - Calculate overall_progress_percentage dynamically
+       - Update estimated_completion_time based on current_velocity
+       - Detect execution_bottlenecks or performance_issues
+       - Track agent_performance_by_task_type
+       - Monitor system_resource_utilization
+
+    3. Dependency Management Algorithm:
+       DEPENDENCY_TRACKING_LOGIC:
+       FOR each pending_task:
+          - Check dependency_satisfaction_status
+          - Identify blocking_dependencies
+          - Calculate dependency_resolution_probability
+          - Update task_readiness_status
+          - Notify when dependencies become satisfied
+
+       DEPENDENCY_RESOLUTION_TRIGGER:
+       WHEN dependency_task COMPLETES:
+          - Update all dependent_tasks
+          - Recalculate execution_readiness
+          - Trigger eligible_tasks for execution
+          - Update execution_sequence if needed
+
+    4. Performance Metrics Collection:
+       AGENT_PERFORMANCE_TRACKING:
+       FOR each agent_type:
+          - Calculate task_completion_success_rate
+          - Measure average_execution_time_by_complexity
+          - Track result_quality_scores
+          - Monitor retry_frequency and failure_patterns
+          - Update competency_vectors based on performance
+
+       SYSTEM_PERFORMANCE_ANALYSIS:
+       - Track overall_delegation_success_rate
+       - Monitor parallel_execution_efficiency
+       - Calculate resource_utilization_optimization
+       - Measure user_satisfaction_indicators
+       - Analyze learning_curve_improvement
 
     PROGRESS_MONITORING:
     1. Real-time Updates:
@@ -363,13 +450,92 @@ result_synthesis_integration:
          "execution_summary": performance_summary
        }
 
-# Integration with Existing Systems
-integration_points:
-  with_tfidf_system:
-    trigger: "tfidf_analysis_completed"
-    input_data: "categorization_results, similarity_scores"
-    output_data: "agent_assignments_for_todo_items"
-    coordination: "use tfidf results for optimal agent selection"
+# Enhanced Integration with TF-IDF and Agent Selection Systems
+tfidf_integration_engine:
+  implementation: |
+    # LLM-Interpretable TF-IDF Integration for TODO Planning
+    INPUT: tfidf_analysis_results, task_categorization_vector, similarity_scores
+    OUTPUT: todo_plan_optimization, agent_assignment_enhancement
+
+    LLM_TFIDF_PROCESSING_INSTRUCTIONS:
+    1. Extract TF-IDF Analysis Components:
+       tfidf_data_extraction = {
+         "primary_categories": extract_top_categories(tfidf_results.category_vector, threshold=0.7),
+         "secondary_categories": extract_secondary_categories(tfidf_results.category_vector, threshold=0.4),
+         "semantic_similarity_scores": tfidf_results.similarity_matrix,
+         "keyword_relevance_weights": calculate_keyword_importance(tfidf_results.keyword_scores),
+         "domain_confidence_levels": assess_domain_certainty(tfidf_results.confidence_scores)
+       }
+
+    2. TODO Plan Optimization Based on TF-IDF:
+       PLAN_ENHANCEMENT_ALGORITHM:
+       FOR each identified_category in tfidf_data_extraction.primary_categories:
+          - Create category_specific_todo_blocks
+          - Assign category_optimized_execution_strategy
+          - Set priority_based_on_relevance_weight
+          - Determine parallel_execution_possibilities within_category
+
+       CROSS_CATEGORY_COORDINATION:
+       - Identify interdependencies_between_categories
+       - Create cross_category_execution_sequence
+       - Optimize resource_allocation_by_category_relevance
+       - Establish category_handoff_protocols
+
+    3. Agent Selection Enhancement with TF-IDF:
+       TFIDF_AGENT_MATCHING_ALGORITHM:
+       FOR each todo_item:
+          - Extract tfidf_requirements_vector from todo_item.content
+          - Match against agent_competency_vectors using cosine_similarity
+          - Apply tfidf_weight_adjustment to agent_selection_scores
+          - Consider historical_performance_by_category
+          - Generate ranked_agent_list_with_confidence_scores
+
+       SELECTION_CONFIDENCE_CALCULATION:
+       agent_confidence_score = (
+         tfidf_similarity_weight * 0.6 +
+         competency_match_weight * 0.25 +
+         historical_performance_weight * 0.10 +
+         domain_specialization_weight * 0.05
+       )
+
+unified_agent_selection_integration:
+  implementation: |
+    # Enhanced Integration with Unified Agent Selection System
+    INPUT: todo_item_list, unified_selection_results, tfidf_enhancement_data
+    OUTPUT: optimized_agent_assignments, delegation_readiness_assessment
+
+    LLM_AGENT_SELECTION_PROCESSING:
+    1. Merge Selection System Outputs:
+       selection_integration = {
+         "unified_selection_scores": unified_selection_results.compatibility_matrix,
+         "tfidf_enhancement_scores": tfidf_enhancement_data.agent_confidence_scores,
+         "performance_history_data": extract_agent_performance_metrics(),
+         "domain_expertise_mapping": map_domain_specializations(),
+         "availability_status": check_current_agent_availability()
+       }
+
+    2. Optimized Agent Assignment Algorithm:
+       FOR each todo_item in todo_item_list:
+          - Calculate composite_agent_score = weighted_average_of_all_sources
+          - Apply task_complexity_adjustment to scoring
+          - Consider parallel_execution_compatibility
+          - Validate agent_capability_sufficiency
+          - Assign primary_agent_with_fallback_options
+
+       DELEGATION_READINESS_ASSESSMENT:
+       - Verify agent_availability_for_assigned_tasks
+       - Check resource_allocation_requirements
+       - Validate dependency_satisfaction_status
+       - Assess execution_risk_factors
+       - Generate contingency_plans_for_high_risk_assignments
+
+    3. Dynamic Selection Optimization:
+       SELECTION_ADAPTATION_LOGIC:
+       - Monitor real_time_agent_performance
+       - Adjust selection_weights_based_on_success_rates
+       - Update competency_vectors_from_execution_results
+       - Refine tfidf_category_mappings_based_on_outcomes
+       - Optimize for multi_agent_coordination_efficiency
 
   with_parallel_coordination:
     trigger: "parallel_execution_required"
