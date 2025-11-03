@@ -349,11 +349,11 @@ integration_interface:
     user_interface: "Execution transparency and communication"
 
   system_dependencies:
-    task_analysis_system: "config_v2/analysis/task_analysis.yaml"
-    agent_selection_system: "config_v2/analysis/agent_selection.yaml"
-    clarification_system: "config_v2/analysis/clarification.yaml"
+    task_analysis_system: "config/analysis/task_analysis.yaml"
+    agent_selection_system: "config/analysis/agent_selection.yaml"
+    clarification_system: "config/analysis/clarification.yaml"
     tfidf_system: "Integrated in agent_selection.yaml"
-    parallel_coordination: "config_v2/execution/coordination.yaml (will be created)"
+    parallel_coordination: "config/execution/coordination.yaml (will be created)"
 
 # Version Management and Compatibility
 version_management:

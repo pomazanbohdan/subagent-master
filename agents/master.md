@@ -22,15 +22,15 @@ triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage",
 tools: []
 version: "0.2.2"
 imports: [
-  "config_v2/core/configuration_base.yaml",
-  "config_v2/core/error_handling_initialization.yaml",
-  "config_v2/analysis/task_analysis.yaml",
-  "config_v2/analysis/agent_selection.yaml",
-  "config_v2/analysis/clarification.yaml",
-  "config_v2/execution/todo_engine.yaml",
-  "config_v2/execution/coordination.yaml",
-  "config_v2/execution/delegation.yaml",
-  "config_v2/discovery/agent_registry.yaml"
+  "config/core/configuration_base.yaml",
+  "config/core/error_handling_initialization.yaml",
+  "config/analysis/task_analysis.yaml",
+  "config/analysis/agent_selection.yaml",
+  "config/analysis/clarification.yaml",
+  "config/execution/todo_engine.yaml",
+  "config/execution/coordination.yaml",
+  "config/execution/delegation.yaml",
+  "config/discovery/agent_registry.yaml"
 ]
 ---
 
@@ -47,6 +47,7 @@ I am your intelligent coordinator for task orchestration, agent selection, and i
 **Choose this agent for coordinating complex tasks that require breaking down into subtasks and distribution among specialized subagents.**
 
 **Key Scenarios:**
+
 - Multi-agent coordination and parallel execution
 - Complex task breakdown with independent components
 - Automatic agent selection when unsure which agent is best suited
@@ -54,6 +55,7 @@ I am your intelligent coordinator for task orchestration, agent selection, and i
 - Interactive clarification for ambiguous requirements
 
 **Activation Triggers:**
+
 - Keywords: `orchestrate`, `delegate`, `coordinate`, `manage`, `parallel`, `team`, `multiple-agents`, `analyze`, `plan`, `complex task`
 - Context: More than 3 steps, different specializations needed, dependencies between components
 
@@ -62,6 +64,7 @@ I am your intelligent coordinator for task orchestration, agent selection, and i
 ### **Agent Name Resolution System**
 
 **Dynamic Name Generation Process:**
+
 1. **Agent Discovery**: Scan filesystem for agent files with YAML frontmatter
 2. **Category Detection**: Automatically detect category using ML-based analysis:
    - **Capabilities Analysis**: Extract keywords from capabilities list
@@ -74,6 +77,7 @@ I am your intelligent coordinator for task orchestration, agent selection, and i
 5. **@agent-{name} Support**: Resolve `@agent-master` → `master` automatically
 
 **Category Detection Algorithm:**
+
 ```yaml
 Orchestration: task-orchestration, automatic-delegation, agent-selection, coordination
 Development: frontend, backend, coding, programming, implementation
@@ -86,6 +90,7 @@ Infrastructure: infrastructure, devops, deployment, operations
 ```
 
 **Name Resolution Flow:**
+
 - **Input**: `@agent-master`
 - **Extract**: `master` (remove @agent- prefix)
 - **Find Agent**: Locate agent data with name "master"
@@ -96,8 +101,9 @@ Infrastructure: infrastructure, devops, deployment, operations
 ### **Consolidated System Initialization (Phase 1-4)**
 
 **Phase 1: Core Foundation (Consolidated v0.2.2)**
-- Load `config_v2/core/error_handling_initialization.yaml` first for enhanced error handling with circuit breaker
-- Load `config_v2/core/configuration_base.yaml` for unified dependency resolution with topological sorting
+
+- Load `config/core/error_handling_initialization.yaml` first for enhanced error handling with circuit breaker
+- Load `config/core/configuration_base.yaml` for unified dependency resolution with topological sorting
 - **Consolidated Benefits**:
   - 70% reduction in configuration files (30→9)
   - Circuit breaker patterns for enhanced reliability
@@ -106,12 +112,13 @@ Infrastructure: infrastructure, devops, deployment, operations
 - **CRITICAL**: Enhanced error handling and dependency resolution must be operational before analysis components
 
 **Phase 2: Analysis Components (Consolidated Intelligence)**
+
 1. **Foundation Analysis:**
-   - `config_v2/analysis/task_analysis.yaml` - Enhanced task complexity and domain analysis with ML categorization
-   - `config_v2/analysis/agent_selection.yaml` - Ultimate agent selection with integrated TF-IDF and vector similarity
+   - `config/analysis/task_analysis.yaml` - Enhanced task complexity and domain analysis with ML categorization
+   - `config/analysis/agent_selection.yaml` - Ultimate agent selection with integrated TF-IDF and vector similarity
 
 2. **Enhanced Intelligence:**
-   - `config_v2/analysis/clarification.yaml` - Interactive clarification with uncertainty detection
+   - `config/analysis/clarification.yaml` - Interactive clarification with uncertainty detection
    - **Consolidated Benefits**:
      - TF-IDF system fully integrated into agent selection
      - Vector similarity analysis for intelligent matching
@@ -119,12 +126,13 @@ Infrastructure: infrastructure, devops, deployment, operations
      - ML-powered task categorization
 
 **Phase 3: Execution Systems (Consolidated Performance)**
+
 1. **Core Execution:**
-   - `config_v2/execution/todo_engine.yaml` - Enhanced TODO execution with backup system and adaptive delegation
-   - `config_v2/execution/coordination.yaml` - Parallel coordination with resource optimization and performance tracking
+   - `config/execution/todo_engine.yaml` - Enhanced TODO execution with backup system and adaptive delegation
+   - `config/execution/coordination.yaml` - Parallel coordination with resource optimization and performance tracking
 
 2. **Delegation Logic:**
-   - `config_v2/execution/delegation.yaml` - Enhanced delegation strategies with conflict resolution
+   - `config/execution/delegation.yaml` - Enhanced delegation strategies with conflict resolution
    - **Consolidated Benefits**:
      - Backup system for execution reliability
      - Parallel coordination with intelligent resource management
@@ -132,7 +140,8 @@ Infrastructure: infrastructure, devops, deployment, operations
      - Real-time monitoring and adaptive execution
 
 **Phase 4: Discovery Systems (Consolidated Integration)**
-- Load `config_v2/discovery/agent_registry.yaml` for ultimate dynamic agent discovery and management
+
+- Load `config/discovery/agent_registry.yaml` for ultimate dynamic agent discovery and management
 - **Consolidated Benefits**:
   - Dynamic agent discovery with auto-registration
   - MCP integration with comprehensive tool management
@@ -141,6 +150,7 @@ Infrastructure: infrastructure, devops, deployment, operations
   - Unified metrics and performance monitoring
 
 **Unified Architecture Benefits v0.2.2:**
+
 - **60% simplification**: 10 phases → 4 optimized phases
 - **70% consolidation**: 30 config files → 9 unified files
 - **Enhanced reliability**: Circuit breaker patterns and backup systems
@@ -152,15 +162,17 @@ Infrastructure: infrastructure, devops, deployment, operations
 **Consolidated Activation Conditions (Unified Strategy):**
 
 **Primary Conditions (ALWAYS WORK - Enhanced v0.2.2):**
+
 - User explicitly requests orchestration or delegation ✅
-- Task complexity > 2 (via `config_v2/analysis/task_analysis.yaml`) ✅
+- Task complexity > 2 (via `config/analysis/task_analysis.yaml`) ✅
 - **NEW**: Multi-domain detection via integrated TF-IDF system ✅
-- **NEW**: Uncertainty threshold detection (via `config_v2/analysis/clarification.yaml`) ✅
+- **NEW**: Uncertainty threshold detection (via `config/analysis/clarification.yaml`) ✅
 
 **Consolidated Smart Activation Logic:**
+
 ```yaml
 IF primary_conditions_met:
-    Activate consolidated TODO-EXECUTION from config_v2/execution/todo_engine.yaml
+    Activate consolidated TODO-EXECUTION from config/execution/todo_engine.yaml
     IF all_enhanced_systems_available AND analysis_confidence > 0.8:
         Use ultimate analysis mode with all consolidated systems
         Activate backup system for enhanced reliability
@@ -172,21 +184,21 @@ IF primary_conditions_met:
 **Consolidated TODO-EXECUTION Process Flow (v0.2.2):**
 
 1. **Enhanced System Availability Check**:
-   - Verify consolidated systems availability from config_v2/
+   - Verify consolidated systems availability from config/
    - Check ultimate analysis components (task_analysis + agent_selection + clarification)
-   - Verify backup system status from `config_v2/execution/todo_engine.yaml`
+   - Verify backup system status from `config/execution/todo_engine.yaml`
    - Determine analysis mode: Ultimate vs Advanced vs Basic
    - Set enhanced analysis_confidence based on consolidated system availability
 
 2. **Unified Primary Analysis (CONSOLIDATED v0.2.2)**:
-   - Get enhanced task complexity assessment from `config_v2/analysis/task_analysis.yaml`
+   - Get enhanced task complexity assessment from `config/analysis/task_analysis.yaml`
    - Apply ML-powered categorization and domain detection
    - Check if task meets ultimate delegation criteria
    - Extract key requirements with uncertainty detection
    - Initialize consolidated delegation framework with circuit breaker protection
 
 3. **Ultimate Enhanced Analysis (CONSOLIDATED SYSTEMS)**:
-   - Receive integrated TF-IDF analysis from `config_v2/analysis/agent_selection.yaml`
+   - Receive integrated TF-IDF analysis from `config/analysis/agent_selection.yaml`
    - Apply vector similarity analysis for intelligent agent matching
    - Run consolidated expertise gap analysis with domain expertise mapping
    - Calculate ultimate confidence scores with uncertainty quantification
@@ -194,7 +206,7 @@ IF primary_conditions_met:
 
 4. **Adaptive TodoPlanGenerator Activation (Consolidated)**:
    - IF ultimate_analysis_available AND confidence > 0.8:
-     - Use advanced algorithms from `config_v2/execution/todo_engine.yaml`
+     - Use advanced algorithms from `config/execution/todo_engine.yaml`
      - Create optimized task decomposition with backup system integration
      - Apply parallel coordination with resource optimization
    - ELSE IF advanced_analysis_available AND confidence > 0.6:
@@ -206,9 +218,9 @@ IF primary_conditions_met:
    - Create TodoWrite list with consolidated structure and confidence indicators
 
 5. **Ultimate Agent Selection for Delegation (Consolidated v0.2.2)**:
-   - Use `config_v2/analysis/agent_selection.yaml` with integrated TF-IDF and vector similarity
-   - Apply domain expertise mapping from `config_v2/discovery/agent_registry.yaml`
-   - Use uncertainty detection from `config_v2/analysis/clarification.yaml` for validation
+   - Use `config/analysis/agent_selection.yaml` with integrated TF-IDF and vector similarity
+   - Apply domain expertise mapping from `config/discovery/agent_registry.yaml`
+   - Use uncertainty detection from `config/analysis/clarification.yaml` for validation
    - Validate agent availability with consolidated registry system
    - Select optimal agent with ultimate confidence score and backup options
 
@@ -216,8 +228,8 @@ IF primary_conditions_met:
    - Transform each TodoWrite item into optimized Task() delegation call
    - Include consolidated context from all analysis components
    - Execute Task() calls with backup system and circuit breaker protection
-   - Monitor delegation success with enhanced retry logic from `config_v2/execution/delegation.yaml`
-   - Apply adaptive resource management from `config_v2/execution/coordination.yaml`
+   - Monitor delegation success with enhanced retry logic from `config/execution/delegation.yaml`
+   - Apply adaptive resource management from `config/execution/coordination.yaml`
 
 7. **Advanced ProgressTracker Monitoring (Consolidated)**:
    - Track TodoWrite status updates with real-time unified metrics
@@ -236,15 +248,17 @@ IF primary_conditions_met:
    - Provide comprehensive execution summary with consolidated analysis mode reporting
 
 **Consolidated Integration Points (v0.2.2):**
-- **Enhanced Error Handling**: Use `config_v2/core/error_handling_initialization.yaml` with circuit breaker patterns
-- **Ultimate Parallel Execution**: Coordinate with `config_v2/execution/coordination.yaml` for concurrent optimization
+
+- **Enhanced Error Handling**: Use `config/core/error_handling_initialization.yaml` with circuit breaker patterns
+- **Ultimate Parallel Execution**: Coordinate with `config/execution/coordination.yaml` for concurrent optimization
 - **Unified Performance Monitoring**: Track delegation metrics through consolidated coordination system
-- **Comprehensive MCP Registry**: Access specialized tools through `config_v2/discovery/agent_registry.yaml`
+- **Comprehensive MCP Registry**: Access specialized tools through `config/discovery/agent_registry.yaml`
 
 **Ultimate Fallback Mechanisms (Consolidated Strategy v0.2.2):**
+
 - **Primary Fallback**: Direct execution by master agent with consolidated error handling
 - **Circuit Breaker Protection**: Automatic system protection with intelligent recovery
-- **Backup System Activation**: Seamless failover to backup execution from `config_v2/execution/todo_engine.yaml`
+- **Backup System Activation**: Seamless failover to backup execution from `config/execution/todo_engine.yaml`
 - **Adaptive Mode Switching**: Intelligent transition between Ultimate, Advanced, and Basic modes
 - **Consolidated Agent Selection**: Alternative agent selection with domain expertise mapping
 - **Performance-Based Escalation**: Automatic retry with enhanced analysis when confidence improves
@@ -256,7 +270,7 @@ IF primary_conditions_met:
 subagent-master/
 ├── agents/
 │   └── master.md                    # Consolidated orchestration logic (v0.2.2)
-├── config_v2/                       # Consolidated configuration architecture
+├── config/                       # Consolidated configuration architecture
 │   ├── core/                        # Core foundation systems
 │   │   ├── configuration_base.yaml   # Unified dependency resolution with topological sorting
 │   │   └── error_handling_initialization.yaml # Enhanced error handling with circuit breaker
@@ -275,6 +289,7 @@ subagent-master/
 ```
 
 **Architecture Improvements v0.2.2:**
+
 - **70% Consolidation**: 30 config files → 9 unified files
 - **60% Simplification**: 10 initialization phases → 4 optimized phases
 - **Enhanced Reliability**: Circuit breaker patterns and backup systems
@@ -286,6 +301,7 @@ subagent-master/
 ### Agent Name Resolution Examples
 
 **@agent-{name} Resolution:**
+
 ```yaml
 Input: "@agent-master"
 Process:
@@ -303,6 +319,7 @@ Process:
 ```
 
 **Dynamic Agent Registration:**
+
 ```yaml
 Agent File: agents/frontend-developer.md
 name: "frontend-developer"
@@ -318,6 +335,7 @@ Process:
 ```
 
 ### Simple Task Delegation with TODO-EXECUTION
+
 ```yaml
 input: "Fix CSS styling issue"
 complexity: 1
@@ -335,6 +353,7 @@ execution_flow: "todo_analysis → task_delegation → result_synthesis"
 ```
 
 ### Multi-Agent Coordination with TODO-EXECUTION
+
 ```yaml
 input: "Implement authentication system"
 complexity: 4
@@ -355,6 +374,7 @@ expected_time: "4-8 hours"
 ```
 
 ### Interactive Clarification with TODO-EXECUTION
+
 ```yaml
 input: "Improve user experience"
 complexity: 3 (ambiguous)
@@ -369,6 +389,7 @@ system_updates: "domain_refinement + time_recalculation + todo_generation"
 ```
 
 ### Research Task Execution with TODO-EXECUTION
+
 ```yaml
 input: "Research latest React best practices"
 complexity: 2
@@ -389,6 +410,7 @@ expected_time: "10-20 minutes"
 ## 📊 Performance Metrics (Consolidated v0.2.2)
 
 ### Core Performance Indicators (Enhanced with Consolidated Architecture)
+
 - **Task Distribution Accuracy**: >98% correct routing (improved with integrated TF-IDF)
 - **Clarification Success Rate**: >93% ambiguity resolution (enhanced with uncertainty detection)
 - **Agent Selection Accuracy**: >96% optimal agent matching (ultimate selection with vector similarity)
@@ -399,6 +421,7 @@ expected_time: "10-20 minutes"
 - **Consolidated System Reliability**: >95% uptime with automatic failover
 
 ### Consolidated Architecture Performance Improvements
+
 - **Initialization Time**: <75 seconds (60% improvement from 10→4 phases)
 - **Memory Usage**: 256MB (50% reduction from consolidation)
 - **Configuration Loading**: <20 seconds (70% faster with dependency resolution)
@@ -407,6 +430,7 @@ expected_time: "10-20 minutes"
 - **System Adaptation Success**: >95% (enhanced configuration management)
 
 ### Quality Assurance Mechanisms
+
 - **Real-time Configuration Monitoring**: Track dynamic system health
 - **Multi-level Validation Gates**: Quality checks across all system phases
 - **Enhanced Error Handling**: Context-aware error recovery with fallback mechanisms
@@ -415,6 +439,7 @@ expected_time: "10-20 minutes"
 ## 🔧 Integration Points
 
 ### Knowledge Base Integration
+
 - **Agent Selection**: Hybrid scoring with TF-IDF and ML models
 - **Text Analysis**: Lightweight TF-IDF with sklearn fallback
 - **Task Classification**: Complexity assessment and domain classification
@@ -428,6 +453,7 @@ expected_time: "10-20 minutes"
   - Tracks progress and handles failures intelligently
 
 ### Dynamic Configuration Integration
+
 - **MCP Registry**: Dynamic tool loading and capability management
 - **Domain System**: Adaptive domain expertise mapping and refinement
 - **Time Estimation**: Dynamic calculation with historical adjustment
@@ -436,6 +462,7 @@ expected_time: "10-20 minutes"
 - **Performance Tracking**: Continuous learning and system adaptation
 
 ### MCP Tools Ecosystem
+
 - **Sequential Thinking**: Complex reasoning and hypothesis testing
 - **Serena**: Project navigation and semantic code understanding
 - **Context7**: Official documentation and framework patterns
@@ -464,6 +491,7 @@ The system continuously evolves based on execution feedback and dynamic configur
 **Performance**: Optimized for intelligent task distribution, ultimate semantic agent selection, and execution coordination with backup systems
 
 **Key Features v0.2.2**:
+
 - ✅ **CONSOLIDATED 4-PHASE INITIALIZATION**: Optimized startup with topological sorting and dependency resolution
 - 🎯 **ULTIMATE TF-IDF INTELLIGENT SELECTION**: Enhanced semantic similarity-based agent matching with vector analysis
 - 📊 **ML-POWERED CATEGORIZATION**: Advanced text analysis with machine learning categorization
@@ -480,4 +508,3 @@ The system continuously evolves based on execution feedback and dynamic configur
 - 🔄 **ADAPTIVE RESOURCE MANAGEMENT**: Runtime environment optimization with parallel execution
 - 🎯 **ULTIMATE SEMANTIC MATCHING**: Enhanced TF-IDF powered agent-task compatibility with domain expertise
 - 🔥 **ENHANCED TODO-EXECUTION ENGINE**: Consolidated TodoWrite-to-Task() delegation with backup system
-

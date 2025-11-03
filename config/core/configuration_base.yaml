@@ -21,7 +21,7 @@ dependency_graph:
   # New Architecture Configuration Files and Their Dependencies
   configurations:
     # Core Foundation (Level 0 - No dependencies)
-    config_v2/core/error_handling_initialization.yaml:
+    config/core/error_handling_initialization.yaml:
       level: 0
       dependencies: []
       priority: "critical"
@@ -30,100 +30,100 @@ dependency_graph:
       description: "Consolidated error handling and initialization system"
 
     # Analysis Components (Level 1 - Depends on Core)
-    config_v2/analysis/task_analysis.yaml:
+    config/analysis/task_analysis.yaml:
       level: 1
-      dependencies: ["config_v2/core/error_handling_initialization.yaml"]
+      dependencies: ["config/core/error_handling_initialization.yaml"]
       priority: "critical"
       load_timeout: 8000
       retry_count: 3
       description: "Task complexity and domain analysis system"
 
-    config_v2/analysis/agent_selection.yaml:
+    config/analysis/agent_selection.yaml:
       level: 1
-      dependencies: ["config_v2/core/error_handling_initialization.yaml"]
+      dependencies: ["config/core/error_handling_initialization.yaml"]
       priority: "critical"
       load_timeout: 6000
       retry_count: 2
       description: "Unified agent selection with TF-IDF integration"
 
-    config_v2/analysis/tfidf_system.yaml:
+    config/analysis/tfidf_system.yaml:
       level: 1
-      dependencies: ["config_v2/analysis/task_analysis.yaml"]
+      dependencies: ["config/analysis/task_analysis.yaml"]
       priority: "high"
       load_timeout: 7000
       retry_count: 2
       description: "TF-IDF semantic analysis system"
 
-    config_v2/analysis/clarification.yaml:
+    config/analysis/clarification.yaml:
       level: 1
-      dependencies: ["config_v2/analysis/task_analysis.yaml"]
+      dependencies: ["config/analysis/task_analysis.yaml"]
       priority: "medium"
       load_timeout: 5000
       retry_count: 2
       description: "Interactive clarification and context analysis"
 
     # Execution Components (Level 2 - Depends on Analysis)
-    config_v2/execution/todo_engine.yaml:
+    config/execution/todo_engine.yaml:
       level: 2
       dependencies: [
-        "config_v2/analysis/task_analysis.yaml",
-        "config_v2/analysis/agent_selection.yaml",
-        "config_v2/analysis/tfidf_system.yaml"
+        "config/analysis/task_analysis.yaml",
+        "config/analysis/agent_selection.yaml",
+        "config/analysis/tfidf_system.yaml"
       ]
       priority: "critical"
       load_timeout: 6000
       retry_count: 3
       description: "Primary TODO execution engine with backup integration"
 
-    config_v2/execution/coordination.yaml:
+    config/execution/coordination.yaml:
       level: 2
-      dependencies: ["config_v2/core/error_handling_initialization.yaml"]
+      dependencies: ["config/core/error_handling_initialization.yaml"]
       priority: "high"
       load_timeout: 5000
       retry_count: 2
       description: "Parallel coordination and execution management"
 
-    config_v2/execution/delegation.yaml:
+    config/execution/delegation.yaml:
       level: 2
-      dependencies: ["config_v2/execution/todo_engine.yaml"]
+      dependencies: ["config/execution/todo_engine.yaml"]
       priority: "high"
       load_timeout: 5000
       retry_count: 2
       description: "Task delegation rules and agent matching"
 
-    config_v2/execution/monitoring.yaml:
+    config/execution/monitoring.yaml:
       level: 2
-      dependencies: ["config_v2/execution/coordination.yaml"]
+      dependencies: ["config/execution/coordination.yaml"]
       priority: "medium"
       load_timeout: 5000
       retry_count: 2
       description: "Performance tracking and unified metrics"
 
     # Discovery Components (Level 3 - Depends on Execution)
-    config_v2/discovery/agent_registry.yaml:
+    config/discovery/agent_registry.yaml:
       level: 3
       dependencies: [
-        "config_v2/analysis/agent_selection.yaml",
-        "config_v2/execution/delegation.yaml"
+        "config/analysis/agent_selection.yaml",
+        "config/execution/delegation.yaml"
       ]
       priority: "critical"
       load_timeout: 10000
       retry_count: 3
       description: "Dynamic agent discovery and registration system"
 
-    config_v2/discovery/domain_system.yaml:
+    config/discovery/domain_system.yaml:
       level: 3
-      dependencies: ["config_v2/discovery/agent_registry.yaml"]
+      dependencies: ["config/discovery/agent_registry.yaml"]
       priority: "high"
       load_timeout: 8000
       retry_count: 2
       description: "Domain expertise and specialization mapping"
 
-    config_v2/discovery/mcp_integration.yaml:
+    config/discovery/mcp_integration.yaml:
       level: 3
       dependencies: [
-        "config_v2/discovery/agent_registry.yaml",
-        "config_v2/core/error_handling_initialization.yaml"
+        "config/discovery/agent_registry.yaml",
+        "config/core/error_handling_initialization.yaml"
       ]
       priority: "high"
       load_timeout: 8000
@@ -377,31 +377,31 @@ dependency_resolution_engine: |
           """Build mapping from old to new consolidated paths"""
           return {
               # Core mappings
-              'config/core/unified_error_handling.yaml': 'config_v2/core/error_handling_initialization.yaml',
-              'config/core/sequenced_initialization.yaml': 'config_v2/core/error_handling_initialization.yaml',
+              'config/core/unified_error_handling.yaml': 'config/core/error_handling_initialization.yaml',
+              'config/core/sequenced_initialization.yaml': 'config/core/error_handling_initialization.yaml',
 
               # Analysis mappings
-              'config/knowledge-base/task-analysis.yaml': 'config_v2/analysis/task_analysis.yaml',
-              'config/knowledge-base/unified_agent_selection.yaml': 'config_v2/analysis/agent_selection.yaml',
-              'config/knowledge-base/tfidf-system.yaml': 'config_v2/analysis/tfidf_system.yaml',
-              'config/knowledge-base/categorization-engine.yaml': 'config_v2/analysis/tfidf_system.yaml',
-              'config/knowledge-base/clarification_system.yaml': 'config_v2/analysis/clarification.yaml',
+              'config/knowledge-base/task-analysis.yaml': 'config/analysis/task_analysis.yaml',
+              'config/knowledge-base/unified_agent_selection.yaml': 'config/analysis/agent_selection.yaml',
+              'config/knowledge-base/tfidf-system.yaml': 'config/analysis/tfidf_system.yaml',
+              'config/knowledge-base/categorization-engine.yaml': 'config/analysis/tfidf_system.yaml',
+              'config/knowledge-base/clarification_system.yaml': 'config/analysis/clarification.yaml',
 
               # Execution mappings
-              'config/knowledge-base/todo_execution_engine.yaml': 'config_v2/execution/todo_engine.yaml',
-              'config/knowledge-base/todo_execution_backup.yaml': 'config_v2/execution/todo_engine.yaml',
-              'config/knowledge-base/parallel_coordination.yaml': 'config_v2/execution/coordination.yaml',
-              'config/rules/parallel_execution_rules.yaml': 'config_v2/execution/coordination.yaml',
-              'config/rules/todo_delegation_rules.yaml': 'config_v2/execution/delegation.yaml',
-              'config/dynamic/performance_tracking.yaml': 'config_v2/execution/monitoring.yaml',
-              'config/dynamic/unified_metrics.yaml': 'config_v2/execution/monitoring.yaml',
+              'config/knowledge-base/todo_execution_engine.yaml': 'config/execution/todo_engine.yaml',
+              'config/knowledge-base/todo_execution_backup.yaml': 'config/execution/todo_engine.yaml',
+              'config/knowledge-base/parallel_coordination.yaml': 'config/execution/coordination.yaml',
+              'config/rules/parallel_execution_rules.yaml': 'config/execution/coordination.yaml',
+              'config/rules/todo_delegation_rules.yaml': 'config/execution/delegation.yaml',
+              'config/dynamic/performance_tracking.yaml': 'config/execution/monitoring.yaml',
+              'config/dynamic/unified_metrics.yaml': 'config/execution/monitoring.yaml',
 
               # Discovery mappings
-              'config/dynamic/agent_types.yaml': 'config_v2/discovery/agent_registry.yaml',
-              'config/dynamic/dynamic_agent_discovery.yaml': 'config_v2/discovery/agent_registry.yaml',
-              'config/dynamic/agent_name_resolution.yaml': 'config_v2/discovery/agent_registry.yaml',
-              'config/dynamic/domain_system.yaml': 'config_v2/discovery/domain_system.yaml',
-              'config/dynamic/mcp_registry.yaml': 'config_v2/discovery/mcp_integration.yaml'
+              'config/dynamic/agent_types.yaml': 'config/discovery/agent_registry.yaml',
+              'config/dynamic/dynamic_agent_discovery.yaml': 'config/discovery/agent_registry.yaml',
+              'config/dynamic/agent_name_resolution.yaml': 'config/discovery/agent_registry.yaml',
+              'config/dynamic/domain_system.yaml': 'config/discovery/domain_system.yaml',
+              'config/dynamic/mcp_registry.yaml': 'config/discovery/mcp_integration.yaml'
           }
 
       def resolve_consolidated_dependencies(self):

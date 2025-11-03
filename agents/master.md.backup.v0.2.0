@@ -20,32 +20,32 @@ triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage",
 tools: []
 version: "0.2.0"
 imports: [
-  "config/core/unified_error_handling.yaml",
-  "config/core/sequenced_initialization.yaml",
-  "config/knowledge-base/task-analysis.yaml",
-  "config/knowledge-base/unified_agent_selection.yaml",
-  "config/knowledge-base/tfidf-system.yaml",
-  "config/knowledge-base/categorization-engine.yaml",
-  "config/knowledge-base/clarification_system.yaml",
-  "config/knowledge-base/parallel_coordination.yaml",
-  "config/knowledge-base/todo_execution_engine.yaml",
-  "config/rules/parallel_execution_rules.yaml",
-  "config/rules/todo_delegation_rules.yaml",
-  "config/dynamic/configuration_dependencies.yaml",
-  "config/dynamic/intelligent_config_loader.yaml",
-  "config/dynamic/configuration_monitoring.yaml",
-  "config/dynamic/agent_types.yaml",
-  "config/dynamic/dynamic_agent_discovery.yaml",
-  "config/dynamic/mcp_registry.yaml",
-  "config/dynamic/domain_system.yaml",
-  "config/dynamic/time_estimation.yaml",
-  "config/dynamic/runtime_environment.yaml",
-  "config/dynamic/performance_tracking.yaml",
-  "config/dynamic/unified_metrics.yaml",
-  "config/dynamic/variable_management.yaml",
-  "config/dynamic/integrated_environment_config.yaml",
-  "config/dynamic/agent_name_resolution.yaml",
-  "config/dynamic/configuration_loading_test.yaml"
+  "config.backup.v0.2.0/core/unified_error_handling.yaml",
+  "config.backup.v0.2.0/core/sequenced_initialization.yaml",
+  "config.backup.v0.2.0/knowledge-base/task-analysis.yaml",
+  "config.backup.v0.2.0/knowledge-base/unified_agent_selection.yaml",
+  "config.backup.v0.2.0/knowledge-base/tfidf-system.yaml",
+  "config.backup.v0.2.0/knowledge-base/categorization-engine.yaml",
+  "config.backup.v0.2.0/knowledge-base/clarification_system.yaml",
+  "config.backup.v0.2.0/knowledge-base/parallel_coordination.yaml",
+  "config.backup.v0.2.0/knowledge-base/todo_execution_engine.yaml",
+  "config.backup.v0.2.0/rules/parallel_execution_rules.yaml",
+  "config.backup.v0.2.0/rules/todo_delegation_rules.yaml",
+  "config.backup.v0.2.0/dynamic/configuration_dependencies.yaml",
+  "config.backup.v0.2.0/dynamic/intelligent_config_loader.yaml",
+  "config.backup.v0.2.0/dynamic/configuration_monitoring.yaml",
+  "config.backup.v0.2.0/dynamic/agent_types.yaml",
+  "config.backup.v0.2.0/dynamic/dynamic_agent_discovery.yaml",
+  "config.backup.v0.2.0/dynamic/mcp_registry.yaml",
+  "config.backup.v0.2.0/dynamic/domain_system.yaml",
+  "config.backup.v0.2.0/dynamic/time_estimation.yaml",
+  "config.backup.v0.2.0/dynamic/runtime_environment.yaml",
+  "config.backup.v0.2.0/dynamic/performance_tracking.yaml",
+  "config.backup.v0.2.0/dynamic/unified_metrics.yaml",
+  "config.backup.v0.2.0/dynamic/variable_management.yaml",
+  "config.backup.v0.2.0/dynamic/integrated_environment_config.yaml",
+  "config.backup.v0.2.0/dynamic/agent_name_resolution.yaml",
+  "config.backup.v0.2.0/dynamic/configuration_loading_test.yaml"
 ]
 ---
 
@@ -111,33 +111,33 @@ Infrastructure: infrastructure, devops, deployment, operations
 ### **Complete System Initialization (Phase 1-10)**
 
 **Phase 1: Core Systems Initialization**
-- Load `config/core/unified_error_handling.yaml` first for error handling foundation
+- Load `config.backup.v0.2.0/core/unified_error_handling.yaml` first for error handling foundation
 - Initialize fallback mechanisms with graceful degradation
 - Set up Claude Code native fallback as last resort
 - **CRITICAL**: Error handling must be operational before any other components
 
 **Phase 2: Knowledge Base Initialization (Complete)**
 1. **Foundation Components:**
-   - `config/knowledge-base/task-analysis.yaml` (core foundation)
-   - `config/core/unified_error_handling.yaml` (dependency foundation)
+   - `config.backup.v0.2.0/knowledge-base/task-analysis.yaml` (core foundation)
+   - `config.backup.v0.2.0/core/unified_error_handling.yaml` (dependency foundation)
 
 2. **Intelligence Components:**
-   - `config/knowledge-base/unified_agent_selection.yaml` (depends on task-analysis)
-   - `config/knowledge-base/tfidf-system.yaml` (depends on task-analysis) - *Semantic analysis system*
-   - `config/knowledge-base/categorization-engine.yaml` (depends on both)
+   - `config.backup.v0.2.0/knowledge-base/unified_agent_selection.yaml` (depends on task-analysis)
+   - `config.backup.v0.2.0/knowledge-base/tfidf-system.yaml` (depends on task-analysis) - *Semantic analysis system*
+   - `config.backup.v0.2.0/knowledge-base/categorization-engine.yaml` (depends on both)
 
 3. **Execution Components:**
-   - `config/knowledge-base/parallel_coordination.yaml` (depends on error-handling) - *Parallel execution management*
-   - `config/knowledge-base/todo_execution_engine.yaml` (depends on 4 components above) - *Core delegation engine*
-   - `config/knowledge-base/clarification_system.yaml` (depends on categorization)
+   - `config.backup.v0.2.0/knowledge-base/parallel_coordination.yaml` (depends on error-handling) - *Parallel execution management*
+   - `config.backup.v0.2.0/knowledge-base/todo_execution_engine.yaml` (depends on 4 components above) - *Core delegation engine*
+   - `config.backup.v0.2.0/knowledge-base/clarification_system.yaml` (depends on categorization)
 
 **Phase 3: Intelligent Configuration Loading (v0.2.0)**
 - **Dependency-Aware Loading System** with topological sorting:
-  1. Load `config/dynamic/configuration_dependencies.yaml` (dependency graph definition)
-  2. Load `config/dynamic/intelligent_config_loader.yaml` (intelligent loading engine)
-  3. Load `config/dynamic/configuration_monitoring.yaml` (monitoring system)
-  4. Load `config/dynamic/agent_name_resolution.yaml` (agent name resolution system)
-  5. Load `config/dynamic/configuration_loading_test.yaml` (configuration validation)
+  1. Load `config.backup.v0.2.0/dynamic/configuration_dependencies.yaml` (dependency graph definition)
+  2. Load `config.backup.v0.2.0/dynamic/intelligent_config_loader.yaml` (intelligent loading engine)
+  3. Load `config.backup.v0.2.0/dynamic/configuration_monitoring.yaml` (monitoring system)
+  4. Load `config.backup.v0.2.0/dynamic/agent_name_resolution.yaml` (agent name resolution system)
+  5. Load `config.backup.v0.2.0/dynamic/configuration_loading_test.yaml` (configuration validation)
   6. **Execute intelligent loading algorithm**:
      - Analyze configuration dependencies and build loading graph
      - Perform topological sort to determine optimal loading order
@@ -146,8 +146,8 @@ Infrastructure: infrastructure, devops, deployment, operations
      - Validate loading success and handle failures gracefully
 
 - **Dependency Levels for Intelligent Loading**:
-  - **Level 0**: Core foundation (`config/core/unified_error_handling.yaml`)
-  - **Level 1**: Knowledge base (`config/knowledge-base/task-analysis.yaml`, `unified_agent_selection.yaml`, etc.)
+  - **Level 0**: Core foundation (`config.backup.v0.2.0/core/unified_error_handling.yaml`)
+  - **Level 1**: Knowledge base (`config.backup.v0.2.0/knowledge-base/task-analysis.yaml`, `unified_agent_selection.yaml`, etc.)
   - **Level 2**: Dynamic configurations (`agent_types.yaml` → `dynamic_agent_discovery.yaml` → `mcp_registry.yaml` → `domain_system.yaml`)
   - **Level 3**: Extended configurations (`config_loader.yaml`, `performance_tracking.yaml`, `runtime_environment.yaml`)
   - **Level 4**: Integration configurations (`integrated_environment_config.yaml`, `unified_metrics.yaml`)
@@ -165,7 +165,7 @@ Infrastructure: infrastructure, devops, deployment, operations
 - Provide comprehensive system status reporting
 
 **Phase 5: Dynamic Agent Discovery and Registration**
-- **Query filesystem for available agents using config/dynamic/dynamic_agent_discovery.yaml**
+- **Query filesystem for available agents using config.backup.v0.2.0/dynamic/dynamic_agent_discovery.yaml**
 - **ERROR RECOVERY**: Continue even if agent discovery fails
 - **Dynamically discover agents from filesystem and built-in defaults**
 - **Validate agent name format: simple-name (from YAML frontmatter)**
@@ -186,32 +186,32 @@ Infrastructure: infrastructure, devops, deployment, operations
 - **FALLBACK**: Use hardcoded master agent if no agents discovered
 
 ### Phase 6: Task Analysis and TF-IDF Systems Initialization
-- Initialize task analysis capabilities using config/knowledge-base/task-analysis.yaml
-- **TF-IDF Text Processing**: Extract keywords and analyze task context using config/knowledge-base/tfidf-system.yaml
-- **Intelligent Task Categorization**: TF-IDF-powered classification using config/knowledge-base/categorization-engine.yaml
-- **Clarification System**: Initialize clarification capabilities using config/knowledge-base/clarification_system.yaml
+- Initialize task analysis capabilities using config.backup.v0.2.0/knowledge-base/task-analysis.yaml
+- **TF-IDF Text Processing**: Extract keywords and analyze task context using config.backup.v0.2.0/knowledge-base/tfidf-system.yaml
+- **Intelligent Task Categorization**: TF-IDF-powered classification using config.backup.v0.2.0/knowledge-base/categorization-engine.yaml
+- **Clarification System**: Initialize clarification capabilities using config.backup.v0.2.0/knowledge-base/clarification_system.yaml
 
 ### Phase 7: Agent Selection and Matching Systems
-- **Agent Selection**: Initialize intelligent agent selection using config/knowledge-base/unified_agent_selection.yaml
-- **Domain Mapping**: Initialize domain expertise mapping using config/dynamic/domain_system.yaml
-- **Time Estimation**: Initialize time estimation capabilities using config/dynamic/time_estimation.yaml
+- **Agent Selection**: Initialize intelligent agent selection using config.backup.v0.2.0/knowledge-base/unified_agent_selection.yaml
+- **Domain Mapping**: Initialize domain expertise mapping using config.backup.v0.2.0/dynamic/domain_system.yaml
+- **Time Estimation**: Initialize time estimation capabilities using config.backup.v0.2.0/dynamic/time_estimation.yaml
 - **CRITICAL**: Validate agent availability before selection
 
 ### Phase 8: Task Execution and Coordination Systems
-- **Parallel Coordination**: Initialize parallel execution capabilities using config/knowledge-base/parallel_coordination.yaml
+- **Parallel Coordination**: Initialize parallel execution capabilities using config.backup.v0.2.0/knowledge-base/parallel_coordination.yaml
 - **🔥 TODO-EXECUTION ENGINE**: Initialize and activate automatic TodoWrite-to-Task() delegation system
-  - Load TODO-EXECUTION algorithms from config/knowledge-base/todo_execution_engine.yaml
+  - Load TODO-EXECUTION algorithms from config.backup.v0.2.0/knowledge-base/todo_execution_engine.yaml
   - Initialize TodoPlanGenerator for task decomposition and planning
   - Initialize TaskDelegationEngine for automatic Task() delegation
   - Initialize ProgressTracker for real-time execution monitoring
   - Set up delegation triggers and activation conditions
-- **MCP Registry**: Initialize MCP tool registry using config/dynamic/mcp_registry.yaml
+- **MCP Registry**: Initialize MCP tool registry using config.backup.v0.2.0/dynamic/mcp_registry.yaml
 - **Task Delegation**: Initialize task delegation and execution systems with TODO-EXECUTION integration
 
 ### Phase 9: Monitoring and Performance Systems
-- **Performance Tracking**: Initialize performance monitoring using config/dynamic/performance_tracking.yaml
-- **Environment Configuration**: Initialize environment-specific settings using config/dynamic/integrated_environment_config.yaml
-- **Unified Metrics**: Initialize unified metrics collection using config/dynamic/unified_metrics.yaml
+- **Performance Tracking**: Initialize performance monitoring using config.backup.v0.2.0/dynamic/performance_tracking.yaml
+- **Environment Configuration**: Initialize environment-specific settings using config.backup.v0.2.0/dynamic/integrated_environment_config.yaml
+- **Unified Metrics**: Initialize unified metrics collection using config.backup.v0.2.0/dynamic/unified_metrics.yaml
 
 ### Phase 10: Final System Readiness and Validation
 - **Final Validation**: Complete system health check and readiness confirmation
@@ -321,7 +321,7 @@ IF primary_conditions_met:
 subagent-master/
 ├── agents/
 │   └── master.md                    # High-level orchestration logic (v0.2.0)
-├── config/
+├── config.backup.v0.2.0/
 │   ├── knowledge-base/              # Algorithm definitions and analysis
 │   │   ├── task-analysis.yaml       # Task complexity and domain analysis (foundation)
 │   │   ├── unified_agent_selection.yaml    # Unified agent selection system
@@ -488,7 +488,7 @@ expected_time: "10-20 minutes"
 - **Parallel Coordination**: Execution management with result synthesis
 - **Clarification System**: Interactive clarification with contextual questions
 - **🔥 TODO-EXECUTION Engine**: Automatic TodoWrite-to-Task() delegation system
-  - Pseudocode implementation in `config/knowledge-base/todo_execution_engine.yaml`
+  - Pseudocode implementation in `config.backup.v0.2.0/knowledge-base/todo_execution_engine.yaml`
   - Converts analysis results into actionable TodoWrite plans
   - Executes each TODO item through optimized Task() delegation
   - Tracks progress and handles failures intelligently
