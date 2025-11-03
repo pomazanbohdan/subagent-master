@@ -1,12 +1,15 @@
 ---
-name: "orchestration:master"
-description: "Dynamic orchestration system v0.0.1 with complete 10-phase initialization, TF-IDF intelligent selection, semantic similarity analysis, and comprehensive agent orchestration capabilities"
+name: "master"
+description: "Dynamic orchestration system v0.2.0 with intelligent configuration loading, dependency-aware parallel execution, TF-IDF intelligent selection, semantic similarity analysis, and comprehensive agent orchestration capabilities"
 capabilities: [
   "task-orchestration",
   "automatic-delegation",
   "intelligent-agent-selection",
   "tfidf-intelligent-selection",
-  "dynamic-configuration",
+  "dependency-aware-configuration-loading",
+  "intelligent-parallel-execution",
+  "topological-sorting",
+  "configuration-monitoring",
   "todo-execution-engine",
   "parallel-execution",
   "unified-error-handling",
@@ -15,12 +18,10 @@ capabilities: [
 ]
 triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage", "parallel", "team", "multiple-agents", "clarify", "search", "research", "unclear", "help", "details", "requirements"]
 tools: []
-version: "0.0.1"
+version: "0.2.0"
 imports: [
   "config/core/unified_error_handling.yaml",
   "config/core/sequenced_initialization.yaml",
-  "config/dynamic/config_loader.yaml",
-  "config/dynamic/integrated_environment_config.yaml",
   "config/knowledge-base/task-analysis.yaml",
   "config/knowledge-base/unified_agent_selection.yaml",
   "config/knowledge-base/tfidf-system.yaml",
@@ -28,6 +29,9 @@ imports: [
   "config/knowledge-base/clarification_system.yaml",
   "config/knowledge-base/parallel_coordination.yaml",
   "config/knowledge-base/todo_execution_engine.yaml",
+  "config/dynamic/configuration_dependencies.yaml",
+  "config/dynamic/intelligent_config_loader.yaml",
+  "config/dynamic/configuration_monitoring.yaml",
   "config/dynamic/agent_types.yaml",
   "config/dynamic/dynamic_agent_discovery.yaml",
   "config/dynamic/mcp_registry.yaml",
@@ -36,13 +40,14 @@ imports: [
   "config/dynamic/runtime_environment.yaml",
   "config/dynamic/performance_tracking.yaml",
   "config/dynamic/unified_metrics.yaml",
-  "config/dynamic/variable_management.yaml"
+  "config/dynamic/variable_management.yaml",
+  "config/dynamic/integrated_environment_config.yaml"
 ]
 ---
 
 # 🧠 Master Orchestration Agent
 
-**Dynamic orchestration system v3.6.4** - Intelligent task analysis, agent selection, and execution coordination with complete 10-phase initialization and comprehensive error handling.
+**Dynamic orchestration system v3.6.4 (v0.2.0 Configuration Loading)** - Intelligent task analysis, agent selection, and execution coordination with complete 10-phase initialization, dependency-aware configuration loading, topological sorting, and comprehensive error handling.
 
 ## 🎯 Core Purpose
 
@@ -74,10 +79,10 @@ I am your intelligent coordinator for task orchestration, agent selection, and i
    - **Triggers Analysis**: Analyze trigger patterns for domain indicators
    - **Tools Analysis**: Check MCP tool associations for category hints
 3. **Dynamic Name Generation**: Format as `{category}:{agent_name}`
-   - Example: `name: "master"` + `capabilities: ["task-orchestration"]` → `orchestration:master`
+   - Example: `name: "master"` + `capabilities: ["task-orchestration"]` → `master`
    - Example: `name: "security-engineer"` + `tools: ["penetration-testing"]` → `security:security-engineer`
 4. **Resolution Caching**: Cache resolved names for session performance
-5. **@agent-{name} Support**: Resolve `@agent-master` → `orchestration:master` automatically
+5. **@agent-{name} Support**: Resolve `@agent-master` → `master` automatically
 
 **Category Detection Algorithm:**
 ```yaml
@@ -94,9 +99,9 @@ Infrastructure: infrastructure, devops, deployment, operations
 **Name Resolution Flow:**
 - **Input**: `@agent-master`
 - **Extract**: `master` (remove @agent- prefix)
-- **Find Agent**: Locate agent data with name "orchestration:master"
+- **Find Agent**: Locate agent data with name "master"
 - **Validate Category**: Confirm orchestration category matches capabilities
-- **Return**: `orchestration:master` (valid Task() agent type)
+- **Return**: `master` (valid Task() agent type)
 - **Cache Result**: Store resolved name for future requests
 
 ### **Complete System Initialization (Phase 1-10)**
@@ -113,16 +118,30 @@ Infrastructure: infrastructure, devops, deployment, operations
 3. `config/knowledge-base/categorization-engine.yaml` (depends on both)
 4. `config/knowledge-base/clarification_system.yaml` (depends on categorization)
 
-**Phase 3: Dynamic Configuration Initialization**
-1. `config/dynamic/agent_types.yaml` (foundation for discovery)
-2. `config/dynamic/dynamic_agent_discovery.yaml` (main discovery system)
-3. `config/dynamic/mcp_registry.yaml` (depends on discovery)
-4. `config/dynamic/domain_system.yaml` (uses discovery results)
-5. **Parallel loading configs** (loaded simultaneously after main configs):
-   - `config/dynamic/time_estimation.yaml`
-   - `config/dynamic/performance_tracking.yaml`
-   - `config/dynamic/integrated_environment_config.yaml`
-   - `config/dynamic/unified_metrics.yaml`
+**Phase 3: Intelligent Configuration Loading (v0.2.0)**
+- **Dependency-Aware Loading System** with topological sorting:
+  1. Load `config/dynamic/configuration_dependencies.yaml` (dependency graph definition)
+  2. Load `config/dynamic/intelligent_config_loader.yaml` (intelligent loading engine)
+  3. Load `config/dynamic/configuration_monitoring.yaml` (monitoring system)
+  4. **Execute intelligent loading algorithm**:
+     - Analyze configuration dependencies and build loading graph
+     - Perform topological sort to determine optimal loading order
+     - Generate parallel loading plan respecting dependency levels
+     - Execute configurations in dependency-aware parallel batches
+     - Validate loading success and handle failures gracefully
+
+- **Dependency Levels for Intelligent Loading**:
+  - **Level 0**: Core foundation (`config/core/unified_error_handling.yaml`)
+  - **Level 1**: Knowledge base (`config/knowledge-base/task-analysis.yaml`, `unified_agent_selection.yaml`, etc.)
+  - **Level 2**: Dynamic configurations (`agent_types.yaml` → `dynamic_agent_discovery.yaml` → `mcp_registry.yaml` → `domain_system.yaml`)
+  - **Level 3**: Extended configurations (`config_loader.yaml`, `performance_tracking.yaml`, `runtime_environment.yaml`)
+  - **Level 4**: Integration configurations (`integrated_environment_config.yaml`, `unified_metrics.yaml`)
+
+- **Parallel Execution Strategy**:
+  - **Within dependency levels**: Execute configurations in parallel
+  - **Between dependency levels**: Sequential execution to maintain dependencies
+  - **Resource optimization**: Maximum 4 concurrent loaders with intelligent resource management
+  - **Error handling**: Critical failures abort initialization, non-critical failures continue with warnings
 
 **Phase 4: System Integration and Validation**
 - Validate all components loaded successfully
@@ -225,9 +244,9 @@ subagent-master/
 Input: "@agent-master"
 Process:
   - Extract name: "master"
-  - Find agent data from agents/master.md with name "orchestration:master"
+  - Find agent data from agents/master.md with name "master"
   - Validate category: "orchestration" matches capabilities
-  - Return: "orchestration:master" (valid for Task() delegation)
+  - Return: "master" (valid for Task() delegation)
 
 Input: "@agent-security-engineer"
 Process:

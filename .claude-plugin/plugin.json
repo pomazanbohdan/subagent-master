@@ -1,7 +1,7 @@
 {
   "name": "master",
-  "version": "0.1.0",
-  "description": "Dynamic orchestration system v0.1.0 - Complete 10-phase initialization system with comprehensive component orchestration, TF-IDF integration, and robust error handling",
+  "version": "0.2.0",
+  "description": "Dynamic orchestration system v0.2.0 - Intelligent configuration loading with dependency-aware parallel execution and topological sorting - Complete 10-phase initialization system with comprehensive component orchestration, TF-IDF integration, and robust error handling",
   "author": {
     "name": "Bohdan",
     "email": "pomazan.bohdan@gmail.com"
@@ -102,6 +102,22 @@
     "agent-name-validation",
     "error-prevention",
     "name-resolution",
-    "registry-validation"
+    "registry-validation",
+    "dependency-aware-configuration",
+    "intelligent-parallel-loading",
+    "topological-sorting",
+    "configuration-dependency-resolution",
+    "parallel-configuration-execution",
+    "dependency-level-optimization",
+    "intelligent-loading-algorithm",
+    "configuration-monitoring-system",
+    "dependency-graph-analysis",
+    "configuration-validation",
+    "resource-optimization",
+    "loading-performance-monitoring",
+    "circular-dependency-detection",
+    "missing-dependency-validation",
+    "configuration-health-checking",
+    "intelligent-error-recovery"
   ]
 }

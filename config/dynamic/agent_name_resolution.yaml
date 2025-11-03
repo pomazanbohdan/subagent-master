@@ -11,7 +11,7 @@ metadata:
 name_validation:
   required_format: "category:agent-name"
   examples:
-    valid: ["orchestration:master", "development:frontend-architect", "security:security-engineer", "development:backend-architect", "performance:performance-engineer"]
+    valid: ["master", "development:frontend-architect", "security:security-engineer", "development:backend-architect", "performance:performance-engineer"]
     invalid: ["master", "agent", "undefined", "frontend"]
 
   validation_steps:
@@ -33,7 +33,7 @@ error_prevention:
     auto_correction:
       enabled: true
       corrections:
-        "master": "orchestration:master"
+        "master": "master"
         "frontend": "development:frontend-architect"
         "backend": "development:backend-architect"
         "security": "security:security-engineer"

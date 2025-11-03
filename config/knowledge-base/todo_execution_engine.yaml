@@ -55,7 +55,7 @@ todo_plan_generation:
           - Integrate TF-IDF analysis with competency scoring
           - Use dynamic registry to find best-matched agent
           - Apply domain system enhancements for optimal selection
-          - Set fallback agent options with orchestration:master as last resort
+          - Set fallback agent options with master as last resort
 
     3. TodoWrite Structure:
        todo_items = []
@@ -158,7 +158,7 @@ agent_selection_from_registry:
         best_match = integrate_with_domain_system(best_match)
 
       # 6. Return canonical agent name
-      return best_match['agent_name'] if best_match else "orchestration:master"
+      return best_match['agent_name'] if best_match else "master"
 
     def create_task_requirement_vector(task_requirements, competency_list):
       """

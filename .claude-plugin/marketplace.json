@@ -1,12 +1,12 @@
 {
-  "name": "subagent-master",
+  "name": "orchestration",
   "owner": {
     "name": "Bohdan",
     "email": "pomazan.bohdan@gmail.com"
   },
   "metadata": {
-    "description": "Dynamic orchestration system v0.1.0 - Complete 10-phase initialization with dynamic agent name resolution, automatic categorization, and @agent-{name} support",
-    "version": "0.1.0"
+    "description": "Dynamic orchestration system v0.2.0 - Intelligent configuration loading with dependency-aware parallel execution and topological sorting - Complete 10-phase initialization with dynamic agent name resolution, automatic categorization, and @agent-{name} support",
+    "version": "0.2.0"
   },
   "plugins": [
     {
@@ -113,7 +113,23 @@
         "tool-based-categorization",
         "name-cache-system",
         "fallback-resolution",
-        "agent-prefix-support"
+        "agent-prefix-support",
+        "dependency-aware-configuration",
+        "intelligent-parallel-loading",
+        "topological-sorting",
+        "configuration-dependency-resolution",
+        "parallel-configuration-execution",
+        "dependency-level-optimization",
+        "intelligent-loading-algorithm",
+        "configuration-monitoring-system",
+        "dependency-graph-analysis",
+        "configuration-validation",
+        "resource-optimization",
+        "loading-performance-monitoring",
+        "circular-dependency-detection",
+        "missing-dependency-validation",
+        "configuration-health-checking",
+        "intelligent-error-recovery"
       ],
       "source": "./",
       "agents": [
