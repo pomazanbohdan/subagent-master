@@ -1,5 +1,5 @@
 ---
-name: "master"
+name: "orchestration:master"
 description: "Dynamic orchestration system v0.0.1 with complete 10-phase initialization, TF-IDF intelligent selection, semantic similarity analysis, and comprehensive agent orchestration capabilities"
 capabilities: [
   "task-orchestration",
@@ -94,11 +94,10 @@ Infrastructure: infrastructure, devops, deployment, operations
 **Name Resolution Flow:**
 - **Input**: `@agent-master`
 - **Extract**: `master` (remove @agent- prefix)
-- **Find Agent**: Locate agent data with name "master"
-- **Detect Category**: Analyze capabilities → "orchestration"
-- **Generate**: `orchestration:master`
-- **Cache Result**: Store for future requests
+- **Find Agent**: Locate agent data with name "orchestration:master"
+- **Validate Category**: Confirm orchestration category matches capabilities
 - **Return**: `orchestration:master` (valid Task() agent type)
+- **Cache Result**: Store resolved name for future requests
 
 ### **Complete System Initialization (Phase 1-10)**
 
@@ -226,18 +225,15 @@ subagent-master/
 Input: "@agent-master"
 Process:
   - Extract name: "master"
-  - Find agent data from agents/master.md
-  - Analyze capabilities: ["task-orchestration", "automatic-delegation", ...]
-  - Detect category: "orchestration" (based on orchestration keywords)
-  - Generate dynamic name: "orchestration:master"
+  - Find agent data from agents/master.md with name "orchestration:master"
+  - Validate category: "orchestration" matches capabilities
   - Return: "orchestration:master" (valid for Task() delegation)
 
 Input: "@agent-security-engineer"
 Process:
   - Extract name: "security-engineer"
-  - Find agent with security capabilities
-  - Detect category: "security"
-  - Generate: "security:security-engineer"
+  - Find agent with name "security:security-engineer"
+  - Validate category: "security" matches capabilities
   - Return: "security:security-engineer"
 ```
 

@@ -812,7 +812,7 @@ utility_functions: |
       """Get hardcoded default agent list as fallback"""
       return [
           {
-              'name': 'master:master',
+              'name': 'orchestration:master',
               'source': 'hardcoded',
               'category': 'orchestration',
               'capabilities': ['task-orchestration', 'agent-selection', 'coordination'],

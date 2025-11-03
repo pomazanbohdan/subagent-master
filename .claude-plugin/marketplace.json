@@ -5,8 +5,8 @@
     "email": "pomazan.bohdan@gmail.com"
   },
   "metadata": {
-    "description": "Dynamic orchestration system v0.0.1 - Complete 10-phase initialization with dynamic agent name resolution, automatic categorization, and @agent-{name} support",
-    "version": "0.0.1"
+    "description": "Dynamic orchestration system v0.0.2 - Complete 10-phase initialization with dynamic agent name resolution, automatic categorization, and @agent-{name} support",
+    "version": "0.0.2"
   },
   "plugins": [
     {
