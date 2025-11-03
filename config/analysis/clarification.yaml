@@ -88,6 +88,7 @@ ambiguity_detection_system:
 
       NORMALIZATION: Clamp scores to 0.0-1.0 range
       THRESHOLD: Trigger clarification at ambiguity_score > 0.6
+      CONFIDENCE_THRESHOLD: Require confidence > 0.6 for basic execution
 
 # Enhanced Contextual Question Generation
 question_generation_system:
@@ -233,22 +234,22 @@ response_processing_system:
 adaptive_workflows:
   simple_clarification:
     trigger_conditions:
-      - "ambiguity_score between 0.6-0.7"
+      - "ambiguity_score between 0.6-0.75"
       - "task_complexity <= 2"
-      - "semantic_confidence >= 0.7"
-      - "domain_clarity >= 0.8"
+      - "semantic_confidence > 0.6"
+      - "domain_clarity > 0.7"
 
     workflow:
       - generate_3_5_questions: "focus on basic requirements with semantic enhancement"
       - process_user_responses: "single round clarification with semantic analysis"
-      - validate_clarification: "check if ambiguity_score < 0.3 and semantic_confidence > 0.8"
+      - validate_clarification: "check if ambiguity_score < 0.4 and semantic_confidence > 0.75"
       - proceed_to_execution: "if clarified, else escalate to comprehensive workflow"
 
   comprehensive_clarification:
     trigger_conditions:
-      - "ambiguity_score between 0.7-0.9"
+      - "ambiguity_score between 0.75-0.9"
       - "task_complexity between 3-4"
-      - "semantic_confidence between 0.4-0.7"
+      - "semantic_confidence between 0.4-0.75"
       - "domain_clarity between 0.5-0.8"
 
     workflow:

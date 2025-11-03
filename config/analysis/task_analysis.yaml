@@ -367,7 +367,7 @@ execution_strategy_framework:
       - complexity_score >= 2.0
       - task_clarity_is_clear: true
       - available_agents_match_requirements: true
-      - confidence_level >= 0.6
+      - confidence_level > 0.6
 
     manual_triggers:
       - high_ambiguity_detected: true

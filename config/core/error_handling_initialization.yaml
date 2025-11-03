@@ -106,7 +106,7 @@ initialization_phases:
     failure_handling:
       partial_failure: "continue_with_degraded_logging"
       complete_failure: "emergency_embedded_mode"
-      escalation_threshold: 1
+      escalation_threshold: 3
 
   # Phase 2: Configuration & Analysis Foundation (Level 1)
   phase_2_configuration_analysis:
@@ -136,7 +136,7 @@ initialization_phases:
     failure_handling:
       partial_failure: "use_basic_analysis"
       complete_failure: "manual_coordination"
-      escalation_threshold: 1
+      escalation_threshold: 3
 
   # Phase 3: Execution & Discovery Systems (Level 2)
   phase_3_execution_discovery:

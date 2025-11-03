@@ -83,43 +83,7 @@ dependency_graph:
       retry_count: 2
       description: "Task delegation rules and agent matching"
 
-    config/execution/monitoring.yaml:
-      level: 2
-      dependencies: ["config/execution/coordination.yaml"]
-      priority: "medium"
-      load_timeout: 5000
-      retry_count: 2
-      description: "Performance tracking and unified metrics"
-
-    # Discovery Components (Level 3 - Depends on Execution)
-    config/discovery/agent_registry.yaml:
-      level: 3
-      dependencies: [
-        "config/execution/delegation.yaml"
-      ]
-      priority: "critical"
-      load_timeout: 10000
-      retry_count: 3
-      description: "Dynamic agent discovery and registration system"
-
-    config/discovery/domain_system.yaml:
-      level: 3
-      dependencies: ["config/discovery/agent_registry.yaml"]
-      priority: "high"
-      load_timeout: 8000
-      retry_count: 2
-      description: "Domain expertise and specialization mapping"
-
-    config/discovery/mcp_integration.yaml:
-      level: 3
-      dependencies: [
-        "config/discovery/agent_registry.yaml",
-        "config/core/error_handling_initialization.yaml"
-      ]
-      priority: "high"
-      load_timeout: 8000
-      retry_count: 2
-      description: "MCP server registry and tool management"
+    # Monitoring functionality is consolidated in existing files
 
 # Enhanced Loading Strategy Configuration
 loading_strategy:
@@ -165,11 +129,11 @@ loading_strategy:
       adjustment_factor: 0.8
       adaptive_scaling: true
 
-    # Load configurations by dependency level (optimized for 4-level architecture)
+    # Load configurations by dependency level (optimized for actual 9-file architecture)
     level_loading:
       level_0: 1  # Sequential - critical foundation (error_handling_initialization)
-      level_1: 3  # Parallel - analysis components (3 analysis configs)
-      level_2: 3  # Parallel - execution components (3 execution configs)
+      level_1: 3  # Parallel - analysis components (task_analysis, agent_selection, clarification)
+      level_2: 3  # Parallel - execution components (todo_engine, coordination, delegation)
       level_3: 1  # Sequential - discovery components (agent_registry only)
 
   # Enhanced Adaptive Timeout Configuration
@@ -384,13 +348,14 @@ dependency_resolution_engine: |
               'config/knowledge-base/parallel_coordination.yaml': 'config/execution/coordination.yaml',
               'config/rules/parallel_execution_rules.yaml': 'config/execution/coordination.yaml',
               'config/rules/todo_delegation_rules.yaml': 'config/execution/delegation.yaml',
-              'config/dynamic/performance_tracking.yaml': 'config/execution/monitoring.yaml',
-              'config/dynamic/unified_metrics.yaml': 'config/execution/monitoring.yaml',
+              # Performance monitoring functionality is consolidated in coordination.yaml and todo_engine.yaml
 
               # Discovery mappings
               'config/dynamic/agent_types.yaml': 'config/discovery/agent_registry.yaml',
               'config/dynamic/dynamic_agent_discovery.yaml': 'config/discovery/agent_registry.yaml',
-              'config/dynamic/agent_name_resolution.yaml': 'config/discovery/agent_registry.yaml'
+              'config/dynamic/agent_name_resolution.yaml': 'config/discovery/agent_registry.yaml',
+              # Domain system functionality is consolidated in agent_registry.yaml
+              # MCP integration functionality is consolidated in agent_registry.yaml and error_handling_initialization.yaml
           }
 
       def resolve_consolidated_dependencies(self):
@@ -580,12 +545,14 @@ version_management:
 
   consolidation_changes:
     what_was_consolidated:
-      - "27 individual configuration files → 9 consolidated files"
+      - "30 individual configuration files → 9 consolidated files"
       - "5 dependency levels → 4 optimized levels"
       - "Multiple dependency systems → unified dependency resolver"
       - "Separate loading strategies → consolidated loading strategy"
-      - "Individual monitoring systems → unified monitoring"
+      - "Individual monitoring systems → unified monitoring (integrated into existing files)"
       - "TF-IDF system consolidation → integrated into agent_selection"
+      - "Domain system functionality → consolidated into agent_registry"
+      - "MCP integration functionality → consolidated into agent_registry and error_handling_initialization"
 
     benefits_of_consolidation:
       - "48% reduction in configuration file count"
