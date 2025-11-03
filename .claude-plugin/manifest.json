@@ -1,7 +1,7 @@
 {
   "name": "subagent-master",
-  "version": "0.0.3",
-  "description": "Dynamic orchestration system v0.0.3 - Fixed catastrophic agent type mismatch and dependency paradox - complete Task() delegation system repair",
+  "version": "0.1.0",
+  "description": "Dynamic orchestration system v0.1.0 - Integrated TODO Engine with Dynamic Agent Registry - complete intelligent agent selection system",
   "author": "Bohdan <pomazan.bohdan@gmail.com>",
   "license": "MIT",
   "keywords": [
