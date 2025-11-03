@@ -23,6 +23,8 @@ delegation_criteria:
     priority_threshold: 0.6
     confidence_threshold: 0.6
     multi_agent_coordination_threshold: 3.0
+    batch_operation_threshold: 3  # NEW: Trigger for massive parallel operations
+    identical_pattern_operations: true  # NEW: Detect identical modification patterns
 
   selection_criteria:
     primary_criteria:
@@ -40,6 +42,12 @@ delegation_criteria:
       competency_match: "minimum 0.5"
       availability_fallback: "allow fallback mechanisms"
       master_agent_available: "ultimate fallback option"
+
+    batch_operation_criteria:
+      operation_count: ">= 3 identical operations"
+      independence_check: "validate no dependencies between operations"
+      performance_optimization: "prioritize parallel execution for speed"
+      resource_monitoring: "track concurrent operation limits"
 
 # Enhanced Agent Selection System
 agent_selection_system:
@@ -216,6 +224,13 @@ performance_metrics:
     quality_improvement: "> 20%"
     system_availability: "> 99%"
     fallback_usage_rate: "< 10%"
+
+  batch_operation_metrics:
+    parallel_execution_efficiency: "> 85%"
+    batch_completion_rate: "> 95%"
+    concurrent_operation_success: "> 90%"
+    time_reduction_achieved: "> 60% for batch operations"
+    resource_utilization_optimization: "> 80%"
 
   learning_metrics:
     pattern_recognition: "Track improvement in selection accuracy"
