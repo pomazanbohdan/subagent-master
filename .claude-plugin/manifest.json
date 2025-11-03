@@ -1,7 +1,7 @@
 {
   "name": "subagent-master",
-  "version": "0.0.2",
-  "description": "Dynamic orchestration system v0.0.2 - Fixed critical agent name resolution loop with standardized category:agent-name format and improved delegation consistency",
+  "version": "0.0.3",
+  "description": "Dynamic orchestration system v0.0.3 - Fixed catastrophic agent type mismatch and dependency paradox - complete Task() delegation system repair",
   "author": "Bohdan <pomazan.bohdan@gmail.com>",
   "license": "MIT",
   "keywords": [

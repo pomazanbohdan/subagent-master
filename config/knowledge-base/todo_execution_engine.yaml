@@ -50,10 +50,12 @@ todo_plan_generation:
 
     2. Agent Assignment:
        FOR each task in plan:
-          - Use TF-IDF similarity for agent selection
-          - Map task requirements to agent capabilities
-          - Assign optimal agent with confidence score
-          - Set fallback agent options
+          - Use dynamic agent discovery for comprehensive agent selection
+          - Apply competency vector matching for precise skill alignment
+          - Integrate TF-IDF analysis with competency scoring
+          - Use dynamic registry to find best-matched agent
+          - Apply domain system enhancements for optimal selection
+          - Set fallback agent options with orchestration:master as last resort
 
     3. TodoWrite Structure:
        todo_items = []
@@ -105,7 +107,7 @@ task_delegation_system:
 
     2. Task() Parameter Construction:
        task_params = {
-         "subagent_type": determine_agent_type(agent_assignment),
+         "subagent_type": determine_agent_type_from_registry(todo_item, execution_context),
          "description": create_task_description(todo_item),
          "prompt": create_comprehensive_prompt(todo_item, execution_context)
        }
@@ -126,33 +128,107 @@ task_delegation_system:
        - Trigger dependent tasks if ready
        - Log performance metrics
 
-  agent_type_mapping:
-    # Pseudocode for agent type determination using category:agent-name format
-    determine_agent_type(agent_assignment):
-      base_capabilities = agent_assignment.capabilities
-      domain_specialization = agent_assignment.domain
+  # Dynamic Agent Selection Integration
+# Integration with existing dynamic_agent_discovery.yaml system
+agent_selection_from_registry:
+  implementation: |
+    # Use existing dynamic agent discovery system instead of static mapping
+    # Reference: config/dynamic/dynamic_agent_discovery.yaml
 
-      IF "research" in base_capabilities:
-         RETURN "research:deep-research-agent"
-      ELIF "architecture" in domain_specialization:
-         IF "frontend" in base_capabilities:
-            RETURN "architecture:frontend-architect"
-         ELSE:
-            RETURN "architecture:backend-architect"
-      ELIF "development" in base_capabilities:
-         IF "frontend" in base_capabilities:
-            RETURN "development:frontend-developer"
-         ELIF "backend" in base_capabilities:
-            RETURN "development:backend-developer"
-      ELIF "security" in base_capabilities:
-         RETURN "security:security-engineer"
-      ELIF "performance" in base_capabilities:
-         RETURN "performance:performance-engineer"
-      ELIF "testing" in base_capabilities:
-         RETURN "testing:quality-engineer"
-      # ... additional mappings
+    def determine_agent_type(task_requirements):
+      """
+      Dynamic agent type determination using existing registry
+      """
+      # 1. Get available agents from dynamic discovery system
+      available_agents = get_available_agents()  # From dynamic_agent_discovery.yaml
 
-      DEFAULT: "orchestration:master"
+      # 2. Create competency vectors for precise matching
+      competency_data = create_competency_vectors(available_agents)
+      competency_list = competency_data['competency_list']
+      agent_vectors = competency_data['agent_vectors']
+
+      # 3. Create task requirement vector
+      task_vector = create_task_requirement_vector(task_requirements, competency_list)
+
+      # 4. Find best agent match using competency vector similarity
+      best_match = find_best_agent_match(task_vector, agent_vectors)
+
+      # 5. Apply domain system enhancements if available
+      if DOMAIN_SYSTEM_INTEGRATION_ENABLED:
+        best_match = integrate_with_domain_system(best_match)
+
+      # 6. Return canonical agent name
+      return best_match['agent_name'] if best_match else "orchestration:master"
+
+    def create_task_requirement_vector(task_requirements, competency_list):
+      """
+      Create competency vector for task requirements
+      """
+      vector = [0] * len(competency_list)
+      task_caps = task_requirements.get('required_capabilities', [])
+
+      for i, comp in enumerate(competency_list):
+        if comp in task_caps:
+          vector[i] = 1
+
+      return vector
+
+    def find_best_agent_match(task_vector, agent_vectors):
+      """
+      Find best agent match using vector similarity
+      """
+      best_agent = None
+      best_score = 0.0
+
+      for agent_data in agent_vectors:
+        # Calculate cosine similarity
+        agent_vector = agent_data['vector']
+        similarity = calculate_vector_similarity(task_vector, agent_vector)
+
+        # Apply confidence boost
+        confidence = agent_data.get('confidence', 0.7)
+        adjusted_score = similarity * confidence
+
+        if adjusted_score > best_score:
+          best_score = adjusted_score
+          best_agent = agent_data
+
+      return best_agent
+
+    def calculate_vector_similarity(vec1, vec2):
+      """
+      Calculate cosine similarity between two vectors
+      """
+      import math
+
+      dot_product = sum(a * b for a, b in zip(vec1, vec2))
+      magnitude1 = math.sqrt(sum(a * a for a in vec1))
+      magnitude2 = math.sqrt(sum(b * b for b in vec2))
+
+      if magnitude1 == 0 or magnitude2 == 0:
+        return 0.0
+
+      return dot_product / (magnitude1 * magnitude2)
+
+    def determine_agent_type_from_registry(todo_item, execution_context):
+      """
+      Wrapper function to integrate TODO execution with dynamic registry
+      """
+      # Extract task requirements from TODO item
+      task_requirements = {
+        'required_capabilities': todo_item.get('required_capabilities', []),
+        'domain_specialization': todo_item.get('domain', 'general'),
+        'complexity_score': todo_item.get('complexity', 1),
+        'urgency': todo_item.get('urgency', 'normal')
+      }
+
+      # Extract capabilities from execution context if available
+      if execution_context and 'analysis_results' in execution_context:
+        analysis_caps = execution_context['analysis_results'].get('detected_capabilities', [])
+        task_requirements['required_capabilities'].extend(analysis_caps)
+
+      # Call dynamic selection system
+      return determine_agent_type(task_requirements)
 
 # Progress Tracking System
 progress_tracking:
