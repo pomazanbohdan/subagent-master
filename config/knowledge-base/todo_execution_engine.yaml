@@ -127,23 +127,32 @@ task_delegation_system:
        - Log performance metrics
 
   agent_type_mapping:
-    # Pseudocode for agent type determination
+    # Pseudocode for agent type determination using category:agent-name format
     determine_agent_type(agent_assignment):
       base_capabilities = agent_assignment.capabilities
       domain_specialization = agent_assignment.domain
 
       IF "research" in base_capabilities:
-         RETURN "deep-research-agent"
+         RETURN "research:deep-research-agent"
       ELIF "architecture" in domain_specialization:
-         RETURN "backend-architect" OR "frontend-architect"
+         IF "frontend" in base_capabilities:
+            RETURN "architecture:frontend-architect"
+         ELSE:
+            RETURN "architecture:backend-architect"
       ELIF "development" in base_capabilities:
-         IF "frontend" in domain_specialization:
-            RETURN "frontend-developer"
-         ELIF "backend" in domain_specialization:
-            RETURN "backend-developer"
+         IF "frontend" in base_capabilities:
+            RETURN "development:frontend-developer"
+         ELIF "backend" in base_capabilities:
+            RETURN "development:backend-developer"
+      ELIF "security" in base_capabilities:
+         RETURN "security:security-engineer"
+      ELIF "performance" in base_capabilities:
+         RETURN "performance:performance-engineer"
+      ELIF "testing" in base_capabilities:
+         RETURN "testing:quality-engineer"
       # ... additional mappings
 
-      DEFAULT: "general-purpose"
+      DEFAULT: "orchestration:master"
 
 # Progress Tracking System
 progress_tracking:

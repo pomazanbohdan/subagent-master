@@ -139,19 +139,19 @@ initialization_phases:
     components:
       - name: "tfidf_system"
         source: "config/knowledge-base/tfidf-system.yaml"
-        required: false
+        required: true
         fallback: "simple_keyword_matching"
         validation: "text_processing_functional"
 
       - name: "categorization_engine"
         source: "config/knowledge-base/categorization-engine.yaml"
-        required: false
+        required: true
         fallback: "rule_based_categorization"
         validation: "categorization_functional"
 
       - name: "clarification_system"
         source: "config/knowledge-base/clarification_system.yaml"
-        required: false
+        required: true
         fallback: "basic_clarification_questions"
         validation: "clarification_functional"
 
