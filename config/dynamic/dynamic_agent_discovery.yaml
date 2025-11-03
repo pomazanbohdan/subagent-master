@@ -3,14 +3,14 @@
 
 metadata:
   name: "dynamic-agent-discovery"
-  version: "1.0.0"
+  version: "0.0.1"
   description: "Dynamic agent discovery and real-time initialization system"
-  author: "Master Agent System v3.6.0"
+  author: "Master Agent System v0.0.1"
 
 # Core Discovery Algorithm
 discovery_algorithm:
   name: "Dynamic Agent Loader"
-  version: "1.0.0"
+  version: "0.0.1"
 
   # Discovery Process
   process:
@@ -523,9 +523,529 @@ agent_detection_function: |
       except Exception as e:
         log_error(f"Failed to save agent discovery feedback: {e}")
 
-  # Constants for integration
-  DOMAIN_SYSTEM_INTEGRATION_ENABLED = True
-  DOMAIN_SYSTEM_CONFIG_PATH = "config/dynamic/domain_system.yaml"
+  # Competency Matrix System Implementation
+def create_competency_vectors(available_agents):
+    """
+    Creation of agent competency vectors for precise skill matching
+    Reference: agents/master.md.backup (lines 626-642)
+    """
+    if not available_agents:
+        return []
+
+    # Extract all unique competencies across all agents
+    all_competencies = set()
+    for agent in available_agents:
+        capabilities = agent.get('capabilities', [])
+        all_competencies.update(capabilities)
+        # Add capabilities from inferred categories
+        detected_category = agent.get('detected_category', 'general')
+        all_competencies.update(get_category_default_capabilities(detected_category))
+
+    # Create competency list (sorted for consistency)
+    competency_list = sorted(list(all_competencies))
+
+    # Create competency vectors for each agent
+    competency_vectors = []
+    for agent in available_agents:
+        vector = [1 if comp in agent.get('capabilities', []) else 0 for comp in competency_list]
+
+        # Add category expertise indicators
+        agent_category = agent.get('detected_category', 'general')
+        if agent_category in ['orchestration', 'development', 'architecture', 'security']:
+            vector[competency_list.index('task-orchestration')] = 1.0
+        if agent_category in ['research', 'analysis', 'testing', 'performance']:
+            vector[competency_list.index('research-analysis')] = 1.0
+
+        competency_vectors.append({
+            'agent_name': agent.get('name'),
+            'agent_category': agent_category,
+            'vector': vector,
+            'raw_capabilities': agent.get('capabilities', []),
+            'confidence': agent.get('category_confidence', 0.7)
+        })
+
+    return {
+        'competency_list': competency_list,
+        'agent_vectors': competency_vectors,
+        'total_competencies': len(competency_list),
+        'vector_dimensions': len(competency_list)
+    }
+
+def get_category_default_capabilities(category):
+    """Get default capabilities for each agent category"""
+    default_capabilities = {
+        'orchestration': ['task-orchestration', 'automatic-delegation', 'agent-selection', 'coordination', 'manage', 'parallel'],
+        'development': ['frontend', 'backend', 'coding', 'programming', 'implementation', 'design'],
+        'architecture': ['architecture', 'system-design', 'scalability', 'patterns', 'structure'],
+        'security': ['security', 'authentication', 'authorization', 'vulnerability', 'protection'],
+        'testing': ['testing', 'qa', 'quality', 'validation', 'automation'],
+        'research': ['research', 'analysis', 'investigation', 'discovery', 'exploration'],
+        'performance': ['performance', 'optimization', 'speed', 'efficiency', 'monitoring'],
+        'infrastructure': ['infrastructure', 'devops', 'deployment', 'ci/cd', 'operations']
+    }
+    return default_capabilities.get(category, [])
+
+def build_dynamic_compatibility_matrix(categories, agent_vectors):
+    """
+    Generation of dynamic compatibility matrix
+    Reference: agents/master.md.backup (lines 421-422)
+    """
+    compatibility_matrix = {}
+
+    for category in categories:
+        category_agents = [av for av in agent_vectors if av['agent_category'] == category]
+
+        # Calculate compatibility scores for agents in this category
+        agent_scores = {}
+        for agent in category_agents:
+            score = calculate_compatibility_score(agent, category)
+            agent_scores[agent['agent_name']] = score
+
+        compatibility_matrix[category] = {
+            'sorted_agents': sorted(agent_scores.items(), key=lambda x: x[1], reverse=True),
+            'all_scores': agent_scores,
+            'top_agents': [agent for agent, score in agent_scores.items() if score > 0.3]
+        }
+
+    return compatibility_matrix
+
+def calculate_compatibility_score(agent_vector, task_category):
+    """
+    Calculate compatibility score between agent capabilities and task category requirements
+    Enhanced version with domain specialization and performance factors
+    """
+    agent_capabilities = agent_vector.get('raw_capabilities', [])
+    agent_name = agent_vector.get('agent_name')
+
+    # Base compatibility score
+    score = 0.0
+
+    # Check direct capability matches
+    if task_category == 'orchestration':
+        orchestration_comps = ['task-orchestration', 'automatic-delegation', 'agent-selection', 'coordination']
+        for comp in orchestration_comps:
+            if comp in agent_capabilities:
+                score += 1.0
+        score /= max(1, len(orchestration_comps))
+    elif task_category == 'development':
+        dev_comps = ['frontend', 'backend', 'coding', 'programming', 'implementation']
+        for comp in dev_comps:
+            if comp in agent_capabilities:
+                score += 1.0
+        score /= max(1, len(dev_comps))
+    elif task_category == 'architecture':
+        arch_comps = ['architecture', 'system-design', 'scalability', 'patterns', 'structure']
+        for comp in arch_comps:
+            if comp in agent_capabilities:
+                score += 1.0
+        score /= max(1, len(arch_comps))
+    elif task_category == 'security':
+        sec_comps = ['security', 'authentication', 'authorization', 'vulnerability', 'protection']
+        for comp in sec_comps:
+            if comp in agent_capabilities:
+                score += 1.0
+        score /= max(1, len(sec_comps))
+    elif task_category == 'testing':
+        test_comps = ['testing', 'qa', 'quality', 'validation', 'automation']
+        for comp in test_comps:
+            if comp in agent_capabilities:
+                score += 1.0
+        score /= max(1, len(test_comps))
+    elif task_category == 'research':
+        research_comps = ['research', 'analysis', 'investigation', 'discovery', 'exploration']
+        for comp in research_comps:
+            if comp in agent_capabilities:
+                score += 1.0
+        score /= max(1, len(research_comps))
+
+    # Apply agent confidence boost
+    agent_confidence = agent_vector.get('confidence', 0.7)
+    score *= agent_confidence
+
+    # Apply domain specialization bonus
+    if agent_name.startswith('development:'):
+        score += 0.1
+    elif agent_name.startswith('orchestration:'):
+        score += 0.15
+    elif agent_name.startswith('security:'):
+        score += 0.15
+
+    return min(score, 1.0)
+
+def optimize_matrix_for_search(compatibility_matrix):
+    """
+    Matrix optimization for fast search and lookup
+    Reference: agents/master.md.backup (lines 751-763)
+    """
+    optimized_matrix = {}
+
+    for category, agent_scores in compatibility_matrix.items():
+        # Sort agents by score
+        sorted_agents = sorted(agent_scores.items(), key=lambda x: x[1], reverse=True)
+        optimized_matrix[category] = {
+            'sorted_agents': sorted_agents,
+            'all_scores': agent_scores,
+            'top_agents': [agent for agent, score in sorted_agents if score > 0.3],
+            'category_total_score': sum(agent_scores.values())
+        }
+
+    return optimized_matrix
+
+def update_scoring_with_compatibility_matrix(agent_data, compatibility_matrix):
+    """
+    Update agent scoring system with compatibility matrix integration
+    """
+    enhanced_agents = []
+
+    for agent in agent_data:
+        agent_name = agent.get('name')
+        detected_category = agent.get('detected_category', 'general')
+
+        # Get compatibility scores from matrix
+        compatibility_scores = compatibility_matrix.get(detected_category, {})
+        matrix_score = compatibility_scores.get(agent_name, 0.0)
+
+        # Calculate enhanced confidence score
+        base_confidence = agent.get('category_confidence', 0.7)
+        enhanced_confidence = (base_confidence * 0.6) + (matrix_score * 0.4)
+
+        # Update agent data
+        enhanced_agent = agent.copy()
+        enhanced_agent['matrix_score'] = matrix_score
+        enhanced_agent['enhanced_confidence'] = enhanced_confidence
+        enhanced_agent['compatibility_rank'] = determine_compatibility_rank(agent, matrix_score)
+
+        enhanced_agents.append(enhanced_agent)
+
+    return enhanced_agents
+
+def determine_compatibility_rank(agent, score):
+    """
+    Determine agent compatibility rank based on score and performance
+    """
+    if score >= 0.8:
+        return 'expert'
+    elif score >= 0.6:
+        return 'proficient'
+    elif score >= 0.4:
+        return 'competent'
+    else:
+        return 'learning'
+
+def integrate_competency_matrix_with_agent_discovery():
+    """
+    Integrate competency matrix system with existing agent discovery
+    This should be called during step_4_name_registration
+    """
+    global COMPETENCY_MATRIX_ENABLED
+    COMPETENCY_MATRIX_ENABLED = True
+
+    # This would be called in the agent discovery process
+    pass
+
+# Global Variables and Constants
+COMPETENCY_MATRIX_ENABLED = False
+DOMAIN_SYSTEM_INTEGRATION_ENABLED = True
+
+# Global cache for agent discovery
+AGENT_CACHE = {}
+NAME_RESOLUTION_CACHE = {}
+
+# Utility Functions for Discovery System
+utility_functions: |
+  # Configuration Loading Utilities
+  def load_config_file(file_path):
+      """Load YAML configuration file"""
+      try:
+          with open(file_path, 'r', encoding='utf-8') as f:
+              return yaml.safe_load(f)
+      except Exception as e:
+          log_error(f"Failed to load config file: {file_path}", error=e)
+          return None
+
+  def parse_yaml_content(yaml_string):
+      """Parse YAML string to dictionary"""
+      try:
+          return yaml.safe_load(yaml_string)
+      except Exception as e:
+          log_error("Failed to parse YAML content", error=e)
+          return {}
+
+  # Logging Utilities
+  def log_error(message, error=None):
+      """Log error message"""
+      timestamp = datetime.datetime.now().isoformat()
+      error_msg = f"[{timestamp}] ERROR: {message}"
+      if error:
+          error_msg += f" - {str(error)}"
+      print(error_msg)  # Replace with proper logging system
+
+  def log_info(message):
+      """Log info message"""
+      timestamp = datetime.datetime.now().isoformat()
+      print(f"[{timestamp}] INFO: {message}")
+
+  # Cache Utilities
+  def save_cache_data(cache_key, data):
+      """Save data to cache"""
+      try:
+          cache_path = f"cache/{cache_key}.json"
+          os.makedirs("cache", exist_ok=True)
+          with open(cache_path, 'w', encoding='utf-8') as f:
+              json.dump(data, f, indent=2)
+      except Exception as e:
+          log_error(f"Failed to save cache data: {cache_key}", error=e)
+
+  def load_cache_data(cache_key):
+      """Load data from cache"""
+      try:
+          cache_path = f"cache/{cache_key}.json"
+          if os.path.exists(cache_path):
+              with open(cache_path, 'r', encoding='utf-8') as f:
+                  return json.load(f)
+      except Exception as e:
+          log_error(f"Failed to load cache data: {cache_key}", error=e)
+      return None
+
+  # Agent Discovery Utilities
+  def get_default_agent_list():
+      """Get hardcoded default agent list as fallback"""
+      return [
+          {
+              'name': 'master:master',
+              'source': 'hardcoded',
+              'category': 'orchestration',
+              'capabilities': ['task-orchestration', 'agent-selection', 'coordination'],
+              'confidence': 1.0,
+              'is_default': True
+          }
+      ]
+
+  def validate_agent_structure(agent):
+      """Validate agent has required structure"""
+      required_fields = ['name', 'source', 'category']
+      return all(field in agent for field in required_fields)
+
+# Required imports for the system
+required_imports: |
+  import os
+  import glob
+  import json
+  import yaml
+  import datetime
+  import pathlib
+
+# Core Discovery Functions Implementation
+discovery_functions:
+
+  load_agent_registry: |
+    # Load Agent Registry Function
+    def load_agent_registry():
+        """
+        Load agents from registry configuration files
+        Returns list of registered agents with metadata
+        """
+        registry_agents = []
+
+        # Load from config/agent_types.yaml if exists
+        try:
+            agent_types_config = load_config_file("config/agent_types.yaml")
+            if agent_types_config and 'agent_types' in agent_types_config:
+                for agent_type, config in agent_types_config['agent_types'].items():
+                    agent_data = {
+                        'name': agent_type,
+                        'source': 'registry',
+                        'category': config.get('category', 'general'),
+                        'capabilities': config.get('capabilities', []),
+                        'triggers': config.get('triggers', []),
+                        'tools': config.get('tools', []),
+                        'confidence': config.get('confidence', 0.8)
+                    }
+                    registry_agents.append(agent_data)
+        except Exception as e:
+            log_error("Failed to load agent registry", error=e)
+
+        return registry_agents
+
+  scan_agent_files: |
+    # Scan Agent Files Function
+    def scan_agent_files(search_paths):
+        """
+        Scan specified paths for agent files
+        search_paths: list of directories to scan
+        Returns list of discovered agents
+        """
+        discovered_agents = []
+
+        for path in search_paths:
+            try:
+                if os.path.exists(path):
+                    for file_path in glob.glob(f"{path}/*.md"):
+                        agent_data = parse_agent_file(file_path)
+                        if agent_data:
+                            discovered_agents.append(agent_data)
+            except Exception as e:
+                log_error(f"Failed to scan path: {path}", error=e)
+
+        return discovered_agents
+
+    def parse_agent_file(file_path):
+        """
+        Parse agent markdown file to extract metadata
+        Returns agent data dict or None if invalid
+        """
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+
+            # Extract YAML frontmatter
+            if content.startswith('---'):
+                yaml_end = content.find('---', 3)
+                if yaml_end > 0:
+                    yaml_content = content[3:yaml_end].strip()
+                    frontmatter = parse_yaml_content(yaml_content)
+
+                    return {
+                        'name': frontmatter.get('name', os.path.basename(file_path)),
+                        'source': 'filesystem',
+                        'file_path': file_path,
+                        'category': frontmatter.get('category', 'general'),
+                        'capabilities': frontmatter.get('capabilities', []),
+                        'triggers': frontmatter.get('triggers', []),
+                        'tools': frontmatter.get('tools', []),
+                        'confidence': frontmatter.get('confidence', 0.7)
+                    }
+        except Exception as e:
+            log_error(f"Failed to parse agent file: {file_path}", error=e)
+
+        return None
+
+  merge_agent_sources: |
+    # Merge Agent Sources Function
+    def merge_agent_sources(registry_agents, filesystem_agents):
+        """
+        Merge agents from registry and filesystem, remove duplicates
+        Returns unified list of agents
+        """
+        all_agents = []
+        seen_agents = set()
+
+        # Add registry agents first (higher priority)
+        for agent in registry_agents:
+            agent_key = f"{agent['source']}:{agent['name']}"
+            if agent_key not in seen_agents:
+                all_agents.append(agent)
+                seen_agents.add(agent_key)
+
+        # Add filesystem agents (avoid duplicates)
+        for agent in filesystem_agents:
+            agent_key = f"{agent['source']}:{agent['name']}"
+            if agent_key not in seen_agents:
+                all_agents.append(agent)
+                seen_agents.add(agent_key)
+
+        return all_agents
+
+  validate_agent_list: |
+    # Validate Agent List Function
+    def validate_agent_list(agents):
+        """
+        Validate list of agents for completeness and correctness
+        Returns list of valid agents
+        """
+        valid_agents = []
+
+        for agent in agents:
+            try:
+                if is_registry_agent(agent):
+                    if validate_registry_agent(agent):
+                        valid_agents.append(agent)
+                elif is_system_agent(agent):
+                    if validate_system_agent(agent):
+                        valid_agents.append(agent)
+            except Exception as e:
+                log_error(f"Failed to validate agent: {agent.get('name', 'unknown')}", error=e)
+
+        return valid_agents
+
+  agent_type_checkers: |
+    # Agent Type Checker Functions
+    def is_registry_agent(agent):
+        """Check if agent is from registry"""
+        return agent.get('source') == 'registry' and ':' in agent.get('name', '')
+
+    def is_system_agent(agent):
+        """Check if agent is from filesystem/system"""
+        return agent.get('source') in ['filesystem', 'system']
+
+    def validate_registry_agent(agent):
+        """Validate registry agent format"""
+        required_fields = ['name', 'category', 'capabilities']
+        return all(field in agent and agent[field] for field in required_fields)
+
+    def validate_system_agent(agent):
+        """Validate system agent format"""
+        required_fields = ['name', 'file_path']
+        return all(field in agent and agent[field] for field in required_fields)
+
+  search_and_cache_functions: |
+    # Search and Cache Functions
+    def find_agent_by_name(agent_name, available_agents):
+        """
+        Find agent by name in available agents list
+        Returns agent dict or None if not found
+        """
+        for agent in available_agents:
+            if agent.get('name') == agent_name:
+                return agent
+
+        # Try cached resolution
+        cached_name = get_cached_name_resolution(agent_name)
+        if cached_name:
+            for agent in available_agents:
+                if agent.get('name') == cached_name:
+                    return agent
+
+        return None
+
+    def cache_agent_list(agents):
+        """
+        Cache agent list for performance
+        """
+        try:
+            cache_data = {
+                'agents': agents,
+                'timestamp': datetime.datetime.now().isoformat(),
+                'count': len(agents)
+            }
+            save_cache_data('agent_list_cache', cache_data)
+        except Exception as e:
+            log_error("Failed to cache agent list", error=e)
+
+    def get_cached_name_resolution(agent_name):
+        """
+        Get cached name resolution for agent
+        Returns resolved name or None
+        """
+        try:
+            cache_data = load_cache_data('name_resolution_cache')
+            if cache_data:
+                return cache_data.get(agent_name)
+        except Exception as e:
+            log_error(f"Failed to get cached name resolution for {agent_name}", error=e)
+
+        return None
+
+    def cache_name_resolution(agent_name, dynamic_name):
+        """
+        Cache name resolution mapping
+        """
+        try:
+            cache_data = load_cache_data('name_resolution_cache') or {}
+            cache_data[agent_name] = dynamic_name
+            save_cache_data('name_resolution_cache', cache_data)
+        except Exception as e:
+            log_error(f"Failed to cache name resolution {agent_name} -> {dynamic_name}", error=e)
 
 # Filesystem-based Discovery Integration
 discovery_integration:
@@ -568,7 +1088,7 @@ validation_rules:
   fallback_validation:
     auto_generate_missing: true
     default_values:
-      version: "1.0.0"
+      version: "0.0.1"
       category: "general"
       capabilities: ["basic_functionality"]
       availability: "available"

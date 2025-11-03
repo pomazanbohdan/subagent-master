@@ -3,9 +3,9 @@
 
 metadata:
   name: "sequenced_initialization"
-  version: "1.0.0"
+  version: "0.0.1"
   description: "Comprehensive system initialization with structured phases and dependency management"
-  author: "Master Agent System v3.6.5"
+  author: "Master Agent System v0.0.1"
   tags: ["initialization", "dependency-resolution", "system-startup", "phased-loading"]
 
 # Initialization Philosophy
@@ -601,11 +601,11 @@ integration_points:
 
 # Version Management
 version_management:
-  current_version: "1.0.0"
+  current_version: "0.0.1"
   compatibility_requirements:
-    minimal_error_handling_version: "1.0.0"
-    minimal_config_loader_version: "1.0.0"
-    minimal_agent_system_version: "3.6.0"
+    minimal_error_handling_version: "0.0.1"
+    minimal_config_loader_version: "0.0.1"
+    minimal_agent_system_version: "0.0.1"
 
   version_compatibility_matrix:
     "1.0.0":

@@ -3,9 +3,9 @@
 
 metadata:
   name: "dynamic-time-estimation"
-  version: "1.0.0"
+  version: "0.0.1"
   description: "Adaptive time estimation system with learning algorithms and environment awareness"
-  author: "Master Agent System v3.5.0"
+  author: "Master Agent System v0.0.1"
 
 # Base Time Metrics Framework
 base_time_metrics:

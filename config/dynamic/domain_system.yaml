@@ -3,9 +3,9 @@
 
 metadata:
   name: "dynamic-domain-system"
-  version: "1.0.0"
+  version: "0.0.1"
   description: "Dynamic domain classification system with auto-discovery and learning capabilities"
-  author: "Master Agent System v3.5.0"
+  author: "Master Agent System v0.0.1"
 
 # Core Domain Registry
 domain_registry:

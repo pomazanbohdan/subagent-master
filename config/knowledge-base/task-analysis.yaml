@@ -3,7 +3,7 @@
 
 metadata:
   name: "task-analysis-system"
-  version: "1.0.0"
+  version: "0.0.1"
   description: "Intelligent task analysis for complexity assessment and execution strategy determination"
   author: "Master Agent System"
   tags: ["task-analysis", "complexity-assessment", "classification", "execution-planning"]

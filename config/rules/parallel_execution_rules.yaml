@@ -3,7 +3,7 @@
 
 ruleset:
   name: "parallel_execution_decision"
-  version: "2.3.0"
+  version: "0.0.1"
   description: "Rules for determining parallel execution strategy"
 
 # Критерії оцінки паралельного потенціалу

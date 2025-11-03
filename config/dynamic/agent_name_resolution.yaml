@@ -3,9 +3,9 @@
 
 metadata:
   name: "agent-name-resolution"
-  version: "1.0.0"
+  version: "0.0.1"
   description: "Agent name validation and resolution system"
-  author: "Master Agent System v3.6.0"
+  author: "Master Agent System v0.0.1"
 
 # Agent Name Validation Rules
 name_validation:

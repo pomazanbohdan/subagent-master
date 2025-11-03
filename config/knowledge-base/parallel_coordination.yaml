@@ -3,7 +3,7 @@
 
 metadata:
   name: "parallel_coordination_system"
-  version: "1.0.0"
+  version: "0.0.1"
   description: "Advanced parallel task coordination with intelligent synchronization and result synthesis"
   author: "master"
   tags: ["parallel-execution", "coordination", "synchronization", "result-synthesis"]

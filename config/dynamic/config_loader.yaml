@@ -1,6 +1,6 @@
 name: "Dynamic Configuration Loader"
 description: "Core configuration loading system with hot reload and validation capabilities"
-version: "1.0.0"
+version: "0.0.1"
 author: "Subagent-Master Team"
 
 # Core Loader Architecture

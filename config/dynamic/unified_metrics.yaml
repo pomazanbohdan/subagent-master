@@ -3,9 +3,9 @@
 
 metadata:
   name: "unified-metrics-timeouts"
-  version: "1.0.0"
+  version: "0.0.1"
   description: "Unified metrics and timeout configuration for system consistency"
-  author: "Master Agent System v3.6.0"
+  author: "Master Agent System v0.0.1"
 
 # Standardized Timeout Values
 timeout_values:

@@ -3,7 +3,7 @@
 
 metadata:
   name: "todo_execution_engine"
-  version: "1.0.0"
+  version: "0.0.1"
   description: "Automatic TodoWrite-to-Task() delegation system with intelligent execution management"
   author: "master"
   tags: ["todo-execution", "task-delegation", "automatic-execution", "progress-tracking"]

@@ -3,14 +3,14 @@
 
 metadata:
   name: "unified-agent-selection-system"
-  version: "1.0.0"
-  description: "Unified agent selection with standardized scoring and fallback strategies"
-  author: "Master Agent System v3.6.0"
+  version: "0.0.1"
+  description: "Unified agent selection with restored competency matrix integration and reference scoring weights"
+  author: "Master Agent System v0.0.1"
 
 # Unified Scoring Components
 scoring_components:
   competency_match:
-    weight: 0.35
+    weight: 0.60
     description: "Agent capability matching with task requirements"
     implementation: |
       # Competency-Based Scoring Algorithm
@@ -39,9 +39,38 @@ scoring_components:
 
       DECAY_FACTOR: 0.95 (monthly decay for older data)
 
+  domain_specialization:
+    weight: 0.10
+    description: "Domain-specific expertise and specialization"
+    implementation: |
+      # Domain Specialization Scoring Algorithm
+      INPUT: agent_domains, task_domain_requirements
+      OUTPUT: domain_alignment_scores (0.0-1.0)
+
+      PROCESS:
+      1. Extract agent domain specializations
+      2. Calculate domain alignment with task requirements
+      3. Apply confidence multipliers based on expertise level
+      4. Return highest domain alignment score
+
+  current_complexity:
+    weight: 0.05
+    description: "Task complexity matching with agent capabilities"
+    implementation: |
+      # Complexity-Based Scoring Algorithm
+      INPUT: task_complexity, agent_complexity_handling
+      OUTPUT: complexity_match_scores (0.0-1.0)
+
+      PROCESS:
+      1. Analyze task complexity indicators
+      2. Match with agent complexity handling capabilities
+      3. Apply complexity tolerance adjustments
+      4. Return complexity alignment score
+
+  # Additional components for enhanced capabilities (used in specific strategies)
   current_load:
-    weight: 0.20
-    description: "Current agent load and availability"
+    weight: 0.00  # Disabled in default configuration
+    description: "Current agent load and availability (for specific strategies)"
     implementation: |
       # Availability-Based Scoring Algorithm
       INPUT: agent_capacity
@@ -54,16 +83,16 @@ scoring_components:
       4. Return final score
 
   availability:
-    weight: 0.15
-    description: "Agent status and immediate availability"
+    weight: 0.00  # Disabled in default configuration
+    description: "Agent status and immediate availability (for specific strategies)"
     implementation: |
       # Immediate availability check
       INPUT: agent_status, current_tasks
       OUTPUT: immediate_availability_score (0.0-1.0)
 
   tfidf_analysis:
-    weight: 0.05
-    description: "Text similarity analysis between task and agent capabilities"
+    weight: 0.00  # Disabled in default configuration
+    description: "Text similarity analysis (for specific strategies)"
     implementation: |
       # TF-IDF Similarity Analysis
       INPUT: task_description, agent_capabilities
@@ -75,13 +104,16 @@ scoring_components:
 selection_strategies:
   default_balanced:
     name: "balanced_selection"
-    description: "Balanced approach with competency, performance, and availability"
+    description: "Balanced approach with competency, performance, and domain specialization"
     weights:
-      competency_match: 0.35
+      competency_match: 0.60
       performance_history: 0.25
-      current_load: 0.20
-      availability: 0.15
-      tfidf_analysis: 0.05
+      domain_specialization: 0.10
+      current_complexity: 0.05
+      # Additional components disabled by default (weight: 0.00)
+      current_load: 0.00
+      availability: 0.00
+      tfidf_analysis: 0.00
     selection_criteria: "highest_total_score"
     min_confidence: 0.6
     use_case: "Default strategy for most scenarios"
@@ -90,11 +122,13 @@ selection_strategies:
     name: "performance_first"
     description: "Prioritize agents with best historical performance"
     weights:
-      competency_match: 0.40
+      competency_match: 0.50
       performance_history: 0.40
-      current_load: 0.10
-      availability: 0.05
-      tfidf_analysis: 0.05
+      domain_specialization: 0.05
+      current_complexity: 0.02
+      current_load: 0.05
+      availability: 0.02
+      tfidf_analysis: 0.01
     selection_criteria: "highest_performance_score"
     min_confidence: 0.7
     use_case: "Critical tasks where quality is paramount"
@@ -103,10 +137,12 @@ selection_strategies:
     name: "availability_first"
     description: "Prioritize agents that are immediately available"
     weights:
-      competency_match: 0.30
+      competency_match: 0.40
       performance_history: 0.20
-      current_load: 0.30
-      availability: 0.20
+      current_load: 0.20
+      availability: 0.15
+      domain_specialization: 0.10
+      current_complexity: 0.02
       tfidf_analysis: 0.00
     selection_criteria: "availability_and_performance"
     min_confidence: 0.5
@@ -116,12 +152,14 @@ selection_strategies:
     name: "learning_opportunity"
     description: "Prioritize agents that can learn from the task"
     weights:
-      competency_match: 0.30
+      competency_match: 0.35
       performance_history: 0.15
-      current_load: 0.20
-      availability: 0.15
+      current_load: 0.15
+      availability: 0.10
+      domain_specialization: 0.10
+      current_complexity: 0.05
       tfidf_analysis: 0.15
-      learning_potential: 0.05
+      learning_potential: 0.10
     selection_criteria: "highest_learning_score"
     min_confidence: 0.4
     use_case: "Tasks with learning potential and lower risk tolerance"
@@ -130,11 +168,13 @@ selection_strategies:
     name: "cost_optimized"
     description: "Budget-conscious scenarios with acceptable quality trade-offs"
     weights:
-      competency_match: 0.30
+      competency_match: 0.35
       performance_history: 0.20
-      current_load: 0.20
-      availability: 0.10
-      tfidf_analysis: 0.05
+      current_load: 0.15
+      availability: 0.05
+      domain_specialization: 0.05
+      current_complexity: 0.02
+      tfidf_analysis: 0.03
       cost_efficiency: 0.15
     selection_criteria: "cost_effective_with_quality"
     min_confidence: 0.5
@@ -307,6 +347,24 @@ integration:
     task_analysis: "config/knowledge-base/task-analysis.yaml"
     tfidf_system: "config/knowledge-base/tfidf-system.yaml"
     clarification_system: "config/knowledge-base/clarification_system.yaml"
+    dynamic_agent_discovery: "config/dynamic/dynamic_agent_discovery.yaml"
+    competency_matrix: "config/dynamic/dynamic_agent_discovery.yaml"
+
+  competency_matrix_integration:
+    description: "Integration with competency vector system"
+    implementation: |
+      # Competency Matrix Integration
+      The selection system integrates with competency matrix from dynamic_agent_discovery.yaml
+      through the following mechanisms:
+
+      1. Vector-based competency scoring using competency vectors
+      2. Dynamic compatibility matrix for agent-task matching
+      3. Enhanced confidence calculations with matrix support
+
+      Key integration points:
+      - competency_match component uses matrix_score from compatibility matrix
+      - domain_specialization aligns with category-based agent classification
+      - current_complexity matches with agent complexity handling capabilities
 
   exports:
     selection_results: "Agent selection with confidence scores"

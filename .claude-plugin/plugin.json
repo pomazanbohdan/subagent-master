@@ -1,7 +1,7 @@
 {
   "name": "master",
-  "version": "3.6.5",
-  "description": "Dynamic orchestration system v3.6.5 - Complete 10-phase initialization system with comprehensive component orchestration, TF-IDF integration, and robust error handling",
+  "version": "0.0.1",
+  "description": "Dynamic orchestration system v0.0.1 - Complete 10-phase initialization system with comprehensive component orchestration, TF-IDF integration, and robust error handling",
   "author": {
     "name": "Bohdan",
     "email": "pomazan.bohdan@gmail.com"

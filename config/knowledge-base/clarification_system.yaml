@@ -3,9 +3,9 @@
 
 metadata:
   name: "clarification-system"
-  version: "1.0.0"
+  version: "0.0.1"
   description: "Interactive clarification system with contextual question generation and adaptive workflows"
-  author: "Master Agent System v3.6.0"
+  author: "Master Agent System v0.0.1"
 
 # Core Clarification Algorithm
 clarification_algorithm:

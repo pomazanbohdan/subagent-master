@@ -3,7 +3,7 @@
 
 metadata:
   name: "categorization-engine"
-  version: "1.0.0"
+  version: "0.0.1"
   description: "Machine learning task categorization with semantic analysis and adaptive optimization"
   author: "Master Agent System"
   tags: ["categorization", "machine-learning", "semantic-analysis", "adaptive-learning"]

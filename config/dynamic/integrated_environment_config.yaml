@@ -3,9 +3,9 @@
 
 metadata:
   name: "integrated-environment-config"
-  version: "1.0.0"
+  version: "0.0.1"
   description: "Integrated environment configuration from all environment files"
-  author: "Master Agent System v3.6.0"
+  author: "Master Agent System v0.0.1"
 
 # Environment Detection and Auto-Switching
 environment_detection:
@@ -48,7 +48,7 @@ environments:
   development:
     name: "development"
     type: "development"
-    version: "1.0.0"
+    version: "0.0.1"
 
     # Debug and Logging
     debug_mode: true
@@ -79,7 +79,7 @@ environments:
   testing:
     name: "testing"
     type: "testing"
-    version: "1.0.0"
+    version: "0.0.1"
 
     # Debug and Logging
     debug_mode: true
@@ -115,7 +115,7 @@ environments:
   production:
     name: "production"
     type: "production"
-    version: "1.0.0"
+    version: "0.0.1"
 
     # Debug and Logging
     debug_mode: false
@@ -376,7 +376,7 @@ integration:
 
   # Version Management
 version_management:
-  current_version: "1.0.1"
+  current_version: "0.0.1"
   supported_versions: ["1.0.0"]
   compatibility_check: true
   migration_support: true

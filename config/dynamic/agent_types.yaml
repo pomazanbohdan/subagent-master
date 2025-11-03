@@ -3,9 +3,9 @@
 
 metadata:
   name: "dynamic-agent-types"
-  version: "1.0.0"
+  version: "0.0.1"
   description: "Dynamic agent type system with auto-discovery, capability negotiation, and evolution"
-  author: "Master Agent System v3.5.0"
+  author: "Master Agent System v0.0.1"
 
 # Agent Registry System
 agent_registry:
@@ -215,7 +215,7 @@ capability_negotiation:
   enabled: true
   negotiation_protocol:
     name: "agent_capability_negotiation_v1"
-    version: "1.0"
+    version: "0.0.1"
     
   negotiation_process:
     capability_declaration:
