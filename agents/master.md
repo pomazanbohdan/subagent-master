@@ -26,6 +26,7 @@ triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage",
 tools: []
 version: "0.3.0"
 imports: [
+  "config/core/mcp_server_discovery.yaml",
   "config/core/configuration_base.yaml",
   "config/core/error_handling_initialization.yaml",
   "config/analysis/task_analysis.yaml",
@@ -102,43 +103,44 @@ Infrastructure: infrastructure, devops, deployment, operations
 - **Return**: `master` (valid Task() agent type)
 - **Cache Result**: Store resolved name for future requests
 
-### **Enhanced System Initialization (Phase 0-4)**
+### **Enhanced 5-Phase System Initialization (Phase -1 to 4)**
 
-**Phase 0: MCP Server Discovery & Validation (Level -1 - Prerequisite Infrastructure)**
+**Phase -1: MCP Server Discovery & Validation (Level -1 - Critical Prerequisite)**
 
 - **CRITICAL**: Comprehensive MCP server analysis before any other operations
-- **Components**: `mcp_server_discovery`, `mcp_capability_analysis`, `mcp_validation_engine`, `mcp_fallback_system`
+- **Components**: Dedicated `config/core/mcp_server_discovery.yaml` system
 - **Mandatory Operations**:
-  - **Automatic MCP Server Detection**: Scan and catalog all available MCP servers
-  - **Capability Analysis**: Analyze each server's tools, permissions, and compatibility
-  - **Tool-Task Matching**: Validate tool suitability for specific task types
-  - **License & Permission Validation**: Check compliance and access rights
-  - **Performance Profiling**: Benchmark tool performance and reliability
-  - **Fallback Strategy Planning**: Create contingency plans for server failures
-- **Success Criteria**: All MCP servers discovered, capabilities analyzed, fallback strategies ready
-- **Critical Failure Handling**: Continue with native tools if MCP unavailable, log all MCP issues
-- **Integration Point**: Results feed into Phase 1-4 configuration loading
+  - **Automatic MCP Server Detection**: Scan and catalog all available MCP servers with enhanced protocols
+  - **Capability Analysis**: Deep analysis of each server's tools, permissions, and compatibility
+  - **Tool-Task Matching**: Intelligent validation of tool suitability for specific task categories
+  - **License & Permission Validation**: Comprehensive compliance and access rights checking
+  - **Performance Profiling**: Benchmark tool performance, reliability, and capacity
+  - **Health Monitoring**: Real-time server availability and performance tracking
+  - **Fallback Strategy Planning**: Multi-level contingency plans for server failures
+- **Success Criteria**: All MCP servers discovered, capabilities analyzed, health monitoring active, fallback strategies ready
+- **Critical Failure Handling**: Continue with degraded MCP functionality or native tools if MCP unavailable
+- **Integration Point**: Results feed into all subsequent phases as prerequisite data
 
-**Phase 1: Core Foundation (Level 0 - Critical Infrastructure)**
+**Phase 0: Core Foundation (Level 0 - Critical Infrastructure)**
 
-- Initialize error handling system, basic logging, and system monitoring
+- Initialize error handling system, basic logging, and system monitoring with MCP integration
 - Components: `error_handling_system`, `basic_logging`, `system_monitoring`, `mcp_health_monitoring`
 - **Critical**: Error handling must be operational before any other components
-- **Enhanced**: Include MCP server health monitoring from Phase 0 results
-- **Success Criteria**: Error handling operational, basic logging functional, core monitoring active, MCP health tracked
-- **Failure Handling**: Continue with degraded logging or emergency embedded mode
+- **Enhanced**: Include comprehensive MCP server health monitoring from Phase -1 results
+- **Success Criteria**: Error handling operational, basic logging functional, core monitoring active, MCP health tracked, integration ready
+- **Failure Handling**: Continue with degraded logging or emergency embedded mode with MCP fallback
 
-**Phase 2: Configuration & Analysis Foundation (Level 1 - Core Analysis)**
+**Phase 1: Configuration & Analysis Foundation (Level 1 - Core Analysis)**
 
-- Load configuration base and analysis systems
+- Load configuration base and analysis systems with MCP integration
 - Components: `configuration_base`, `task_analysis`, `agent_selection`, `clarification`
-- Dependencies: Requires Phase 1 completion
-- **Consolidated Benefits**:
-  - TF-IDF system fully integrated into agent selection
-  - Vector similarity analysis for intelligent matching
-  - Uncertainty detection for proactive clarification
-  - ML-powered task categorization
-- **Success Criteria**: Configuration loaded, task analysis operational, agent selection ready
+- Dependencies: Requires Phase 0 completion
+- **Enhanced Benefits**:
+  - TF-IDF system fully integrated into agent selection with MCP tool awareness
+  - Vector similarity analysis for intelligent agent-MCP tool matching
+  - Uncertainty detection for proactive clarification with MCP context
+  - ML-powered task categorization with MCP-enhanced capabilities
+- **Success Criteria**: Configuration loaded, task analysis operational, agent selection ready with MCP integration
 
 **Phase 3: Execution & Discovery Systems (Level 2 - Task Execution)**
 

@@ -3,9 +3,9 @@
 
 metadata:
   name: "clarification"
-  version: "0.2.2"
+  version: "0.3.0"
   description: "Consolidated clarification system with contextual question generation, adaptive workflows, semantic analysis integration, and learning capabilities for optimal task understanding"
-  author: "Master Agent System v0.2.2"
+  author: "Master Agent System v0.3.0"
   tags: ["clarification", "context-analysis", "question-generation", "adaptive-workflows", "semantic-analysis", "learning"]
 
 # Clarification Philosophy

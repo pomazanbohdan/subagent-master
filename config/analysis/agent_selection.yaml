@@ -3,9 +3,9 @@
 
 metadata:
   name: "agent_selection"
-  version: "0.2.2"
+  version: "0.3.0"
   description: "Consolidated agent selection system with TF-IDF semantic analysis, competency matrix integration, and adaptive learning for optimal agent matching"
-  author: "Master Agent System v0.2.2"
+  author: "Master Agent System v0.3.0"
   tags: ["agent-selection", "tfidf-analysis", "competency-matching", "semantic-analysis", "machine-learning", "performance-optimization"]
 
 # Agent Selection Philosophy

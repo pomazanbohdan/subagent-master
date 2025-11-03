@@ -3,9 +3,9 @@
 
 metadata:
   name: "error_handling_initialization"
-  version: "0.2.2"
-  description: "Consolidated error handling and initialization system with circuit breaker protection, graceful degradation and structured startup"
-  author: "Master Agent System v0.2.2"
+  version: "0.3.0"
+  description: "Enhanced error handling and initialization system with circuit breaker protection, graceful degradation and structured startup including MCP Server Discovery"
+  author: "Master Agent System v0.3.0"
   tags: ["error-handling", "circuit-breaker", "initialization", "fallback", "recovery", "resilience", "graceful-degradation"]
 
 # Core System Philosophy

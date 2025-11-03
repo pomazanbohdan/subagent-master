@@ -3,9 +3,9 @@
 
 metadata:
   name: "configuration_base"
-  version: "0.2.2"
+  version: "0.3.0"
   description: "Consolidated configuration base system with dependency resolution, intelligent loading, and resource management"
-  author: "Master Agent System v0.2.2"
+  author: "Master Agent System v0.3.0"
   tags: ["configuration", "dependency-resolution", "intelligent-loading", "topological-sort", "resource-management"]
 
 # Configuration Loading Philosophy
@@ -16,74 +16,90 @@ configuration_philosophy: |
   4. Fault-Tolerant: Continue operation even with partial configuration failures
   5. Performance-Optimized: Use parallel loading where dependencies allow
 
-# Consolidated Dependency Graph (Updated for v0.2.2 Architecture)
+# Enhanced 5-Phase Dependency Graph (Updated for v0.3.0 Architecture)
 dependency_graph:
   # New Architecture Configuration Files and Their Dependencies
   configurations:
-    # Core Foundation (Level 0 - No dependencies)
+    # MCP Server Discovery (Phase 0 - Prerequisite Infrastructure)
+    config/core/mcp_server_discovery.yaml:
+      level: -1
+      dependencies: []
+      priority: "critical"
+      load_timeout: 30000
+      retry_count: 3
+      description: "MCP Server Discovery and Validation system (Phase 0 prerequisite)"
+
+    # Core Foundation (Level 0 - Depends on MCP Discovery)
     config/core/error_handling_initialization.yaml:
       level: 0
-      dependencies: []
+      dependencies: ["config/core/mcp_server_discovery.yaml"]
       priority: "critical"
       load_timeout: 15000
       retry_count: 3
-      description: "Consolidated error handling and initialization system"
+      description: "Enhanced error handling and initialization system with MCP integration"
 
     # Analysis Components (Level 1 - Depends on Core)
     config/analysis/task_analysis.yaml:
       level: 1
-      dependencies: ["config/core/error_handling_initialization.yaml"]
+      dependencies: ["config/core/error_handling_initialization.yaml", "config/core/mcp_server_discovery.yaml"]
       priority: "critical"
       load_timeout: 8000
       retry_count: 3
-      description: "Task complexity and domain analysis system"
+      description: "Enhanced task analysis with MCP integration"
 
     config/analysis/agent_selection.yaml:
       level: 1
-      dependencies: ["config/core/error_handling_initialization.yaml"]
+      dependencies: ["config/core/error_handling_initialization.yaml", "config/core/mcp_server_discovery.yaml"]
       priority: "critical"
       load_timeout: 6000
       retry_count: 2
-      description: "Unified agent selection with TF-IDF integration"
+      description: "Ultimate agent selection with TF-IDF and MCP integration"
 
-  
     config/analysis/clarification.yaml:
       level: 1
-      dependencies: ["config/analysis/task_analysis.yaml"]
+      dependencies: ["config/analysis/task_analysis.yaml", "config/core/mcp_server_discovery.yaml"]
       priority: "medium"
       load_timeout: 5000
       retry_count: 2
-      description: "Interactive clarification and context analysis"
+      description: "Enhanced clarification with MCP tool awareness"
 
     # Execution Components (Level 2 - Depends on Analysis)
     config/execution/todo_engine.yaml:
       level: 2
       dependencies: [
         "config/analysis/task_analysis.yaml",
-        "config/analysis/agent_selection.yaml"
+        "config/analysis/agent_selection.yaml",
+        "config/core/mcp_server_discovery.yaml"
       ]
       priority: "critical"
       load_timeout: 6000
       retry_count: 3
-      description: "Primary TODO execution engine with backup integration"
+      description: "Enhanced TODO execution engine with MCP integration"
 
     config/execution/coordination.yaml:
       level: 2
-      dependencies: ["config/core/error_handling_initialization.yaml"]
+      dependencies: ["config/core/error_handling_initialization.yaml", "config/core/mcp_server_discovery.yaml"]
       priority: "high"
       load_timeout: 5000
       retry_count: 2
-      description: "Parallel coordination and execution management"
+      description: "Enhanced parallel coordination with MCP support"
 
     config/execution/delegation.yaml:
       level: 2
-      dependencies: ["config/execution/todo_engine.yaml"]
+      dependencies: ["config/execution/todo_engine.yaml", "config/core/mcp_server_discovery.yaml"]
       priority: "high"
       load_timeout: 5000
       retry_count: 2
-      description: "Task delegation rules and agent matching"
+      description: "Enhanced delegation with MCP tool integration"
 
-    # Monitoring functionality is consolidated in existing files
+    # Discovery Components (Level 3 - Depends on Execution)
+    config/discovery/agent_registry.yaml:
+      level: 3
+      dependencies: ["config/core/mcp_server_discovery.yaml", "config/execution/delegation.yaml"]
+      priority: "high"
+      load_timeout: 8000
+      retry_count: 3
+      description: "Dynamic agent discovery with comprehensive MCP integration"
 
 # Enhanced Loading Strategy Configuration
 loading_strategy:
@@ -129,12 +145,13 @@ loading_strategy:
       adjustment_factor: 0.8
       adaptive_scaling: true
 
-    # Load configurations by dependency level (optimized for actual 9-file architecture)
+    # Load configurations by dependency level (optimized for enhanced 5-phase architecture)
     level_loading:
-      level_0: 1  # Sequential - critical foundation (error_handling_initialization)
-      level_1: 3  # Parallel - analysis components (task_analysis, agent_selection, clarification)
-      level_2: 3  # Parallel - execution components (todo_engine, coordination, delegation)
-      level_3: 1  # Sequential - discovery components (agent_registry only)
+      level_-1: 1  # Sequential - MCP discovery prerequisite (mcp_server_discovery)
+      level_0: 1   # Sequential - critical foundation (error_handling_initialization)
+      level_1: 3   # Parallel - analysis components (task_analysis, agent_selection, clarification)
+      level_2: 3   # Parallel - execution components (todo_engine, coordination, delegation)
+      level_3: 1   # Sequential - discovery components (agent_registry)
 
   # Enhanced Adaptive Timeout Configuration
   adaptive_timeouts:
@@ -188,13 +205,13 @@ loading_strategy:
       cleanup_partial_loads: true
       preserve_successful_loads: true
 
-# Consolidated Topological Sort Implementation
+# Enhanced Topological Sort Implementation
 topological_sort_algorithm: |
-  # Enhanced Topological Sort for Consolidated Architecture
-  def topological_sort_dependencies_v2(configurations):
+  # Enhanced Topological Sort for 5-Phase Architecture v0.3.0
+  def topological_sort_dependencies_v3(configurations):
       """
       Sort configurations based on dependencies using topological sort
-      Optimized for the 4-level consolidated architecture
+      Optimized for the 5-phase enhanced architecture with MCP Server Discovery
 
       Args:
           configurations: Dict of configuration paths to their metadata
@@ -202,7 +219,7 @@ topological_sort_algorithm: |
       Returns:
           List of configuration paths in dependency order
           Dict of dependency levels for parallel loading
-          Loading plan optimized for consolidated architecture
+          Loading plan optimized for enhanced 5-phase architecture
       """
 
       # Build adjacency list and in-degree count
@@ -234,7 +251,7 @@ topological_sort_algorithm: |
       levels = {}
 
       while queue:
-          # Group by level for parallel processing (optimized for 4 levels)
+          # Group by level for parallel processing (optimized for 5 levels)
           current_level = len(sorted_configs)
           level_configs = queue.copy()
           queue.clear()
@@ -258,21 +275,21 @@ topological_sort_algorithm: |
 
       return sorted_configs, levels, config_metadata
 
-  def generate_consolidated_loading_plan(levels, config_metadata, max_parallel_loaders):
+  def generate_enhanced_loading_plan(levels, config_metadata, max_parallel_loaders):
       """
-      Generate optimal loading plan for consolidated architecture
+      Generate optimal loading plan for enhanced 5-phase architecture
       """
-      # Group configurations by level (4 levels max)
+      # Group configurations by level (5 levels max)
       level_groups = {}
       for config, level in levels.items():
           if level not in level_groups:
               level_groups[level] = []
           level_groups[level].append(config)
 
-      # Sort levels (0-3)
+      # Sort levels (-1 to 3)
       sorted_levels = sorted(level_groups.keys())
 
-      # Generate loading batches (optimized for consolidation)
+      # Generate loading batches (optimized for enhanced architecture)
       loading_batches = []
       for level in sorted_levels:
           configs = level_groups[level]
@@ -281,7 +298,7 @@ topological_sort_algorithm: |
           batch_metadata = {
               'level': level,
               'configs': configs,
-              'parallel': level > 0,  # Level 0 is sequential
+              'parallel': level >= 0,  # Level -1 and 0 are sequential
               'priority': determine_batch_priority(configs, config_metadata),
               'estimated_timeout': calculate_batch_timeout(configs, config_metadata)
           }
@@ -318,10 +335,10 @@ topological_sort_algorithm: |
       timeouts = [config_metadata.get(config, {}).get('load_timeout', 5000) for config in configs]
       return max(timeouts) * 1.2  # 20% buffer
 
-# Consolidated Dependency Resolution Engine
+# Enhanced Dependency Resolution Engine
 dependency_resolution_engine: |
-  # Enhanced Dependency Resolution Engine for Consolidated Architecture
-  class ConsolidatedConfigurationResolver:
+  # Enhanced Dependency Resolution Engine for 5-Phase Architecture v0.3.0
+  class EnhancedConfigurationResolver:
       def __init__(self, dependency_config):
           self.dependency_config = dependency_config
           self.loading_strategy = dependency_config['loading_strategy']
@@ -334,6 +351,7 @@ dependency_resolution_engine: |
               # Core mappings
               'config/core/unified_error_handling.yaml': 'config/core/error_handling_initialization.yaml',
               'config/core/sequenced_initialization.yaml': 'config/core/error_handling_initialization.yaml',
+              'config/core/mcp_server_discovery.yaml': 'config/core/mcp_server_discovery.yaml',
 
               # Analysis mappings
               'config/knowledge-base/task-analysis.yaml': 'config/analysis/task_analysis.yaml',
@@ -348,32 +366,31 @@ dependency_resolution_engine: |
               'config/knowledge-base/parallel_coordination.yaml': 'config/execution/coordination.yaml',
               'config/rules/parallel_execution_rules.yaml': 'config/execution/coordination.yaml',
               'config/rules/todo_delegation_rules.yaml': 'config/execution/delegation.yaml',
-              # Performance monitoring functionality is consolidated in coordination.yaml and todo_engine.yaml
 
               # Discovery mappings
               'config/dynamic/agent_types.yaml': 'config/discovery/agent_registry.yaml',
               'config/dynamic/dynamic_agent_discovery.yaml': 'config/discovery/agent_registry.yaml',
               'config/dynamic/agent_name_resolution.yaml': 'config/discovery/agent_registry.yaml',
-              # Domain system functionality is consolidated in agent_registry.yaml
-              # MCP integration functionality is consolidated in agent_registry.yaml and error_handling_initialization.yaml
+              'config/core/mcp_integration.yaml': 'config/core/mcp_server_discovery.yaml',
+              'config/dynamic/mcp_registry.yaml': 'config/core/mcp_server_discovery.yaml'
           }
 
-      def resolve_consolidated_dependencies(self):
+      def resolve_enhanced_dependencies(self):
           """
-          Resolve dependencies for consolidated architecture with backward compatibility
+          Resolve dependencies for enhanced 5-phase architecture with MCP integration
           """
           try:
               # Validate consolidation mapping
               self._validate_consolidation_mapping()
 
               # Perform topological sort
-              sorted_configs, levels, config_metadata = self._topological_sort_consolidated()
+              sorted_configs, levels, config_metadata = self._topological_sort_enhanced()
 
               # Generate optimized loading plan
-              loading_plan = self._generate_consolidated_loading_plan(levels, config_metadata)
+              loading_plan = self._generate_enhanced_loading_plan(levels, config_metadata)
 
               # Validate loading plan
-              self._validate_consolidated_loading_plan(loading_plan)
+              self._validate_enhanced_loading_plan(loading_plan)
 
               return {
                   'status': 'success',
@@ -382,9 +399,10 @@ dependency_resolution_engine: |
                   'loading_plan': loading_plan,
                   'consolidation_mapping': self.consolidation_mapping,
                   'parallel_loading_enabled': self.loading_strategy['parallel_loading']['enabled'],
-                  'architecture_version': 'v0.2.2',
+                  'architecture_version': 'v0.3.0',
                   'total_configurations': len(sorted_configs),
-                  'consolidation_ratio': self._calculate_consolidation_ratio()
+                  'mcp_integration_enabled': True,
+                  'phase_count': 5
               }
 
           except CircularDependencyError as e:
@@ -393,7 +411,7 @@ dependency_resolution_engine: |
                   'error_type': 'circular_dependency',
                   'message': str(e),
                   'suggestions': self._suggest_cycle_resolution(),
-                  'architecture_version': 'v0.2.2'
+                  'architecture_version': 'v0.3.0'
               }
           except Exception as e:
               return {
@@ -401,8 +419,22 @@ dependency_resolution_engine: |
                   'error_type': 'resolution_error',
                   'message': str(e),
                   'suggestions': self._suggest_general_resolution(),
-                  'architecture_version': 'v0.2.2'
+                  'architecture_version': 'v0.3.0'
               }
+
+      def _topological_sort_enhanced(self):
+          """Enhanced topological sort for 5-phase architecture"""
+          # Implementation using the v0.3.0 algorithm
+          pass
+
+      def _generate_enhanced_loading_plan(self, levels, config_metadata):
+          """Generate enhanced loading plan for 5-phase architecture"""
+          return self.generate_enhanced_loading_plan(levels, config_metadata, 6)
+
+      def _validate_enhanced_loading_plan(self, loading_plan):
+          """Validate enhanced loading plan for 5-phase architecture"""
+          # Enhanced validation for MCP integration
+          pass
 
       def _validate_consolidation_mapping(self):
           """Validate that all old configurations have consolidated equivalents"""
@@ -441,45 +473,52 @@ monitoring_system:
       - "error_recovery_time"
       - "memory_usage"
 
-    # Performance targets for consolidated architecture
+    # Performance targets for enhanced 5-phase architecture
     performance_targets:
       dependency_resolution_time: 3000   # Improved from 5000ms
-      configuration_loading_time: 20000   # Improved from 30000ms
+      configuration_loading_time: 25000   # Enhanced for MCP integration
       parallel_loading_efficiency: 0.85   # Target 85% efficiency
       consolidation_efficiency: 0.90      # Target 90% efficiency
-      memory_usage: 256                    # Reduced from 512MB
+      memory_usage: 384                    # Increased for MCP integration
       error_rate: 0.05                     # Reduced from 10% to 5%
+      mcp_discovery_time: 15000            # New: MCP Server Discovery time
+      mcp_validation_time: 10000           # New: MCP validation time
 
     alert_thresholds:
       dependency_resolution_time: 5000
-      configuration_loading_time: 25000
+      configuration_loading_time: 30000
       error_rate: 0.1
-      memory_usage: 384
+      memory_usage: 512
+      mcp_discovery_time: 20000
+      mcp_validation_time: 15000
 
-  # Validation Rules (Enhanced for Consolidation)
+  # Validation Rules (Enhanced for 5-Phase Architecture)
   validation_rules:
     dependency_validation:
       check_circular_dependencies: true
       check_missing_dependencies: true
       validate_dependency_levels: true
       validate_consolidation_mapping: true
+      validate_mcp_integration: true
 
     configuration_validation:
       validate_yaml_syntax: true
       validate_required_fields: true
       validate_configuration_schema: true
       validate_consolidation_integrity: true
+      validate_mcp_compatibility: true
 
     loading_validation:
       validate_loading_order: true
       validate_parallel_execution: true
       validate_error_handling: true
-      validate_consolidation_benefits: true
+      validate_mcp_discovery: true
+      validate_enhanced_benefits: true
 
-# Error Definitions (Updated)
+# Error Definitions (Enhanced for 5-Phase Architecture)
 error_definitions:
   CircularDependencyError:
-    description: "Circular dependency detected in consolidated configuration loading"
+    description: "Circular dependency detected in enhanced configuration loading"
     handling_strategy: "error_with_resolution_suggestions"
 
   ConsolidationValidationError:
@@ -487,77 +526,100 @@ error_definitions:
     handling_strategy: "fallback_to_individual_configs"
 
   ConfigurationLoadError:
-    description: "Failed to load consolidated configuration file"
+    description: "Failed to load enhanced configuration file"
     handling_strategy: "retry_with_backoff_and_individual_fallback"
 
   ValidationError:
-    description: "Consolidated configuration validation failed"
+    description: "Enhanced configuration validation failed"
     handling_strategy: "log_warning_and_continue_with_best_effort"
 
-# Configuration Cache System (New)
+  MCPDiscoveryError:
+    description: "MCP Server Discovery failed or incomplete"
+    handling_strategy: "continue_with_basic_mcp_functionality"
+
+  MCPValidationError:
+    description: "MCP Server validation failed or compatibility issues"
+    handling_strategy: "disable_problematic_mcp_tools"
+
+  MCPIntegrationError:
+    description: "MCP integration failed during initialization"
+    handling_strategy: "graceful_degradation_with_native_tools"
+
+# Enhanced Configuration Cache System
 cache_system:
   enabled: true
-  cache_strategy: "intelligent_caching"
+  cache_strategy: "intelligent_caching_with_mcp"
 
   dependency_cache:
     enabled: true
     cache_duration: 3600  # 1 hour
-    max_cache_size: 100   # Max cached resolution results
+    max_cache_size: 150   # Increased for MCP discovery results
 
   configuration_cache:
     enabled: true
     cache_duration: 1800  # 30 minutes
     compression_enabled: true
-    max_cache_size_mb: 64
+    max_cache_size_mb: 96   # Increased for MCP tool data
+
+  mcp_cache:
+    enabled: true
+    cache_duration: 900   # 15 minutes for MCP server data
+    max_cache_size_mb: 32
+    cache_server_capabilities: true
+    cache_tool_performance: true
 
   cache_invalidation:
     on_configuration_change: true
     on_dependency_change: true
     on_error_threshold_exceeded: true
+    on_mcp_server_change: true
+    on_mcp_tool_discovery: true
 
-# Integration Points (Updated for Consolidated Architecture)
+# Integration Points (Updated for Enhanced 5-Phase Architecture)
 integration_points:
   # Internal Integration
   internal_systems:
-    - configuration_base_integrates_with: ["error_handling_initialization", "all_other_components"]
-    - dependency_resolver_integrates_with: ["monitoring_system", "cache_system"]
-    - loading_strategy_integrates_with: ["resource_monitoring", "error_handling"]
+    - configuration_base_integrates_with: ["error_handling_initialization", "mcp_server_discovery", "all_other_components"]
+    - dependency_resolver_integrates_with: ["monitoring_system", "cache_system", "mcp_validation"]
+    - loading_strategy_integrates_with: ["resource_monitoring", "error_handling", "mcp_health_monitoring"]
 
   # External Integration
   external_systems:
-    - analysis_integration: "configuration_base_coordinates_with_analysis_components"
-    - execution_integration: "configuration_base_coordinates_with_execution_components"
+    - analysis_integration: "configuration_base_coordinates_with_analysis_components_with_mcp"
+    - execution_integration: "configuration_base_coordinates_with_execution_components_with_mcp"
     - discovery_integration: "configuration_base_coordinates_with_discovery_components"
     - monitoring_integration: "configuration_base_provides_metrics_to_monitoring_system"
+    - mcp_integration: "configuration_base_orchestrates_mcp_server_discovery_and_validation"
 
-# Version Management (Updated)
+# Version Management (Enhanced)
 version_management:
-  current_version: "0.2.2"
-  architecture_version: "consolidated_v2"
+  current_version: "0.3.0"
+  architecture_version: "enhanced_5_phase_v0.3.0"
   compatibility_requirements:
-    minimal_system_version: "0.2.0"
-    required_components: ["error_handling_initialization", "dependency_resolver"]
+    minimal_system_version: "0.3.0"
+    required_components: ["mcp_server_discovery", "error_handling_initialization", "dependency_resolver"]
 
   migration_support:
-    previous_version_support: true
-    migration_strategy: "consolidated_with_backward_compatibility"
+    previous_version_support: false
+    migration_strategy: "enhanced_with_mcp_integration"
     configuration_migration: "automatic_with_validation_and_fallback"
 
-  consolidation_changes:
-    what_was_consolidated:
-      - "30 individual configuration files → 9 consolidated files"
-      - "5 dependency levels → 4 optimized levels"
-      - "Multiple dependency systems → unified dependency resolver"
-      - "Separate loading strategies → consolidated loading strategy"
-      - "Individual monitoring systems → unified monitoring (integrated into existing files)"
-      - "TF-IDF system consolidation → integrated into agent_selection"
-      - "Domain system functionality → consolidated into agent_registry"
-      - "MCP integration functionality → consolidated into agent_registry and error_handling_initialization"
+  enhancement_changes:
+    what_was_enhanced:
+      - "9 consolidated files → 10 files with dedicated MCP Server Discovery"
+      - "4 dependency levels → 5 enhanced levels including MCP prerequisite"
+      - "Consolidated loading strategy → Enhanced loading with MCP integration"
+      - "Basic error handling → Enhanced error handling with MCP monitoring"
+      - "Individual monitoring → Unified monitoring with MCP health tracking"
+      - "TF-IDF system integration → Ultimate agent selection with MCP"
+      - "Basic MCP integration → Comprehensive MCP discovery and validation"
+      - "4-phase initialization → 5-phase initialization with MCP prerequisite"
 
-    benefits_of_consolidation:
-      - "48% reduction in configuration file count"
-      - "20% improvement in loading performance"
-      - "Simplified dependency management"
-      - "Enhanced error handling coordination"
-      - "Reduced memory footprint"
-      - "Improved maintainability"
+    benefits_of_enhancement:
+      - "100% MCP coverage with automatic discovery"
+      - "Enhanced reliability through comprehensive MCP validation"
+      - "Improved performance monitoring with MCP health tracking"
+      - "Better error handling with MCP-specific fallback strategies"
+      - "Enhanced cache system for MCP server data"
+      - "Real-time MCP monitoring and optimization"
+      - "Automatic MCP tool selection and fallback"

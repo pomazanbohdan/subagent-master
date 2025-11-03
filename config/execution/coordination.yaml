@@ -3,9 +3,9 @@
 
 metadata:
   name: "coordination"
-  version: "0.2.2"
+  version: "0.3.0"
   description: "Consolidated parallel coordination system with intelligent synchronization, result synthesis, and adaptive orchestration for optimal parallel task execution"
-  author: "Master Agent System v0.2.2"
+  author: "Master Agent System v0.3.0"
   tags: ["parallel-coordination", "synchronization", "result-synthesis", "adaptive-orchestration", "dependency-management"]
 
 # Coordination Philosophy

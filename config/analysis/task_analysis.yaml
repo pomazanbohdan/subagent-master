@@ -3,9 +3,9 @@
 
 metadata:
   name: "task_analysis"
-  version: "0.2.2"
+  version: "0.3.0"
   description: "Consolidated task analysis system with complexity assessment, domain classification, and execution strategy determination for optimized agent selection"
-  author: "Master Agent System v0.2.2"
+  author: "Master Agent System v0.3.0"
   tags: ["task-analysis", "complexity-assessment", "classification", "execution-planning", "domain-detection"]
 
 # Task Analysis Philosophy
