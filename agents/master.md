@@ -29,6 +29,8 @@ imports: [
   "config/knowledge-base/clarification_system.yaml",
   "config/knowledge-base/parallel_coordination.yaml",
   "config/knowledge-base/todo_execution_engine.yaml",
+  "config/rules/parallel_execution_rules.yaml",
+  "config/rules/todo_delegation_rules.yaml",
   "config/dynamic/configuration_dependencies.yaml",
   "config/dynamic/intelligent_config_loader.yaml",
   "config/dynamic/configuration_monitoring.yaml",
@@ -41,7 +43,9 @@ imports: [
   "config/dynamic/performance_tracking.yaml",
   "config/dynamic/unified_metrics.yaml",
   "config/dynamic/variable_management.yaml",
-  "config/dynamic/integrated_environment_config.yaml"
+  "config/dynamic/integrated_environment_config.yaml",
+  "config/dynamic/agent_name_resolution.yaml",
+  "config/dynamic/configuration_loading_test.yaml"
 ]
 ---
 
@@ -112,18 +116,29 @@ Infrastructure: infrastructure, devops, deployment, operations
 - Set up Claude Code native fallback as last resort
 - **CRITICAL**: Error handling must be operational before any other components
 
-**Phase 2: Knowledge Base Initialization**
-1. `config/knowledge-base/task-analysis.yaml` (foundation)
-2. `config/knowledge-base/unified_agent_selection.yaml` (depends on task analysis)
-3. `config/knowledge-base/categorization-engine.yaml` (depends on both)
-4. `config/knowledge-base/clarification_system.yaml` (depends on categorization)
+**Phase 2: Knowledge Base Initialization (Complete)**
+1. **Foundation Components:**
+   - `config/knowledge-base/task-analysis.yaml` (core foundation)
+   - `config/core/unified_error_handling.yaml` (dependency foundation)
+
+2. **Intelligence Components:**
+   - `config/knowledge-base/unified_agent_selection.yaml` (depends on task-analysis)
+   - `config/knowledge-base/tfidf-system.yaml` (depends on task-analysis) - *Semantic analysis system*
+   - `config/knowledge-base/categorization-engine.yaml` (depends on both)
+
+3. **Execution Components:**
+   - `config/knowledge-base/parallel_coordination.yaml` (depends on error-handling) - *Parallel execution management*
+   - `config/knowledge-base/todo_execution_engine.yaml` (depends on 4 components above) - *Core delegation engine*
+   - `config/knowledge-base/clarification_system.yaml` (depends on categorization)
 
 **Phase 3: Intelligent Configuration Loading (v0.2.0)**
 - **Dependency-Aware Loading System** with topological sorting:
   1. Load `config/dynamic/configuration_dependencies.yaml` (dependency graph definition)
   2. Load `config/dynamic/intelligent_config_loader.yaml` (intelligent loading engine)
   3. Load `config/dynamic/configuration_monitoring.yaml` (monitoring system)
-  4. **Execute intelligent loading algorithm**:
+  4. Load `config/dynamic/agent_name_resolution.yaml` (agent name resolution system)
+  5. Load `config/dynamic/configuration_loading_test.yaml` (configuration validation)
+  6. **Execute intelligent loading algorithm**:
      - Analyze configuration dependencies and build loading graph
      - Perform topological sort to determine optimal loading order
      - Generate parallel loading plan respecting dependency levels
@@ -305,32 +320,38 @@ IF primary_conditions_met:
 ```
 subagent-master/
 ├── agents/
-│   └── master.md                    # High-level orchestration logic
+│   └── master.md                    # High-level orchestration logic (v0.2.0)
 ├── config/
 │   ├── knowledge-base/              # Algorithm definitions and analysis
+│   │   ├── task-analysis.yaml       # Task complexity and domain analysis (foundation)
 │   │   ├── unified_agent_selection.yaml    # Unified agent selection system
-│   │   ├── tfidf-system.yaml        # TF-IDF implementation and fallback system
-│   │   ├── task-analysis.yaml       # Task complexity and domain analysis
+│   │   ├── tfidf-system.yaml        # TF-IDF semantic analysis system
 │   │   ├── categorization-engine.yaml # ML categorization and semantic analysis
 │   │   ├── parallel_coordination.yaml # Parallel execution coordination
+│   │   ├── todo_execution_engine.yaml # Core TODO→Task() delegation engine
 │   │   └── clarification_system.yaml # Interactive clarification algorithms
 │   ├── dynamic/                     # Dynamic configuration files
+│   │   ├── configuration_dependencies.yaml # Dependency graph definition
+│   │   ├── intelligent_config_loader.yaml # Intelligent loading engine
+│   │   ├── configuration_monitoring.yaml # System monitoring
+│   │   ├── agent_types.yaml        # Dynamic agent type definitions
+│   │   ├── dynamic_agent_discovery.yaml # Agent discovery system
 │   │   ├── mcp_registry.yaml       # MCP server registry and capabilities
 │   │   ├── domain_system.yaml      # Domain expertise and specialization mapping
 │   │   ├── time_estimation.yaml    # Dynamic time estimation algorithms
-│   │   ├── agent_types.yaml        # Dynamic agent type definitions
 │   │   ├── runtime_environment.yaml # Runtime environment detection
-│   │   └── performance_tracking.yaml # Performance monitoring and learning
-│   ├── environments/                # Environment-specific configurations
-│   │   ├── development.yaml        # Development environment settings
-│   │   ├── testing.yaml            # Testing environment settings
-│   │   ├── production.yaml         # Production environment settings
-│   │   └── performance_targets.yaml # Performance targets by environment
+│   │   ├── performance_tracking.yaml # Performance monitoring and learning
+│   │   ├── unified_metrics.yaml     # Unified metrics collection
+│   │   ├── variable_management.yaml # Variable management system
+│   │   ├── integrated_environment_config.yaml # Environment integration
+│   │   ├── agent_name_resolution.yaml # Agent name resolution system
+│   │   └── configuration_loading_test.yaml # Configuration testing
 │   ├── rules/                       # Selection rules and thresholds
-│   │   ├── selection_rules.yaml     # Agent selection criteria and rules
-│   │   └── parallel_execution_rules.yaml # Parallel execution constraints
+│   │   ├── parallel_execution_rules.yaml # Parallel execution constraints
+│   │   └── todo_delegation_rules.yaml # TODO delegation rules
 │   └── core/                        # Core configuration management
-│       └── configuration_loader.yaml # Dynamic configuration loading system
+│       ├── unified_error_handling.yaml # Centralized error handling
+│       └── sequenced_initialization.yaml # Initialization sequencing
 └── .claude-plugin/                  # Plugin metadata
 ```
 
