@@ -1,7 +1,7 @@
 {
   "name": "orchestration",
-  "version": "0.2.2",
-  "description": "Consolidated orchestration system v0.2.2 - Unified configuration loading with 4-phase initialization, enhanced TF-IDF selection, circuit breaker patterns, and backup systems - ultimate agent orchestration platform",
+  "version": "0.3.0",
+  "description": "Enhanced orchestration system v0.3.0 - 5-phase initialization with MCP Server Discovery, comprehensive MCP integration, automatic tool selection, performance profiling, and fallback strategies - ultimate agent orchestration platform",
   "author": "Bohdan <pomazan.bohdan@gmail.com>",
   "license": "MIT",
   "keywords": [
@@ -158,7 +158,22 @@
     "performance-optimization",
     "system-reliability-enhanced",
     "unified-metrics-tracking",
-    "adaptive-fallback-systems"
+    "adaptive-fallback-systems",
+    "5-phase-initialization",
+    "mcp-server-discovery",
+    "comprehensive-mcp-integration",
+    "automatic-mcp-tool-selection",
+    "mcp-performance-profiling",
+    "mcp-fallback-strategies",
+    "mcp-server-validation",
+    "real-time-mcp-monitoring",
+    "mcp-health-monitoring",
+    "mcp-capability-analysis",
+    "mcp-license-validation",
+    "mcp-performance-optimization",
+    "mcp-load-balancing",
+    "mcp-caching-system",
+    "enhanced-mcp-integration"
   ],
   "homepage": "https://github.com/pomazanbohdan/subagent-master",
   "repository": "https://github.com/pomazanbohdan/subagent-master.git",

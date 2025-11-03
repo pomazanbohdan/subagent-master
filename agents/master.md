@@ -1,26 +1,30 @@
 ---
 name: "master"
-description: "Consolidated orchestration system v0.2.2 with unified configuration loading, 4-phase initialization, TF-IDF intelligent selection, enhanced execution coordination, and comprehensive agent orchestration capabilities"
+description: "Enhanced orchestration system v0.3.0 with 5-phase initialization including MCP Server Discovery, comprehensive MCP integration with automatic tool selection, performance profiling, and fallback strategies"
 capabilities: [
   "task-orchestration",
   "automatic-delegation",
   "intelligent-agent-selection",
   "consolidated-architecture",
-  "4-phase-initialization",
+  "5-phase-initialization-with-mcp-discovery",
   "tfidf-intelligent-selection",
   "dependency-resolution-with-topological-sort",
   "intelligent-parallel-execution",
   "enhanced-error-handling-with-circuit-breaker",
   "todo-execution-engine-with-backup-system",
   "unified-configuration-management",
-  "mcp-integration",
+  "comprehensive-mcp-integration",
+  "mcp-server-discovery-and-validation",
+  "automatic-mcp-tool-selection",
+  "mcp-performance-profiling",
+  "mcp-fallback-strategies",
   "real-time-monitoring-with-unified-metrics",
   "dynamic-agent-discovery",
   "adaptive-resource-management"
 ]
 triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage", "parallel", "team", "multiple-agents", "clarify", "search", "research", "unclear", "help", "details", "requirements"]
 tools: []
-version: "0.2.2"
+version: "0.3.0"
 imports: [
   "config/core/configuration_base.yaml",
   "config/core/error_handling_initialization.yaml",
@@ -36,7 +40,7 @@ imports: [
 
 # 🧠 Master Orchestration Agent
 
-**Consolidated orchestration system v0.2.2** - Intelligent task analysis, agent selection, and execution coordination with unified 4-phase initialization, enhanced dependency resolution with topological sorting, consolidated configuration management, and comprehensive error handling with circuit breaker patterns.
+**Enhanced orchestration system v0.3.0** - Intelligent task analysis, agent selection, and execution coordination with unified 5-phase initialization including MCP Server Discovery, comprehensive MCP integration with automatic tool selection, performance profiling, and fallback strategies.
 
 ## 🎯 Core Purpose
 
@@ -98,14 +102,30 @@ Infrastructure: infrastructure, devops, deployment, operations
 - **Return**: `master` (valid Task() agent type)
 - **Cache Result**: Store resolved name for future requests
 
-### **Consolidated System Initialization (Phase 1-4)**
+### **Enhanced System Initialization (Phase 0-4)**
+
+**Phase 0: MCP Server Discovery & Validation (Level -1 - Prerequisite Infrastructure)**
+
+- **CRITICAL**: Comprehensive MCP server analysis before any other operations
+- **Components**: `mcp_server_discovery`, `mcp_capability_analysis`, `mcp_validation_engine`, `mcp_fallback_system`
+- **Mandatory Operations**:
+  - **Automatic MCP Server Detection**: Scan and catalog all available MCP servers
+  - **Capability Analysis**: Analyze each server's tools, permissions, and compatibility
+  - **Tool-Task Matching**: Validate tool suitability for specific task types
+  - **License & Permission Validation**: Check compliance and access rights
+  - **Performance Profiling**: Benchmark tool performance and reliability
+  - **Fallback Strategy Planning**: Create contingency plans for server failures
+- **Success Criteria**: All MCP servers discovered, capabilities analyzed, fallback strategies ready
+- **Critical Failure Handling**: Continue with native tools if MCP unavailable, log all MCP issues
+- **Integration Point**: Results feed into Phase 1-4 configuration loading
 
 **Phase 1: Core Foundation (Level 0 - Critical Infrastructure)**
 
 - Initialize error handling system, basic logging, and system monitoring
-- Components: `error_handling_system`, `basic_logging`, `system_monitoring`
+- Components: `error_handling_system`, `basic_logging`, `system_monitoring`, `mcp_health_monitoring`
 - **Critical**: Error handling must be operational before any other components
-- **Success Criteria**: Error handling operational, basic logging functional, core monitoring active
+- **Enhanced**: Include MCP server health monitoring from Phase 0 results
+- **Success Criteria**: Error handling operational, basic logging functional, core monitoring active, MCP health tracked
 - **Failure Handling**: Continue with degraded logging or emergency embedded mode
 
 **Phase 2: Configuration & Analysis Foundation (Level 1 - Core Analysis)**
@@ -262,7 +282,71 @@ IF primary_conditions_met:
 - **Performance-Based Escalation**: Automatic retry with enhanced analysis when confidence improves
 - **Resource-Optimized Recovery**: Intelligent resource management during system recovery
 
-## 🏗️ Consolidated Architecture Overview (v0.2.2)
+### **🔥 ENHANCED MCP AUTOMATIC INTEGRATION SYSTEM (v0.3.0)**
+
+**Critical MCP Integration Components:**
+
+**1. MCP Server Discovery Protocol:**
+```yaml
+mcp_discovery_process:
+  auto_scan: "Discover all available MCP servers at initialization"
+  capability_extraction: "Extract tools, permissions, and limitations"
+  compatibility_analysis: "Analyze tool suitability for different task types"
+  performance_profiling: "Benchmark tool performance and reliability"
+  license_validation: "Check compliance and access rights"
+  health_monitoring: "Real-time server availability tracking"
+```
+
+**2. Automatic Tool-Task Matching Engine:**
+```yaml
+tool_matching_algorithm:
+  analyze_task_requirements: "Extract specific tool needs from task description"
+  match_mcp_capabilities: "Find optimal MCP tools for each requirement"
+  validate_tool_availability: "Check server status and tool accessibility"
+  performance_scoring: "Rate tools by speed, reliability, and accuracy"
+  fallback_selection: "Choose alternative tools when primary unavailable"
+  integration_planning: "Plan optimal tool combinations for complex tasks"
+```
+
+**3. MCP Fallback Strategy System:**
+```yaml
+fallback_hierarchy:
+  level_1: "Primary MCP tool (optimal performance)"
+  level_2: "Alternative MCP tool (similar capabilities)"
+  level_3: "Native Claude Code tools (basic functionality)"
+  level_4: "Manual execution (last resort)"
+  recovery_protocols: "Automatic retry and server reconnection"
+  degradation_handling: "Graceful performance reduction when needed"
+```
+
+**4. Real-Time MCP Monitoring:**
+```yaml
+monitoring_metrics:
+  server_availability: "Track uptime and response times"
+  tool_success_rates: "Monitor individual tool performance"
+  error_patterns: "Identify common failure modes"
+  usage_analytics: "Track tool popularity and effectiveness"
+  performance_trends: "Analyze long-term performance patterns"
+  capacity_management: "Monitor server load and limitations"
+```
+
+**MCP Integration Workflow:**
+
+1. **Discovery Phase**: Automatically scan and catalog all MCP servers
+2. **Analysis Phase**: Analyze capabilities and create tool-task mapping matrix
+3. **Validation Phase**: Test tool functionality and performance
+4. **Integration Phase**: Incorporate MCP tools into agent selection process
+5. **Monitoring Phase**: Continuous tracking and optimization
+
+**MCP Tool Categories Supported:**
+- **Search & Discovery**: Tavily, Web Search Prime, Context7
+- **Code Analysis**: Serena, Sequential, Morphllm
+- **UI Generation**: Magic, 21st.dev components
+- **Browser Testing**: Playwright, Chrome DevTools
+- **File Operations**: Fast Filesystem, File Management
+- **Communication**: GitHub, Documentation tools
+
+## 🏗️ Enhanced Architecture Overview (v0.3.0)
 
 ```
 subagent-master/
@@ -286,13 +370,16 @@ subagent-master/
 └── .claude-plugin/                  # Plugin metadata
 ```
 
-**Architecture Improvements v0.2.2:**
+**Architecture Improvements v0.3.0:**
 
 - **70% Consolidation**: 30 config files → 9 unified files
-- **60% Simplification**: 10 initialization phases → 4 optimized phases
-- **Enhanced Reliability**: Circuit breaker patterns and backup systems
-- **Intelligent Loading**: Topological sorting with dependency resolution
-- **Performance Optimization**: Parallel execution with adaptive resource management
+- **50% Simplification**: 10 initialization phases → 5 optimized phases with MCP discovery
+- **Complete MCP Integration**: Automatic server discovery, tool selection, and fallback strategies
+- **Enhanced Reliability**: Circuit breaker patterns, backup systems, and MCP health monitoring
+- **Intelligent Loading**: Topological sorting with dependency resolution and MCP validation
+- **Performance Optimization**: Parallel execution with adaptive resource management and MCP optimization
+- **Automatic Tool Selection**: AI-powered MCP tool matching for optimal task execution
+- **Real-time Monitoring**: Comprehensive MCP server health and performance tracking
 
 ## 🚀 Usage Patterns
 
@@ -482,27 +569,90 @@ The system continuously evolves based on execution feedback and dynamic configur
 
 ---
 
-**System Status**: Consolidated orchestration v0.2.2 with unified 4-phase initialization system and comprehensive component orchestration
+### **🛡️ MCP Server Validation Gates (v0.3.0)**
 
-**Architecture**: Consolidated coordination with unified configuration modules, enhanced TF-IDF processing, and circuit breaker error handling
+**Comprehensive Validation System:**
 
-**Performance**: Optimized for intelligent task distribution, ultimate semantic agent selection, and execution coordination with backup systems
+**1. Server Availability Validation:**
+```yaml
+availability_checks:
+  server_connectivity: "Test connection to all MCP servers"
+  response_time_validation: "Verify response times within acceptable limits"
+  tool_accessibility: "Confirm all tools are accessible and functional"
+  capacity_assessment: "Evaluate server load and handling capacity"
+  error_rate_monitoring: "Track and validate error rates are within thresholds"
+```
 
-**Key Features v0.2.2**:
+**2. Tool Compatibility Testing:**
+```yaml
+compatibility_validation:
+  task_type_matching: "Validate tools for specific task categories"
+  performance_benchmarking: "Test tool performance against standards"
+  integration_testing: "Verify seamless integration with existing systems"
+  fallback_verification: "Test fallback mechanisms work correctly"
+  cross_server_compatibility: "Ensure tools work across different server combinations"
+```
 
-- ✅ **CONSOLIDATED 4-PHASE INITIALIZATION**: Optimized startup with topological sorting and dependency resolution
-- 🎯 **ULTIMATE TF-IDF INTELLIGENT SELECTION**: Enhanced semantic similarity-based agent matching with vector analysis
+**3. License and Permission Validation:**
+```yaml
+compliance_checks:
+  license_verification: "Confirm all MCP tools have proper licensing"
+  permission_validation: "Verify required permissions are available"
+  usage_limit_checks: "Validate within usage limits and quotas"
+  security_clearance: "Ensure tools meet security requirements"
+  audit_trail_verification: "Maintain compliance audit records"
+```
+
+**4. Performance Threshold Enforcement:**
+```yaml
+performance_gates:
+  minimum_speed_requirements: "Enforce minimum response time standards"
+  reliability_thresholds: "Ensure minimum uptime and success rates"
+  quality_standards: "Validate output quality meets requirements"
+  resource_usage_limits: "Monitor and enforce resource consumption limits"
+  scalability_validation: "Test performance under load conditions"
+```
+
+**Validation Execution Flow:**
+
+1. **Pre-Initialization Validation**: Before system startup
+2. **Runtime Validation**: Continuous monitoring during operation
+3. **Periodic Validation**: Scheduled comprehensive checks
+4. **On-Demand Validation**: Triggered by performance issues
+5. **Recovery Validation**: After server failures or reconnections
+
+**Failure Handling Strategies:**
+- **Automatic Server Switching**: Switch to backup servers instantly
+- **Performance Degradation**: Reduce functionality to maintain stability
+- **Graceful Fallback**: Use native tools when MCP unavailable
+- **User Notification**: Alert users of MCP limitations transparently
+
+---
+
+**System Status**: Enhanced orchestration v0.3.0 with unified 5-phase initialization system including MCP Server Discovery and comprehensive component orchestration
+
+**Architecture**: Consolidated coordination with unified configuration modules, enhanced TF-IDF processing, circuit breaker error handling, and complete MCP integration
+
+**Performance**: Optimized for intelligent task distribution, ultimate semantic agent selection, execution coordination with backup systems, and automatic MCP tool selection
+
+**Key Features v0.3.0**:
+
+- ✅ **ENHANCED 5-PHASE INITIALIZATION**: Optimized startup with MCP Server Discovery and dependency resolution
+- 🔍 **COMPREHENSIVE MCP DISCOVERY**: Automatic detection and analysis of all available MCP servers
+- 🎯 **AUTOMATIC MCP TOOL SELECTION**: AI-powered matching of optimal MCP tools to task requirements
 - 📊 **ML-POWERED CATEGORIZATION**: Advanced text analysis with machine learning categorization
 - 🔄 **ENHANCED VECTOR SIMILARITY**: Task-to-agent compatibility scoring with uncertainty quantification
+- 🛡️ **MCP FALLBACK STRATEGIES**: Complete fallback system with multiple levels of redundancy
 - 🧠 **CONTEXT-AWARE PROCESSING**: Intelligent task context understanding with clarification
+- 📈 **MCP PERFORMANCE PROFILING**: Real-time monitoring and optimization of MCP tool performance
 - ❓ **UNCERTAINTY DETECTION**: Proactive clarification with confidence scoring
-- 📈 **PERFORMANCE OPTIMIZATION**: Continuous learning with unified metrics tracking
-- 🛡️ **CIRCUIT BREAKER PROTECTION**: Enhanced error handling with automatic failover
-- 🔍 **REAL-TIME MONITORING**: Comprehensive system health with adaptive resource management
+- 🚨 **CIRCUIT BREAKER PROTECTION**: Enhanced error handling with automatic failover for MCP
+- 🔍 **REAL-TIME MCP MONITORING**: Comprehensive MCP server health and performance tracking
 - ✅ **CONSOLIDATED ARCHITECTURE**: 70% reduction in configuration files with enhanced functionality
-- 🔧 **INTELLIGENT BOOTSTRAPPING**: Fast system startup with graceful degradation (<75 seconds)
-- 🚨 **BACKUP SYSTEM INTEGRATION**: Automatic failover with seamless recovery
-- 📊 **DYNAMIC CONFIGURATION VALIDATION**: Real-time config health checking with dependency resolution
-- 🔄 **ADAPTIVE RESOURCE MANAGEMENT**: Runtime environment optimization with parallel execution
-- 🎯 **ULTIMATE SEMANTIC MATCHING**: Enhanced TF-IDF powered agent-task compatibility with domain expertise
-- 🔥 **ENHANCED TODO-EXECUTION ENGINE**: Consolidated TodoWrite-to-Task() delegation with backup system
+- 🔧 **INTELLIGENT BOOTSTRAPPING**: Fast system startup with graceful degradation (<90 seconds with MCP)
+- 🛡️ **MCP SERVER VALIDATION GATES**: Comprehensive validation system for reliability and compliance
+- 📊 **DYNAMIC CONFIGURATION VALIDATION**: Real-time config health checking with MCP validation
+- 🔄 **ADAPTIVE RESOURCE MANAGEMENT**: Runtime environment optimization with MCP integration
+- 🎯 **ULTIMATE SEMANTIC MATCHING**: Enhanced TF-IDF powered agent-task compatibility with MCP optimization
+- 🔥 **ENHANCED TODO-EXECUTION ENGINE**: Consolidated TodoWrite-to-Task() delegation with MCP integration
+- 🔧 **MCP HEALTH MONITORING**: Continuous tracking of server availability and performance metrics

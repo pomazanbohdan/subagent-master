@@ -5,8 +5,8 @@
     "email": "pomazan.bohdan@gmail.com"
   },
   "metadata": {
-    "description": "Consolidated orchestration system v0.2.2 - Unified configuration loading with 4-phase initialization, enhanced TF-IDF selection, circuit breaker patterns, and backup systems - Ultimate agent orchestration platform with consolidated architecture and dynamic agent discovery",
-    "version": "0.2.2"
+    "description": "Enhanced orchestration system v0.3.0 - 5-phase initialization with MCP Server Discovery, comprehensive MCP integration, automatic tool selection, performance profiling, and fallback strategies - Ultimate agent orchestration platform with enhanced MCP integration and dynamic agent discovery",
+    "version": "0.3.0"
   },
   "plugins": [
     {
@@ -148,7 +148,22 @@
         "performance-optimization",
         "system-reliability-enhanced",
         "unified-metrics-tracking",
-        "adaptive-fallback-systems"
+        "adaptive-fallback-systems",
+        "5-phase-initialization",
+        "mcp-server-discovery",
+        "comprehensive-mcp-integration",
+        "automatic-mcp-tool-selection",
+        "mcp-performance-profiling",
+        "mcp-fallback-strategies",
+        "mcp-server-validation",
+        "real-time-mcp-monitoring",
+        "mcp-health-monitoring",
+        "mcp-capability-analysis",
+        "mcp-license-validation",
+        "mcp-performance-optimization",
+        "mcp-load-balancing",
+        "mcp-caching-system",
+        "enhanced-mcp-integration"
       ],
       "source": "./",
       "agents": [
