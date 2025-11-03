@@ -46,14 +46,7 @@ dependency_graph:
       retry_count: 2
       description: "Unified agent selection with TF-IDF integration"
 
-    config/analysis/tfidf_system.yaml:
-      level: 1
-      dependencies: ["config/analysis/task_analysis.yaml"]
-      priority: "high"
-      load_timeout: 7000
-      retry_count: 2
-      description: "TF-IDF semantic analysis system"
-
+  
     config/analysis/clarification.yaml:
       level: 1
       dependencies: ["config/analysis/task_analysis.yaml"]
@@ -67,8 +60,7 @@ dependency_graph:
       level: 2
       dependencies: [
         "config/analysis/task_analysis.yaml",
-        "config/analysis/agent_selection.yaml",
-        "config/analysis/tfidf_system.yaml"
+        "config/analysis/agent_selection.yaml"
       ]
       priority: "critical"
       load_timeout: 6000
@@ -103,7 +95,6 @@ dependency_graph:
     config/discovery/agent_registry.yaml:
       level: 3
       dependencies: [
-        "config/analysis/agent_selection.yaml",
         "config/execution/delegation.yaml"
       ]
       priority: "critical"
@@ -177,9 +168,9 @@ loading_strategy:
     # Load configurations by dependency level (optimized for 4-level architecture)
     level_loading:
       level_0: 1  # Sequential - critical foundation (error_handling_initialization)
-      level_1: 4  # Parallel - analysis components (4 analysis configs)
-      level_2: 4  # Parallel - execution components (4 execution configs)
-      level_3: 3  # Parallel - discovery components (3 discovery configs)
+      level_1: 3  # Parallel - analysis components (3 analysis configs)
+      level_2: 3  # Parallel - execution components (3 execution configs)
+      level_3: 1  # Sequential - discovery components (agent_registry only)
 
   # Enhanced Adaptive Timeout Configuration
   adaptive_timeouts:
@@ -383,8 +374,8 @@ dependency_resolution_engine: |
               # Analysis mappings
               'config/knowledge-base/task-analysis.yaml': 'config/analysis/task_analysis.yaml',
               'config/knowledge-base/unified_agent_selection.yaml': 'config/analysis/agent_selection.yaml',
-              'config/knowledge-base/tfidf-system.yaml': 'config/analysis/tfidf_system.yaml',
-              'config/knowledge-base/categorization-engine.yaml': 'config/analysis/tfidf_system.yaml',
+              'config/knowledge-base/tfidf-system.yaml': 'config/analysis/agent_selection.yaml',
+              'config/knowledge-base/categorization-engine.yaml': 'config/analysis/agent_selection.yaml',
               'config/knowledge-base/clarification_system.yaml': 'config/analysis/clarification.yaml',
 
               # Execution mappings
@@ -399,9 +390,7 @@ dependency_resolution_engine: |
               # Discovery mappings
               'config/dynamic/agent_types.yaml': 'config/discovery/agent_registry.yaml',
               'config/dynamic/dynamic_agent_discovery.yaml': 'config/discovery/agent_registry.yaml',
-              'config/dynamic/agent_name_resolution.yaml': 'config/discovery/agent_registry.yaml',
-              'config/dynamic/domain_system.yaml': 'config/discovery/domain_system.yaml',
-              'config/dynamic/mcp_registry.yaml': 'config/discovery/mcp_integration.yaml'
+              'config/dynamic/agent_name_resolution.yaml': 'config/discovery/agent_registry.yaml'
           }
 
       def resolve_consolidated_dependencies(self):
@@ -591,11 +580,12 @@ version_management:
 
   consolidation_changes:
     what_was_consolidated:
-      - "27 individual configuration files → 14 consolidated files"
+      - "27 individual configuration files → 9 consolidated files"
       - "5 dependency levels → 4 optimized levels"
       - "Multiple dependency systems → unified dependency resolver"
       - "Separate loading strategies → consolidated loading strategy"
       - "Individual monitoring systems → unified monitoring"
+      - "TF-IDF system consolidation → integrated into agent_selection"
 
     benefits_of_consolidation:
       - "48% reduction in configuration file count"

@@ -389,7 +389,7 @@ version_management:
   architecture_version: "consolidated_v2"
   compatibility_requirements:
     minimal_system_version: "0.2.0"
-    required_components: ["task_analysis", "tfidf_system", "agent_registry"]
+    required_components: ["task_analysis"]
 
   consolidation_changes:
     what_was_consolidated:

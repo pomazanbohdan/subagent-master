@@ -476,7 +476,7 @@ version_management:
   architecture_version: "consolidated_v2"
   compatibility_requirements:
     minimal_system_version: "0.2.0"
-    required_components: ["error_handling_initialization", "agent_selection", "tfidf_system"]
+    required_components: ["error_handling_initialization"]
 
   migration_support:
     previous_version_support: true
