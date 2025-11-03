@@ -1,22 +1,14 @@
-# Configuration Base System (Consolidated)
-# Intelligent dependency-aware configuration loading with topological sorting and resource management
+# Configuration Base System
+# Dependency-aware configuration loading with topological sorting and resource management
 
 metadata:
   name: "configuration_base"
   version: "0.3.0"
-  description: "Consolidated configuration base system with dependency resolution, intelligent loading, and resource management"
-  author: "Master Agent System v0.3.0"
-  tags: ["configuration", "dependency-resolution", "intelligent-loading", "topological-sort", "resource-management"]
+  description: "Configuration base system with dependency resolution, loading, and resource management"
+  author: "Master Agent System"
+  tags: ["configuration", "dependency-resolution", "loading", "topological-sort", "resource-management"]
 
-# Configuration Loading Philosophy
-configuration_philosophy: |
-  1. Dependency-First: Respect configuration dependencies for reliable loading
-  2. Intelligent Loading: Use topological sorting for optimal loading order
-  3. Resource-Aware: Adapt loading based on system resources and load
-  4. Fault-Tolerant: Continue operation even with partial configuration failures
-  5. Performance-Optimized: Use parallel loading where dependencies allow
-
-# Enhanced 5-Phase Dependency Graph (Updated for v0.3.0 Architecture)
+# 5-Phase Dependency Graph (Updated for v0.3.0 Architecture)
 dependency_graph:
   # New Architecture Configuration Files and Their Dependencies
   configurations:

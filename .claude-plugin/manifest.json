@@ -1,7 +1,7 @@
 {
   "name": "orchestration",
   "version": "0.3.0",
-  "description": "Enhanced orchestration system v0.3.0 - 5-phase initialization with MCP Server Discovery, comprehensive MCP integration, automatic tool selection, performance profiling, and fallback strategies - ultimate agent orchestration platform",
+  "description": "Task orchestration system with agent coordination and MCP integration",
   "author": "Bohdan <pomazan.bohdan@gmail.com>",
   "license": "MIT",
   "keywords": [

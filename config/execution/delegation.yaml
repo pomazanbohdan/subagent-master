@@ -23,8 +23,42 @@ delegation_criteria:
     priority_threshold: 0.6
     confidence_threshold: 0.6
     multi_agent_coordination_threshold: 3.0
-    batch_operation_threshold: 3  # NEW: Trigger for massive parallel operations
-    identical_pattern_operations: true  # NEW: Detect identical modification patterns
+    batch_operation_threshold: 3  # Trigger for massive parallel operations
+    identical_pattern_operations: true  # Detect identical modification patterns
+
+# Batch Integration System (NEW)
+batch_integration:
+  enabled: true
+  task_analysis_integration:
+    use_batch_detection_results: true
+    validate_batch_independence: true
+    prepare_batch_execution_plan: true
+
+  batch_preparation_workflow:
+    1. receive_batch_info:
+       - Get batch detection results from task_analysis.yaml
+       - Validate batch feasibility
+       - Check resource availability
+
+    2. independence_validation:
+       - Validate no dependencies between operations
+       - Check resource contention
+       - Validate safety constraints
+
+    3. resource_allocation:
+       - Assign optimal agent per operation
+       - Balance load across available agents
+       - Set concurrent execution limits
+
+    4. execution_planning:
+       - Create detailed execution timeline
+       - Set up monitoring checkpoints
+       - Prepare fallback mechanisms
+
+    5. handoff_to_coordination:
+       - Pass prepared batch to coordination.yaml
+       - Provide execution metadata
+       - Monitor handoff success
 
   selection_criteria:
     primary_criteria:
@@ -48,6 +82,32 @@ delegation_criteria:
       independence_check: "validate no dependencies between operations"
       performance_optimization: "prioritize parallel execution for speed"
       resource_monitoring: "track concurrent operation limits"
+
+# Enhanced Output Specification with Batch Support
+output_specification:
+  delegation_result:
+    success_status: "boolean"
+    assigned_agent: "string"
+    confidence_score: "number (0.0-1.0)"
+    execution_strategy: "string"
+    fallback_options_used: "array"
+
+  batch_delegation_result:
+    batch_detected: boolean
+    batch_id: "unique_identifier"
+    operations_count: integer
+    operations_completed: integer
+    operations_failed: integer
+    time_reduction_achieved: "percentage"
+    parallel_efficiency_score: "number (0.0-1.0)"
+    agent_assignments: "array of assignment objects"
+
+  detailed_execution_report:
+    execution_timeline: "array of execution phases"
+    performance_metrics: "object with timing and efficiency data"
+    fallback_activations: "array of fallback events"
+    quality_assessment: "object with quality scores"
+    lessons_learned: "array of improvement insights"
 
 # Enhanced Agent Selection System
 agent_selection_system:
