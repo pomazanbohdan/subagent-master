@@ -40,10 +40,43 @@ performance_tracking_algorithm:
       type: "object"
       description: "Updated confidence scores and thresholds"
 
-# Performance Metrics Collection
+# Performance Metrics Collection - Optimized for v0.2.0
 metrics_collection:
   enabled: true
-  collection_interval: 60  # seconds
+  collection_interval: 30  # seconds (reduced from 60 for better responsiveness)
+
+  # Resource Management
+  resource_monitoring:
+    memory_pool_adjustment: true
+    cpu_pool_scaling: true
+    io_pool_scaling: true
+    automatic_optimization: true
+    dynamic_sizing: true
+
+  # Load Balancing Configuration
+  load_balancing:
+    enabled: true
+    strategy: "adaptive_resource_based"
+    algorithms:
+      - "round_robin"
+      - "least_connections"
+      - "resource_based"
+      - "complexity_based"
+
+    # Resource allocation by task type
+    resource_allocation:
+      simple_tasks:
+        memory_limit: "64MB"
+        cpu_limit: "20%"
+        timeout_multiplier: 1.0
+      complex_tasks:
+        memory_limit: "128MB"
+        cpu_limit: "40%"
+        timeout_multiplier: 1.5
+      critical_tasks:
+        memory_limit: "256MB"
+        cpu_limit: "60%"
+        timeout_multiplier: 2.0
   
   agent_performance_metrics:
     task_success_rate:
@@ -492,8 +525,51 @@ configuration:
     learning_models: "6_months"
     optimization_history: "1_year"
     
-  performance_thresholds:
-    excellent_performance: "> 0.95 success rate"
-    good_performance: "0.85-0.95 success rate"
-    acceptable_performance: "0.70-0.85 success rate"
-    poor_performance: "< 0.70 success rate"
+  # Performance Thresholds - Optimized for v0.2.0
+performance_thresholds:
+  excellent_performance: "> 0.95 success rate"
+  good_performance: "0.85-0.95 success rate"
+  acceptable_performance: "0.70-0.85 success rate"
+  poor_performance: "< 0.70 success rate"
+
+# Adaptive Timeout Configuration
+adaptive_timeouts:
+  base_timeout_ms: 3000  # 3 seconds (reduced from 5)
+  max_timeout_ms: 30000  # 30 seconds (reduced from 60)
+  complexity_multiplier: 1.2  # Dynamic adjustment
+  resource_adjustment: true
+  adaptive_scaling: true
+
+  # Complexity-based timeout adjustments
+  timeout_by_complexity:
+    simple_configs:
+      min_timeout_ms: 1000
+      max_timeout_ms: 3000
+      description: "Basic configuration loading"
+    complex_configs:
+      min_timeout_ms: 2000
+      max_timeout_ms: 15000
+      description: "Multi-component configurations"
+    critical_configs:
+      min_timeout_ms: 5000
+      max_timeout_ms: 30000
+      description: "Core system configurations"
+    system_initialization:
+      min_timeout_ms: 30000
+      max_timeout_ms: 45000
+      description: "Complete system initialization"
+
+# Performance Monitoring Thresholds
+performance_monitoring:
+  memory_usage_threshold: 0.85  # Reduced from 0.9
+  cpu_usage_threshold: 0.75  # Reduced from 0.8
+  response_time_target: 5000  # 5 seconds target
+  cache_hit_rate_target: 0.8   # 80% target hit rate
+  parallel_efficiency_target: 0.7  # 70% parallel efficiency
+
+  # Resource usage alerts
+  resource_alerts:
+    memory_high: "0.85 - warning, 0.95 - critical"
+    cpu_high: "0.75 - warning, 0.9 - critical"
+    response_slow: "5s - warning, 10s - critical"
+    error_rate_high: "0.1 - warning, 0.2 - critical"

@@ -235,16 +235,68 @@ loading_strategy:
   # Parallel Loading Configuration
   parallel_loading:
     enabled: true
-    max_concurrent_loaders: 4
+    max_concurrent_loaders: 8
     level_based_parallelism: true
 
-    # Load configurations by dependency level
+    # Thread Pool Configuration for Different Operation Types
+    thread_pools:
+      io_operations:
+        pool_size: 12
+        queue_size: 100
+        thread_name_prefix: "config-loader-io"
+        keep_alive_time: 60  # seconds
+
+      cpu_operations:
+        pool_size: 4
+        queue_size: 50
+        thread_name_prefix: "config-loader-cpu"
+        keep_alive_time: 30  # seconds
+
+      priority_operations:
+        pool_size: 2
+        queue_size: 20
+        thread_name_prefix: "config-loader-priority"
+        keep_alive_time: 120  # seconds
+
+    # Resource Monitoring and Adaptive Configuration
+    resource_monitoring:
+      enabled: true
+      memory_threshold_mb: 1024  # Auto-adjust if memory usage exceeds this
+      cpu_threshold_percent: 80  # Auto-adjust if CPU usage exceeds this
+      adjustment_factor: 0.75  # Reduce pool sizes by this factor when thresholds exceeded
+
+    # Load configurations by dependency level (optimized)
     level_loading:
-      level_0: 1  # Sequential - critical foundation
-      level_1: 2  # Parallel  - knowledge base + rules
-      level_2: 3  # Parallel  - dynamic configurations
-      level_3: 4  # Parallel  - extended dynamic configs
-      level_4: 2  # Parallel  - integration configs
+      level_0: 1  # Sequential - critical foundation (unchanged for reliability)
+      level_1: 4  # Parallel  - knowledge base + rules (increased from 2)
+      level_2: 6  # Parallel  - dynamic configurations (increased from 3)
+      level_3: 8  # Parallel  - extended dynamic configs (increased from 4)
+      level_4: 6  # Parallel  - integration configs (increased from 2)
+
+  # Enhanced Thread Pool Configuration
+  thread_pools:
+    io_operations:
+      pool_size: 12      # Increased from 8
+      max_queue_size: 200
+      keep_alive_time: 120
+
+    cpu_operations:
+      pool_size: 6      # Increased from 4
+      max_queue_size: 100
+      keep_alive_time: 60
+
+    priority_operations:
+      pool_size: 4
+      max_queue_size: 50
+      keep_alive_time: 30
+
+  # Adaptive Timeout Configuration
+  adaptive_timeouts:
+    enabled: true
+    base_timeout_ms: 3000
+    max_timeout_ms: 30000
+    complexity_multiplier: 1.2
+    resource_adjustment: true
 
   # Dependency Validation
   dependency_validation:
@@ -252,6 +304,36 @@ loading_strategy:
     strict_validation: true
     missing_dependency_action: "error"
     circular_dependency_action: "error"
+
+  # Adaptive Timeout Configuration
+  adaptive_timeouts:
+    enabled: true
+    base_timeout_ms: 3000
+    max_timeout_ms: 30000
+
+    # File size-based timeout scaling
+    size_based_scaling:
+      enabled: true
+      small_file_kb: 10      # timeout = base_timeout_ms
+      medium_file_kb: 50     # timeout = base_timeout_ms * 1.5
+      large_file_kb: 200     # timeout = base_timeout_ms * 2.5
+      extra_large_file_kb: 500  # timeout = base_timeout_ms * 4
+
+    # Priority-based timeout adjustment
+    priority_timeout_factors:
+      critical: 0.7  # 30% faster timeout for critical configs
+      high: 1.0      # Standard timeout
+      medium: 1.2    # 20% longer timeout
+      low: 1.5       # 50% longer timeout
+
+    # System load-based timeout adjustment
+    load_based_adjustment:
+      enabled: true
+      cpu_thresholds:
+        light_load: 40     # < 40% CPU usage, reduce timeout by 20%
+        medium_load: 70    # 40-70% CPU usage, standard timeout
+        heavy_load: 90     # 70-90% CPU usage, increase timeout by 50%
+        extreme_load: 100  # > 90% CPU usage, increase timeout by 100%
 
   # Error Handling and Recovery
   error_handling:

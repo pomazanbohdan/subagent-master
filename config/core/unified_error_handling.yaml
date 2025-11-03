@@ -3,10 +3,10 @@
 
 metadata:
   name: "unified_error_handling"
-  version: "0.0.1"
-  description: "Centralized error handling system with graceful degradation and fallback mechanisms"
-  author: "Master Agent System v0.0.1"
-  tags: ["error-handling", "fallback", "recovery", "graceful-degradation"]
+  version: "0.2.0"
+  description: "Centralized error handling system with circuit breaker pattern, graceful degradation and fallback mechanisms"
+  author: "Master Agent System v0.2.0"
+  tags: ["error-handling", "circuit-breaker", "fallback", "recovery", "graceful-degradation", "resilience"]
 
 # Core Error Handling Philosophy
 error_handling_philosophy: |
@@ -373,6 +373,253 @@ error_monitoring:
       success_tracking: true
       strategy_ranking: true
       automatic_strategy_selection: true
+
+# Circuit Breaker Pattern Implementation
+circuit_breaker:
+  # Global Circuit Breaker Configuration
+  global_settings:
+    enabled: true
+    default_failure_threshold: 3
+    default_recovery_timeout: 30000  # 30 seconds
+    default_half_open_max_calls: 5
+    monitoring_interval: 5000  # 5 seconds
+    health_check_interval: 10000  # 10 seconds
+    alert_on_state_change: true
+    track_circuit_events: true
+
+  # Component-Specific Circuit Breakers
+  component_circuit_breakers:
+    # TODO-EXECUTION Engine Circuit Breaker (Most Critical)
+    todo_execution_engine:
+      enabled: true
+      failure_threshold: 3
+      recovery_timeout: 30000
+      half_open_max_calls: 5
+      monitoring_enabled: true
+
+      timeout: 30000  # 30 seconds
+      fallback_strategy: "backup_engine"
+      fallback_config: "config/knowledge-base/todo_execution_backup.yaml"
+
+      health_checks:
+        primary_engine_health: true
+        backup_engine_health: true
+        system_resource_health: true
+
+      alerts:
+        state_change: true
+        failure_threshold_reached: true
+        recovery_successful: true
+
+      metrics:
+        failure_rate_tracking: true
+        response_time_tracking: true
+        state_change_tracking: true
+
+    # Agent Selection Circuit Breaker
+    agent_selection:
+      enabled: true
+      failure_threshold: 3
+      recovery_timeout: 15000  # 15 seconds
+      half_open_max_calls: 5
+      monitoring_enabled: true
+
+      timeout: 15000  # 15 seconds
+      fallback_strategy: "manual_selection"
+      fallback_options:
+        - "master_agent"
+        - "claude_native_execution"
+        - "user_guided_selection"
+
+      health_checks:
+        agent_registry_health: true
+        agent_availability_check: true
+        capability_validation: true
+
+      alerts:
+        agent_unavailable_alert: true
+        selection_timeout_alert: true
+        fallback_activation_alert: true
+
+    # Configuration Loading Circuit Breaker
+    configuration_loading:
+      enabled: true
+      failure_threshold: 2
+      recovery_timeout: 60000  # 60 seconds
+      half_open_max_calls: 3
+      monitoring_enabled: true
+
+      timeout: 60000  # 60 seconds
+      fallback_strategy: "cached_or_embedded"
+      fallback_options:
+        - "cached_configurations"
+        - "embedded_defaults"
+        - "minimal_configuration"
+
+      health_checks:
+        file_system_health: true
+        configuration_validation: true
+        dependency_resolution: true
+
+      alerts:
+        configuration_loading_failure: true
+        dependency_resolution_failure: true
+        fallback_activation: true
+
+    # Task Analysis Circuit Breaker
+    task_analysis:
+      enabled: true
+      failure_threshold: 2
+      recovery_timeout: 10000  # 10 seconds
+      half_open_max_calls: 5
+      monitoring_enabled: true
+
+      timeout: 10000  # 10 seconds
+      fallback_strategy: "basic_classification"
+      fallback_options:
+        - "keyword_based_analysis"
+        - "simple_complexity_scoring"
+        - "manual_task_analysis"
+
+      health_checks:
+        analysis_engine_health: true
+        classification_accuracy: true
+        processing_capacity: true
+
+      alerts:
+        analysis_failure: true
+        classification_errors: true
+        processing_timeout: true
+
+    # MCP Registry Circuit Breaker
+    mcp_registry:
+      enabled: true
+      failure_threshold: 3
+      recovery_timeout: 20000  # 20 seconds
+      half_open_max_calls: 3
+      monitoring_enabled: true
+
+      timeout: 20000  # 20 seconds
+      fallback_strategy: "cached_registry"
+      fallback_options:
+        - "cached_mcp_data"
+        - "basic_mcp_functionality"
+        - "mcp_bypass_mode"
+
+      health_checks:
+        registry_connectivity: true
+        server_availability: true
+        tool_accessibility: true
+
+      alerts:
+        mcp_server_unavailable: true
+        tool_access_failure: true
+        registry_connection_loss: true
+
+  # Circuit Breaker State Management
+  state_management:
+    # CLOSED State (Normal Operation)
+    closed_state:
+      description: "Normal operation, all requests pass through"
+      monitoring: "passive health checks"
+      failure_counting: true
+      alerting: "failure_threshold_approaching"
+
+    # OPEN State (Circuit is Open)
+    open_state:
+      description: "Circuit is open, blocking requests"
+      blocking: "all_new_requests"
+      recovery_timer: true
+      fallback_activation: true
+      alerting: "immediate_notification"
+
+    # HALF-OPEN State (Testing Recovery)
+    half_open_state:
+      description: "Testing if system has recovered"
+      controlled_requests: true
+      success_threshold_tracking: true
+      state_transition_logic: true
+      alerting: "recovery_attempt"
+
+  # Recovery and Healing Mechanisms
+  recovery_mechanisms:
+    # Automatic Recovery
+    automatic_recovery:
+      enabled: true
+      retry_mechanism: "exponential_backoff"
+      backoff_base: 1000  # 1 second
+      backoff_multiplier: 2.0
+      max_backoff: 60000  # 1 minute
+
+    # Manual Recovery
+    manual_recovery:
+      enabled: true
+      admin_commands:
+        - "circuit_reset <component>"
+        - "force_open <component>"
+        - "force_close <component>"
+        - "bypass_circuit <component>"
+
+      emergency_commands:
+        - "emergency_mode:activate"
+        - "emergency_mode:deactivate"
+        - "system_graceful_shutdown"
+
+    # Health Check Mechanisms
+    health_checks:
+      periodic_health_checks:
+        enabled: true
+        interval: 10000  # 10 seconds
+        timeout: 5000  # 5 seconds
+        comprehensive_validation: true
+
+      request_based_health_checks:
+        enabled: true
+        check_before_execution: true
+        quick_health_validation: true
+        detailed_validation_on_failures: true
+
+  # Monitoring and Alerting
+  monitoring:
+    # Circuit Event Tracking
+    event_tracking:
+      track_state_changes: true
+      track_failures: true
+      track_recoveries: true
+      track_fallback_activations: true
+
+    # Performance Metrics
+    performance_metrics:
+      response_time_tracking: true
+      failure_rate_calculation: true
+      success_rate_monitoring: true
+      throughput_analysis: true
+
+    # Alert Configuration
+    alerting:
+      alert_channels:
+        - name: "system_logs"
+          enabled: true
+          level: "all"
+
+        - name: "dashboard"
+          enabled: true
+          level: "high"
+
+        - name: "email"
+          enabled: true
+          level: "critical"
+
+        - name: "slack"
+          enabled: true
+          level: "critical"
+
+      alert_triggers:
+        circuit_opened: true
+        circuit_closed_after_open: true
+        high_failure_rate: true
+        repeated_failures: true
+        recovery_success: true
 
 # Environment-Specific Error Handling
 environment_specific_handling:
