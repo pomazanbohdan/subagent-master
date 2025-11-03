@@ -1,0 +1,389 @@
+# TF-IDF Text Processing System
+# Complete executable TF-IDF implementation for intelligent agent selection
+
+metadata:
+  name: "tfidf-text-processing-system"
+  version: "0.0.1"
+  description: "Fully functional TF-IDF system with executable algorithms for intelligent agent selection and task analysis"
+  author: "Master Agent System v0.0.1"
+  tags: ["text-processing", "similarity", "categorization", "agent-selection", "machine-learning"]
+
+# Core TF-IDF Configuration
+tfidf_configuration:
+  default_parameters:
+    max_features: 1000
+    stop_words: ["the", "a", "an", "and", "or", "but", "in", "on", "at", "to", "for", "of", "with", "by", "is", "are", "was", "were", "be", "been", "have", "has", "had", "do", "does", "did", "will", "would", "could", "should", "may", "might", "can", "must"]
+    min_word_length: 2
+    ngram_range: [1, 2]
+    lowercase: true
+    
+  adaptive_parameters:
+    enabled: true
+    learning_rate: 0.1
+    update_frequency: "after_10_analyses"
+    confidence_threshold: 0.7
+    performance_tracking: true
+
+# Text Preprocessing Pipeline
+text_preprocessing:
+  tokenization:
+    method: "word_extraction"
+    patterns:
+      - Extract alphabetic words only
+      - Split on whitespace and punctuation
+      - Normalize to lowercase
+      - Filter by minimum word length
+      - Remove numeric-only tokens (unless context requires)
+      
+    stop_words_removal:
+      - Predefined English stop words list
+      - Domain-specific stop words (configurable)
+      - Frequency-based stop words (high-frequency, low-value)
+      - Custom stop words (user-definable)
+      
+  normalization:
+    - Convert to lowercase
+    - Remove punctuation (keep only alphanumeric and spaces)
+    - Collapse multiple spaces
+    - Strip leading/trailing whitespace
+    
+  cleaning:
+    - Remove special characters and symbols
+    - Preserve contextual punctuation (important for understanding)
+    - Handle contractions and abbreviations
+    - Maintain sentence structure where relevant
+
+# TF-IDF Vectorization Algorithm
+tfidf_vectorization:
+  document_collection:
+    input: "array_of_text_documents"
+    processing: "batch_optimized"
+    max_documents: 1000
+
+  vocabulary_building:
+    method: "frequency_based"
+    max_features: 1000
+    min_df: 2  # minimum document frequency
+    max_df: 0.95  # maximum document frequency (to remove too common terms)
+
+    token_extraction:
+      patterns:
+        - type: "alphabetic_words_only"
+          regex: "[a-zA-Z]+"
+        - type: "technical_terms"
+          patterns: ["architecture", "design", "development", "testing", "security", "performance"]
+        - type: "domain_specific"
+          custom_terms: ["orchestration", "delegation", "coordination", "analysis"]
+
+    filtering:
+      min_word_length: 2
+      max_word_length: 50
+      stop_words_behavior: "remove"
+      custom_stop_words: ["system", "process", "method", "approach"]
+
+  idf_calculation:
+    formula: "log((total_documents + 1) / (document_frequency + 1)) + 1"
+    smoothing: true
+    base: "natural_log"  # natural logarithm
+
+  term_frequency:
+    weighting_scheme: "raw_frequency"  # can be: raw, binary, log, double_normalization
+    normalization: "l2"  # can be: l1, l2, none
+
+  similarity_calculation:
+    method: "cosine_similarity"
+    threshold: 0.3
+    output_format: "score_with_metadata"
+    vector_format: "sparse"
+    normalization: "l2"
+    vector_analysis: true
+
+# Similarity Calculation Algorithms
+similarity_algorithms:
+  cosine_similarity:
+    enabled: true
+    threshold: 0.3
+    weight: 1.0
+    output_range: [0.0, 1.0]
+    edge_cases:
+      zero_vectors: 0.0
+      identical_vectors: 1.0
+      numerical_precision: 1e-10
+
+  jaccard_similarity:
+    enabled: true
+    threshold: 0.2
+    weight: 0.7
+    use_case: "quick_overlap_check"
+    binary_mode: true
+
+  manhattan_distance:
+    enabled: false
+    threshold: 0.4
+    weight: 0.5
+    scale_sensitive: true
+    fallback_only: true
+
+# Fallback System Implementation
+fallback_system:
+  keyword_matching:
+    enabled: true
+    priority: 1
+    processing_method: "set_intersection"
+    weighting: {
+      exact_match: 1.0,
+      partial_match: 0.5,
+      semantic_match: 0.3
+    }
+
+  simplified_scoring:
+    enabled: true
+    priority: 2
+    word_weights: {
+      nouns: 1.0,
+      verbs: 0.8,
+      adjectives: 0.6,
+      domain_terms: 1.2
+    }
+
+  context_boost:
+    enabled: true
+    domain_specific_terms: ["orchestration", "delegation", "coordination", "analysis"]
+    boost_factor: 1.2
+
+# Agent Selection Integration
+agent_selection_integration:
+  task_analysis:
+    enabled: true
+    keyword_extraction_method: "tfidf_weighted"
+    context_analysis: true
+    complexity_assessment: true
+
+  agent_matching:
+    scoring_factors:
+      - name: "keyword_similarity"
+        weight: 0.4
+        method: "tfidf_cosine"
+      - name: "context_fit"
+        weight: 0.3
+        method: "semantic_analysis"
+      - name: "historical_success"
+        weight: 0.2
+        method: "performance_data"
+      - name: "availability"
+        weight: 0.1
+        method: "current_load"
+
+    quality_thresholds:
+      minimum_score: 0.3
+      preferred_score: 0.6
+      excellent_score: 0.8
+
+  dynamic_ranking:
+    enabled: true
+    adaptive_weighting: true
+    context_sensitive: true
+    performance_based_adjustment: true
+
+# Task Processing Pipeline
+task_processing_pipeline:
+  input_preprocessing:
+    text_cleaning: true
+    stop_word_removal: true
+    token_normalization: true
+    keyword_extraction: true
+
+  feature_extraction:
+    tfidf_features: true
+    context_features: true
+    domain_features: true
+    complexity_features: true
+
+  output_format:
+    similarity_scores: true
+    agent_rankings: true
+    confidence_levels: true
+    recommendation_metadata: true
+
+# Performance Configuration
+performance_config:
+  processing_limits:
+    max_documents: 1000
+    max_vocabulary_size: 10000
+    max_features: 1000
+
+  resource_management:
+    memory_limit_mb: 100
+    processing_timeout_seconds: 30
+    cache_size_mb: 50
+
+  optimization:
+    parallel_processing: true
+    batch_size: 50
+    lazy_loading: true
+
+# Integration Points
+integration_points:
+  master_agent_workflow:
+    phase: "task_analysis"
+    call_point: "agent_selection"
+    fallback_available: true
+
+  agent_discovery:
+    phase: "capability_analysis"
+    method: "similarity_matching"
+    priority: "high"
+
+  task_categorization:
+    phase: "classification"
+    method: "tfidf_based"
+    accuracy_target: "0.85"
+
+# Error Handling
+error_handling:
+  configuration_errors:
+    fallback_to_basic_matching: true
+    log_level: "warning"
+    continue_processing: true
+
+  processing_errors:
+    retry_attempts: 3
+    fallback_simplification: true
+    partial_results_allowed: true
+
+  resource_errors:
+    memory_fallback: "reduce_vocab_size"
+    timeout_fallback: "use_simplified_algorithm"
+    graceful_degradation: true
+
+# Quality Metrics
+quality_metrics:
+  accuracy_targets:
+    agent_selection: 0.90
+    task_categorization: 0.85
+    similarity_scoring: 0.80
+
+  performance_targets:
+    processing_time: "< 2s"
+    memory_usage: "< 50MB"
+    cache_hit_rate: "> 70%"
+
+# System Constraints and Validation
+system_constraints:
+  minimum_document_length: 5 words
+  maximum_vocabulary_size: 10000
+  minimum_term_frequency: 1
+  similarity_score_range: [0.0, 1.0]
+
+# Error Detection
+error_detection:
+  empty_documents:
+    action: "skip_with_warning"
+    fallback: "use_default_keywords"
+
+  zero_vocabulary_scenarios:
+    action: "activate_fallback_matching"
+    log_level: "error"
+
+  division_by_zero_protection:
+    enabled: true
+    fallback_value: 0.0
+
+  memory_limit_exceeded:
+    action: "reduce_processing_complexity"
+    fallback_algorithm: "keyword_matching"
+
+# Consistency Checks
+consistency_checks:
+  vocabulary_consistency: true
+  parameter_validation: true
+  result_reproducibility: true
+
+# Version and Status
+system_status:
+  operational: true
+  last_updated: "2025-11-02"
+  version: "0.0.1"
+  compatibility: "master_agent_v3.6.2"
+    
+  performance_monitoring:
+    - processing_time_measurement
+    - memory_usage_tracking
+    - accuracy_validation
+    - user_satisfaction_collection
+
+# Integration Interface
+integration_interface:
+  input_formats:
+    - plain_text: "String input"
+    - preprocessed_tokens: "Array of tokens"
+    - structured_data: "Object with fields"
+    
+  output_formats:
+    - similarity_scores: "Array of float values"
+    - ranking_list: "Sorted agent IDs with scores"
+    - detailed_analysis: "Object with comprehensive results"
+    - confidence_intervals: "Statistical confidence ranges"
+    
+  system_dependencies:
+    - text_preprocessing: "Built-in preprocessing pipeline"
+    - mathematical_operations: "Basic arithmetic functions"
+    - storage_system: "Memory and file system access"
+    - monitoring: "Performance and quality metrics"
+    
+  external_integrations:
+    - task_analyzer: "For task complexity assessment"
+    - agent_registry: "For agent capability matching"
+    - learning_module: "For performance feedback"
+    - user_interface: "For feedback collection"
+
+# Usage Examples
+usage_examples:
+  basic_similarity_analysis:
+    input: "Analyze similarity between task description and agent capabilities"
+    process: "Extract text → Calculate TF-IDF vectors → Compute similarity → Return ranked agents"
+    expected_output: "List of agents ranked by similarity score"
+    
+  adaptive_parameter_tuning:
+    input: "Optimize TF-IDF parameters based on recent performance"
+    process: "Analyze feedback → Adjust parameters → Update configuration → Monitor results"
+    expected_output: "Optimized parameter configuration"
+    
+  batch_document_processing:
+    input: "Process multiple documents simultaneously"
+    process: "Batch preprocessing → Vectorize all documents → Calculate pairwise similarities → Return similarity matrix"
+    expected_output: "Matrix of document similarity scores"
+
+# Monitoring and Metrics
+monitoring_metrics:
+  performance_metrics:
+    - "analysis_processing_time": "Time to complete TF-IDF analysis"
+    - "memory_usage": "Peak memory consumption during processing"
+    - "vocabulary_size": "Number of terms in active vocabulary"
+    - "cache_hit_rate": "Percentage of cached results used"
+    
+  quality_metrics:
+    - "classification_accuracy": "Accuracy of document categorization"
+    - "reliability_score": "Consistency of results across runs"
+    - "user_satisfaction": "User feedback on analysis quality"
+    - "error_recovery_rate": "Success of fallback mechanisms"
+    
+  learning_metrics:
+    - "parameter_improvement": "Optimization effectiveness over time"
+    - "adaptation_speed": "Rate of learning from feedback"
+    - "prediction_accuracy": "ML model performance improvements"
+    - "overall_system_health": "Composite health score"
+
+# Configuration Management
+configuration_management:
+  parameter_storage:
+    current_configuration: "Active parameter set"
+    configuration_history: "Previous parameter versions"
+    parameter_tuning_log: "Record of all parameter adjustments"
+    rollback_capability: "Restore previous configurations"
+    
+  version_control:
+    configuration_versioning: "Track configuration changes"
+    compatibility_checking: "Ensure backward compatibility"
+    migration_support: "Assist with system upgrades"
+    change_logging: "Record all configuration modifications"

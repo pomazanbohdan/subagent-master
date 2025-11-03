@@ -1,7 +1,7 @@
 {
   "name": "orchestration",
-  "version": "0.2.0",
-  "description": "Dynamic orchestration system v0.2.0 - Intelligent configuration loading with dependency-aware parallel execution and topological sorting - complete intelligent agent selection system",
+  "version": "0.2.2",
+  "description": "Consolidated orchestration system v0.2.2 - Unified configuration loading with 4-phase initialization, enhanced TF-IDF selection, circuit breaker patterns, and backup systems - ultimate agent orchestration platform",
   "author": "Bohdan <pomazan.bohdan@gmail.com>",
   "license": "MIT",
   "keywords": [
@@ -139,7 +139,26 @@
     "circular-dependency-detection",
     "missing-dependency-validation",
     "configuration-health-checking",
-    "intelligent-error-recovery"
+    "intelligent-error-recovery",
+    "consolidated-architecture",
+    "4-phase-initialization",
+    "circuit-breaker-patterns",
+    "backup-system-integration",
+    "uncertainty-detection",
+    "ultimate-agent-selection",
+    "enhanced-error-handling",
+    "consolidated-configuration",
+    "topological-sorting-enhanced",
+    "dependency-resolution-ultimate",
+    "parallel-execution-optimized",
+    "resource-management-adaptive",
+    "vector-similarity-analysis",
+    "domain-expertise-mapping",
+    "ml-powered-categorization",
+    "performance-optimization",
+    "system-reliability-enhanced",
+    "unified-metrics-tracking",
+    "adaptive-fallback-systems"
   ],
   "homepage": "https://github.com/pomazanbohdan/subagent-master",
   "repository": "https://github.com/pomazanbohdan/subagent-master.git",
@@ -147,6 +166,6 @@
     "./agents/master.md"
   ],
   "engines": {
-    "claude-code": ">=2.0.30"
+    "claude-code": ">=2.0.31"
   }
 }

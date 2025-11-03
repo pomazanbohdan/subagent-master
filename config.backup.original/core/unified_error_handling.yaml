@@ -1,0 +1,719 @@
+# Unified Error Handling System
+# Consolidated error handling strategy for all system components
+
+metadata:
+  name: "unified_error_handling"
+  version: "0.2.0"
+  description: "Centralized error handling system with circuit breaker pattern, graceful degradation and fallback mechanisms"
+  author: "Master Agent System v0.2.0"
+  tags: ["error-handling", "circuit-breaker", "fallback", "recovery", "graceful-degradation", "resilience"]
+
+# Core Error Handling Philosophy
+error_handling_philosophy: |
+  1. Fail Fast and Gracefully: Detect errors early and handle them gracefully
+  2. Fallback-first: Always have fallback mechanisms available
+  3. Context-aware Recovery: Adapt recovery strategies based on context
+  4. Never-crash Policy: System should remain operational even with partial failures
+  5. Continuous Learning: Learn from errors to improve future handling
+
+# Error Classification System
+error_classification:
+  severity_levels:
+    critical:
+      description: "System-breaking errors requiring immediate attention"
+      recovery_strategy: "emergency_fallback"
+      user_notification: true
+      escalation_required: true
+      examples:
+        - "complete_system_initialization_failure"
+        - "all_agents_unavailable"
+        - "memory_exhaustion_complete"
+        - "core_configuration_corruption"
+
+    high:
+      description: "Major component failures with workarounds available"
+      recovery_strategy: "graceful_degradation"
+      user_notification: true
+      escalation_required: false
+      examples:
+        - "agent_discovery_partial_failure"
+        - "mcp_server_unavailable"
+        - "configuration_loading_errors"
+        - "task_execution_timeout"
+
+    medium:
+      description: "Non-critical errors with automatic recovery possible"
+      recovery_strategy: "auto_recovery"
+      user_notification: false
+      escalation_required: false
+      examples:
+        - "individual_agent_failure"
+        - "network_connectivity_issues"
+        - "temporary_resource_unavailability"
+        - "validation_warnings"
+
+    low:
+      description: "Minor issues that don't affect core functionality"
+      recovery_strategy: "log_and_continue"
+      user_notification: false
+      escalation_required: false
+      examples:
+        - "performance_degradation"
+        - "cache_misses"
+        - "non_critical_feature_unavailable"
+        - "debug_logging_triggers"
+
+  error_categories:
+    system_errors:
+      initialization_failures:
+        detection_criteria: "failed_system_startup_components"
+        handling_strategy: "selective_initialization_with_fallbacks"
+        recovery_actions:
+          - "identify_failed_components"
+          - "initialize_available_components"
+          - "activate_fallback_mechanisms"
+          - "log_comprehensive_failure_report"
+
+      configuration_errors:
+        detection_criteria: "config_file_loading_or_validation_failures"
+        handling_strategy: "use_last_known_good_configuration"
+        recovery_actions:
+          - "fallback_to_cached_configuration"
+          - "use_embedded_default_configuration"
+          - "disable_advanced_features"
+          - "notify_configuration_team"
+
+      resource_errors:
+        detection_criteria: "memory_cpu_or_disk_exhaustion"
+        handling_strategy: "adaptive_resource_management"
+        recovery_actions:
+          - "activate_low_resource_mode"
+          - "clear_caches_and_temporary_data"
+          - "prioritize_essential_operations"
+          - "gracefully_degrade_non_critical_features"
+
+    agent_errors:
+      agent_unavailable:
+        detection_criteria: "selected_agent_not_responding"
+        handling_strategy: "agent_substitution_with_fallback"
+        recovery_actions:
+          - "select_alternative_agent_based_on_capabilities"
+          - "use_master_agent_as_last_resort"
+          - "log_agent_performance_for_future_selection"
+          - "update_agent_availability_status"
+
+      task_delegation_failure:
+        detection_criteria: "todo_execution_engine_delegation_failure"
+        handling_strategy: "delegation_retry_with_alternative_strategy"
+        recovery_actions:
+          - "analyze_delegation_failure_type"
+          - "apply_todo_delegation_rules_fallback"
+          - "retry_with_different_agent_selection"
+          - "decompose_complex_task_into_simpler_subtasks"
+          - "escalate_to_master_agent_execution"
+
+      todo_plan_generation_failure:
+        detection_criteria: "todo_execution_engine_plan_generation_failure"
+        handling_strategy: "simplified_planning_with_manual_override"
+        recovery_actions:
+          - "fallback_to_simple_sequential_plan"
+          - "reduce_task_complexity_threshold"
+          - "activate_manual_planning_mode"
+          - "log_planning_failure_pattern_for_learning"
+
+      progress_tracking_failure:
+        detection_criteria: "todo_execution_engine_progress_tracking_failure"
+        handling_strategy: "basic_progress_estimation_with_fallback"
+        recovery_actions:
+          - "activate_simple_progress_counter"
+          - "disable_advanced_progress_features"
+          - "fallback_to_time_based_estimates"
+          - "log_tracking_failure_for_system_improvement"
+          - "use_general_purpose_agent_as_fallback"
+          - "retry_with_different_parameters"
+          - "escalate_to_manual_selection"
+
+      agent_capability_mismatch:
+        detection_criteria: "agent_lacks_required_capabilities"
+        handling_strategy: "task_decomposition_or_agent_switching"
+        recovery_actions:
+          - "decompose_task_into_simpler_subtasks"
+          - "find_agent_with_matching_capabilities"
+          - "use_multiple_agents协作"
+          - "provide_additional_guidance_to_agent"
+
+    task_execution_errors:
+      timeout_errors:
+        detection_criteria: "task_execution_exceeds_time_limit"
+        handling_strategy: "adaptive_timeout_handling"
+        recovery_actions:
+          - "increase_timeout_based_on_task_complexity"
+          - "decompose_task_into_smaller_chunks"
+          - "try_different_agent_with_better_performance"
+          - "provide_progress_feedback_to_user"
+
+      validation_errors:
+        detection_criteria: "task_requirements_or_results_validation_failure"
+        handling_strategy: "clarification_or_task_refinement"
+        recovery_actions:
+          - "trigger_clarification_workflow"
+          - "refine_task_requirements"
+          - "provide_examples_or_templates"
+          - "break_down_ambiguous_requirements"
+
+    communication_errors:
+      mcp_server_errors:
+        detection_criteria: "mcp_server_unreachable_or_responding_with_errors"
+        handling_strategy: "mcp_fallback_to_native_capabilities"
+        recovery_actions:
+          - "switch_to_claude_native_tools"
+          - "use_alternative_mcp_servers"
+          - "cache_mcp_results_for_offline_use"
+          - "disable_advanced_mcp_features"
+
+      network_errors:
+        detection_criteria: "network_connectivity_or_api_errors"
+        handling_strategy: "offline_mode_with_cached_data"
+        recovery_actions:
+          - "activate_offline_mode"
+          - "use_cached_information_when_available"
+          - "queue_operations_for_later_execution"
+          - "provide_graceful_degradation_message"
+
+# Fallback Strategy Matrix
+fallback_strategies:
+  # System-level Fallbacks
+  system_level_fallbacks:
+    complete_system_failure:
+      primary_fallback: "claude_native_mode"
+      description: "Fallback to Claude Code native capabilities when all else fails"
+      activation_criteria: "all_specialized_systems_unavailable"
+      capabilities:
+        - "basic_file_operations"
+        - "code_analysis"
+        - "simple_task_execution"
+        - "direct_user_communication"
+      limitations:
+        - "no_parallel_execution"
+        - "no_specialized_agent_coordination"
+        - "limited_advanced_features"
+
+    configuration_system_failure:
+      primary_fallback: "embedded_configuration"
+      description: "Use built-in default configuration when config loading fails"
+      activation_criteria: "configuration_loading_complete_failure"
+      fallback_config:
+        max_agents: 3
+        default_agents: ["general-purpose", "technical-writer", "analyzer"]
+        timeout_values: "conservative_defaults"
+        error_handling: "minimal_safe_mode"
+
+  # Agent-level Fallbacks
+  agent_level_fallbacks:
+    specialized_agent_unavailable:
+      primary_fallback: "general_purpose_agent"
+      secondary_fallback: "claude_native_execution"
+      description: "Use general-purpose agent when specialized agent is unavailable"
+      activation_criteria: "selected_agent_not_responding_after_3_retries"
+      capabilities_mapping:
+        "backend-architect": "general-purpose (with architecture_guidance)"
+        "frontend-developer": "general-purpose (with ui_best_practices)"
+        "research-agent": "general-purpose (with search_instructions)"
+        "testing-specialist": "general-purpose (with testing_checklist)"
+
+  # Task-level Fallbacks
+  task_level_fallbacks:
+    complex_task_decomposition_failure:
+      primary_fallback: "simplified_sequential_execution"
+      description: "Break complex task into simple sequential steps"
+      activation_criteria: "parallel_coordination_or_dependency_resolution_failure"
+      fallback_approach:
+        - "execute_tasks_one_by_one"
+        - "skip_complex_dependency_analysis"
+        - "use_manual_progress_tracking"
+        - "provide_basic_coordination"
+
+# Error Recovery Workflows
+recovery_workflows:
+  initialization_recovery:
+    workflow_name: "System Initialization Recovery"
+    trigger_conditions:
+      - "phase_initialization_failure"
+      - "critical_component_unavailable"
+      - "dependency_resolution_failure"
+
+    recovery_steps:
+      1. "Assess initialization failure scope and identify failed components"
+      2. "Isolate failed components to prevent cascade failures"
+      3. "Initialize available components with safe defaults"
+      4. "Activate fallback mechanisms for critical functionality"
+      5. "Log comprehensive failure report for debugging"
+      6. "Notify user about system capabilities and limitations"
+      7. "Continue operation in degraded mode if possible"
+
+    success_criteria:
+      - "core_system_functional"
+      - "basic_task_execution_possible"
+      - "error_handling_operational"
+      - "user_communication_available"
+
+    failure_criteria:
+      - "no_components_successful"
+      - "critical_infrastructure_unavailable"
+      - "emergency_mode_required"
+
+  agent_execution_recovery:
+    workflow_name: "Agent Execution Recovery"
+    trigger_conditions:
+      - "selected_agent_unresponsive"
+      - "agent_execution_timeout"
+      - "agent_capability_mismatch"
+
+    recovery_steps:
+      1. "Validate agent availability and responsiveness"
+      2. "Attempt agent restart or reconnection"
+      3. "Select alternative agent based on task requirements"
+      4. "Modify task parameters to better suit alternative agent"
+      5. "Execute with enhanced monitoring and timeouts"
+      6. "Validate execution results quality"
+      7. "Update agent performance metrics for future selection"
+
+    success_criteria:
+      - "task_completed_successfully"
+      - "results_meet_minimum_quality_threshold"
+      - "execution_time_within_acceptable_limits"
+
+    failure_criteria:
+      - "all_agents_unavailable"
+      - "task_requirements_impossible"
+      - "continuous_execution_failures"
+
+  configuration_recovery:
+    workflow_name: "Configuration Recovery"
+    trigger_conditions:
+      - "configuration_file_loading_failure"
+      - "configuration_validation_errors"
+      - "configuration_corruption_detected"
+
+    recovery_steps:
+      1. "Identify corrupted or missing configuration files"
+      2. "Restore from last known good configuration cache"
+      3. "Fallback to embedded default configuration"
+      4. "Disable advanced features requiring complex configuration"
+      5. "Initialize with safe conservative settings"
+      6. "Log configuration issues for admin notification"
+      7. "Provide user notification about limited functionality"
+
+    success_criteria:
+      - "system_initializes_with_basic_configuration"
+      - "core_functionality_available"
+      - "configuration_stabilized"
+
+    failure_criteria:
+      - "even_embedded_configuration_fails"
+      - "core_system_components_uninitialized"
+
+# Error Handling Integration Points
+integration_points:
+  with_config_loader:
+    error_propagation: "config_loader_errors → unified_error_handling"
+    recovery_coordination: "config_loader_uses_unified_recovery_strategies"
+    fallback_integration: "config_loader_uses_unified_fallback_mechanisms"
+
+  with_agent_discovery:
+    error_propagation: "agent_discovery_failures → unified_error_handling"
+    recovery_coordination: "agent_discovery_uses_unified_recovery_workflows"
+    fallback_integration: "agent_discovery_uses_unified_fallback_agents"
+
+  with_task_execution:
+    error_propagation: "task_execution_failures → unified_error_handling"
+    recovery_coordination: "task_execution_uses_unified_recovery_strategies"
+    fallback_integration: "task_execution_uses_unified_fallback_execution"
+
+  with_environment_system:
+    error_propagation: "environment_errors → unified_error_handling"
+    recovery_coordination: "environment_system_uses_unified_recovery"
+    fallback_integration: "environment_system_uses_unified_fallback_environment"
+
+# Error Monitoring and Learning
+error_monitoring:
+  metrics_collection:
+    error_rates:
+      - "system_initialization_error_rate"
+      - "agent_execution_error_rate"
+      - "configuration_loading_error_rate"
+      - "task_completion_error_rate"
+      - "mcp_communication_error_rate"
+
+    recovery_success_rates:
+      - "fallback_activation_success_rate"
+      - "recovery_workflow_success_rate"
+      - "graceful_degradation_success_rate"
+      - "auto_recovery_success_rate"
+
+    performance_impact:
+      - "error_handling_overhead_percentage"
+      - "fallback_execution_time_vs_optimal"
+      - "degraded_mode_functionality_percentage"
+
+  learning_system:
+    error_pattern_analysis:
+      enabled: true
+      learning_rate: 0.1
+      pattern_recognition_threshold: 3  # occurrences before pattern recognized
+
+    adaptive_thresholds:
+      enabled: true
+      adaptation_rate: 0.05
+      min_threshold_adjustment: 0.01
+      max_threshold_adjustment: 0.2
+
+    recovery_strategy_optimization:
+      enabled: true
+      success_tracking: true
+      strategy_ranking: true
+      automatic_strategy_selection: true
+
+# Circuit Breaker Pattern Implementation
+circuit_breaker:
+  # Global Circuit Breaker Configuration
+  global_settings:
+    enabled: true
+    default_failure_threshold: 3
+    default_recovery_timeout: 30000  # 30 seconds
+    default_half_open_max_calls: 5
+    monitoring_interval: 5000  # 5 seconds
+    health_check_interval: 10000  # 10 seconds
+    alert_on_state_change: true
+    track_circuit_events: true
+
+  # Component-Specific Circuit Breakers
+  component_circuit_breakers:
+    # TODO-EXECUTION Engine Circuit Breaker (Most Critical)
+    todo_execution_engine:
+      enabled: true
+      failure_threshold: 3
+      recovery_timeout: 30000
+      half_open_max_calls: 5
+      monitoring_enabled: true
+
+      timeout: 30000  # 30 seconds
+      fallback_strategy: "backup_engine"
+      fallback_config: "config/knowledge-base/todo_execution_backup.yaml"
+
+      health_checks:
+        primary_engine_health: true
+        backup_engine_health: true
+        system_resource_health: true
+
+      alerts:
+        state_change: true
+        failure_threshold_reached: true
+        recovery_successful: true
+
+      metrics:
+        failure_rate_tracking: true
+        response_time_tracking: true
+        state_change_tracking: true
+
+    # Agent Selection Circuit Breaker
+    agent_selection:
+      enabled: true
+      failure_threshold: 3
+      recovery_timeout: 15000  # 15 seconds
+      half_open_max_calls: 5
+      monitoring_enabled: true
+
+      timeout: 15000  # 15 seconds
+      fallback_strategy: "manual_selection"
+      fallback_options:
+        - "master_agent"
+        - "claude_native_execution"
+        - "user_guided_selection"
+
+      health_checks:
+        agent_registry_health: true
+        agent_availability_check: true
+        capability_validation: true
+
+      alerts:
+        agent_unavailable_alert: true
+        selection_timeout_alert: true
+        fallback_activation_alert: true
+
+    # Configuration Loading Circuit Breaker
+    configuration_loading:
+      enabled: true
+      failure_threshold: 2
+      recovery_timeout: 60000  # 60 seconds
+      half_open_max_calls: 3
+      monitoring_enabled: true
+
+      timeout: 60000  # 60 seconds
+      fallback_strategy: "cached_or_embedded"
+      fallback_options:
+        - "cached_configurations"
+        - "embedded_defaults"
+        - "minimal_configuration"
+
+      health_checks:
+        file_system_health: true
+        configuration_validation: true
+        dependency_resolution: true
+
+      alerts:
+        configuration_loading_failure: true
+        dependency_resolution_failure: true
+        fallback_activation: true
+
+    # Task Analysis Circuit Breaker
+    task_analysis:
+      enabled: true
+      failure_threshold: 2
+      recovery_timeout: 10000  # 10 seconds
+      half_open_max_calls: 5
+      monitoring_enabled: true
+
+      timeout: 10000  # 10 seconds
+      fallback_strategy: "basic_classification"
+      fallback_options:
+        - "keyword_based_analysis"
+        - "simple_complexity_scoring"
+        - "manual_task_analysis"
+
+      health_checks:
+        analysis_engine_health: true
+        classification_accuracy: true
+        processing_capacity: true
+
+      alerts:
+        analysis_failure: true
+        classification_errors: true
+        processing_timeout: true
+
+    # MCP Registry Circuit Breaker
+    mcp_registry:
+      enabled: true
+      failure_threshold: 3
+      recovery_timeout: 20000  # 20 seconds
+      half_open_max_calls: 3
+      monitoring_enabled: true
+
+      timeout: 20000  # 20 seconds
+      fallback_strategy: "cached_registry"
+      fallback_options:
+        - "cached_mcp_data"
+        - "basic_mcp_functionality"
+        - "mcp_bypass_mode"
+
+      health_checks:
+        registry_connectivity: true
+        server_availability: true
+        tool_accessibility: true
+
+      alerts:
+        mcp_server_unavailable: true
+        tool_access_failure: true
+        registry_connection_loss: true
+
+  # Circuit Breaker State Management
+  state_management:
+    # CLOSED State (Normal Operation)
+    closed_state:
+      description: "Normal operation, all requests pass through"
+      monitoring: "passive health checks"
+      failure_counting: true
+      alerting: "failure_threshold_approaching"
+
+    # OPEN State (Circuit is Open)
+    open_state:
+      description: "Circuit is open, blocking requests"
+      blocking: "all_new_requests"
+      recovery_timer: true
+      fallback_activation: true
+      alerting: "immediate_notification"
+
+    # HALF-OPEN State (Testing Recovery)
+    half_open_state:
+      description: "Testing if system has recovered"
+      controlled_requests: true
+      success_threshold_tracking: true
+      state_transition_logic: true
+      alerting: "recovery_attempt"
+
+  # Recovery and Healing Mechanisms
+  recovery_mechanisms:
+    # Automatic Recovery
+    automatic_recovery:
+      enabled: true
+      retry_mechanism: "exponential_backoff"
+      backoff_base: 1000  # 1 second
+      backoff_multiplier: 2.0
+      max_backoff: 60000  # 1 minute
+
+    # Manual Recovery
+    manual_recovery:
+      enabled: true
+      admin_commands:
+        - "circuit_reset <component>"
+        - "force_open <component>"
+        - "force_close <component>"
+        - "bypass_circuit <component>"
+
+      emergency_commands:
+        - "emergency_mode:activate"
+        - "emergency_mode:deactivate"
+        - "system_graceful_shutdown"
+
+    # Health Check Mechanisms
+    health_checks:
+      periodic_health_checks:
+        enabled: true
+        interval: 10000  # 10 seconds
+        timeout: 5000  # 5 seconds
+        comprehensive_validation: true
+
+      request_based_health_checks:
+        enabled: true
+        check_before_execution: true
+        quick_health_validation: true
+        detailed_validation_on_failures: true
+
+  # Monitoring and Alerting
+  monitoring:
+    # Circuit Event Tracking
+    event_tracking:
+      track_state_changes: true
+      track_failures: true
+      track_recoveries: true
+      track_fallback_activations: true
+
+    # Performance Metrics
+    performance_metrics:
+      response_time_tracking: true
+      failure_rate_calculation: true
+      success_rate_monitoring: true
+      throughput_analysis: true
+
+    # Alert Configuration
+    alerting:
+      alert_channels:
+        - name: "system_logs"
+          enabled: true
+          level: "all"
+
+        - name: "dashboard"
+          enabled: true
+          level: "high"
+
+        - name: "email"
+          enabled: true
+          level: "critical"
+
+        - name: "slack"
+          enabled: true
+          level: "critical"
+
+      alert_triggers:
+        circuit_opened: true
+        circuit_closed_after_open: true
+        high_failure_rate: true
+        repeated_failures: true
+        recovery_success: true
+
+# Environment-Specific Error Handling
+environment_specific_handling:
+  development:
+    error_tolerance: "high"
+    recovery_automation: "full"
+    user_notification: "verbose"
+    debug_information: "detailed"
+    fallback_aggressiveness: "conservative"
+
+  testing:
+    error_tolerance: "medium"
+    recovery_automation: "controlled"
+    user_notification: "structured"
+    debug_information: "moderate"
+    fallback_aggressiveness: "balanced"
+
+  production:
+    error_tolerance: "low"
+    recovery_automation: "minimal"
+    user_notification: "minimal"
+    debug_information: "minimal"
+    fallback_aggressiveness: "aggressive"
+
+# Error Handling Configuration
+configuration_parameters:
+  timeouts:
+    error_detection_timeout: 5000  # milliseconds
+    recovery_attempt_timeout: 30000  # milliseconds
+    fallback_activation_timeout: 10000  # milliseconds
+
+  thresholds:
+    max_retry_attempts: 3
+    max_consecutive_failures: 5
+    error_rate_threshold: 0.1  # 10%
+    recovery_success_threshold: 0.8  # 80%
+
+  logging:
+    error_log_level: "ERROR"
+    recovery_log_level: "INFO"
+    debug_log_level: "DEBUG"
+    structured_logging: true
+    error_context_capture: true
+
+# Default Error Responses
+default_error_responses:
+  system_unavailable:
+    message: "I'm experiencing some technical difficulties, but I can still help you with basic tasks using my core capabilities."
+    capabilities: "basic_file_operations, code_analysis, simple_task_execution"
+    escalation: "Contact support if issues persist."
+
+  agent_unavailable:
+    message: "The specialized agent I selected is temporarily unavailable. I'll use an alternative approach or help you directly."
+    fallback: "general_purpose_agent or direct_execution"
+    reassurance: "Your task will still be completed, though perhaps with less specialization."
+
+  configuration_error:
+    message: "I'm having trouble with some configuration settings. Let me work with a simpler setup to assist you."
+    impact: "Some advanced features may be temporarily unavailable."
+    recovery: "System will continue with basic functionality."
+
+# Emergency Procedures
+emergency_procedures:
+  complete_system_failure:
+    procedure_name: "Emergency Claude Native Mode"
+    trigger: "all_specialized_systems_unavailable"
+    actions:
+      1. "Disable all specialized components"
+      2. "Activate Claude Code native tools only"
+      3. "Inform user about limited capabilities"
+      4. "Provide basic task execution assistance"
+      5. "Log emergency activation for admin review"
+
+  critical_configuration_corruption:
+    procedure_name: "Emergency Embedded Configuration"
+    trigger: "all_configuration_sources_unavailable"
+    actions:
+      1. "Load embedded safe configuration"
+      2. "Initialize with minimal safe settings"
+      3. "Disable all advanced features"
+      4. "Provide user notification about limitations"
+      5. "Queue configuration repair for admin attention"
+
+# Version Management and Compatibility
+version_management:
+  current_version: "0.0.1"
+  compatibility_requirements:
+    minimal_system_version: "0.0.1"
+    required_components:
+      - "basic_logging"
+      - "fallback_mechanisms"
+      - "error_detection"
+
+  migration_support:
+    previous_version_support: true
+    migration_strategy: "backward_compatible_fallbacks"
+    configuration_migration: "automatic_with_validation"

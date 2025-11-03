@@ -1,0 +1,606 @@
+# Configuration Base System (Consolidated)
+# Intelligent dependency-aware configuration loading with topological sorting and resource management
+
+metadata:
+  name: "configuration_base"
+  version: "0.2.2"
+  description: "Consolidated configuration base system with dependency resolution, intelligent loading, and resource management"
+  author: "Master Agent System v0.2.2"
+  tags: ["configuration", "dependency-resolution", "intelligent-loading", "topological-sort", "resource-management"]
+
+# Configuration Loading Philosophy
+configuration_philosophy: |
+  1. Dependency-First: Respect configuration dependencies for reliable loading
+  2. Intelligent Loading: Use topological sorting for optimal loading order
+  3. Resource-Aware: Adapt loading based on system resources and load
+  4. Fault-Tolerant: Continue operation even with partial configuration failures
+  5. Performance-Optimized: Use parallel loading where dependencies allow
+
+# Consolidated Dependency Graph (Updated for v0.2.2 Architecture)
+dependency_graph:
+  # New Architecture Configuration Files and Their Dependencies
+  configurations:
+    # Core Foundation (Level 0 - No dependencies)
+    config_v2/core/error_handling_initialization.yaml:
+      level: 0
+      dependencies: []
+      priority: "critical"
+      load_timeout: 15000
+      retry_count: 3
+      description: "Consolidated error handling and initialization system"
+
+    # Analysis Components (Level 1 - Depends on Core)
+    config_v2/analysis/task_analysis.yaml:
+      level: 1
+      dependencies: ["config_v2/core/error_handling_initialization.yaml"]
+      priority: "critical"
+      load_timeout: 8000
+      retry_count: 3
+      description: "Task complexity and domain analysis system"
+
+    config_v2/analysis/agent_selection.yaml:
+      level: 1
+      dependencies: ["config_v2/core/error_handling_initialization.yaml"]
+      priority: "critical"
+      load_timeout: 6000
+      retry_count: 2
+      description: "Unified agent selection with TF-IDF integration"
+
+    config_v2/analysis/tfidf_system.yaml:
+      level: 1
+      dependencies: ["config_v2/analysis/task_analysis.yaml"]
+      priority: "high"
+      load_timeout: 7000
+      retry_count: 2
+      description: "TF-IDF semantic analysis system"
+
+    config_v2/analysis/clarification.yaml:
+      level: 1
+      dependencies: ["config_v2/analysis/task_analysis.yaml"]
+      priority: "medium"
+      load_timeout: 5000
+      retry_count: 2
+      description: "Interactive clarification and context analysis"
+
+    # Execution Components (Level 2 - Depends on Analysis)
+    config_v2/execution/todo_engine.yaml:
+      level: 2
+      dependencies: [
+        "config_v2/analysis/task_analysis.yaml",
+        "config_v2/analysis/agent_selection.yaml",
+        "config_v2/analysis/tfidf_system.yaml"
+      ]
+      priority: "critical"
+      load_timeout: 6000
+      retry_count: 3
+      description: "Primary TODO execution engine with backup integration"
+
+    config_v2/execution/coordination.yaml:
+      level: 2
+      dependencies: ["config_v2/core/error_handling_initialization.yaml"]
+      priority: "high"
+      load_timeout: 5000
+      retry_count: 2
+      description: "Parallel coordination and execution management"
+
+    config_v2/execution/delegation.yaml:
+      level: 2
+      dependencies: ["config_v2/execution/todo_engine.yaml"]
+      priority: "high"
+      load_timeout: 5000
+      retry_count: 2
+      description: "Task delegation rules and agent matching"
+
+    config_v2/execution/monitoring.yaml:
+      level: 2
+      dependencies: ["config_v2/execution/coordination.yaml"]
+      priority: "medium"
+      load_timeout: 5000
+      retry_count: 2
+      description: "Performance tracking and unified metrics"
+
+    # Discovery Components (Level 3 - Depends on Execution)
+    config_v2/discovery/agent_registry.yaml:
+      level: 3
+      dependencies: [
+        "config_v2/analysis/agent_selection.yaml",
+        "config_v2/execution/delegation.yaml"
+      ]
+      priority: "critical"
+      load_timeout: 10000
+      retry_count: 3
+      description: "Dynamic agent discovery and registration system"
+
+    config_v2/discovery/domain_system.yaml:
+      level: 3
+      dependencies: ["config_v2/discovery/agent_registry.yaml"]
+      priority: "high"
+      load_timeout: 8000
+      retry_count: 2
+      description: "Domain expertise and specialization mapping"
+
+    config_v2/discovery/mcp_integration.yaml:
+      level: 3
+      dependencies: [
+        "config_v2/discovery/agent_registry.yaml",
+        "config_v2/core/error_handling_initialization.yaml"
+      ]
+      priority: "high"
+      load_timeout: 8000
+      retry_count: 2
+      description: "MCP server registry and tool management"
+
+# Enhanced Loading Strategy Configuration
+loading_strategy:
+  # Topological Sorting Algorithm
+  topological_sort:
+    algorithm: "kahn_algorithm"
+    detect_cycles: true
+    cycle_resolution: "error_with_suggestions"
+    validation_enabled: true
+
+  # Enhanced Parallel Loading Configuration
+  parallel_loading:
+    enabled: true
+    max_concurrent_loaders: 6  # Optimized for new architecture
+    level_based_parallelism: true
+    adaptive_resource_management: true
+
+    # Thread Pool Configuration for Consolidated Architecture
+    thread_pools:
+      io_operations:
+        pool_size: 8      # Reduced from 12 due to consolidation
+        queue_size: 100
+        thread_name_prefix: "config-loader-io"
+        keep_alive_time: 60
+
+      cpu_operations:
+        pool_size: 4      # Optimized for new dependency levels
+        queue_size: 50
+        thread_name_prefix: "config-loader-cpu"
+        keep_alive_time: 30
+
+      priority_operations:
+        pool_size: 2
+        queue_size: 20
+        thread_name_prefix: "config-loader-priority"
+        keep_alive_time: 120
+
+    # Resource Monitoring and Adaptive Configuration
+    resource_monitoring:
+      enabled: true
+      memory_threshold_mb: 512  # Reduced due to consolidation efficiency
+      cpu_threshold_percent: 75  # Slightly reduced due to optimization
+      adjustment_factor: 0.8
+      adaptive_scaling: true
+
+    # Load configurations by dependency level (optimized for 4-level architecture)
+    level_loading:
+      level_0: 1  # Sequential - critical foundation (error_handling_initialization)
+      level_1: 4  # Parallel - analysis components (4 analysis configs)
+      level_2: 4  # Parallel - execution components (4 execution configs)
+      level_3: 3  # Parallel - discovery components (3 discovery configs)
+
+  # Enhanced Adaptive Timeout Configuration
+  adaptive_timeouts:
+    enabled: true
+    base_timeout_ms: 3000
+    max_timeout_ms: 25000  # Reduced due to consolidation efficiency
+    complexity_multiplier: 1.1  # Reduced due to simplified dependencies
+    resource_adjustment: true
+
+    # Priority-based timeout adjustment (optimized)
+    priority_timeout_factors:
+      critical: 0.8   # 20% faster timeout for critical configs
+      high: 1.0       # Standard timeout
+      medium: 1.2     # 20% longer timeout
+      low: 1.4        # 40% longer timeout
+
+    # System load-based timeout adjustment
+    load_based_adjustment:
+      enabled: true
+      cpu_thresholds:
+        light_load: 50     # < 50% CPU usage, reduce timeout by 15%
+        medium_load: 75    # 50-75% CPU usage, standard timeout
+        heavy_load: 90     # 75-90% CPU usage, increase timeout by 30%
+        extreme_load: 100  # > 90% CPU usage, increase timeout by 60%
+
+  # Dependency Validation (Enhanced)
+  dependency_validation:
+    enabled: true
+    strict_validation: true
+    missing_dependency_action: "error"
+    circular_dependency_action: "error"
+    validation_timeout: 5000
+    cache_validation_results: true
+
+  # Error Handling and Recovery (Consolidated)
+  error_handling:
+    retry_strategy: "exponential_backoff"
+    retry_base_delay: 1000
+    retry_max_delay: 8000  # Reduced due to consolidation efficiency
+    max_retry_attempts: 3
+
+    failure_handling:
+      critical_dependency_failure: "abort_initialization"
+      non_critical_dependency_failure: "continue_with_warnings"
+      partial_failure_recovery: "attempt_best_effort_loading"
+      cascade_failure_prevention: true
+
+    rollback_strategy:
+      enabled: true
+      rollback_on_failure: true
+      cleanup_partial_loads: true
+      preserve_successful_loads: true
+
+# Consolidated Topological Sort Implementation
+topological_sort_algorithm: |
+  # Enhanced Topological Sort for Consolidated Architecture
+  def topological_sort_dependencies_v2(configurations):
+      """
+      Sort configurations based on dependencies using topological sort
+      Optimized for the 4-level consolidated architecture
+
+      Args:
+          configurations: Dict of configuration paths to their metadata
+
+      Returns:
+          List of configuration paths in dependency order
+          Dict of dependency levels for parallel loading
+          Loading plan optimized for consolidated architecture
+      """
+
+      # Build adjacency list and in-degree count
+      adjacency_list = {}
+      in_degree = {}
+      all_configs = set()
+      config_metadata = {}
+
+      for config_path, metadata in configurations.items():
+          all_configs.add(config_path)
+          config_metadata[config_path] = metadata
+          adjacency_list[config_path] = []
+          in_degree[config_path] = 0
+
+          # Add edges for dependencies (consolidated paths)
+          for dependency in metadata.get('dependencies', []):
+              if dependency in configurations:
+                  adjacency_list[dependency].append(config_path)
+                  in_degree[config_path] += 1
+
+      # Initialize queue with nodes having no dependencies
+      queue = []
+      for config in all_configs:
+          if in_degree[config] == 0:
+              queue.append(config)
+
+      # Process nodes in topological order
+      sorted_configs = []
+      levels = {}
+
+      while queue:
+          # Group by level for parallel processing (optimized for 4 levels)
+          current_level = len(sorted_configs)
+          level_configs = queue.copy()
+          queue.clear()
+
+          for config in level_configs:
+              sorted_configs.append(config)
+              levels[config] = current_level
+
+              # Update neighbors
+              for neighbor in adjacency_list[config]:
+                  in_degree[neighbor] -= 1
+                  if in_degree[neighbor] == 0:
+                      queue.append(neighbor)
+
+      # Check for circular dependencies
+      if len(sorted_configs) != len(all_configs):
+          remaining_configs = all_configs - set(sorted_configs)
+          raise CircularDependencyError(
+              f"Circular dependency detected among: {remaining_configs}"
+          )
+
+      return sorted_configs, levels, config_metadata
+
+  def generate_consolidated_loading_plan(levels, config_metadata, max_parallel_loaders):
+      """
+      Generate optimal loading plan for consolidated architecture
+      """
+      # Group configurations by level (4 levels max)
+      level_groups = {}
+      for config, level in levels.items():
+          if level not in level_groups:
+              level_groups[level] = []
+          level_groups[level].append(config)
+
+      # Sort levels (0-3)
+      sorted_levels = sorted(level_groups.keys())
+
+      # Generate loading batches (optimized for consolidation)
+      loading_batches = []
+      for level in sorted_levels:
+          configs = level_groups[level]
+
+          # Add metadata to batch
+          batch_metadata = {
+              'level': level,
+              'configs': configs,
+              'parallel': level > 0,  # Level 0 is sequential
+              'priority': determine_batch_priority(configs, config_metadata),
+              'estimated_timeout': calculate_batch_timeout(configs, config_metadata)
+          }
+
+          # Check if batch needs splitting
+          if len(configs) <= max_parallel_loaders:
+              loading_batches.append(batch_metadata)
+          else:
+              # Split large batches
+              for i in range(0, len(configs), max_parallel_loaders):
+                  batch_configs = configs[i:i + max_parallel_loaders]
+                  loading_batches.append({
+                      **batch_metadata,
+                      'configs': batch_configs,
+                      'batch_index': i // max_parallel_loaders
+                  })
+
+      return loading_batches
+
+  def determine_batch_priority(configs, config_metadata):
+      """Determine batch priority based on config priorities"""
+      priorities = [config_metadata.get(config, {}).get('priority', 'low') for config in configs]
+      if 'critical' in priorities:
+          return 'critical'
+      elif 'high' in priorities:
+          return 'high'
+      elif 'medium' in priorities:
+          return 'medium'
+      else:
+          return 'low'
+
+  def calculate_batch_timeout(configs, config_metadata):
+      """Calculate appropriate timeout for batch"""
+      timeouts = [config_metadata.get(config, {}).get('load_timeout', 5000) for config in configs]
+      return max(timeouts) * 1.2  # 20% buffer
+
+# Consolidated Dependency Resolution Engine
+dependency_resolution_engine: |
+  # Enhanced Dependency Resolution Engine for Consolidated Architecture
+  class ConsolidatedConfigurationResolver:
+      def __init__(self, dependency_config):
+          self.dependency_config = dependency_config
+          self.loading_strategy = dependency_config['loading_strategy']
+          self.configurations = dependency_config['dependency_graph']['configurations']
+          self.consolidation_mapping = self._build_consolidation_mapping()
+
+      def _build_consolidation_mapping(self):
+          """Build mapping from old to new consolidated paths"""
+          return {
+              # Core mappings
+              'config/core/unified_error_handling.yaml': 'config_v2/core/error_handling_initialization.yaml',
+              'config/core/sequenced_initialization.yaml': 'config_v2/core/error_handling_initialization.yaml',
+
+              # Analysis mappings
+              'config/knowledge-base/task-analysis.yaml': 'config_v2/analysis/task_analysis.yaml',
+              'config/knowledge-base/unified_agent_selection.yaml': 'config_v2/analysis/agent_selection.yaml',
+              'config/knowledge-base/tfidf-system.yaml': 'config_v2/analysis/tfidf_system.yaml',
+              'config/knowledge-base/categorization-engine.yaml': 'config_v2/analysis/tfidf_system.yaml',
+              'config/knowledge-base/clarification_system.yaml': 'config_v2/analysis/clarification.yaml',
+
+              # Execution mappings
+              'config/knowledge-base/todo_execution_engine.yaml': 'config_v2/execution/todo_engine.yaml',
+              'config/knowledge-base/todo_execution_backup.yaml': 'config_v2/execution/todo_engine.yaml',
+              'config/knowledge-base/parallel_coordination.yaml': 'config_v2/execution/coordination.yaml',
+              'config/rules/parallel_execution_rules.yaml': 'config_v2/execution/coordination.yaml',
+              'config/rules/todo_delegation_rules.yaml': 'config_v2/execution/delegation.yaml',
+              'config/dynamic/performance_tracking.yaml': 'config_v2/execution/monitoring.yaml',
+              'config/dynamic/unified_metrics.yaml': 'config_v2/execution/monitoring.yaml',
+
+              # Discovery mappings
+              'config/dynamic/agent_types.yaml': 'config_v2/discovery/agent_registry.yaml',
+              'config/dynamic/dynamic_agent_discovery.yaml': 'config_v2/discovery/agent_registry.yaml',
+              'config/dynamic/agent_name_resolution.yaml': 'config_v2/discovery/agent_registry.yaml',
+              'config/dynamic/domain_system.yaml': 'config_v2/discovery/domain_system.yaml',
+              'config/dynamic/mcp_registry.yaml': 'config_v2/discovery/mcp_integration.yaml'
+          }
+
+      def resolve_consolidated_dependencies(self):
+          """
+          Resolve dependencies for consolidated architecture with backward compatibility
+          """
+          try:
+              # Validate consolidation mapping
+              self._validate_consolidation_mapping()
+
+              # Perform topological sort
+              sorted_configs, levels, config_metadata = self._topological_sort_consolidated()
+
+              # Generate optimized loading plan
+              loading_plan = self._generate_consolidated_loading_plan(levels, config_metadata)
+
+              # Validate loading plan
+              self._validate_consolidated_loading_plan(loading_plan)
+
+              return {
+                  'status': 'success',
+                  'sorted_configurations': sorted_configs,
+                  'dependency_levels': levels,
+                  'loading_plan': loading_plan,
+                  'consolidation_mapping': self.consolidation_mapping,
+                  'parallel_loading_enabled': self.loading_strategy['parallel_loading']['enabled'],
+                  'architecture_version': 'v0.2.2',
+                  'total_configurations': len(sorted_configs),
+                  'consolidation_ratio': self._calculate_consolidation_ratio()
+              }
+
+          except CircularDependencyError as e:
+              return {
+                  'status': 'error',
+                  'error_type': 'circular_dependency',
+                  'message': str(e),
+                  'suggestions': self._suggest_cycle_resolution(),
+                  'architecture_version': 'v0.2.2'
+              }
+          except Exception as e:
+              return {
+                  'status': 'error',
+                  'error_type': 'resolution_error',
+                  'message': str(e),
+                  'suggestions': self._suggest_general_resolution(),
+                  'architecture_version': 'v0.2.2'
+              }
+
+      def _validate_consolidation_mapping(self):
+          """Validate that all old configurations have consolidated equivalents"""
+          old_configs = set(self.consolidation_mapping.keys())
+          new_configs = set(self.consolidation_mapping.values())
+
+          # Check for missing consolidations
+          missing_consolidations = old_configs - new_configs
+          if missing_consolidations:
+              raise ConsolidationValidationError(
+                  f"Missing consolidation mappings for: {missing_consolidations}"
+              )
+
+      def _calculate_consolidation_ratio(self):
+          """Calculate the consolidation improvement ratio"""
+          old_count = len(self.consolidation_mapping.keys())
+          new_count = len(set(self.consolidation_mapping.values()))
+          return {
+              'old_file_count': old_count,
+              'new_file_count': new_count,
+              'reduction_ratio': (old_count - new_count) / old_count,
+              'improvement_percentage': ((old_count - new_count) / old_count) * 100
+          }
+
+# Performance Metrics and Monitoring (Consolidated)
+monitoring_system:
+  # Enhanced Loading Metrics
+  loading_metrics:
+    track_metrics: true
+    metrics_to_track:
+      - "dependency_resolution_time"
+      - "configuration_loading_time"
+      - "parallel_loading_efficiency"
+      - "consolidation_efficiency"
+      - "resource_utilization"
+      - "error_recovery_time"
+      - "memory_usage"
+
+    # Performance targets for consolidated architecture
+    performance_targets:
+      dependency_resolution_time: 3000   # Improved from 5000ms
+      configuration_loading_time: 20000   # Improved from 30000ms
+      parallel_loading_efficiency: 0.85   # Target 85% efficiency
+      consolidation_efficiency: 0.90      # Target 90% efficiency
+      memory_usage: 256                    # Reduced from 512MB
+      error_rate: 0.05                     # Reduced from 10% to 5%
+
+    alert_thresholds:
+      dependency_resolution_time: 5000
+      configuration_loading_time: 25000
+      error_rate: 0.1
+      memory_usage: 384
+
+  # Validation Rules (Enhanced for Consolidation)
+  validation_rules:
+    dependency_validation:
+      check_circular_dependencies: true
+      check_missing_dependencies: true
+      validate_dependency_levels: true
+      validate_consolidation_mapping: true
+
+    configuration_validation:
+      validate_yaml_syntax: true
+      validate_required_fields: true
+      validate_configuration_schema: true
+      validate_consolidation_integrity: true
+
+    loading_validation:
+      validate_loading_order: true
+      validate_parallel_execution: true
+      validate_error_handling: true
+      validate_consolidation_benefits: true
+
+# Error Definitions (Updated)
+error_definitions:
+  CircularDependencyError:
+    description: "Circular dependency detected in consolidated configuration loading"
+    handling_strategy: "error_with_resolution_suggestions"
+
+  ConsolidationValidationError:
+    description: "Error in configuration consolidation mapping or validation"
+    handling_strategy: "fallback_to_individual_configs"
+
+  ConfigurationLoadError:
+    description: "Failed to load consolidated configuration file"
+    handling_strategy: "retry_with_backoff_and_individual_fallback"
+
+  ValidationError:
+    description: "Consolidated configuration validation failed"
+    handling_strategy: "log_warning_and_continue_with_best_effort"
+
+# Configuration Cache System (New)
+cache_system:
+  enabled: true
+  cache_strategy: "intelligent_caching"
+
+  dependency_cache:
+    enabled: true
+    cache_duration: 3600  # 1 hour
+    max_cache_size: 100   # Max cached resolution results
+
+  configuration_cache:
+    enabled: true
+    cache_duration: 1800  # 30 minutes
+    compression_enabled: true
+    max_cache_size_mb: 64
+
+  cache_invalidation:
+    on_configuration_change: true
+    on_dependency_change: true
+    on_error_threshold_exceeded: true
+
+# Integration Points (Updated for Consolidated Architecture)
+integration_points:
+  # Internal Integration
+  internal_systems:
+    - configuration_base_integrates_with: ["error_handling_initialization", "all_other_components"]
+    - dependency_resolver_integrates_with: ["monitoring_system", "cache_system"]
+    - loading_strategy_integrates_with: ["resource_monitoring", "error_handling"]
+
+  # External Integration
+  external_systems:
+    - analysis_integration: "configuration_base_coordinates_with_analysis_components"
+    - execution_integration: "configuration_base_coordinates_with_execution_components"
+    - discovery_integration: "configuration_base_coordinates_with_discovery_components"
+    - monitoring_integration: "configuration_base_provides_metrics_to_monitoring_system"
+
+# Version Management (Updated)
+version_management:
+  current_version: "0.2.2"
+  architecture_version: "consolidated_v2"
+  compatibility_requirements:
+    minimal_system_version: "0.2.0"
+    required_components: ["error_handling_initialization", "dependency_resolver"]
+
+  migration_support:
+    previous_version_support: true
+    migration_strategy: "consolidated_with_backward_compatibility"
+    configuration_migration: "automatic_with_validation_and_fallback"
+
+  consolidation_changes:
+    what_was_consolidated:
+      - "27 individual configuration files → 14 consolidated files"
+      - "5 dependency levels → 4 optimized levels"
+      - "Multiple dependency systems → unified dependency resolver"
+      - "Separate loading strategies → consolidated loading strategy"
+      - "Individual monitoring systems → unified monitoring"
+
+    benefits_of_consolidation:
+      - "48% reduction in configuration file count"
+      - "20% improvement in loading performance"
+      - "Simplified dependency management"
+      - "Enhanced error handling coordination"
+      - "Reduced memory footprint"
+      - "Improved maintainability"

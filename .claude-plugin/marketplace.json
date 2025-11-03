@@ -5,8 +5,8 @@
     "email": "pomazan.bohdan@gmail.com"
   },
   "metadata": {
-    "description": "Dynamic orchestration system v0.2.0 - Intelligent configuration loading with dependency-aware parallel execution and topological sorting - Complete 10-phase initialization with dynamic agent name resolution, automatic categorization, and @agent-{name} support",
-    "version": "0.2.0"
+    "description": "Consolidated orchestration system v0.2.2 - Unified configuration loading with 4-phase initialization, enhanced TF-IDF selection, circuit breaker patterns, and backup systems - Ultimate agent orchestration platform with consolidated architecture and dynamic agent discovery",
+    "version": "0.2.2"
   },
   "plugins": [
     {
@@ -129,7 +129,26 @@
         "circular-dependency-detection",
         "missing-dependency-validation",
         "configuration-health-checking",
-        "intelligent-error-recovery"
+        "intelligent-error-recovery",
+        "consolidated-architecture",
+        "4-phase-initialization",
+        "circuit-breaker-patterns",
+        "backup-system-integration",
+        "uncertainty-detection",
+        "ultimate-agent-selection",
+        "enhanced-error-handling",
+        "consolidated-configuration",
+        "topological-sorting-enhanced",
+        "dependency-resolution-ultimate",
+        "parallel-execution-optimized",
+        "resource-management-adaptive",
+        "vector-similarity-analysis",
+        "domain-expertise-mapping",
+        "ml-powered-categorization",
+        "performance-optimization",
+        "system-reliability-enhanced",
+        "unified-metrics-tracking",
+        "adaptive-fallback-systems"
       ],
       "source": "./",
       "agents": [

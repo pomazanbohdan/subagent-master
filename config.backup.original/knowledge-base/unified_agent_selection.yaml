@@ -1,0 +1,383 @@
+# Unified Agent Selection System
+# Consolidated rules from agent-selection.yaml and selection_rules.yaml
+
+metadata:
+  name: "unified-agent-selection-system"
+  version: "0.0.1"
+  description: "Unified agent selection with restored competency matrix integration and reference scoring weights"
+  author: "Master Agent System v0.0.1"
+
+# Unified Scoring Components
+scoring_components:
+  competency_match:
+    weight: 0.60
+    description: "Agent capability matching with task requirements"
+    implementation: |
+      # Competency-Based Scoring Algorithm
+      INPUT: task_requirements, agent_competencies
+      OUTPUT: competency_scores (0.0-1.0)
+
+      PROCESS:
+      1. Extract task requirements and agent competencies
+      2. Calculate skill overlap (task_skills ∩ agent_skills)
+      3. Score based on skill importance (primary=1.0, secondary=0.7, optional=0.5)
+      4. Apply domain-specific adjustments
+      5. Return highest score
+
+  performance_history:
+    weight: 0.25
+    description: "Historical performance metrics and success rates"
+    implementation: |
+      # Performance-Based Scoring Algorithm
+      INPUT: agent_id, task_category, historical_performance
+      OUTPUT: performance_scores (0.0-1.0)
+
+      METRICS:
+      1. Success rate: successful_tasks / total_tasks (weight: 0.4)
+      2. Response time: inverse relationship with average response time (weight: 0.3)
+      3. Quality score: User satisfaction ratings (weight: 0.3)
+
+      DECAY_FACTOR: 0.95 (monthly decay for older data)
+
+  domain_specialization:
+    weight: 0.10
+    description: "Domain-specific expertise and specialization"
+    implementation: |
+      # Domain Specialization Scoring Algorithm
+      INPUT: agent_domains, task_domain_requirements
+      OUTPUT: domain_alignment_scores (0.0-1.0)
+
+      PROCESS:
+      1. Extract agent domain specializations
+      2. Calculate domain alignment with task requirements
+      3. Apply confidence multipliers based on expertise level
+      4. Return highest domain alignment score
+
+  current_complexity:
+    weight: 0.05
+    description: "Task complexity matching with agent capabilities"
+    implementation: |
+      # Complexity-Based Scoring Algorithm
+      INPUT: task_complexity, agent_complexity_handling
+      OUTPUT: complexity_match_scores (0.0-1.0)
+
+      PROCESS:
+      1. Analyze task complexity indicators
+      2. Match with agent complexity handling capabilities
+      3. Apply complexity tolerance adjustments
+      4. Return complexity alignment score
+
+  # Additional components for enhanced capabilities (used in specific strategies)
+  current_load:
+    weight: 0.00  # Disabled in default configuration
+    description: "Current agent load and availability (for specific strategies)"
+    implementation: |
+      # Availability-Based Scoring Algorithm
+      INPUT: agent_capacity
+      OUTPUT: availability_scores (0.0-1.0)
+
+      PROCESS:
+      1. Calculate availability ratio
+      2. Apply sigmoid smoothing
+      3. Apply confidence adjustments
+      4. Return final score
+
+  availability:
+    weight: 0.00  # Disabled in default configuration
+    description: "Agent status and immediate availability (for specific strategies)"
+    implementation: |
+      # Immediate availability check
+      INPUT: agent_status, current_tasks
+      OUTPUT: immediate_availability_score (0.0-1.0)
+
+  tfidf_analysis:
+    weight: 0.00  # Disabled in default configuration
+    description: "Text similarity analysis (for specific strategies)"
+    implementation: |
+      # TF-IDF Similarity Analysis
+      INPUT: task_description, agent_capabilities
+      OUTPUT: relevance_scores (0.0-1.0)
+
+      FALLBACK: keyword matching if TF-IDF fails
+
+# Unified Selection Strategies
+selection_strategies:
+  default_balanced:
+    name: "balanced_selection"
+    description: "Balanced approach with competency, performance, and domain specialization"
+    weights:
+      competency_match: 0.60
+      performance_history: 0.25
+      domain_specialization: 0.10
+      current_complexity: 0.05
+      # Additional components disabled by default (weight: 0.00)
+      current_load: 0.00
+      availability: 0.00
+      tfidf_analysis: 0.00
+    selection_criteria: "highest_total_score"
+    min_confidence: 0.6
+    use_case: "Default strategy for most scenarios"
+
+  performance_priority:
+    name: "performance_first"
+    description: "Prioritize agents with best historical performance"
+    weights:
+      competency_match: 0.50
+      performance_history: 0.40
+      domain_specialization: 0.05
+      current_complexity: 0.02
+      current_load: 0.05
+      availability: 0.02
+      tfidf_analysis: 0.01
+    selection_criteria: "highest_performance_score"
+    min_confidence: 0.7
+    use_case: "Critical tasks where quality is paramount"
+
+  availability_priority:
+    name: "availability_first"
+    description: "Prioritize agents that are immediately available"
+    weights:
+      competency_match: 0.40
+      performance_history: 0.20
+      current_load: 0.20
+      availability: 0.15
+      domain_specialization: 0.10
+      current_complexity: 0.02
+      tfidf_analysis: 0.00
+    selection_criteria: "availability_and_performance"
+    min_confidence: 0.5
+    use_case: "Time-sensitive tasks requiring immediate attention"
+
+  learning_priority:
+    name: "learning_opportunity"
+    description: "Prioritize agents that can learn from the task"
+    weights:
+      competency_match: 0.35
+      performance_history: 0.15
+      current_load: 0.15
+      availability: 0.10
+      domain_specialization: 0.10
+      current_complexity: 0.05
+      tfidf_analysis: 0.15
+      learning_potential: 0.10
+    selection_criteria: "highest_learning_score"
+    min_confidence: 0.4
+    use_case: "Tasks with learning potential and lower risk tolerance"
+
+  cost_optimized:
+    name: "cost_optimized"
+    description: "Budget-conscious scenarios with acceptable quality trade-offs"
+    weights:
+      competency_match: 0.35
+      performance_history: 0.20
+      current_load: 0.15
+      availability: 0.05
+      domain_specialization: 0.05
+      current_complexity: 0.02
+      tfidf_analysis: 0.03
+      cost_efficiency: 0.15
+    selection_criteria: "cost_effective_with_quality"
+    min_confidence: 0.5
+    use_case: "Budget-conscious scenarios with acceptable quality trade-offs"
+
+# Standardized Thresholds
+standard_thresholds:
+  minimum_confidence: 0.6
+  max_candidates: 3
+  min_relevance_score: 0.3
+  max_task_complexity_mismatch: 1.5
+
+  quality_gates:
+    - All selected agents must meet minimum confidence threshold
+    - At least one agent must exceed 0.8 confidence score
+    - Total selection confidence must exceed 0.7 for critical tasks
+    - Performance score must be > 0.6 for high-priority tasks
+
+  performance_thresholds:
+    min_success_rate: 0.7
+    max_response_time: 10.0
+    min_reliability: 0.8
+    max_load_ratio: 0.8
+    min_availability: 0.2
+
+# Unified Fallback Rules
+fallback_rules:
+  no_suitable_agent:
+    action: "Expand search criteria"
+    options:
+      - lower_confidence_threshold: 0.1
+      - increase_load_tolerance: 0.1
+      - consider_backup_agents: true
+      - enable_cross_domain_fallback: true
+      - use_general_purpose_as_last_resort: true
+      - fallback_to_claude_native: true  # Use Claude Code built-in capabilities
+
+  all_agents_busy:
+    action: "Intelligent queue management"
+    options:
+      priority_queue: true
+      wait_time_limit: 300  # 5 minutes
+      escalation_threshold: 2
+      use_claude_parallel: true  # Use Claude Code parallel processing
+      notify_user_of_delay: false  # Silent operation
+
+  selection_timeout:
+    action: "Emergency selection protocol"
+    options:
+      ignore_load_constraints: true
+      minimum_acceptance_score: 0.3
+      select_least_loaded_available: true
+      fallback_to_claude_direct: true  # Direct Claude Code execution
+      log_selection_difficulty: false
+
+  system_failure:
+    action: "Claude Code native fallback"
+    options:
+      use_builtin_tools: true
+      sequential_execution: true
+      minimal_coordination: true
+      direct_user_interaction: true
+
+# Error Handling with Claude Code Integration
+claude_code_fallback_strategies:
+  native_capability_fallback:
+    description: "Use Claude Code built-in tools and capabilities"
+    implementation: |
+      # Claude Code Native Fallback Algorithm
+      INPUT: task_description, failed_agent_selection
+      OUTPUT: direct_claude_execution_result
+
+      CAPABILITIES:
+      - File operations (Read, Write, Edit)
+      - Web search and fetch
+      - MCP tool usage
+      - Bash execution
+      - Task delegation
+
+      EXECUTION_STRATEGY:
+      1. Analyze task requirements
+      2. Select appropriate Claude Code tools
+      3. Execute task directly
+      4. Provide comprehensive results
+
+  parallel_tool_execution:
+    description: "Use Claude Code parallel processing capabilities"
+    implementation: |
+      # Parallel Tool Execution Algorithm
+      INPUT: complex_task_with_multiple_components
+      OUTPUT: coordinated_tool_results
+
+      STRATEGY:
+      1. Identify independent task components
+      2. Execute tool calls in parallel
+      3. Synthesize results
+      4. Handle conflicts and dependencies
+
+  mcp_server_fallback:
+    description: "Direct MCP server usage without agent coordination"
+    implementation: |
+      # Direct MCP Server Usage
+      INPUT: task_description, available_mcp_servers
+      OUTPUT: direct_mcp_execution
+
+      PROCESS:
+      1. Identify suitable MCP servers
+      2. Execute direct tool calls
+      3. Handle responses and errors
+      4. Provide integrated results
+
+# Task Classification with Keywords
+task_classification_keywords:
+  analysis:
+    primary: ["analyze", "analysis", "investigate", "review", "examine", "study", "research"]
+    secondary: ["understand", "evaluate", "assess", "audit"]
+    weight: 1.0
+
+  design:
+    primary: ["design", "architecture", "plan", "structure", "blueprint"]
+    secondary: ["specify", "define", "outline", "schema"]
+    weight: 1.0
+
+  implementation:
+    primary: ["implement", "create", "build", "develop", "code", "program"]
+    secondary: ["write", "construct", "assemble", "fabricate"]
+    weight: 1.0
+
+  testing:
+    primary: ["test", "testing", "validate", "verify", "check", "qa"]
+    secondary: ["ensure", "confirm", "inspect", "examine"]
+    weight: 1.0
+
+  optimization:
+    primary: ["optimize", "optimization", "improve", "enhance", "boost"]
+    secondary: ["speed", "performance", "efficiency", "tune"]
+    weight: 0.9
+
+  security:
+    primary: ["security", "secure", "protect", "safeguard", "harden"]
+    secondary: ["vulnerability", "threat", "risk", "compliance"]
+    weight: 1.0
+
+  coordination:
+    primary: ["coordinate", "orchestrate", "manage", "organize", "lead"]
+    secondary: ["supervise", "direct", "guide", "facilitate"]
+    weight: 0.8
+
+  error_handling:
+    primary: ["error", "fix", "debug", "troubleshoot", "recover", "resolve"]
+    secondary: ["issue", "problem", "failure", "crash", "exception"]
+    weight: 1.0
+
+# Quality Metrics
+quality_metrics:
+  classification_precision: "Target > 0.85"
+  recall_score: "Target > 0.80"
+  user_satisfaction: "Target > 0.80"
+  error_recovery_success: "Target > 90%"
+
+  performance_targets:
+    selection_time: "< 2 seconds"
+    confidence_score: "> 0.6 for default"
+    fallback_usage_rate: "< 15%"
+    system_availability: "> 99%"
+
+# Integration Points
+integration:
+  imports:
+    task_analysis: "config/knowledge-base/task-analysis.yaml"
+    tfidf_system: "config/knowledge-base/tfidf-system.yaml"
+    clarification_system: "config/knowledge-base/clarification_system.yaml"
+    dynamic_agent_discovery: "config/dynamic/dynamic_agent_discovery.yaml"
+    competency_matrix: "config/dynamic/dynamic_agent_discovery.yaml"
+
+  competency_matrix_integration:
+    description: "Integration with competency vector system"
+    implementation: |
+      # Competency Matrix Integration
+      The selection system integrates with competency matrix from dynamic_agent_discovery.yaml
+      through the following mechanisms:
+
+      1. Vector-based competency scoring using competency vectors
+      2. Dynamic compatibility matrix for agent-task matching
+      3. Enhanced confidence calculations with matrix support
+
+      Key integration points:
+      - competency_match component uses matrix_score from compatibility matrix
+      - domain_specialization aligns with category-based agent classification
+      - current_complexity matches with agent complexity handling capabilities
+
+  exports:
+    selection_results: "Agent selection with confidence scores"
+    fallback_activations: "Fallback strategy usage tracking"
+    performance_metrics: "Selection performance data"
+    claude_native_usage: "Direct Claude Code execution tracking"
+
+# Version Control and Compatibility
+version_compatibility:
+  supported_versions: ["3.6.0", "3.7.0"]
+  backward_compatible: true
+  migration_support: true
+
+  deprecation_warnings:
+    - "Old agent-selection.yaml to be removed in v3.8.0"
+    - "Old selection_rules.yaml to be removed in v3.8.0"

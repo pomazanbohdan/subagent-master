@@ -1,0 +1,793 @@
+# Configuration Loading Monitoring System
+# Comprehensive monitoring, validation, and health checking for configuration loading
+
+metadata:
+  name: "configuration-monitoring"
+  version: "0.2.0"
+  description: "Configuration loading monitoring with real-time validation and health checking"
+  author: "Master Agent System v0.2.0"
+
+# Monitoring System Architecture
+monitoring_system:
+  # Real-time Monitoring
+  real_time_monitoring:
+    enabled: true
+    monitoring_interval: 1000  # milliseconds
+    metrics_collection:
+      enabled: true
+      collection_interval: 500  # milliseconds
+
+  # Health Checking
+  health_checking:
+    enabled: true
+    check_interval: 5000  # milliseconds
+    comprehensive_checks: true
+
+  # Performance Monitoring
+  performance_monitoring:
+    enabled: true
+    profiling_enabled: true
+    resource_tracking: true
+
+# Metrics Collection
+metrics_collection:
+  # Loading Metrics
+  loading_metrics:
+    # Timing Metrics
+    timing_metrics:
+      - name: "dependency_resolution_time"
+        unit: "milliseconds"
+        description: "Time taken to resolve configuration dependencies"
+        alert_threshold: 5000
+        warning_threshold: 3000
+
+      - name: "topological_sort_time"
+        unit: "milliseconds"
+        description: "Time taken for topological sorting"
+        alert_threshold: 1000
+        warning_threshold: 500
+
+      - name: "configuration_loading_time"
+        unit: "milliseconds"
+        description: "Total time for configuration loading"
+        alert_threshold: 30000
+        warning_threshold: 15000
+
+      - name: "parallel_execution_time"
+        unit: "milliseconds"
+        description: "Time for parallel configuration execution"
+        alert_threshold: 25000
+        warning_threshold: 12000
+
+      - name: "validation_time"
+        unit: "milliseconds"
+        description: "Time for configuration validation"
+        alert_threshold: 5000
+        warning_threshold: 2500
+
+    # Success Metrics
+    success_metrics:
+      - name: "loading_success_rate"
+        unit: "percentage"
+        description: "Percentage of successfully loaded configurations"
+        alert_threshold: 0.8
+        warning_threshold: 0.9
+
+      - name: "dependency_resolution_success_rate"
+        unit: "percentage"
+        description: "Success rate of dependency resolution"
+        alert_threshold: 0.9
+        warning_threshold: 0.95
+
+      - name: "validation_success_rate"
+        unit: "percentage"
+        description: "Success rate of configuration validation"
+        alert_threshold: 0.85
+        warning_threshold: 0.9
+
+    # Resource Metrics
+    resource_metrics:
+      - name: "memory_usage"
+        unit: "megabytes"
+        description: "Memory usage during configuration loading"
+        alert_threshold: 512
+        warning_threshold: 256
+
+      - name: "cpu_usage"
+        unit: "percentage"
+        description: "CPU usage during configuration loading"
+        alert_threshold: 80
+        warning_threshold: 60
+
+      - name: "file_handle_usage"
+        unit: "count"
+        description: "Number of file handles in use"
+        alert_threshold: 100
+        warning_threshold: 50
+
+    # Parallel Processing Metrics
+    parallel_metrics:
+      - name: "parallel_efficiency"
+        unit: "percentage"
+        description: "Efficiency of parallel processing"
+        alert_threshold: 0.6
+        warning_threshold: 0.7
+
+      - name: "loader_utilization"
+        unit: "percentage"
+        description: "Utilization of parallel loaders"
+        alert_threshold: 0.9
+        warning_threshold: 0.8
+
+      - name: "dependency_level_distribution"
+        unit: "distribution"
+        description: "Distribution of configurations across dependency levels"
+        alert_threshold: "uneven_distribution"
+        warning_threshold: "moderate_unevenness"
+
+# Validation System
+validation_system:
+  # Pre-loading Validation
+  pre_loading_validation:
+    enabled: true
+    validation_rules:
+      - name: "dependency_graph_validity"
+        description: "Validate dependency graph structure"
+        check_function: "validate_dependency_graph"
+
+      - name: "configuration_file_existence"
+        description: "Check if all configuration files exist"
+        check_function: "validate_file_existence"
+
+      - name: "circular_dependency_check"
+        description: "Detect circular dependencies"
+        check_function: "detect_circular_dependencies"
+
+      - name: "missing_dependency_check"
+        description: "Check for missing dependencies"
+        check_function: "check_missing_dependencies"
+
+      - name: "yaml_syntax_validation"
+        description: "Validate YAML syntax for all configuration files"
+        check_function: "validate_yaml_syntax"
+
+  # Post-loading Validation
+  post_loading_validation:
+    enabled: true
+    validation_rules:
+      - name: "configuration_completeness"
+        description: "Verify all required configurations are loaded"
+        check_function: "validate_configuration_completeness"
+
+      - name: "dependency_satisfaction"
+        description: "Verify all dependencies are satisfied"
+        check_function: "validate_dependency_satisfaction"
+
+      - name: "configuration_schema_validation"
+        description: "Validate configuration schemas"
+        check_function: "validate_configuration_schemas"
+
+      - name: "cross_configuration_consistency"
+        description: "Check consistency between related configurations"
+        check_function: "validate_cross_configuration_consistency"
+
+      - name: "performance_threshold_validation"
+        description: "Validate performance against thresholds"
+        check_function: "validate_performance_thresholds"
+
+# Health Checking System
+health_checking_system:
+  # Health Check Categories
+  health_checks:
+    system_health:
+      enabled: true
+      checks:
+        - name: "dependency_graph_health"
+          description: "Health of dependency graph structure"
+          check_interval: 10000
+          timeout: 5000
+
+        - name: "configuration_loading_health"
+          description: "Health of configuration loading system"
+          check_interval: 5000
+          timeout: 10000
+
+        - name: "parallel_execution_health"
+          description: "Health of parallel execution system"
+          check_interval: 5000
+          timeout: 8000
+
+    performance_health:
+      enabled: true
+      checks:
+        - name: "loading_performance_health"
+          description: "Performance of configuration loading"
+          check_interval: 10000
+          timeout: 3000
+
+        - name: "resource_usage_health"
+          description: "Resource usage during loading"
+          check_interval: 8000
+          timeout: 2000
+
+        - name: "memory_health"
+          description: "Memory usage and leaks"
+          check_interval: 15000
+          timeout: 5000
+
+    configuration_health:
+      enabled: true
+      checks:
+        - name: "configuration_integrity_health"
+          description: "Integrity of loaded configurations"
+          check_interval: 20000
+          timeout: 8000
+
+        - name: "dependency_health"
+          description: "Health of dependency relationships"
+          check_interval: 15000
+          timeout: 5000
+
+        - name: "schema_compliance_health"
+          description: "Compliance with configuration schemas"
+          check_interval: 25000
+          timeout: 10000
+
+# Monitoring Implementation
+monitoring_implementation: |
+  import time
+  import psutil
+  import threading
+  import logging
+  from datetime import datetime, timedelta
+  from typing import Dict, List, Optional, Any
+  from dataclasses import dataclass, field
+  from enum import Enum
+  import yaml
+  import json
+
+  class HealthStatus(Enum):
+      HEALTHY = "healthy"
+      WARNING = "warning"
+      CRITICAL = "critical"
+      UNKNOWN = "unknown"
+
+  @dataclass
+  class MetricValue:
+      name: str
+      value: Any
+      unit: str
+      timestamp: datetime
+      status: HealthStatus = HealthStatus.HEALTHY
+      warning_threshold: Optional[float] = None
+      alert_threshold: Optional[float] = None
+
+  @dataclass
+  class HealthCheckResult:
+      check_name: str
+      status: HealthStatus
+      message: str
+      timestamp: datetime
+      metrics: Dict[str, MetricValue] = field(default_factory=dict)
+      details: Dict[str, Any] = field(default_factory=dict)
+
+  class ConfigurationMonitoringSystem:
+      def __init__(self, monitoring_config_path: str):
+          self.monitoring_config_path = monitoring_config_path
+          self.monitoring_config = self._load_monitoring_config()
+          self.logger = self._setup_logging()
+
+          # Monitoring state
+          self.is_monitoring = False
+          self.monitoring_thread = None
+          self.health_check_thread = None
+
+          # Metrics storage
+          self.metrics_history = []
+          self.health_check_history = []
+          self.current_metrics = {}
+          self.current_health_status = HealthStatus.HEALTHY
+
+          # Performance tracking
+          self.performance_baseline = {}
+          self.performance_trends = {}
+
+      def start_monitoring(self):
+          """Start the monitoring system"""
+          if self.is_monitoring:
+              self.logger.warning("Monitoring is already running")
+              return
+
+          self.logger.info("Starting configuration monitoring system...")
+          self.is_monitoring = True
+
+          # Start metrics collection thread
+          self.monitoring_thread = threading.Thread(target=self._metrics_collection_loop, daemon=True)
+          self.monitoring_thread.start()
+
+          # Start health checking thread
+          self.health_check_thread = threading.Thread(target=self._health_check_loop, daemon=True)
+          self.health_check_thread.start()
+
+          self.logger.info("Monitoring system started successfully")
+
+      def stop_monitoring(self):
+          """Stop the monitoring system"""
+          if not self.is_monitoring:
+              return
+
+          self.logger.info("Stopping monitoring system...")
+          self.is_monitoring = False
+
+          if self.monitoring_thread:
+              self.monitoring_thread.join(timeout=5)
+
+          if self.health_check_thread:
+              self.health_check_thread.join(timeout=5)
+
+          self.logger.info("Monitoring system stopped")
+
+      def record_loading_event(self, event_type: str, details: Dict[str, Any]):
+          """Record a configuration loading event"""
+          event = {
+              'type': event_type,
+              'timestamp': datetime.now(),
+              'details': details
+          }
+
+          # Add metrics based on event type
+          if event_type == 'configuration_loaded':
+              self._record_loading_metrics(details)
+          elif event_type == 'loading_failed':
+              self._record_failure_metrics(details)
+          elif event_type == 'dependency_resolved':
+              self._record_dependency_metrics(details)
+
+          self.logger.info(f"Recorded event: {event_type}")
+
+      def get_current_metrics(self) -> Dict[str, Any]:
+          """Get current monitoring metrics"""
+          return {
+              'current_metrics': self.current_metrics,
+              'health_status': self.current_health_status.value,
+              'monitoring_active': self.is_monitoring,
+              'last_update': datetime.now().isoformat(),
+              'performance_summary': self._calculate_performance_summary()
+          }
+
+      def get_health_report(self) -> Dict[str, Any]:
+          """Generate comprehensive health report"""
+          recent_health_checks = [
+              check for check in self.health_check_history
+              if (datetime.now() - check.timestamp).total_seconds() < 300  # Last 5 minutes
+          ]
+
+          critical_issues = [
+              check for check in recent_health_checks
+              if check.status == HealthStatus.CRITICAL
+          ]
+
+          warning_issues = [
+              check for check in recent_health_checks
+              if check.status == HealthStatus.WARNING
+          ]
+
+          return {
+              'overall_health': self.current_health_status.value,
+              'critical_issues': len(critical_issues),
+              'warning_issues': len(warning_issues),
+              'recent_health_checks': [
+                  {
+                      'check_name': check.check_name,
+                      'status': check.status.value,
+                      'message': check.message,
+                      'timestamp': check.timestamp.isoformat()
+                  }
+                  for check in recent_health_checks[-10:]  # Last 10 checks
+              ],
+              'performance_trends': self._analyze_performance_trends(),
+              'recommendations': self._generate_health_recommendations(critical_issues, warning_issues)
+          }
+
+      def _load_monitoring_config(self) -> Dict:
+          """Load monitoring configuration"""
+          try:
+              with open(self.monitoring_config_path, 'r', encoding='utf-8') as f:
+                  return yaml.safe_load(f)
+          except Exception as e:
+              self.logger.error(f"Failed to load monitoring config: {e}")
+              return {}
+
+      def _setup_logging(self) -> logging.Logger:
+          """Setup logging for monitoring system"""
+          logger = logging.getLogger('ConfigurationMonitoring')
+          logger.setLevel(logging.INFO)
+
+          if not logger.handlers:
+              handler = logging.StreamHandler()
+              formatter = logging.Formatter(
+                  '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+              )
+              handler.setFormatter(formatter)
+              logger.addHandler(handler)
+
+          return logger
+
+      def _metrics_collection_loop(self):
+          """Main metrics collection loop"""
+          while self.is_monitoring:
+              try:
+                  self._collect_system_metrics()
+                  self._collect_performance_metrics()
+                  time.sleep(0.5)  # 500ms interval
+              except Exception as e:
+                  self.logger.error(f"Error in metrics collection: {e}")
+                  time.sleep(1)  # Wait before retrying
+
+      def _health_check_loop(self):
+          """Main health checking loop"""
+          while self.is_monitoring:
+              try:
+                  self._perform_health_checks()
+                  time.sleep(5)  # 5 second interval
+              except Exception as e:
+                  self.logger.error(f"Error in health checking: {e}")
+                  time.sleep(10)  # Wait longer before retrying
+
+      def _collect_system_metrics(self):
+          """Collect system-level metrics"""
+          try:
+              # CPU and Memory metrics
+              cpu_percent = psutil.cpu_percent(interval=0.1)
+              memory_info = psutil.virtual_memory()
+
+              self.current_metrics.update({
+                  'cpu_usage': cpu_percent,
+                  'memory_usage': memory_info.used / (1024 * 1024),  # MB
+                  'memory_percent': memory_info.percent,
+                  'timestamp': datetime.now().isoformat()
+              })
+
+              # Check thresholds
+              self._check_metric_thresholds()
+
+          except Exception as e:
+              self.logger.error(f"Error collecting system metrics: {e}")
+
+      def _collect_performance_metrics(self):
+          """Collect performance-related metrics"""
+          try:
+              # Calculate performance metrics from recent history
+              if self.metrics_history:
+                  recent_metrics = self.metrics_history[-100:]  # Last 100 measurements
+
+                  # Calculate averages and trends
+                  avg_cpu = sum(m.get('cpu_usage', 0) for m in recent_metrics) / len(recent_metrics)
+                  avg_memory = sum(m.get('memory_usage', 0) for m in recent_metrics) / len(recent_metrics)
+
+                  self.current_metrics.update({
+                      'avg_cpu_usage_100': avg_cpu,
+                      'avg_memory_usage_100': avg_memory,
+                      'metrics_collected': len(self.metrics_history)
+                  })
+
+          except Exception as e:
+              self.logger.error(f"Error collecting performance metrics: {e}")
+
+      def _perform_health_checks(self):
+          """Perform comprehensive health checks"""
+          health_checks = self.monitoring_config.get('health_checking_system', {}).get('health_checks', {})
+
+          overall_status = HealthStatus.HEALTHY
+          all_results = []
+
+          # System health checks
+          system_checks = health_checks.get('system_health', {}).get('checks', [])
+          for check in system_checks:
+              result = self._perform_health_check(check, 'system_health')
+              all_results.append(result)
+              if result.status.value in ['critical', 'warning']:
+                  overall_status = result.status
+
+          # Performance health checks
+          performance_checks = health_checks.get('performance_health', {}).get('checks', [])
+          for check in performance_checks:
+              result = self._perform_health_check(check, 'performance_health')
+              all_results.append(result)
+              if result.status.value in ['critical', 'warning']:
+                  overall_status = result.status
+
+          # Configuration health checks
+          config_checks = health_checks.get('configuration_health', {}).get('checks', [])
+          for check in config_checks:
+              result = self._perform_health_check(check, 'configuration_health')
+              all_results.append(result)
+              if result.status.value in ['critical', 'warning']:
+                  overall_status = result.status
+
+          self.current_health_status = overall_status
+          self.health_check_history.extend(all_results)
+
+          # Keep only recent history (last hour)
+              cutoff_time = datetime.now() - timedelta(hours=1)
+              self.health_check_history = [
+                  check for check in self.health_check_history
+                  if check.timestamp > cutoff_time
+              ]
+
+      def _perform_health_check(self, check_config: Dict, category: str) -> HealthCheckResult:
+          """Perform individual health check"""
+          check_name = check_config['name']
+          description = check_config['description']
+
+          try:
+              # Perform check based on category and name
+              if category == 'system_health':
+                  result = self._check_system_health(check_name, description)
+              elif category == 'performance_health':
+                  result = self._check_performance_health(check_name, description)
+              elif category == 'configuration_health':
+                  result = self._check_configuration_health(check_name, description)
+              else:
+                  result = HealthCheckResult(
+                      check_name=check_name,
+                      status=HealthStatus.UNKNOWN,
+                      message=f"Unknown health check category: {category}",
+                      timestamp=datetime.now()
+                  )
+
+              return result
+
+          except Exception as e:
+              self.logger.error(f"Health check {check_name} failed: {e}")
+              return HealthCheckResult(
+                  check_name=check_name,
+                  status=HealthStatus.CRITICAL,
+                  message=f"Health check failed: {str(e)}",
+                  timestamp=datetime.now()
+              )
+
+      def _check_system_health(self, check_name: str, description: str) -> HealthCheckResult:
+          """Check system health"""
+          if check_name == "dependency_graph_health":
+              # Check if dependency graph is healthy
+              return HealthCheckResult(
+                  check_name=check_name,
+                  status=HealthStatus.HEALTHY,
+                  message="Dependency graph is healthy",
+                  timestamp=datetime.now()
+              )
+
+          elif check_name == "configuration_loading_health":
+              # Check configuration loading health
+              if self.current_metrics.get('loading_success_rate', 1.0) > 0.9:
+                  status = HealthStatus.HEALTHY
+                  message = "Configuration loading is healthy"
+              elif self.current_metrics.get('loading_success_rate', 1.0) > 0.8:
+                  status = HealthStatus.WARNING
+                  message = "Configuration loading has issues"
+              else:
+                  status = HealthStatus.CRITICAL
+                  message = "Configuration loading is critically failing"
+
+              return HealthCheckResult(
+                  check_name=check_name,
+                  status=status,
+                  message=message,
+                  timestamp=datetime.now(),
+                  metrics={
+                      'success_rate': MetricValue(
+                          'success_rate',
+                          self.current_metrics.get('loading_success_rate', 1.0),
+                          'percentage',
+                          datetime.now()
+                      )
+                  }
+              )
+
+          # Default healthy status for unknown checks
+          return HealthCheckResult(
+              check_name=check_name,
+              status=HealthStatus.HEALTHY,
+              message="System check passed",
+              timestamp=datetime.now()
+          )
+
+      def _check_performance_health(self, check_name: str, description: str) -> HealthCheckResult:
+          """Check performance health"""
+          cpu_usage = self.current_metrics.get('cpu_usage', 0)
+          memory_usage = self.current_metrics.get('memory_usage', 0)
+
+          if cpu_usage > 80 or memory_usage > 512:
+              status = HealthStatus.CRITICAL
+              message = f"High resource usage: CPU {cpu_usage}%, Memory {memory_usage}MB"
+          elif cpu_usage > 60 or memory_usage > 256:
+              status = HealthStatus.WARNING
+              message = f"Elevated resource usage: CPU {cpu_usage}%, Memory {memory_usage}MB"
+          else:
+              status = HealthStatus.HEALTHY
+              message = f"Resource usage is normal: CPU {cpu_usage}%, Memory {memory_usage}MB"
+
+          return HealthCheckResult(
+              check_name=check_name,
+              status=status,
+              message=message,
+              timestamp=datetime.now(),
+              metrics={
+                  'cpu_usage': MetricValue('cpu_usage', cpu_usage, 'percentage', datetime.now()),
+                  'memory_usage': MetricValue('memory_usage', memory_usage, 'megabytes', datetime.now())
+              }
+          )
+
+      def _check_configuration_health(self, check_name: str, description: str) -> HealthCheckResult:
+          """Check configuration health"""
+          # This would integrate with the actual configuration loading system
+          return HealthCheckResult(
+              check_name=check_name,
+              status=HealthStatus.HEALTHY,
+              message="Configuration health check passed",
+              timestamp=datetime.now()
+          )
+
+      def _check_metric_thresholds(self):
+          """Check metrics against thresholds and update health status"""
+          metrics_config = self.monitoring_config.get('metrics_collection', {})
+
+          # Check loading metrics thresholds
+          loading_metrics = metrics_config.get('loading_metrics', {})
+          timing_metrics = loading_metrics.get('timing_metrics', [])
+          success_metrics = loading_metrics.get('success_metrics', [])
+          resource_metrics = loading_metrics.get('resource_metrics', [])
+
+          for metric_config in timing_metrics + success_metrics + resource_metrics:
+              metric_name = metric_config['name']
+              current_value = self.current_metrics.get(metric_name)
+
+              if current_value is not None:
+                  alert_threshold = metric_config.get('alert_threshold')
+                  warning_threshold = metric_config.get('warning_threshold')
+
+                  if alert_threshold is not None and current_value > alert_threshold:
+                      self.logger.warning(f"Alert threshold exceeded for {metric_name}: {current_value}")
+                  elif warning_threshold is not None and current_value > warning_threshold:
+                      self.logger.info(f"Warning threshold exceeded for {metric_name}: {current_value}")
+
+      def _record_loading_metrics(self, details: Dict[str, Any]):
+          """Record metrics for configuration loading events"""
+          if 'load_time' in details:
+              self.current_metrics['last_load_time'] = details['load_time']
+
+          if 'config_path' in details:
+              self.current_metrics['last_loaded_config'] = details['config_path']
+
+      def _record_failure_metrics(self, details: Dict[str, Any]):
+          """Record metrics for failure events"""
+          failure_count = self.current_metrics.get('failure_count', 0) + 1
+          self.current_metrics['failure_count'] = failure_count
+
+      def _record_dependency_metrics(self, details: Dict[str, Any]):
+          """Record metrics for dependency resolution events"""
+          if 'resolution_time' in details:
+              self.current_metrics['last_dependency_resolution_time'] = details['resolution_time']
+
+      def _calculate_performance_summary(self) -> Dict[str, Any]:
+          """Calculate performance summary"""
+          if not self.metrics_history:
+              return {}
+
+          recent_metrics = self.metrics_history[-100:]  # Last 100 measurements
+
+          return {
+              'avg_cpu_usage': sum(m.get('cpu_usage', 0) for m in recent_metrics) / len(recent_metrics),
+              'avg_memory_usage': sum(m.get('memory_usage', 0) for m in recent_metrics) / len(recent_metrics),
+              'max_cpu_usage': max(m.get('cpu_usage', 0) for m in recent_metrics),
+              'max_memory_usage': max(m.get('memory_usage', 0) for m in recent_metrics),
+              'total_metrics_collected': len(self.metrics_history)
+          }
+
+      def _analyze_performance_trends(self) -> Dict[str, Any]:
+          """Analyze performance trends"""
+          if len(self.metrics_history) < 10:
+              return {'status': 'insufficient_data'}
+
+          recent_metrics = self.metrics_history[-50:]  # Last 50 measurements
+          older_metrics = self.metrics_history[-100:-50] if len(self.metrics_history) >= 100 else []
+
+          if not older_metrics:
+              return {'status': 'insufficient_historical_data'}
+
+          # Calculate trends
+          recent_avg_cpu = sum(m.get('cpu_usage', 0) for m in recent_metrics) / len(recent_metrics)
+          older_avg_cpu = sum(m.get('cpu_usage', 0) for m in older_metrics) / len(older_metrics)
+
+          recent_avg_memory = sum(m.get('memory_usage', 0) for m in recent_metrics) / len(recent_metrics)
+          older_avg_memory = sum(m.get('memory_usage', 0) for m in older_metrics) / len(older_metrics)
+
+          cpu_trend = 'increasing' if recent_avg_cpu > older_avg_cpu else 'decreasing'
+          memory_trend = 'increasing' if recent_avg_memory > older_avg_memory else 'decreasing'
+
+          return {
+              'cpu_trend': cpu_trend,
+              'memory_trend': memory_trend,
+              'recent_avg_cpu': recent_avg_cpu,
+              'older_avg_cpu': older_avg_cpu,
+              'recent_avg_memory': recent_avg_memory,
+              'older_avg_memory': older_avg_memory
+          }
+
+      def _generate_health_recommendations(self, critical_issues: List, warning_issues: List) -> List[str]:
+          """Generate health recommendations based on issues"""
+          recommendations = []
+
+          if critical_issues:
+              recommendations.extend([
+                  "Critical issues detected - immediate attention required",
+                  "Review system logs for detailed error information",
+                  "Consider system restart if issues persist"
+              ])
+
+          if warning_issues:
+              recommendations.extend([
+                  "Warning issues detected - monitor closely",
+                  "Review resource utilization patterns",
+                  "Consider preventive maintenance"
+              ])
+
+          # Performance-based recommendations
+          current_cpu = self.current_metrics.get('cpu_usage', 0)
+          current_memory = self.current_metrics.get('memory_usage', 0)
+
+          if current_cpu > 70:
+              recommendations.append("High CPU usage detected - optimize processing")
+
+          if current_memory > 400:
+              recommendations.append("High memory usage detected - check for memory leaks")
+
+          if not recommendations:
+              recommendations.append("System is operating normally")
+
+          return recommendations
+
+# Alert System
+alert_system:
+  enabled: true
+
+  # Alert Configuration
+  alert_configuration:
+    # Alert Channels
+    channels:
+      - name: "system_logs"
+        type: "logging"
+        enabled: true
+
+      - name: "monitoring_dashboard"
+        type: "dashboard"
+        enabled: true
+
+    # Alert Rules
+    alert_rules:
+      - name: "critical_loading_failure"
+        condition: "loading_success_rate < 0.8"
+        severity: "critical"
+        message: "Critical configuration loading failures detected"
+
+      - name: "high_resource_usage"
+        condition: "cpu_usage > 80 OR memory_usage > 512"
+        severity: "warning"
+        message: "High resource usage detected"
+
+      - name: "dependency_resolution_failure"
+        condition: "dependency_resolution_success_rate < 0.9"
+        severity: "critical"
+        message: "Dependency resolution failures detected"
+
+      - name: "parallel_efficiency_low"
+        condition: "parallel_efficiency < 0.6"
+        severity: "warning"
+        message: "Low parallel processing efficiency"
+
+    # Alert Rate Limiting
+    rate_limiting:
+      max_alerts_per_minute: 10
+      max_alerts_per_hour: 100
+      cooldown_period: 300  # seconds

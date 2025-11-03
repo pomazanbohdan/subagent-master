@@ -1,0 +1,421 @@
+# Error Handling & Initialization System (Consolidated)
+# Unified error management with circuit breaker pattern and initialization sequencing
+
+metadata:
+  name: "error_handling_initialization"
+  version: "0.2.2"
+  description: "Consolidated error handling and initialization system with circuit breaker protection, graceful degradation and structured startup"
+  author: "Master Agent System v0.2.2"
+  tags: ["error-handling", "circuit-breaker", "initialization", "fallback", "recovery", "resilience", "graceful-degradation"]
+
+# Core System Philosophy
+system_philosophy: |
+  1. Fail Fast and Gracefully: Detect errors early and handle them gracefully
+  2. Fallback-first: Always have fallback mechanisms available
+  3. Context-aware Recovery: Adapt recovery strategies based on context
+  4. Never-crash Policy: System should remain operational even with partial failures
+  5. Structured Initialization: Initialize components in logical dependency order
+  6. Progressive Enhancement: Start with basic functionality and enhance progressively
+
+# Error Classification System
+error_classification:
+  severity_levels:
+    critical:
+      description: "System-breaking errors requiring immediate attention"
+      recovery_strategy: "emergency_fallback"
+      user_notification: true
+      escalation_required: true
+      examples: ["complete_system_failure", "all_agents_unavailable", "memory_exhaustion"]
+
+    high:
+      description: "Major component failures with workarounds available"
+      recovery_strategy: "graceful_degradation"
+      user_notification: true
+      escalation_required: false
+      examples: ["agent_discovery_failure", "mcp_server_unavailable", "configuration_errors"]
+
+    medium:
+      description: "Non-critical errors with automatic recovery possible"
+      recovery_strategy: "auto_recovery"
+      user_notification: false
+      escalation_required: false
+      examples: ["individual_agent_failure", "network_issues", "validation_warnings"]
+
+    low:
+      description: "Minor issues that don't affect core functionality"
+      recovery_strategy: "log_and_continue"
+      user_notification: false
+      escalation_required: false
+      examples: ["performance_degradation", "cache_misses", "debug_triggers"]
+
+  error_categories:
+    system_errors:
+      initialization_failures:
+        detection: "failed_system_startup_components"
+        strategy: "selective_initialization_with_fallbacks"
+        actions: ["identify_failed", "initialize_available", "activate_fallbacks", "log_report"]
+
+      configuration_errors:
+        detection: "config_file_loading_or_validation_failures"
+        strategy: "use_last_known_good_configuration"
+        actions: ["fallback_to_cached", "use_embedded_defaults", "disable_advanced", "notify_team"]
+
+      resource_errors:
+        detection: "memory_cpu_or_disk_exhaustion"
+        strategy: "adaptive_resource_management"
+        actions: ["activate_low_resource_mode", "clear_caches", "prioritize_essential", "gracefully_degrade"]
+
+    agent_errors:
+      agent_unavailable:
+        detection: "selected_agent_not_responding"
+        strategy: "agent_substitution_with_fallback"
+        actions: ["select_alternative", "use_master_as_last_resort", "log_performance", "update_status"]
+
+      task_delegation_failure:
+        detection: "todo_execution_engine_delegation_failure"
+        strategy: "delegation_retry_with_alternative_strategy"
+        actions: ["analyze_failure", "apply_fallback_rules", "retry_different", "decompose_task", "escalate"]
+
+# 4-Phase Initialization System (Consolidated from 10 phases)
+initialization_phases:
+  # Phase 1: Core Foundation (Level 0)
+  phase_1_core_foundation:
+    name: "Core Foundation"
+    description: "Initialize error handling and fundamental system infrastructure"
+    criticality: "critical"
+    dependencies: []
+    timeout: 15000
+
+    components:
+      - name: "error_handling_system"
+        required: true
+        fallback: "embedded_error_handling"
+        validation: "error_handling_responsive"
+
+      - name: "basic_logging"
+        required: true
+        fallback: "console_logging"
+        validation: "logging_functional"
+
+      - name: "system_monitoring"
+        required: false
+        fallback: "basic_health_checks"
+        validation: "monitoring_responsive"
+
+    success_criteria: ["error_handling_operational", "basic_logging_functional", "core_monitoring_active"]
+    failure_handling:
+      partial_failure: "continue_with_degraded_logging"
+      complete_failure: "emergency_embedded_mode"
+      escalation_threshold: 1
+
+  # Phase 2: Configuration & Analysis Foundation (Level 1)
+  phase_2_configuration_analysis:
+    name: "Configuration & Analysis Foundation"
+    description: "Load configuration and core analysis systems"
+    criticality: "critical"
+    dependencies: ["phase_1_core_foundation"]
+    timeout: 20000
+
+    components:
+      - name: "configuration_base"
+        required: true
+        fallback: "embedded_configuration_base"
+        validation: "configuration_loaded"
+
+      - name: "task_analysis"
+        required: true
+        fallback: "basic_task_classification"
+        validation: "task_analysis_functional"
+
+      - name: "agent_selection"
+        required: true
+        fallback: "simple_agent_mapping"
+        validation: "agent_selection_functional"
+
+    success_criteria: ["configuration_loaded", "task_analysis_operational", "agent_selection_ready"]
+    failure_handling:
+      partial_failure: "use_basic_analysis"
+      complete_failure: "manual_coordination"
+      escalation_threshold: 1
+
+  # Phase 3: Execution & Discovery Systems (Level 2)
+  phase_3_execution_discovery:
+    name: "Execution & Discovery Systems"
+    description: "Initialize task execution and agent discovery systems"
+    criticality: "high"
+    dependencies: ["phase_2_configuration_analysis"]
+    timeout: 25000
+
+    components:
+      - name: "todo_execution_engine"
+        required: true
+        fallback: "manual_task_coordination"
+        validation: "todo_engine_functional"
+
+      - name: "agent_registry"
+        required: true
+        fallback: "static_agent_registry"
+        validation: "agent_discovery_functional"
+
+      - name: "mcp_integration"
+        required: false
+        fallback: "basic_mcp_detection"
+        validation: "mcp_tools_available"
+
+    success_criteria: ["task_execution_ready", "agent_discovery_ready", "mcp_tools_available"]
+    failure_handling:
+      partial_failure: "use_static_configuration"
+      complete_failure: "master_agent_only_mode"
+      escalation_threshold: 2
+
+  # Phase 4: System Integration & Monitoring (Level 3)
+  phase_4_integration_monitoring:
+    name: "Integration & Monitoring"
+    description: "Final system integration and monitoring activation"
+    criticality: "medium"
+    dependencies: ["phase_3_execution_discovery"]
+    timeout: 10000
+
+    components:
+      - name: "system_health_check"
+        required: true
+        fallback: "basic_validation"
+        validation: "system_healthy"
+
+      - name: "monitoring_system"
+        required: false
+        fallback: "basic_monitoring"
+        validation: "monitoring_active"
+
+      - name: "performance_optimization"
+        required: false
+        fallback: "conservative_settings"
+        validation: "optimization_active"
+
+    success_criteria: ["system_healthy", "monitoring_active", "optimization_enabled"]
+    failure_handling:
+      partial_failure: "degraded_monitoring_mode"
+      complete_failure: "basic_operation_mode"
+      escalation_threshold: 2
+
+# Circuit Breaker Configuration (Consolidated)
+circuit_breaker:
+  global_settings:
+    enabled: true
+    default_failure_threshold: 3
+    default_recovery_timeout: 30000
+    default_half_open_max_calls: 5
+    monitoring_interval: 5000
+    health_check_interval: 10000
+    alert_on_state_change: true
+
+  component_circuit_breakers:
+    # Core Systems Circuit Breaker
+    core_systems:
+      enabled: true
+      failure_threshold: 2
+      recovery_timeout: 20000
+      half_open_max_calls: 3
+      timeout: 15000
+      fallback_strategy: "embedded_core_systems"
+      health_checks: ["error_handling_health", "logging_health", "monitoring_health"]
+
+    # Configuration Systems Circuit Breaker
+    configuration_systems:
+      enabled: true
+      failure_threshold: 2
+      recovery_timeout: 15000
+      half_open_max_calls: 3
+      timeout: 10000
+      fallback_strategy: "cached_or_embedded_config"
+      health_checks: ["config_loading_health", "validation_health", "dependency_health"]
+
+    # Agent Systems Circuit Breaker
+    agent_systems:
+      enabled: true
+      failure_threshold: 3
+      recovery_timeout: 30000
+      half_open_max_calls: 5
+      timeout: 20000
+      fallback_strategy: "master_agent_only"
+      health_checks: ["agent_registry_health", "discovery_health", "validation_health"]
+
+    # Execution Systems Circuit Breaker
+    execution_systems:
+      enabled: true
+      failure_threshold: 3
+      recovery_timeout: 25000
+      half_open_max_calls: 5
+      timeout: 30000
+      fallback_strategy: "manual_execution"
+      health_checks: ["todo_engine_health", "coordination_health", "delegation_health"]
+
+# Fallback Strategy Matrix (Consolidated)
+fallback_strategies:
+  system_level_fallbacks:
+    complete_system_failure:
+      primary_fallback: "claude_native_mode"
+      description: "Fallback to Claude Code native capabilities when all else fails"
+      activation_criteria: "all_specialized_systems_unavailable"
+      capabilities: ["basic_file_operations", "code_analysis", "simple_task_execution", "direct_communication"]
+      limitations: ["no_parallel_execution", "no_specialized_coordination", "limited_features"]
+
+    configuration_system_failure:
+      primary_fallback: "embedded_configuration"
+      description: "Use built-in default configuration when config loading fails"
+      activation_criteria: "configuration_loading_complete_failure"
+      fallback_config:
+        max_agents: 3
+        default_agents: ["general-purpose", "technical-writer", "analyzer"]
+        timeout_values: "conservative_defaults"
+        error_handling: "minimal_safe_mode"
+
+  agent_level_fallbacks:
+    specialized_agent_unavailable:
+      primary_fallback: "general_purpose_agent"
+      secondary_fallback: "claude_native_execution"
+      description: "Use general-purpose agent when specialized agent is unavailable"
+      activation_criteria: "selected_agent_not_responding_after_3_retries"
+      capabilities_mapping:
+        "backend-architect": "general-purpose (with architecture_guidance)"
+        "frontend-developer": "general-purpose (with ui_best_practices)"
+        "research-agent": "general-purpose (with search_instructions)"
+        "testing-specialist": "general-purpose (with testing_checklist)"
+
+# Error Recovery Workflows (Consolidated)
+recovery_workflows:
+  initialization_recovery:
+    workflow_name: "System Initialization Recovery"
+    trigger_conditions: ["phase_initialization_failure", "critical_component_unavailable"]
+    recovery_steps:
+      1. "Assess initialization failure scope and identify failed components"
+      2. "Isolate failed components to prevent cascade failures"
+      3. "Initialize available components with safe defaults"
+      4. "Activate fallback mechanisms for critical functionality"
+      5. "Log comprehensive failure report for debugging"
+      6. "Notify user about system capabilities and limitations"
+      7. "Continue operation in degraded mode if possible"
+
+    success_criteria: ["core_system_functional", "basic_task_execution_possible", "error_handling_operational"]
+    failure_criteria: ["no_components_successful", "critical_infrastructure_unavailable", "emergency_mode_required"]
+
+  agent_execution_recovery:
+    workflow_name: "Agent Execution Recovery"
+    trigger_conditions: ["selected_agent_unresponsive", "agent_execution_timeout", "agent_capability_mismatch"]
+    recovery_steps:
+      1. "Validate agent availability and responsiveness"
+      2. "Attempt agent restart or reconnection"
+      3. "Select alternative agent based on task requirements"
+      4. "Modify task parameters to better suit alternative agent"
+      5. "Execute with enhanced monitoring and timeouts"
+      6. "Validate execution results quality"
+      7. "Update agent performance metrics for future selection"
+
+    success_criteria: ["task_completed_successfully", "results_meet_minimum_quality", "execution_time_acceptable"]
+    failure_criteria: ["all_agents_unavailable", "task_requirements_impossible", "continuous_failures"]
+
+# Configuration Parameters (Consolidated)
+configuration_parameters:
+  timeouts:
+    error_detection_timeout: 5000
+    recovery_attempt_timeout: 30000
+    fallback_activation_timeout: 10000
+    phase_initialization_timeout: 60000
+
+  thresholds:
+    max_retry_attempts: 3
+    max_consecutive_failures: 5
+    error_rate_threshold: 0.1
+    recovery_success_threshold: 0.8
+
+  logging:
+    error_log_level: "ERROR"
+    recovery_log_level: "INFO"
+    debug_log_level: "DEBUG"
+    structured_logging: true
+    error_context_capture: true
+
+# Environment-Specific Configuration (Consolidated)
+environment_configuration:
+  development:
+    error_tolerance: "high"
+    recovery_automation: "full"
+    user_notification: "verbose"
+    debug_information: "detailed"
+    fallback_aggressiveness: "conservative"
+    initialization_timeout: 90000
+
+  testing:
+    error_tolerance: "medium"
+    recovery_automation: "controlled"
+    user_notification: "structured"
+    debug_information: "moderate"
+    fallback_aggressiveness: "balanced"
+    initialization_timeout: 75000
+
+  production:
+    error_tolerance: "low"
+    recovery_automation: "minimal"
+    user_notification: "minimal"
+    debug_information: "minimal"
+    fallback_aggressiveness: "aggressive"
+    initialization_timeout: 60000
+
+# Performance Targets (Consolidated)
+performance_targets:
+  initialization_timing:
+    total_initialization_time: "< 75 seconds"  # Increased from 60s due to consolidation
+    critical_phases_time: "< 45 seconds"
+    average_phase_time: "< 18 seconds"
+
+    phase_specific_targets:
+      phase_1_core_foundation: "< 15 seconds"
+      phase_2_configuration_analysis: "< 20 seconds"
+      phase_3_execution_discovery: "< 25 seconds"
+      phase_4_integration_monitoring: "< 10 seconds"
+
+  resource_usage:
+    memory_usage_during_initialization: "< 120MB"  # Slight increase due to consolidation
+    cpu_usage_during_initialization: "< 60%"
+    disk_io_during_initialization: "minimal"
+
+# Integration Points (Updated for Consolidated Architecture)
+integration_points:
+  # Internal Integration
+  internal_systems:
+    - error_handling_integrates_with: ["all_phases", "circuit_breaker", "fallback_systems"]
+    - configuration_base_integrates_with: ["phase_2", "agent_registry", "monitoring"]
+    - circuit_breaker_integrates_with: ["all_components", "monitoring_system"]
+
+  # External Integration
+  external_systems:
+    - analysis_systems_integration: "phase_2_coordinates_with_analysis_components"
+    - execution_systems_integration: "phase_3_coordinates_with_execution_components"
+    - discovery_systems_integration: "phase_3_coordinates_with_discovery_components"
+    - monitoring_integration: "phase_4_provides_monitoring_to_all_systems"
+
+# Version Management (Updated)
+version_management:
+  current_version: "0.2.2"
+  compatibility_requirements:
+    minimal_system_version: "0.2.0"
+    required_components: ["error_handling", "configuration_base", "circuit_breaker"]
+
+  migration_support:
+    previous_version_support: true
+    migration_strategy: "consolidated_components_with_backward_compatibility"
+    configuration_migration: "automatic_with_validation"
+
+  consolidation_changes:
+    what_was_consolidated:
+      - "unified_error_handling.yaml + sequenced_initialization.yaml"
+      - "10 initialization phases → 4 consolidated phases"
+      - "separate circuit breaker systems → unified circuit breaker"
+      - "individual fallback systems → consolidated fallback matrix"
+
+    benefits_of_consolidation:
+      - "Reduced complexity: 27 → 14 files"
+      - "Improved dependency management: 5 → 4 levels"
+      - "Enhanced error handling coordination"
+      - "Simplified initialization process"
+      - "Better resource utilization"

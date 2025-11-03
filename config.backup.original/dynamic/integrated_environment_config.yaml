@@ -1,0 +1,389 @@
+# Integrated Environment Configuration
+# Consolidated environments configuration with unified settings
+
+metadata:
+  name: "integrated-environment-config"
+  version: "0.0.1"
+  description: "Integrated environment configuration from all environment files"
+  author: "Master Agent System v0.0.1"
+
+# Environment Detection and Auto-Switching
+environment_detection:
+  methods:
+    - "environment_variable"
+    - "system_property"
+    - "profile_file"
+    - "hostname_pattern"
+    - "default_fallback"
+
+  environment_variables:
+    primary: "APP_ENV"
+    alternatives: ["ENVIRONMENT", "NODE_ENV", "SPRING_PROFILES_ACTIVE"]
+    case_sensitive: false
+
+  hostname_patterns:
+    production:
+      - "prod-.*"
+      - ".*-prod"
+      - "production.*"
+      - "live.*"
+
+    development:
+      - "dev-.*"
+      - ".*-dev"
+      - "development.*"
+      - "local.*"
+      - "localhost"
+
+    testing:
+      - "test-.*"
+      - ".*-test"
+      - "testing.*"
+      - "ci.*"
+      - "jenkins.*"
+      - "github-actions"
+
+# Unified Environment Configurations
+environments:
+  development:
+    name: "development"
+    type: "development"
+    version: "0.0.1"
+
+    # Debug and Logging
+    debug_mode: true
+    verbose_logging: true
+    log_level: "debug"
+    structured_logging: false
+
+    # Performance
+    hot_reload: true
+    caching_enabled: false
+    aggressive_caching: false
+
+    # Resource Settings
+    max_concurrent_operations: 5
+    timeout_multiplier: 1.2
+    resource_constraints: "relaxed"
+
+    # Error Handling
+    strict_validation: false
+    graceful_degradation: true
+    auto_recovery: true
+
+    # Claude Code Integration
+    claude_native_fallback: "prefer_native"
+    parallel_execution: true
+    direct_tool_access: true
+
+  testing:
+    name: "testing"
+    type: "testing"
+    version: "0.0.1"
+
+    # Debug and Logging
+    debug_mode: true
+    verbose_logging: true
+    log_level: "info"
+    structured_logging: true
+
+    # Performance
+    hot_reload: false
+    caching_enabled: true
+    mock_services: true
+
+    # Resource Settings
+    max_concurrent_operations: 10
+    timeout_multiplier: 0.8
+    resource_constraints: "controlled"
+
+    # Error Handling
+    strict_validation: true
+    graceful_degradation: false
+    auto_recovery: false
+
+    # Testing Specific
+    automated_testing: true
+    test_coverage_required: 0.8
+    performance_testing: true
+
+    # Claude Code Integration
+    claude_native_fallback: "enabled"
+    parallel_execution: true
+    test_simulation: true
+
+  production:
+    name: "production"
+    type: "production"
+    version: "0.0.1"
+
+    # Debug and Logging
+    debug_mode: false
+    verbose_logging: false
+    log_level: "error"
+    structured_logging: true
+
+    # Performance
+    hot_reload: false
+    caching_enabled: true
+    aggressive_caching: true
+
+    # Resource Settings
+    max_concurrent_operations: 20
+    timeout_multiplier: 1.0
+    resource_constraints: "strict"
+
+    # Error Handling
+    strict_validation: true
+    graceful_degradation: true
+    auto_recovery: true
+
+    # Security
+    security_mode: "strict"
+    audit_logging: true
+    backup_on_change: true
+
+    # Claude Code Integration
+    claude_native_fallback: "emergency_only"
+    parallel_execution: false
+    direct_tool_access: false
+
+# Performance Targets by Environment
+performance_targets:
+  universal_targets:
+    discovery_time_total: "< 30 seconds"
+    mcp_servers_discovered_count: "> 0"
+    agents_discovered_count: "> 0"
+    resource_assessment_time: "< 10 seconds"
+    capability_negotiation_time: "< 15 seconds"
+
+  development_targets:
+    system_initialization: "< 15 seconds"
+    agent_selection_time: "< 5 seconds"
+    task_completion_rate: "> 80%"
+    error_recovery_rate: "> 70%"
+
+  testing_targets:
+    system_initialization: "< 20 seconds"
+    agent_selection_time: "< 3 seconds"
+    task_completion_rate: "> 95%"
+    test_success_rate: "> 90%"
+
+  production_targets:
+    system_initialization: "< 10 seconds"
+    agent_selection_time: "< 2 seconds"
+    task_completion_rate: "> 99%"
+    error_recovery_rate: "> 95%"
+    system_availability: "> 99.9%"
+
+# Resource Adaptation Configuration
+resource_adaptation:
+  adaptive_configuration:
+    enabled: true
+    adaptation_triggers:
+      - "environment_change_detected"
+      - "resource_availability_change"
+      - "performance_degradation_detected"
+      - "new_agent_or_service_discovered"
+
+  adaptation_strategies:
+    low_memory_mode:
+      enabled: "auto_detect"
+      memory_threshold: 0.8
+      adaptations:
+        - "reduce_cache_sizes"
+        - "limit_concurrent_operations"
+        - "optimize_memory_usage"
+        - "disable_non_essential_features"
+
+    limited_cpu_mode:
+      enabled: "auto_detect"
+      cpu_threshold: 0.8
+      adaptations:
+        - "reduce_concurrent_processing"
+        - "prioritize_critical_tasks"
+        - "optimize_cpu_usage"
+        - "increase_timeout_values"
+
+    high_load_mode:
+      enabled: "auto_detect"
+      load_threshold: 0.9
+      adaptations:
+        - "enable_claude_fallback"
+        - "activate_graceful_degradation"
+        - "prioritize_essential_operations"
+        - "disable_optional_features"
+
+# Claude Code Integration Settings
+claude_code_integration:
+  universal_settings:
+    fallback_enabled: true
+    direct_tool_access: true
+    parallel_execution_capable: true
+    mcp_coordination_enabled: true
+
+  development_settings:
+    fallback_preference: "prefer_native"
+    tool_access_level: "full"
+    parallel_execution: "always_enabled"
+    error_verbosity: "detailed"
+
+  testing_settings:
+    fallback_preference: "enabled"
+    tool_access_level: "controlled"
+    parallel_execution: "conditional"
+    error_verbosity: "structured"
+
+  production_settings:
+    fallback_preference: "emergency_only"
+    tool_access_level: "restricted"
+    parallel_execution: "disabled"
+    error_verbosity: "minimal"
+
+# Environment Switching Logic
+environment_switching:
+  hot_reload:
+    enabled: true
+    requires_restart: false
+    affected_components: ["logging", "metrics", "caching"]
+
+  graceful_switching:
+    enabled: true
+    timeout: 30
+    rollback_on_failure: true
+    validation_required: true
+
+  validation:
+    post_switch_validation:
+      health_check: true
+      configuration_test: true
+      connectivity_test: true
+
+# Error Handling by Environment
+error_handling:
+  universal_handlers:
+    detection_failure:
+      action: "use_default_environment"
+      default_environment: "development"
+      log_level: "WARN"
+
+    validation_failure:
+      action: "fallback_to_development"
+      log_level: "ERROR"
+
+    switching_failure:
+      action: "rollback"
+      log_level: "ERROR"
+
+  environment_specific_handlers:
+    development:
+      error_tolerance: "high"
+      recovery_automation: "full"
+      user_notification: "verbose"
+
+    testing:
+      error_tolerance: "medium"
+      recovery_automation: "controlled"
+      user_notification: "structured"
+
+    production:
+      error_tolerance: "low"
+      recovery_automation: "minimal"
+      user_notification: "minimal"
+      escalation_immediate: true
+
+# Caching Configuration
+caching_configuration:
+  universal_settings:
+    enabled: true
+    cache_type: "memory_with_file_backup"
+
+  development_caching:
+    cache_size_limit: "50MB"
+    cache_ttl: 300  # 5 minutes
+    aggressive_caching: false
+
+  testing_caching:
+    cache_size_limit: "100MB"
+    cache_ttl: 600  # 10 minutes
+    aggressive_caching: true
+    test_data_caching: true
+
+  production_caching:
+    cache_size_limit: "500MB"
+    cache_ttl: 3600  # 1 hour
+    aggressive_caching: true
+    persistent_caching: true
+
+# Monitoring Configuration
+monitoring:
+  universal_metrics:
+    tracked_metrics:
+      - "environment_detection_time"
+      - "configuration_load_time"
+      - "resource_utilization"
+      - "error_count"
+      - "performance_indicators"
+
+  development_monitoring:
+    detailed_logging: true
+    performance_profiling: true
+    resource_monitoring: true
+
+  testing_monitoring:
+    structured_logging: true
+    test_coverage_tracking: true
+    performance_benchmarking: true
+
+  production_monitoring:
+    essential_logging: true
+    performance_monitoring: true
+    alert_thresholds: "strict"
+    health_checks: "continuous"
+
+# Configuration Validation
+validation:
+  required_fields:
+    - "name"
+    - "type"
+    - "version"
+
+  field_validation:
+    name:
+      type: "string"
+      pattern: "^[a-z][a-z0-9_-]*$"
+      max_length: 50
+
+    type:
+      type: "string"
+      allowed_values: ["development", "testing", "production"]
+
+    version:
+      type: "string"
+      pattern: "^\\d+\\.\\d+\\.\\d+$"
+
+# Integration Points
+integration:
+  imports:
+    - "config/core/unified_error_handling.yaml"
+    - "config/knowledge-base/unified_agent_selection.yaml"
+
+  exports:
+    - "environment_configuration"
+    - "performance_targets"
+    - "resource_adaptation_settings"
+    - "claude_code_integration_settings"
+
+  # Version Management
+version_management:
+  current_version: "0.0.1"
+  supported_versions: ["1.0.0"]
+  compatibility_check: true
+  migration_support: true
+
+# Default Fallback
+default_fallback:
+  environment: "development"
+  reason: "safe_default_for_local_development"
+  automatic_fallback: true
+  user_notification: false
