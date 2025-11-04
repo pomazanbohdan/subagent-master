@@ -39,58 +39,180 @@ implementation:
 
     - name: "system_initialization"
       priority: 0
-      method: "automatic_bootstrap_sequence"
+      method: "independent_bootstrap_sequence"
       trigger: "on_agent_load"
       config:
         bootstrap_operations:
           - priority: 1
             operation: "error_system_initialization"
             required_for_system: true
+            description: "Setup fallback framework and error handling"
           - priority: 2
             operation: "monitoring_minimal_setup"
             required_for_system: true
+            description: "Initialize basic metrics collection framework"
           - priority: 3
-            operation: "mcp_server_discovery"
+            operation: "basic_system_readiness"
             required_for_system: true
+            description: "Verify minimum system functionality"
           - priority: 4
-            operation: "agent_registry_construction"
+            operation: "bootstrap_completion_report"
             required_for_system: true
-          - priority: 5
-            operation: "system_validation"
-            required_for_system: true
-          - priority: 6
-            operation: "system_readiness_report_display"
-            required_for_system: true
+            description: "Display bootstrap completion status"
         initialization_parameters:
-          readiness_threshold: 0.9
-          timeout_seconds: 300
+          bootstrap_mode: "independent"
+          timeout_seconds: 60
           retry_on_failure: true
-          max_retries: 3
+          max_retries: 2
           fallback_to_safe_mode: true
+          minimum_components_only: true
         error_handling:
           bootstrap_failure:
-            action: "activate_safe_mode_bootstrap"
+            action: "activate_emergency_bootstrap"
             log_error: true
             notify_user: true
           partial_failure:
-            action: "continue_with_available_components"
+            action: "continue_with_core_components"
             log_warning: true
           timeout_failure:
-            action: "force_minimum_initialization"
-            notify_user: "System initialization taking longer than expected"
+            action: "force_bootstrap_completion"
+            notify_user: "Bootstrap completed with minimal components"
       output:
-        initialization_complete: "boolean"
-        system_ready_status: "float"
-        bootstrap_operations_completed: "array"
-        failed_operations: "array"
+        bootstrap_complete: "boolean"
+        basic_monitoring_active: "boolean"
         system_health_score: "float"
+        fallback_systems_ready: "boolean"
         initialization_time: "float"
-        fallback_mode_active: "boolean"
+        bootstrap_operations_summary: "object"
 
-    # === CRITICAL BOOTSTRAP OPERATIONS (Priority 1-10) ===
+    # === SYSTEM DISCOVERY PHASE (Priority 1) ===
+
+    - name: "system_discovery_phase"
+      priority: 1
+      method: "discover_system_components"
+      dependencies:
+        required_inputs:
+          - component: "system_initialization"
+            expected_outputs: ["bootstrap_complete", "basic_monitoring_active"]
+            validation: "bootstrap_complete == true && basic_monitoring_active == true"
+      config:
+        discovery_operations:
+          - priority: 1
+            operation: "mcp_server_discovery"
+            description: "Discover and analyze available MCP servers"
+            source: "moved_from_system_initialization"
+          - priority: 2
+            operation: "agent_registry_construction"
+            description: "Build registry of available agents"
+            source: "moved_from_system_initialization"
+        discovery_parameters:
+          scan_timeout: 120
+          retry_on_failure: true
+          max_discovery_retries: 3
+          parallel_discovery: true
+        error_handling:
+          discovery_failure:
+            action: "continue_with_builtin_servers"
+            log_warning: true
+            notify_user: "Some components not found, using built-in alternatives"
+          partial_discovery:
+            action: "continue_with_available_components"
+            log_info: true
+      output:
+        discovery_complete: "boolean"
+        mcp_servers_discovered: "array"
+        agents_registry_built: "boolean"
+        discovered_agents: "array"
+        mcp_tool_inventory: "object"
+        discovery_summary: "object"
+        discovery_time: "float"
+
+    # === SYSTEM INTEGRATION PHASE (Priority 2) ===
+
+    - name: "system_integration_phase"
+      priority: 2
+      method: "integrate_discovered_components"
+      dependencies:
+        required_inputs:
+          - component: "system_discovery_phase"
+            expected_outputs: ["discovery_complete", "mcp_servers_discovered", "agents_registry_built"]
+            validation: "discovery_complete == true && agents_registry_built == true"
+      config:
+        integration_operations:
+          - priority: 1
+            operation: "system_validation"
+            description: "Validate discovered components and system integrity"
+            source: "moved_from_system_initialization"
+          - priority: 2
+            operation: "component_integration_testing"
+            description: "Test component interactions and compatibility"
+          - priority: 3
+            operation: "capability_mapping"
+            description: "Map agent capabilities to MCP tools"
+        integration_parameters:
+          validation_timeout: 60
+          integration_testing: true
+          capability_analysis: true
+          cross_component_validation: true
+        error_handling:
+          integration_failure:
+            action: "continue_with_partial_integration"
+            log_warning: true
+            notify_user: "Some components not fully integrated"
+          validation_failure:
+            action: "continue_with_available_validations"
+            log_info: true
+      output:
+        integration_complete: "boolean"
+        system_validated: "boolean"
+        capability_mappings_created: "boolean"
+        integration_summary: "object"
+        validation_results: "object"
+        integration_time: "float"
+
+    # === SYSTEM READINESS PHASE (Priority 3) ===
+
+    - name: "system_readiness_phase"
+      priority: 3
+      method: "finalize_system_readiness"
+      dependencies:
+        required_inputs:
+          - component: "system_integration_phase"
+            expected_outputs: ["integration_complete", "system_validated"]
+            validation: "integration_complete == true && system_validated == true"
+      config:
+        readiness_operations:
+          - priority: 1
+            operation: "final_readiness_check"
+            description: "Perform comprehensive system readiness assessment"
+          - priority: 2
+            operation: "system_readiness_report_display"
+            description: "Display comprehensive system capabilities report"
+            source: "moved_from_system_initialization"
+          - priority: 3
+            operation: "capability_announcement"
+            description: "Announce system capabilities to user"
+        readiness_parameters:
+          readiness_threshold: 0.9
+          comprehensive_check: true
+          capability_announcement: true
+        error_handling:
+          readiness_failure:
+            action: "announce_basic_readiness"
+            log_warning: true
+            notify_user: "System ready with basic capabilities"
+        output:
+        system_ready: "boolean"
+        readiness_complete: "boolean"
+        capabilities_announced: "boolean"
+        readiness_report: "object"
+        final_health_score: "float"
+        system_waiting_for_task: "boolean"
+
+    # === CRITICAL BOOTSTRAP OPERATIONS (Priority 4-10) ===
 
     - name: "error_system_initialization"
-      priority: 1
+      priority: 4
       method: "fallback_bootstrap"
       config:
         fallback_strategies:
@@ -123,270 +245,13 @@ implementation:
         monitoring_active: "boolean"
         metrics_collection: "array"
 
-    - name: "mcp_server_discovery"
-      priority: 3
-      method: "comprehensive_server_detection"
-      config:
-        discovery_protocols:
-          automatic_scanning:
-            enabled: true
-            port_range: [3000, 9000]
-            timeout: 5
-          manifest_detection:
-            search_paths: [".claude/", "config/", "plugins/"]
-            file_patterns: ["mcp.json", "*.mcp.json"]
-          builtin_servers:
-            enabled: true
-            server_list: ["tavily", "serena", "context7", "magic", "playwright", "sequential"]
-        capability_analysis:
-          tool_extraction: true
-          performance_profiling: true
-          compatibility_testing: true
-      output:
-        discovered_servers: "array"
-        tool_inventory: "object"
-        server_health: "object"
+    # MOVED: mcp_server_discovery → system_discovery_phase (priority 1)
 
-    - name: "agent_registry_construction"
-      priority: 4
-      method: "dynamic_agent_discovery"
-      dependencies:
-        required_inputs:
-          - component: "mcp_server_discovery"
-            expected_outputs: ["discovered_servers", "tool_inventory", "server_health"]
-            integration_point: "step_3_mcp_integration"
-      algorithm:
-        step_1_filesystem_scan:
-          description: "Scan configured paths for agent definitions"
-          process:
-            - "iterate through scan_paths in order"
-            - "for each path, search for files matching file_patterns"
-            - "extract metadata using extraction_method"
-            - "validate agent name and capabilities"
-          error_handling:
-            invalid_path: "skip_with_warning"
-            extraction_failure: "use_basic_parsing"
-            validation_failure: "mark_as_invalid"
+    # MOVED: agent_registry_construction → system_discovery_phase (priority 1)
 
-        step_2_category_analysis:
-          description: "Assign agents to categories using unified TF-IDF processor"
-          process:
-            - "extract text content from agent descriptions and capabilities"
-            - "use unified_tfidf_processor for vectorization"
-            - "calculate similarity scores against predefined category patterns"
-            - "assign primary category based on highest similarity score"
-            - "assign secondary categories if score > confidence threshold"
-          tfidf_integration:
-            dependency: "unified_tfidf_processor"
-            usage_mode: "category_classification"
-            category_patterns:
-              development: ["code", "programming", "development", "implementation", "build", "create", "develop"]
-              operations: ["deploy", "infrastructure", "devops", "monitoring", "scaling", "automation"]
-              testing: ["test", "testing", "validation", "verification", "quality", "automation"]
-              security: ["security", "vulnerability", "authentication", "authorization", "encryption"]
-              research: ["research", "analyze", "investigate", "explore", "study", "examine"]
-              performance: ["optimize", "performance", "speed", "efficiency", "tuning"]
-              architecture: ["design", "architecture", "system", "structure", "patterns"]
-            confidence_threshold: 0.6
-            fallback_to_keyword_matching: true
+    # MOVED: system_validation → system_integration_phase (priority 2)
 
-        step_3_mcp_integration:
-          description: "Integrate discovered MCP servers with agent registry"
-          process:
-            - "receive mcp_server_discovery results from priority 3"
-            - "map MCP capabilities to agent requirements"
-            - "create tool mappings for each agent"
-            - "validate compatibility between agents and MCP servers"
-          validation_rules:
-            tool_compatibility: true
-            capability_matching: true
-            version_compatibility: true
-
-        step_4_registry_construction:
-          description: "Build final agent registry with all metadata"
-          process:
-            - "merge filesystem discovery with mcp integration"
-            - "apply name_format rules"
-            - "resolve name conflicts"
-            - "cache results for future use"
-          output_format:
-            agent_id: "string"
-            name: "string"
-            category: "string"
-            capabilities: "array"
-            mcp_tools: "array"
-            metadata: "object"
-      config:
-        discovery_sources:
-          filesystem:
-            enabled: true
-            scan_paths: [
-              "agents/",
-              "subagents/",
-              ".claude/agents/",
-              "system/agents/",
-              "user/agents/"
-            ]
-            file_patterns: ["*.md", "*.yaml", "*.json"]
-            extraction_method: "yaml_frontmatter"
-            fallback_on_empty: true
-
-          agent_categories:
-            development:
-              enabled: true
-              patterns: [
-                "frontend", "ui", "ux", "css", "javascript", "react", "vue", "angular",
-                "backend", "api", "server", "database", "microservice", "fullstack",
-                "development", "coding", "programming", "implementation", "build", "create", "develop", "code"
-              ]
-            operations:
-              enabled: true
-              patterns: [
-                "devops", "deployment", "infrastructure", "ci", "pipeline",
-                "build", "test", "deploy", "cloud", "infrastructure", "cloud_platform",
-                "hosting", "monitoring", "observability", "alerting", "logging"
-              ]
-            testing:
-              enabled: true
-              patterns: ["test", "testing", "qa", "quality", "automation", "automated", "e2e", "validate", "verify"]
-            security:
-              enabled: true
-              patterns: [
-                "security", "security_audit", "vulnerability", "penetration",
-                "authentication", "authorization", "access_control", "identity",
-                "encryption", "cryptography", "privacy", "compliance", "audit", "governance"
-              ]
-            research:
-              enabled: true
-              patterns: ["research", "analyze", "investigate", "explore", "analysis", "study", "examine", "discover"]
-            performance:
-              enabled: true
-              patterns: [
-                "optimize", "performance", "optimization", "speed", "tune", "benchmark",
-                "performance_test", "monitoring", "performance_tracking"
-              ]
-            architecture:
-              enabled: true
-              patterns: [
-                "architecture", "design", "system_architecture", "patterns", "scalability", "scalable",
-                "design_patterns", "pattern", "architectural_pattern", "system_design", "software_design", "software_architecture"
-              ]
-
-        validation_rules:
-          name_validation:
-            pattern: "^[a-zA-Z][a-zA-Z0-9_-]+$"
-            max_length: 50
-            no_spaces: true
-            no_special_characters: true
-          capability_validation:
-            required_capabilities: true
-            check_availability: true
-            check_responsive: true
-            check_compatibility: true
-          fallback_handling:
-            invalid_name_format: "convert_to_lowercase_and_validate"
-            missing_capabilities: "request_basic_capabilities"
-            unavailable_agent: "mark_as_unavailable"
-
-        mcp_integration:
-          enabled: true
-          discovery_dependency: "mcp_server_discovery"
-          validation_required: true
-          cache_discovery_results: true
-
-        scan_filesystem: true
-        category_detection: "tfidf_analysis"
-        name_format: "{category}:{agent_name}"
-        cache_resolution: true
-      output:
-        discovered_agents: "array"
-        agent_validation_results: "object"
-        categories_assigned: "object"
-        registration_status: "object"
-        registered_agents: "array"
-        name_mappings: "object"
-        agent_capabilities: "object"
-        mcp_integrations: "object"
-        registry_metadata: "object"
-        processing_summary: "object"
-        cache_status: "boolean"
-
-    - name: "system_validation"
-      priority: 5
-      method: "comprehensive_health_check"
-      dependencies:
-        required_inputs:
-          - component: "mcp_server_discovery"
-            expected_outputs: ["discovered_servers", "tool_inventory", "server_health"]
-            validation: "validate_mcp_discovery_results"
-          - component: "agent_registry_construction"
-            expected_outputs: ["registered_agents", "agent_capabilities", "validation_results"]
-            validation: "validate_agent_registry_data"
-          - component: "error_system_initialization"
-            expected_outputs: ["error_handling_ready", "available_fallbacks"]
-            validation: "validate_error_system_status"
-          - component: "monitoring_minimal_setup"
-            expected_outputs: ["monitoring_active", "metrics_collection"]
-            validation: "validate_monitoring_status"
-      config:
-        validation_checks:
-          mcp_connectivity:
-            validate_discovery_results: true
-            check_server_health: true
-            verify_tool_inventory: true
-          agent_availability:
-            validate_registry_data: true
-            check_agent_capabilities: true
-            verify_name_mappings: true
-          tool_functionality:
-            test_mcp_connectivity: true
-            validate_tool_responses: true
-            check_error_handling: true
-          fallback_readiness:
-            validate_error_system: true
-            check_available_fallbacks: true
-            test_recovery_mechanisms: true
-      output:
-        system_ready: "boolean"
-        system_validation_results: "object"
-        components_active: "array"
-        validation_summary: "object"
-        failed_validations: "array"
-        system_health_score: "float"
-
-    - name: "system_readiness_report_display"
-      priority: 6
-      method: "display_comprehensive_system_capabilities"
-      config:
-        report_sections:
-          core_capabilities:
-            - "parallel_execution"
-            - "batch_processing"
-            - "intelligent_planning"
-            - "multi_agent_delegation"
-            - "subprocess_execution"
-            - "result_consolidation"
-            - "dependency_resolution"
-            - "automatic_delegation"
-            - "agent_selection"
-            - "mcp_integration"
-            - "agent_discovery"
-            - "resource_management"
-            - "configuration_management"
-            - "tool_selection"
-            - "adaptive_replanning"
-            - "performance_optimization"
-            - "comprehensive_fallback_system"
-            - "minimal_monitoring"
-            - "circuit_breaker"
-            - "graceful_degradation"
-        output_format: "user_friendly_bullet_points"
-        display_mode: "company_announcement_style"
-        interaction_mode: "wait_for_user_task"
-      output:
-        capabilities_displayed: "boolean"
-        user_notified: "boolean"
-        system_waiting_for_task: "boolean"
+    # MOVED: system_readiness_report_display → system_readiness_phase (priority 3)
 
     # === SHARED COMPONENTS (Priority 9.5) ===
 
@@ -551,10 +416,10 @@ implementation:
       method: "central_task_handler"
       trigger: "on_task_received"
       dependencies:
-        system_initialization_dependency:
-          component: "system_initialization"
-          expected_outputs: ["initialization_complete", "system_ready_status", "system_health_score"]
-          validation: "initialization_complete == true && system_ready_status >= 0.9"
+        system_readiness_dependency:
+          component: "system_readiness_phase"
+          expected_outputs: ["system_ready", "readiness_complete", "final_health_score"]
+          validation: "system_ready == true && readiness_complete == true && final_health_score >= 0.9"
       config:
         task_handling:
           validation_phase:
@@ -574,6 +439,7 @@ implementation:
             user_notification: true
         activation_rules:
           minimum_system_readiness: 0.9
+          required_phases_complete: ["system_initialization", "system_discovery_phase", "system_integration_phase", "system_readiness_phase"]
           required_components_active: ["error_system", "monitoring", "mcp_servers", "agent_registry"]
           task_validation_enabled: true
         coordination_protocols:
@@ -590,7 +456,267 @@ implementation:
         task_metadata: "object"
         coordination_metadata: "object"
 
-    # === CORE ANALYSIS OPERATIONS (Priority 11-20) ===
+    # === PARALLEL TASK ANALYSIS COORDINATION (Priority 10.5) ===
+
+    - name: "task_analysis_coordinator"
+      priority: 10.5
+      method: "parallel_analysis_orchestrator"
+      dependencies:
+        trigger_source: "task_received_coordinator"
+        required_outputs: ["task_accepted", "task_metadata", "coordination_plan"]
+        activation_condition: "task_accepted == true && analysis_sequence_initiated == true"
+        event_system_dependency: "event_system"
+      config:
+        analysis_types:
+          - name: "semantic_analysis"
+            handler: "semantic_analysis_handler"
+            parallel_group: "task_analysis"
+            timeout: 15
+            priority: "high"
+            event_publish: "task.analysis.started"
+
+          - name: "complexity_assessment"
+            handler: "complexity_assessment_handler"
+            parallel_group: "task_analysis"
+            timeout: 20
+            priority: "high"
+            event_publish: "task.analysis.started"
+
+          - name: "domain_classification"
+            handler: "domain_classification_handler"
+            parallel_group: "task_analysis"
+            timeout: 15
+            priority: "high"
+            event_publish: "task.analysis.started"
+
+        coordination_strategy:
+          trigger_all: true
+          wait_for_completion: false  # Fire-and-forget parallel execution
+          correlation_id: "task_id"
+          completion_handler: "analysis_completion_aggregator"
+
+        parallel_execution:
+          enabled: true
+          max_concurrent: 3
+          timeout_handling: "proceed_with_available_analyses"
+          partial_results_handling: "use_available_proceed_with_selection"
+
+        event_generation:
+          correlation_id_source: "task_metadata.task_id"
+          timestamp_generation: true
+          performance_tracking: true
+
+        error_handling:
+          analysis_failure_handling: "continue_with_other_analyses"
+          timeout_handling: "use_partial_proceed_with_selection"
+          error_events: true
+
+      output:
+        analysis_jobs_started: "array"
+        correlation_id: "string"
+        analysis_timeout: "integer"
+        parallel_execution_status: "object"
+        event_generation_summary: "object"
+
+    # === EVENT-DRIVEN ANALYSIS HANDLERS (Priority 11-13) ===
+
+    - name: "semantic_analysis_handler"
+      priority: 11
+      method: "event_driven_semantic_analysis"
+      event_subscription:
+        listen_to: "task.received"
+        correlation_field: "task_id"
+        processing_mode: "parallel"
+        event_filter: "handler == 'semantic_analysis_handler'"
+      dependencies:
+        tfidf_dependency: "unified_tfidf_processor"
+        threshold_standards_dependency: "system_threshold_standards"
+      config:
+        usage_mode: "semantic_analysis"
+        input_source: "event.description"
+        technical_domains: ["backend", "frontend", "devops", "security", "testing", "data", "architecture"]
+        domain_boosting: true
+        similarity_analysis:
+          compare_against: "domain_patterns"
+          return_top_matches: 5
+          similarity_standard: "acceptable_match"
+          confidence_standard: "medium"
+        error_handling:
+          processing_timeout: 15
+          fallback_to_keywords: true
+          log_processing_issues: true
+          error_event_publish: true
+        event_output:
+          event_type: "task.semantic.completed"
+          data_mapping:
+            task_id: "correlation_id"
+            semantic_vector: "processing_results.vector"
+            domain_indicators: "processing_results.domains"
+            confidence: "processing_results.confidence"
+            processing_time: "execution_time"
+            correlation_id: "correlation_id"
+      output:
+        analysis_completed: "boolean"
+        event_published: "boolean"
+        processing_results: "object"
+        execution_time: "float"
+
+    - name: "complexity_assessment_handler"
+      priority: 12
+      method: "event_driven_complexity_analysis"
+      event_subscription:
+        listen_to: "task.received"
+        correlation_field: "task_id"
+        processing_mode: "parallel"
+        event_filter: "handler == 'complexity_assessment_handler'"
+      error_handling:
+        processing_timeout: 20
+        fallback_to_basic_scoring: true
+        error_event_publish: true
+      config:
+        scoring_factors:
+          component_count:
+            weight: 0.25
+            scoring:
+              single: 0.2
+              few_2_3: 0.4
+              moderate_4_5: 0.6
+              many_6plus: 1.0
+          dependencies:
+            weight: 0.20
+            scoring:
+              external: 0.5
+              internal: 0.2
+              circular: 1.0
+              unknown: 0.8
+          uncertainty:
+            weight: 0.20
+            scoring:
+              clear: 0.0
+              minor_ambiguity: 0.3
+              moderate: 0.6
+              high: 1.0
+              critical: 1.5
+          integration:
+            weight: 0.15
+            scoring:
+              none: 0.0
+              single_system: 0.3
+              multi_system: 0.8
+              cross_functional: 1.2
+              enterprise: 1.5
+          resources:
+            weight: 0.10
+            scoring:
+              minimal: 0.0
+              standard: 0.2
+              specialized: 0.5
+              critical: 0.8
+              limited: 1.0
+          historical_patterns:
+            weight: 0.10
+            scoring:
+              successful_similar: -0.2
+              failed_similar: 0.3
+              no_patterns: 0.0
+              confident_patterns: -0.1
+        calculation:
+          base_score: 1.0
+          normalization: "clamp_to_1_5_range"
+          confidence_calculation: "1.0 - (uncertainty * 0.3) - (missing_info * 0.4)"
+        event_output:
+          event_type: "task.complexity.completed"
+          data_mapping:
+            task_id: "correlation_id"
+            complexity_score: "processing_results.score"
+            factors: "processing_results.factor_breakdown"
+            confidence: "processing_results.confidence"
+            processing_time: "execution_time"
+            correlation_id: "correlation_id"
+      output:
+        analysis_completed: "boolean"
+        event_published: "boolean"
+        processing_results: "object"
+        execution_time: "float"
+
+    - name: "domain_classification_handler"
+      priority: 13
+      method: "event_driven_domain_classification"
+      event_subscription:
+        listen_to: "task.received"
+        correlation_field: "task_id"
+        processing_mode: "parallel"
+        event_filter: "handler == 'domain_classification_handler'"
+      dependencies:
+        tfidf_dependency: "unified_tfidf_processor"
+        threshold_standards_dependency: "system_threshold_standards"
+      error_handling:
+        processing_timeout: 15
+        fallback_to_keyword_matching: true
+        confidence_reduction: 0.2
+        error_event_publish: true
+      config:
+        domains:
+          backend:
+            keywords: ["api", "backend", "server", "database", "microservice", "infrastructure", "rest", "graphql", "sql", "nosql", "authentication", "authorization", "endpoint", "service"]
+            patterns: ["build.*api", "design.*backend", "create.*server", "implement.*database", "setup.*endpoint", "configure.*service"]
+            complexity_tendency: 2.0-3.5
+            agent_prefs: ["backend-developer", "backend-architect", "fullstack"]
+          frontend:
+            keywords: ["frontend", "ui", "ux", "react", "vue", "angular", "web", "css", "javascript", "html", "responsive", "component", "interface", "design"]
+            patterns: ["build.*ui", "design.*frontend", "create.*web.*app", "implement.*react", "design.*interface", "create.*component"]
+            complexity_tendency: 2.0-3.5
+            agent_prefs: ["frontend-developer", "ui-designer", "fullstack"]
+          devops:
+            keywords: ["devops", "infrastructure", "deployment", "ci/cd", "docker", "kubernetes", "terraform", "jenkins", "pipeline", "monitoring", "cloud", "aws", "azure", "gcp"]
+            patterns: ["deploy.*application", "setup.*ci", "configure.*kubernetes", "implement.*pipeline", "setup.*infrastructure", "configure.*cloud"]
+            complexity_tendency: 2.5-4.0
+            agent_prefs: ["devops-engineer", "infrastructure-architect", "cloud-specialist"]
+          security:
+            keywords: ["security", "vulnerability", "penetration", "compliance", "audit", "authentication", "authorization", "encryption", "firewall", "secure", "protect"]
+            patterns: ["security.*audit", "penetration.*test", "implement.*security", "compliance.*check", "secure.*application", "protect.*data"]
+            complexity_tendency: 3.0-4.5
+            agent_prefs: ["security-engineer", "security-analyst", "compliance-specialist"]
+          testing:
+            keywords: ["testing", "qa", "quality", "automation", "test", "validate", "verify", "inspect", "coverage", "unit", "integration", "e2e"]
+            patterns: ["write.*test", "automate.*testing", "quality.*assurance", "validate.*functionality", "test.*coverage", "implement.*test.*suite"]
+            complexity_tendency: 1.5-3.0
+            agent_prefs: ["testing-specialist", "qa-engineer", "quality-analyst"]
+          data_science:
+            keywords: ["data", "analytics", "machine", "learning", "statistics", "visualization", "python", "r", "sql", "dataset", "analysis", "model", "algorithm"]
+            patterns: ["analyze.*data", "build.*model", "visualize.*insights", "process.*statistics", "implement.*algorithm", "train.*model"]
+            complexity_tendency: 2.0-4.0
+            agent_prefs: ["data-scientist", "ml-engineer", "data-analyst"]
+          documentation:
+            keywords: ["documentation", "writing", "technical", "api.*docs", "manual", "readme", "guide", "specification", "wiki", "knowledge"]
+            patterns: ["write.*documentation", "create.*guide", "update.*readme", "document.*process", "create.*specification", "build.*wiki"]
+            complexity_tendency: 1.0-2.0
+            agent_prefs: ["technical-writer", "documentation-specialist", "knowledge-manager"]
+        cross_domain:
+          detection_threshold: 0.6
+          complexity_adjustments:
+            two_domains: 0.3
+            three_domains: 0.6
+            four_plus: 1.0
+        classification_method: "tfidf_domain_matching"
+        confidence_threshold: 0.6
+        event_output:
+          event_type: "task.domain.completed"
+          data_mapping:
+            task_id: "correlation_id"
+            primary_domain: "processing_results.primary_domain"
+            confidence: "processing_results.confidence"
+            secondary_domains: "processing_results.secondary_domains"
+            cross_domain_score: "processing_results.cross_domain_score"
+            processing_time: "execution_time"
+            correlation_id: "correlation_id"
+      output:
+        analysis_completed: "boolean"
+        event_published: "boolean"
+        processing_results: "object"
+        execution_time: "float"
+
+    # === LEGACY SEQUENTIAL OPERATIONS (Priority 14-20) ===
 
     - name: "task_semantic_analysis"
       priority: 11
@@ -780,10 +906,7 @@ implementation:
         confidence_threshold: 0.6
       output:
         primary_domain: "string"
-        domain_confidence: "float"
-        secondary_domains: "array"
-        cross_domain_score: "float"
-        domain_complexity_adjustment: "float"
+        # DEPRECATED: domain_classification moved to event-driven handler
 
     - name: "agent_competency_matching"
       priority: 14
@@ -908,6 +1031,128 @@ implementation:
         selection_confidence: "float"
         backup_options: "array"
         selection_rationale: "string"
+
+    # === ANALYSIS COMPLETION AGGREGATOR (Priority 15.5) ===
+
+    - name: "analysis_completion_aggregator"
+      priority: 15.5
+      method: "event_based_analysis_coordinator"
+      event_subscription:
+        listen_to: ["task.semantic.completed", "task.complexity.completed", "task.domain.completed"]
+        correlation_field: "task_id"
+        completion_strategy: "wait_for_all_events"
+        timeout_handling: "proceed_with_available_analyses"
+      dependencies:
+        event_system_dependency: "event_system"
+      config:
+        completion_criteria:
+          required_events: ["semantic_completed", "complexity_completed", "domain_completed"]
+          minimum_confidence_threshold: 0.6
+          timeout: 300  # 5 minutes max
+          partial_analysis_handling: "use_available_proceed_with_selection"
+
+        event_aggregation:
+          data_mapping_strategy: "merge_analysis_results"
+          confidence_calculation: "weighted_average"
+          correlation_timeout_recovery: "use_partial_proceed_with_selection"
+
+        validation:
+          cross_result_validation: true
+          consistency_check: true
+          anomaly_detection: true
+
+        error_handling:
+          missing_events_handling: "use_available_analyses"
+          timeout_handling: "partial_analysis_proceed"
+          error_events: true
+          recovery_events: true
+
+        event_output:
+          when_complete:
+            event_type: "task.agent.selection.ready"
+            data: "aggregated_analysis_results"
+          when_partial:
+            event_type: "task.agent.selection.ready"
+            data: "partial_analysis_results"
+            warning: "Some analyses failed - proceeding with available data"
+
+      output:
+        aggregation_complete: "boolean"
+        analysis_results: "object"
+        partial_analysis_detected: "boolean"
+        timeout_occurred: "boolean"
+        aggregated_confidence: "float"
+        processing_summary: "object"
+        events_received: "array"
+        correlation_id: "string"
+
+    # === EVENT-DRIVEN AGENT SELECTION (Priority 15.6) ===
+
+    - name: "event_driven_agent_selection"
+      priority: 15.6
+      method: "agent_selection_on_analysis_complete"
+      event_subscription:
+        listen_to: "task.agent.selection.ready"
+        correlation_field: "task_id"
+        processing_mode: "sequential"
+      dependencies:
+        agent_registry_dependency: "agent_registry_construction"
+        competency_matching_dependency: "agent_competency_matching"
+        threshold_standards_dependency: "system_threshold_standards"
+      config:
+        input_data:
+          semantic_analysis: "event.data.semantic_results"
+          complexity_assessment: "event.data.complexity_results"
+          domain_classification: "event.data.domain_results"
+          aggregated_confidence: "event.data.aggregated_confidence"
+
+        selection_process:
+          competency_matching:
+            use_domain_classification: true
+            complexity_adjustment: true
+            semantic_boosting: true
+            aggregated_confidence_weighting: true
+
+          selection_algorithm:
+            scoring_method: "weighted_competency_score"
+            backup_option_generation: true
+            confidence_threshold_adjustment: true
+
+          validation:
+            cross_reference_check: true
+            availability_verification: true
+            compatibility_validation: true
+
+        event_output:
+          event_type: "task.agent.selected"
+          data_mapping:
+            task_id: "correlation_id"
+            selected_agent: "selection_results.agent"
+            confidence: "selection_results.confidence"
+            backup_options: "selection_results.backup_options"
+            selection_rationale: "selection_results.rationale"
+            analysis_summary: "input_data"
+
+        error_handling:
+          selection_failure:
+            fallback_to: "basic_keyword_selection"
+            confidence_adjustment: -0.3
+            error_event_publish: true
+
+          insufficient_agents:
+            fallback_to: "builtin_agent_pool"
+            user_notification: "Limited agents available - using alternatives"
+            error_event_publish: true
+
+          timeout_handling:
+            auto_select_best_available: true
+            timeout_warning: true
+
+      output:
+        selection_completed: "boolean"
+        event_published: "boolean"
+        selection_results: "object"
+        processing_time: "float"
 
     - name: "clarification_subsystem"
       priority: 16
@@ -1447,6 +1692,120 @@ implementation:
           performance_metrics: "object"
           active_alerts: "array"
 
+    # === ENHANCED ERROR HANDLING & RECOVERY SYSTEM (Priority 36) ===
+
+    - name: "error_recovery_handler"
+      priority: 36
+      method: "event_based_error_recovery"
+      event_subscription:
+        listen_to: ["task.analysis.error", "task.selection.error", "task.processing.timeout", "task.agent.unavailable"]
+        correlation_field: "task_id"
+        error_handling_priority: "critical"
+      dependencies:
+        fallback_system_dependency: "error_system_initialization"
+        monitoring_dependency: "monitoring_minimal_setup"
+      config:
+        recovery_strategies:
+          semantic_analysis_failure:
+            fallback_to: "keyword_based_analysis"
+            confidence_adjustment: -0.2
+            processing_time_adjustment: "+5s"
+            recovery_event: "task.analysis.recovered"
+
+          complexity_assessment_failure:
+            fallback_to: "basic_complexity_scoring"
+            use_domain_heuristics: true
+            confidence_adjustment: -0.3
+            recovery_event: "task.analysis.recovered"
+
+          domain_classification_failure:
+            fallback_to: "keyword_domain_matching"
+            confidence_adjustment: -0.3
+            recovery_event: "task.analysis.recovered"
+
+          agent_selection_failure:
+            fallback_to: "builtin_agent_fallback"
+            available_agents: ["general_developer", "system_analyst", "quality_assurance"]
+            user_notification: "Specialized agents unavailable. Using general-purpose alternatives."
+            recovery_event: "task.agent.fallback_selected"
+
+          timeout_handling:
+            partial_analysis_proceed: true
+            missing_analysis_estimation: "domain_based_defaults"
+            timeout_extension: false
+            recovery_event: "task.processing.timeout_resolved"
+
+        recovery_events:
+          event_type: "task.analysis.recovered"
+          data_mapping:
+            task_id: "correlation_id"
+            recovered_analysis: "recovery_results"
+            original_error: "error_data"
+            recovery_method: "strategy_used"
+            adjusted_confidence: "confidence_level"
+            processing_time: "recovery_processing_time"
+
+        error_analysis:
+          pattern_recognition: true
+          failure_trend_analysis: true
+          root_cause_identification: true
+          prevention_recommendations: true
+
+        monitoring_integration:
+          error_logging: true
+          performance_impact_tracking: true
+          recovery_success_metrics: true
+          failure_pattern_alerts: true
+
+      output:
+        error_handled: "boolean"
+        recovery_successful: "boolean"
+        error_details: "object"
+        recovery_strategy_used: "string"
+        adjusted_confidence: "float"
+        recovery_processing_time: "float"
+
+    - name: "timeout_handler"
+      priority: 36.1
+      method: "event_based_timeout_resolution"
+      event_subscription:
+        listen_to: "task.processing.timeout"
+        correlation_field: "task_id"
+        timeout_handling_priority: "high"
+      config:
+        timeout_types:
+          analysis_timeout:
+            threshold: 60  # 1 minute
+            action: "proceed_with_available_analyses"
+            partial_results_handling: true
+
+          selection_timeout:
+            threshold: 30  # 30 seconds
+            action: "auto_select_best_available"
+            confidence_adjustment: -0.1
+
+          execution_timeout:
+            threshold: 600  # 10 minutes
+            action: "escalate_to_user"
+            provide_partial_results: true
+
+        timeout_recovery:
+          graceful_degradation: true
+          partial_result_utilization: true
+          user_notification: true
+          alternative_execution_paths: true
+
+        monitoring:
+          timeout_pattern_detection: true
+          performance_optimization_suggestions: true
+          resource_adjustment_recommendations: true
+
+      output:
+        timeout_resolved: "boolean"
+        partial_results_provided: "boolean"
+        recovery_action_taken: "string"
+        remaining_timeout_adjustment: "float"
+
     - name: "optimization_monitor"
       priority: 35
       method: "continuous_optimization_monitoring"
@@ -1703,3 +2062,108 @@ performance_optimization:
     pattern_recognition: true
     cross_operation_analysis: true
     similarity_threshold: 0.8
+
+# === HYBRID EVENT-DRIVEN ARCHITECTURE ===
+
+event_system:
+  enabled: true
+  hybrid_mode: true  # Priority-based for system phases, event-driven for task processing
+
+  task_processing_events:
+    # Core task lifecycle events
+    task.received:
+      description: "Task received from user, starts parallel analysis"
+      data_fields: ["task_id", "description", "metadata", "timestamp", "user_id"]
+      handlers: ["task_analysis_coordinator", "monitoring_system"]
+      priority: "high"
+
+    task.analysis.started:
+      description: "Individual analysis component started"
+      data_fields: ["task_id", "analysis_type", "start_time", "correlation_id"]
+      handlers: ["monitoring_system", "performance_tracker"]
+      priority: "medium"
+
+    # Analysis completion events (parallel processing)
+    task.semantic.completed:
+      description: "Semantic analysis completed successfully"
+      data_fields: ["task_id", "semantic_vector", "domain_indicators", "confidence", "processing_time"]
+      handlers: ["analysis_completion_aggregator", "domain_validator"]
+      priority: "high"
+
+    task.complexity.completed:
+      description: "Complexity assessment completed successfully"
+      data_fields: ["task_id", "complexity_score", "factors", "confidence", "processing_time"]
+      handlers: ["analysis_completion_aggregator", "resource_planner"]
+      priority: "high"
+
+    task.domain.completed:
+      description: "Domain classification completed successfully"
+      data_fields: ["task_id", "primary_domain", "confidence", "secondary_domains", "processing_time"]
+      handlers: ["analysis_completion_aggregator", "competency_matcher"]
+      priority: "high"
+
+    # Agent selection events
+    task.agent.selection.ready:
+      description: "All analyses completed, ready for agent selection"
+      data_fields: ["task_id", "analysis_complete", "selection_ready", "aggregated_results"]
+      handlers: ["event_driven_agent_selection"]
+      priority: "critical"
+
+    task.agent.selected:
+      description: "Agent selected for task execution"
+      data_fields: ["task_id", "selected_agent", "confidence", "backup_options", "selection_rationale"]
+      handlers: ["clarification_subsystem", "delegation_engine", "monitoring_system"]
+      priority: "critical"
+
+    task.clarification.completed:
+      description: "Clarification process completed"
+      data_fields: ["task_id", "clarified_requirements", "confidence_level", "ambiguity_resolved"]
+      handlers: ["todo_generation_system", "execution_planner"]
+      priority: "high"
+
+    # Error and recovery events
+    task.analysis.error:
+      description: "Error occurred during analysis"
+      data_fields: ["task_id", "analysis_type", "error_code", "error_message", "timestamp"]
+      handlers: ["error_recovery_handler", "fallback_system"]
+      priority: "critical"
+
+    task.processing.timeout:
+      description: "Task processing exceeded timeout"
+      data_fields: ["task_id", "timeout_type", "elapsed_time", "completed_analyses"]
+      handlers: ["timeout_handler", "partial_analysis_processor"]
+      priority: "critical"
+
+  event_correlation:
+    task_id_based:
+      strategy: "correlation_by_task_id"
+      timeout: 300  # 5 minutes max for all analyses
+      completion_criteria: "semantic_completed && complexity_completed && domain_completed"
+      correlation_field: "task_id"
+
+    parallel_analysis_coordination:
+      strategy: "parallel_then_select"
+      max_parallel_analyses: 3
+      coordination_logic: "wait_for_all_analyses_before_selection"
+      timeout_handling: "proceed_with_available_analyses"
+
+    event_aggregation:
+      data_mapping_strategy: "merge_analysis_results"
+      confidence_calculation: "weighted_average"
+      timeout_recovery: "use_partial_proceed_with_selection"
+
+  event_routing:
+    priority_based_routing:
+      enabled: true
+      critical_events: ["task.agent.selected", "task.processing.timeout", "task.analysis.error"]
+      high_priority_queue: true
+
+    correlation_routing:
+      enabled: true
+      correlation_field: "task_id"
+      routing_strategy: "same_task_id_to_same_handler"
+
+    load_balancing:
+      enabled: true
+      strategy: "round_robin_within_priority"
+      handler_health_monitoring: true
