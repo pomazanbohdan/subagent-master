@@ -237,12 +237,19 @@ IF primary_conditions_met:
 
 **TODO-EXECUTION Process Flow:**
 
-0. **Auto-Batch Detection (NEW)**:
+0. **Auto-Batch Detection (ENHANCED)**:
    - Scan incoming task operations for identical patterns
    - Count operations of same type (Read, Edit, Grep, etc.)
    - Classify operation types: version_updates, text_replacements, file_modifications
-   - IF identical_operations >= 3: TRIGGER massive parallel execution
+   - Detect similar file patterns and target extensions
+   - Apply enhanced batch detection criteria:
+     * identical_operations >= 3 (current threshold)
+     * file_pattern_similarity > 0.8 (NEW)
+     * operation_type in ["read", "edit", "create"] (NEW)
+     * target_files in [".yaml", ".md", ".json"] (NEW)
+   - IF criteria_met: TRIGGER massive parallel execution
    - Generate parallel batches with independence validation
+   - Create parallel task groups by operation type and file pattern
 
 1. **System Availability Check**:
    - Verify systems availability from config/
@@ -277,6 +284,14 @@ IF primary_conditions_met:
      - Use task analysis with basic delegation
      - Generate execution plan with error handling
    - Create TodoWrite list with structure and confidence indicators
+
+**Parallel Execution Rules (NEW):**
+- **Identical Operations**: 3+ similar tasks → automatic parallel execution
+- **File Pattern Similarity**: Same extension + similar operation → parallel group
+- **Resource Allocation**: Dynamic based on task complexity
+- **Batch Size**: Maximum 10 parallel operations per batch
+- **Dependency Validation**: Ensure no circular dependencies in parallel groups
+- **Configuration Files Special**: Auto-batch for .yaml/.json/.md files with same operation type
 
 5. **Agent Selection for Delegation**:
    - Use `config/analysis/agent_selection.yaml` with TF-IDF and vector similarity
@@ -548,6 +563,54 @@ todo_tasks:
   - "Synthesize findings into actionable recommendations"
 execution_flow: "todo_planning → parallel_research → knowledge_synthesis"
 expected_time: "10-20 minutes"
+```
+
+### Configuration Files Batch Processing with TODO-EXECUTION (NEW)
+
+```yaml
+input: "Create/update multiple configuration files"
+complexity: 3-5
+routing: auto_batch_detection → todo_execution_engine
+process:
+  - Detect similar file patterns (.yaml, .json, .md)
+  - Group operations by file type and operation pattern
+  - Create parallel TodoWrite plan with batch groups
+  - Execute parallel Task() delegation by file type groups
+  - Monitor batch completion with progress tracking
+parallel_groups:
+  - group_1: "YAML configuration files" → configuration-specialist
+  - group_2: "JSON manifest files" → manifest-specialist
+  - group_3: "Documentation files" → documentation-specialist
+expected_improvement: "60-80% time reduction vs sequential execution"
+batch_detection:
+  - file_extension_similarity: true
+  - operation_pattern_match: true
+  - independence_validation: true
+todo_tasks:
+  - "Create configuration_base_optimized.yaml" (YAML group)
+  - "Create monitoring_system_optimized.yaml" (YAML group)
+  - "Create system_health_check_optimized.yaml" (YAML group)
+  - "Create coordination_optimized.yaml" (YAML group)
+  - "Create batch_orchestrator_optimized.yaml" (YAML group)
+execution_flow: "batch_detection → parallel_grouping → simultaneous_execution → result_synthesis"
+```
+
+### Automatic Configuration Batch Detection (NEW)
+
+```yaml
+**Trigger Conditions:**
+- 3+ files with same extension (.yaml, .json, .md)
+- Similar operation type (create, update, optimize)
+- Pattern similarity score > 0.8
+
+**Automatic Process:**
+1. **Pattern Recognition**: Scan task for similar file operations
+2. **Group Creation**: Create parallel groups by file type
+3. **TodoWrite Bypass**: Auto-create parallel execution plan for identical patterns
+4. **Resource Allocation**: Dynamic assignment based on file type specialization
+5. **Progress Monitoring**: Track group completion with batch metrics
+
+**Result**: Bypass manual TodoWrite creation for identical patterns, enable automatic parallel execution
 ```
 
 ## 📊 Performance Metrics
