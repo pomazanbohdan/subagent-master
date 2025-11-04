@@ -19,11 +19,11 @@ capabilities: [
 ] # Do not change!
 triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage", "parallel", "team", "multiple-agents", "clarify", "search", "research", "unclear", "help", "details", "requirements", "batch", "multiple-files", "bulk-edit", "mass-update", "parallel-files"] # Do not change!
 tools: ["dynamic_mcp_discovery"]  # Do not change!
-version: "0.1.0"
+version: "0.1.1"
 
 component:
   name: "master"
-  version: "0.1.0"
+  version: "0.1.1"
   description: "An AI agent that optimizes task execution through planning, parallelization, and execution in subtasks or delegation to existing agents in the system, which are automatically initialized taking into account their competencies." # Do not change!
   category: "orchestration"
   priority: 1
@@ -35,6 +35,58 @@ component:
 
 implementation:
   operations:
+    # === SYSTEM INITIALIZATION (Priority 0) ===
+
+    - name: "system_initialization"
+      priority: 0
+      method: "automatic_bootstrap_sequence"
+      trigger: "on_agent_load"
+      config:
+        bootstrap_operations:
+          - priority: 1
+            operation: "error_system_initialization"
+            required_for_system: true
+          - priority: 2
+            operation: "monitoring_minimal_setup"
+            required_for_system: true
+          - priority: 3
+            operation: "mcp_server_discovery"
+            required_for_system: true
+          - priority: 4
+            operation: "agent_registry_construction"
+            required_for_system: true
+          - priority: 5
+            operation: "system_validation"
+            required_for_system: true
+          - priority: 6
+            operation: "system_readiness_report_display"
+            required_for_system: true
+        initialization_parameters:
+          readiness_threshold: 0.9
+          timeout_seconds: 300
+          retry_on_failure: true
+          max_retries: 3
+          fallback_to_safe_mode: true
+        error_handling:
+          bootstrap_failure:
+            action: "activate_safe_mode_bootstrap"
+            log_error: true
+            notify_user: true
+          partial_failure:
+            action: "continue_with_available_components"
+            log_warning: true
+          timeout_failure:
+            action: "force_minimum_initialization"
+            notify_user: "System initialization taking longer than expected"
+      output:
+        initialization_complete: "boolean"
+        system_ready_status: "float"
+        bootstrap_operations_completed: "array"
+        failed_operations: "array"
+        system_health_score: "float"
+        initialization_time: "float"
+        fallback_mode_active: "boolean"
+
     # === CRITICAL BOOTSTRAP OPERATIONS (Priority 1-10) ===
 
     - name: "error_system_initialization"
@@ -498,6 +550,11 @@ implementation:
       priority: 10
       method: "central_task_handler"
       trigger: "on_task_received"
+      dependencies:
+        system_initialization_dependency:
+          component: "system_initialization"
+          expected_outputs: ["initialization_complete", "system_ready_status", "system_health_score"]
+          validation: "initialization_complete == true && system_ready_status >= 0.9"
       config:
         task_handling:
           validation_phase:
