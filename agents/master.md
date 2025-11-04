@@ -103,22 +103,53 @@ implementation:
         discovery_operations:
           - priority: 1
             operation: "mcp_server_discovery"
-            description: "Discover and analyze available MCP servers"
-            source: "moved_from_system_initialization"
+            description: "Real-time discovery and analysis of MCP servers using ListMcpResourcesTool"
+            implementation:
+              tool: "ListMcpResourcesTool"
+              parallel_execution: true
+              timeout: 30
+              retry_count: 3
+              servers: ["all_available"]
+              error_handling:
+                timeout_action: "continue_with_discovered"
+                failure_action: "log_error_continue"
+                partial_success_action: "use_available_servers"
           - priority: 2
             operation: "agent_registry_construction"
-            description: "Build registry of available agents"
-            source: "moved_from_system_initialization"
+            description: "Build registry of available agents through multiple discovery methods"
+            implementation:
+              tool: "Task"
+              parallel_execution: true
+              timeout: 25
+              methods:
+                - discover_subagent_types
+                - query_agent_capabilities
           - priority: 2.5
             operation: "dynamic_agent_discovery"
-            description: "Dynamic discovery of all available agents in system"
-            source: "new_discovery_capability"
-            discovery_methods:
-              - "task_tool_api_discovery"
-              - "persona_instruction_scan"
-              - "filesystem_agent_search"
-              - "mcp_server_agent_enumeration"
-              - "configuration_based_discovery"
+            description: "Dynamic discovery of all available agents with real tool calls"
+            implementation:
+              discovery_methods:
+                - name: "task_tool_api_discovery"
+                  tool: "Task"
+                  method: "enumerate_subagent_types"
+                  parallel: true
+                - name: "persona_instruction_scan"
+                  tool: "Read"
+                  method: "scan_persona_instructions"
+                  paths: ["/home/user/.claude/"]
+                  patterns: ["*.md"]
+                - name: "filesystem_agent_search"
+                  tool: "Glob"
+                  method: "find_agent_files"
+                  patterns: ["agents/**/*", "*/agents/*"]
+                - name: "mcp_server_agent_enumeration"
+                  tool: "ListMcpResourcesTool"
+                  method: "extract_mcp_capabilities"
+                  parallel: true
+                - name: "configuration_based_discovery"
+                  tool: "Read"
+                  method: "parse_config_files"
+                  patterns: ["*.yaml", "*.json"]
         discovery_parameters:
           scan_timeout: 120
           retry_on_failure: true
@@ -141,26 +172,66 @@ implementation:
         discovery_summary: "object"
         discovery_time: "float"
 
-    # === DYNAMIC AGENT DISCOVERY PHASE (Priority 2.5) ===
+    # === DYNAMIC TEXT ANALYSIS AND CATEGORIZATION PHASE (Priority 2.6) ===
 
-    - name: "dynamic_agent_discovery_phase"
-      priority: 2.5
-      method: "comprehensive_agent_discovery"
+    - name: "dynamic_text_analysis_phase"
+      priority: 2.6
+      method: "real_time_text_processing"
       dependencies:
         required_inputs:
           - component: "system_discovery_phase"
-            expected_outputs: ["discovery_complete", "mcp_servers_discovered", "agents_registry_built"]
-            validation: "discovery_complete == true && agents_registry_built == true"
+            expected_outputs: ["discovery_complete", "mcp_servers_discovered", "discovered_agents"]
+            validation: "discovery_complete == true"
       config:
-        discovery_operations:
+        text_analysis_operations:
           - priority: 1
-            operation: "task_tool_agent_discovery"
-            description: "Discover agents via Task tool API"
-            method: "api_based_enumeration"
-            source: "task_tool_interface"
+            operation: "text_extraction_and_parsing"
+            description: "Extract and parse descriptions from MCP servers and agents"
+            implementation:
+              parallel_processing: true
+              text_sources:
+                - mcp_server_descriptions
+                - agent_descriptions
+                - persona_instructions
+              preprocessing:
+                - lowercase_conversion
+                - stop_word_removal
+                - lemmatization
+                - ngram_extraction: [1, 2, 3]
+
           - priority: 2
-            operation: "persona_instruction_discovery"
-            description: "Find SuperClaude personas in instruction files"
+            operation: "tfidf_vectorization"
+            description: "Create TF-IDF vectors for semantic analysis"
+            implementation:
+              vectorizer: "TfidfVectorizer"
+              parameters:
+                max_features: 1000
+                ngram_range: [1, 3]
+                min_df: 2
+                max_df: 0.8
+                norm: "l2"
+              parallel_execution: true
+
+          - priority: 3
+            operation: "dynamic_clustering"
+            description: "Perform clustering on extracted features"
+            implementation:
+              clustering_algorithm: "kmeans"
+              cluster_count_method: "auto_determine"
+              similarity_metric: "cosine"
+              validation_methods: ["silhouette", "elbow", "gap_statistic"]
+              category_generation:
+                method: "top_keywords_extraction"
+                format: "semantic_category_names"
+
+          - priority: 4
+            operation: "competency_matrix_construction"
+            description: "Build dynamic competency matrix from analysis results"
+            implementation:
+              matrix_structure: "agents × competencies"
+              scoring_method: "weighted_confidence"
+              confidence_calculation: "multi_source_validation"
+              dynamic_updates: true
             method: "instruction_parsing"
             source: "persona_analysis"
           - priority: 3
@@ -269,13 +340,31 @@ implementation:
             description: "Perform comprehensive system readiness assessment"
           - priority: 2
             operation: "greeting_formation_engine"
-            description: "Generate categorized system greeting with dynamic lists"
-            source: "new_event_driven_component"
-            dependencies: ["final_readiness_check", "enhanced_agent_registry", "mcp_servers_discovered"]
+            description: "Generate categorized system greeting with dynamic agent and MCP server lists"
+            implementation:
+              data_sources:
+                agent_categories: "from_dynamic_analysis_results"
+                mcp_categories: "from_dynamic_analysis_results"
+                agent_count: "from_discovered_agents"
+                mcp_count: "from_mcp_servers_discovered"
+              format_template: "Категорій агентів: {agent_categories}\\nКількість Агентів: {agent_count}\\nКатегорій MCP серверов: {mcp_categories}\\nКількість MCP серверів: {mcp_count}"
+              validation:
+                ensure_data_availability: true
+                format_validation: true
+                error_handling: "fallback_to_basic_message"
           - priority: 3
             operation: "integrated_system_readiness_display"
-            description: "Display integrated system announcement with categorized content"
-            source: "new_integration_component"
+            description: "Display comprehensive system announcement with dynamically categorized content"
+            implementation:
+              display_format: "structured_with_categories"
+              content_sources:
+                - "system_readiness_status"
+                - "discovered_capabilities"
+                - "dynamic_categories"
+                - "competency_summary"
+              error_handling:
+                incomplete_data: "display_available_only"
+                formatting_errors: "use_basic_template"
             dependencies: ["greeting_formation_engine"]
           - priority: 4
             operation: "capability_announcement"

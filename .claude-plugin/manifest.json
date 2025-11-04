@@ -1,6 +1,6 @@
 {
   "name": "orchestration",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Hybrid event-driven task orchestration with dynamic agent discovery, parallel analysis processing, enhanced error recovery and categorized system announcements",
   "author": "Bohdan <pomazan.bohdan@gmail.com>",
   "license": "MIT",
