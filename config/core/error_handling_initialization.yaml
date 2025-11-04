@@ -3,10 +3,10 @@
 
 metadata:
   name: "error_handling_initialization"
-  version: "0.3.0"
-  description: "Enhanced error handling and initialization system with circuit breaker protection, graceful degradation and structured startup including MCP Server Discovery"
-  author: "Master Agent System v0.3.0"
-  tags: ["error-handling", "circuit-breaker", "initialization", "fallback", "recovery", "resilience", "graceful-degradation"]
+  version: "0.3.1"
+  description: "Unified 6-phase error handling and initialization system with circuit breaker protection, graceful degradation and structured startup including MCP Server Discovery"
+  author: "Master Agent System v0.3.1"
+  tags: ["error-handling", "circuit-breaker", "initialization", "fallback", "recovery", "resilience", "graceful-degradation", "6-phase-architecture"]
 
 # Core System Philosophy
 system_philosophy: |
@@ -76,52 +76,52 @@ error_classification:
         strategy: "delegation_retry_with_alternative_strategy"
         actions: ["analyze_failure", "apply_fallback_rules", "retry_different", "decompose_task", "escalate"]
 
-# 4-Phase Initialization System (Consolidated from 10 phases)
+# 6-Phase Initialization System (Aligned with master.md architecture)
 initialization_phases:
-  # Phase 1: Core Foundation (Level 0)
-  phase_1_core_foundation:
-    name: "Core Foundation"
-    description: "Initialize error handling and fundamental system infrastructure"
+  # Phase 0: MCP Discovery & Core Setup (Level 0)
+  phase_0_mcp_core_setup:
+    name: "MCP Discovery & Core Setup"
+    description: "Parallel initialization of prerequisite infrastructure for MCP discovery and core systems"
     criticality: "critical"
     dependencies: []
-    timeout: 15000
+    timeout: 30000
 
     components:
+      - name: "mcp_server_discovery"
+        required: true
+        fallback: "basic_mcp_detection"
+        validation: "mcp_servers_discovered"
+
       - name: "error_handling_system"
         required: true
         fallback: "embedded_error_handling"
         validation: "error_handling_responsive"
 
-      - name: "basic_logging"
+      - name: "monitoring_system"
+        required: true
+        fallback: "basic_health_checks"
+        validation: "monitoring_responsive"
+
+      - name: "system_logging"
         required: true
         fallback: "console_logging"
         validation: "logging_functional"
 
-      - name: "system_monitoring"
-        required: false
-        fallback: "basic_health_checks"
-        validation: "monitoring_responsive"
-
-    success_criteria: ["error_handling_operational", "basic_logging_functional", "core_monitoring_active"]
+    success_criteria: ["mcp_servers_discovered", "error_handling_operational", "monitoring_active", "logging_functional"]
     failure_handling:
-      partial_failure: "continue_with_degraded_logging"
+      partial_failure: "continue_with_degraded_mcp"
       complete_failure: "emergency_embedded_mode"
       escalation_threshold: 3
 
-  # Phase 2: Configuration & Analysis Foundation (Level 1)
-  phase_2_configuration_analysis:
-    name: "Configuration & Analysis Foundation"
-    description: "Load configuration and core analysis systems"
+  # Phase 1: Analysis & Selection Systems (Level 1)
+  phase_1_analysis_selection:
+    name: "Analysis & Selection Systems"
+    description: "Load task analysis and agent selection systems with MCP integration"
     criticality: "critical"
-    dependencies: ["phase_1_core_foundation"]
+    dependencies: ["phase_0_mcp_core_setup"]
     timeout: 20000
 
     components:
-      - name: "configuration_base"
-        required: true
-        fallback: "embedded_configuration_base"
-        validation: "configuration_loaded"
-
       - name: "task_analysis"
         required: true
         fallback: "basic_task_classification"
@@ -132,18 +132,53 @@ initialization_phases:
         fallback: "simple_agent_mapping"
         validation: "agent_selection_functional"
 
-    success_criteria: ["configuration_loaded", "task_analysis_operational", "agent_selection_ready"]
+      - name: "mcp_tool_matching"
+        required: true
+        fallback: "manual_tool_selection"
+        validation: "tool_matching_operational"
+
+    success_criteria: ["task_analysis_operational", "agent_selection_ready", "mcp_tool_matching_active"]
     failure_handling:
       partial_failure: "use_basic_analysis"
       complete_failure: "manual_coordination"
       escalation_threshold: 3
 
-  # Phase 3: Execution & Discovery Systems (Level 2)
-  phase_3_execution_discovery:
-    name: "Execution & Discovery Systems"
-    description: "Initialize task execution and agent discovery systems"
+  # Phase 2: Clarification & Advanced Processing (Level 2)
+  phase_2_clarification_processing:
+    name: "Clarification & Advanced Processing"
+    description: "Enhanced analysis with uncertainty detection and clarification workflows"
     criticality: "high"
-    dependencies: ["phase_2_configuration_analysis"]
+    dependencies: ["phase_1_analysis_selection"]
+    timeout: 15000
+
+    components:
+      - name: "clarification_system"
+        required: true
+        fallback: "basic_clarification"
+        validation: "clarification_functional"
+
+      - name: "uncertainty_detection"
+        required: false
+        fallback: "confidence_scoring"
+        validation: "uncertainty_quantification_active"
+
+      - name: "contextual_analysis"
+        required: false
+        fallback: "semantic_analysis"
+        validation: "context_analysis_operational"
+
+    success_criteria: ["clarification_operational", "uncertainty_detection_available", "contextual_analysis_ready"]
+    failure_handling:
+      partial_failure: "use_basic_clarification"
+      complete_failure: "skip_clarification_workflow"
+      escalation_threshold: 2
+
+  # Phase 3: Execution & Coordination (Level 3)
+  phase_3_execution_coordination:
+    name: "Execution & Coordination"
+    description: "Initialize task execution and coordination systems with batch capabilities"
+    criticality: "critical"
+    dependencies: ["phase_2_clarification_processing"]
     timeout: 25000
 
     components:
@@ -152,51 +187,81 @@ initialization_phases:
         fallback: "manual_task_coordination"
         validation: "todo_engine_functional"
 
+      - name: "coordination_system"
+        required: true
+        fallback: "basic_coordination"
+        validation: "coordination_operational"
+
+      - name: "delegation_system"
+        required: true
+        fallback: "manual_delegation"
+        validation: "delegation_functional"
+
+    success_criteria: ["task_execution_ready", "coordination_active", "delegation_operational"]
+    failure_handling:
+      partial_failure: "use_basic_execution"
+      complete_failure: "master_agent_direct_execution"
+      escalation_threshold: 2
+
+  # Phase 4: Discovery & Agent Registration (Level 4)
+  phase_4_discovery_registration:
+    name: "Discovery & Agent Registration"
+    description: "Initialize agent discovery and registration systems"
+    criticality: "high"
+    dependencies: ["phase_3_execution_coordination"]
+    timeout: 20000
+
+    components:
       - name: "agent_registry"
         required: true
         fallback: "static_agent_registry"
         validation: "agent_discovery_functional"
 
-      - name: "mcp_integration"
+      - name: "dynamic_discovery"
         required: false
-        fallback: "basic_mcp_detection"
-        validation: "mcp_tools_available"
+        fallback: "manual_agent_loading"
+        validation: "dynamic_discovery_operational"
 
-    success_criteria: ["task_execution_ready", "agent_discovery_ready", "mcp_tools_available"]
+      - name: "agent_validation"
+        required: false
+        fallback: "basic_validation"
+        validation: "agent_validation_active"
+
+    success_criteria: ["agent_discovery_ready", "dynamic_discovery_available", "agent_validation_operational"]
     failure_handling:
-      partial_failure: "use_static_configuration"
-      complete_failure: "master_agent_only_mode"
+      partial_failure: "use_static_registry"
+      complete_failure: "embedded_agent_list"
       escalation_threshold: 2
 
-  # Phase 4: System Integration & Monitoring (Level 3)
-  phase_4_integration_monitoring:
-    name: "Integration & Monitoring"
-    description: "Final system integration and monitoring activation"
+  # Phase 5: Batch Orchestration (Level 5)
+  phase_5_batch_orchestration:
+    name: "Batch Orchestration"
+    description: "Initialize batch orchestration system for parallel operations"
     criticality: "medium"
-    dependencies: ["phase_3_execution_discovery"]
-    timeout: 10000
+    dependencies: ["phase_4_discovery_registration"]
+    timeout: 15000
 
     components:
-      - name: "system_health_check"
+      - name: "batch_orchestrator"
         required: true
-        fallback: "basic_validation"
-        validation: "system_healthy"
+        fallback: "sequential_execution"
+        validation: "batch_orchestration_functional"
 
-      - name: "monitoring_system"
+      - name: "parallel_execution"
         required: false
-        fallback: "basic_monitoring"
-        validation: "monitoring_active"
+        fallback: "sequential_fallback"
+        validation: "parallel_execution_operational"
 
       - name: "performance_optimization"
         required: false
         fallback: "conservative_settings"
         validation: "optimization_active"
 
-    success_criteria: ["system_healthy", "monitoring_active", "optimization_enabled"]
+    success_criteria: ["batch_orchestration_ready", "parallel_execution_available", "performance_optimization_enabled"]
     failure_handling:
-      partial_failure: "degraded_monitoring_mode"
+      partial_failure: "use_sequential_execution"
       complete_failure: "basic_operation_mode"
-      escalation_threshold: 2
+      escalation_threshold: 1
 
 # Circuit Breaker Configuration (Consolidated)
 circuit_breaker:
@@ -369,10 +434,12 @@ performance_targets:
     average_phase_time: "< 18 seconds"
 
     phase_specific_targets:
-      phase_1_core_foundation: "< 15 seconds"
-      phase_2_configuration_analysis: "< 20 seconds"
-      phase_3_execution_discovery: "< 25 seconds"
-      phase_4_integration_monitoring: "< 10 seconds"
+      phase_0_mcp_core_setup: "< 30 seconds"
+      phase_1_analysis_selection: "< 20 seconds"
+      phase_2_clarification_processing: "< 15 seconds"
+      phase_3_execution_coordination: "< 25 seconds"
+      phase_4_discovery_registration: "< 20 seconds"
+      phase_5_batch_orchestration: "< 15 seconds"
 
   resource_usage:
     memory_usage_during_initialization: "< 120MB"  # Slight increase due to consolidation
@@ -394,28 +461,29 @@ integration_points:
     - discovery_systems_integration: "phase_3_coordinates_with_discovery_components"
     - monitoring_integration: "phase_4_provides_monitoring_to_all_systems"
 
-# Version Management (Updated)
+# Version Management (Updated to 6-Phase Architecture)
 version_management:
-  current_version: "0.2.2"
+  current_version: "0.3.1"
   compatibility_requirements:
-    minimal_system_version: "0.2.0"
-    required_components: ["error_handling", "configuration_base", "circuit_breaker"]
+    minimal_system_version: "0.3.0"
+    required_components: ["error_handling", "configuration_base", "circuit_breaker", "mcp_server_discovery"]
 
   migration_support:
-    previous_version_support: true
-    migration_strategy: "consolidated_components_with_backward_compatibility"
+    previous_version_support: false
+    migration_strategy: "unified_6_phase_architecture"
     configuration_migration: "automatic_with_validation"
 
-  consolidation_changes:
-    what_was_consolidated:
-      - "unified_error_handling.yaml + sequenced_initialization.yaml"
-      - "10 initialization phases → 4 consolidated phases"
-      - "separate circuit breaker systems → unified circuit breaker"
-      - "individual fallback systems → consolidated fallback matrix"
+  architecture_changes:
+    what_was_changed:
+      - "4-phase system → 6-phase system (Phase 0-5)"
+      - "phase_1_core_foundation → phase_0_mcp_core_setup"
+      - "Separate monitoring systems → unified monitoring_system"
+      - "Conflicting initialization → unified architecture"
+      - "Circular dependencies resolved"
 
-    benefits_of_consolidation:
-      - "Reduced complexity: 27 → 14 files"
-      - "Improved dependency management: 5 → 4 levels"
-      - "Enhanced error handling coordination"
-      - "Simplified initialization process"
-      - "Better resource utilization"
+    benefits_of_changes:
+      - "Eliminated architecture conflicts between master.md and error_handling_initialization.yaml"
+      - "Proper MCP integration from Phase 0"
+      - "Unified monitoring and logging systems"
+      - "Clear dependency hierarchy without cycles"
+      - "Consistent 6-phase initialization across all components"

@@ -20,7 +20,7 @@ capabilities: [
 ]
 triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage", "parallel", "team", "multiple-agents", "clarify", "search", "research", "unclear", "help", "details", "requirements", "batch", "multiple-files", "bulk-edit", "mass-update", "parallel-files"]
 tools: []
-version: "0.3.0"
+version: "0.3.1"
 imports: [
   "config/core/mcp_server_discovery.yaml",
   "config/core/configuration_base.yaml",
@@ -682,13 +682,13 @@ performance_gates:
 
 ---
 
-**System Status**: Orchestration v0.3.0 with 6-phase initialization system (Phase 0-5) including MCP integration and component orchestration
+**System Status**: Orchestration v0.3.1 with unified 6-phase initialization system (Phase 0-5) including MCP integration and component orchestration
 
 **Architecture**: Coordination with phase-based configuration modules, TF-IDF processing, circuit breaker error handling, and MCP integration
 
 **Performance**: Optimized for task distribution, semantic agent selection, execution coordination with backup systems, and automatic MCP tool selection
 
-**Key Features v0.3.0**:
+**Key Features v0.3.1**:
 
 - ✅ **CLEAN 6-PHASE INITIALIZATION**: Startup (Phase 0-5) with resolved circular dependencies
 - 🔍 **MCP DISCOVERY**: Automatic detection of available MCP servers

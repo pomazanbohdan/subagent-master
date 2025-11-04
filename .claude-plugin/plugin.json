@@ -1,7 +1,7 @@
 {
   "name": "master",
-  "version": "0.3.0",
-  "description": "Optimized orchestration system v0.3.0 - clean 5-phase initialization (Phase 0-4) with enhanced MCP integration, automatic tool selection, and streamlined architecture",
+  "version": "0.3.1",
+  "description": "Unified orchestration system v0.3.1 - resolved architecture conflicts with 6-phase initialization (Phase 0-5) and enhanced MCP integration",
   "author": {
     "name": "Bohdan",
     "email": "pomazan.bohdan@gmail.com"
@@ -83,9 +83,10 @@
     "resource-optimization",
     "circular-dependency-detection",
     "configuration-validation",
-    "consolidated-architecture",
-    "5-phase-initialization",
+    "unified-architecture",
+    "6-phase-initialization",
     "phase-based-architecture",
+    "architecture-conflict-resolution",
     "mcp-server-discovery",
     "comprehensive-mcp-integration",
     "automatic-mcp-tool-selection",
