@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Enhanced orchestration system v0.3.5 - YAML optimized configuration with complete functionality restoration and improved performance",
-    "version": "0.3.5"
+    "version": "0.1.0"
   },
   "plugins": [
     {
