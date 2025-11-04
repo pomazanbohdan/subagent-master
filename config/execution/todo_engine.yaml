@@ -3,7 +3,7 @@
 
 metadata:
   name: "todo_engine"
-  version: "0.3.0"
+  version: "0.3.1"
   description: "Consolidated TODO execution engine with backup integration, parallel coordination, adaptive delegation, and intelligent task management for optimal execution"
   author: "Master Agent System v0.3.0"
   tags: ["todo-execution", "task-delegation", "parallel-coordination", "backup-system", "progress-tracking", "adaptive-execution"]

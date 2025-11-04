@@ -26,6 +26,8 @@ imports: [
   "config/core/configuration_base.yaml",
   "config/core/error_handling_initialization.yaml",
   "config/core/monitoring_system.yaml",
+  "config/core/performance_optimization.yaml",
+  "config/core/system_health_check.yaml",
   "config/analysis/task_analysis.yaml",
   "config/analysis/agent_selection.yaml",
   "config/analysis/clarification.yaml",

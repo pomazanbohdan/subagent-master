@@ -3,7 +3,7 @@
 
 metadata:
   name: "mcp_server_discovery"
-  version: "0.3.0"
+  version: "0.3.1"
   description: "MCP Server Discovery and Validation system for Phase 0 initialization with automatic detection, capability analysis, and health monitoring"
   author: "Master Agent System"
   tags: ["mcp-discovery", "server-detection", "capability-analysis", "validation", "health-monitoring", "tool-selection"]
@@ -360,10 +360,10 @@ error_handling:
 
 # Version Management
 version_management:
-  current_version: "0.3.0"
+  current_version: "0.3.1"
   architecture_version: "v0.3.0"
   compatibility_requirements:
-    minimal_system_version: "0.3.0"
+    minimal_system_version: "0.3.1"
     required_components: ["error_handling_initialization"]
 
   phase_integration:

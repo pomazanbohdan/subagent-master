@@ -3,7 +3,7 @@
 
 metadata:
   name: "coordination"
-  version: "0.3.0"
+  version: "0.3.1"
   description: "Parallel coordination system with auto-batch detection, intelligent synchronization, result synthesis, and adaptive orchestration"
   author: "Master Agent System"
   tags: ["parallel-coordination", "auto-batch-detection", "synchronization", "result-synthesis", "adaptive-orchestration", "dependency-management"]

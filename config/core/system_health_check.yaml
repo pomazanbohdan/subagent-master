@@ -268,7 +268,7 @@ version_management:
   current_version: "0.3.1"
   architecture_version: "unified_health_monitoring_v1"
   compatibility_requirements:
-    minimal_system_version: "0.3.0"
+    minimal_system_version: "0.3.1"
     required_components: ["monitoring_system", "error_handling_initialization", "mcp_server_discovery"]
 
   integration_support:

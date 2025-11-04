@@ -3,7 +3,7 @@
 
 metadata:
   name: "agent_selection"
-  version: "0.3.0"
+  version: "0.3.1"
   description: "Agent selection system with TF-IDF semantic analysis, competency matrix integration, and adaptive learning for agent matching"
   tags: ["agent-selection", "tfidf-analysis", "competency-matching", "semantic-analysis", "machine-learning", "performance-optimization"]
 

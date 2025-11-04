@@ -3,7 +3,7 @@
 
 metadata:
   name: "delegation"
-  version: "0.3.0"
+  version: "0.3.1"
   description: "Consolidated task delegation system with intelligent agent selection, coordination integration, and adaptive fallback mechanisms for optimal task execution"
   author: "Master Agent System v0.3.0"
   tags: ["task-delegation", "agent-selection", "coordination", "fallback-mechanisms", "adaptive-strategies"]

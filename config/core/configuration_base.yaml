@@ -3,7 +3,7 @@
 
 metadata:
   name: "configuration_base"
-  version: "0.3.0"
+  version: "0.3.1"
   description: "Configuration base system with dependency resolution, loading, and resource management"
   tags: ["configuration", "dependency-resolution", "loading", "topological-sort", "resource-management"]
 
@@ -632,10 +632,10 @@ integration_points:
 
 # Version Management (Enhanced)
 version_management:
-  current_version: "0.3.0"
-  architecture_version: "enhanced_5_phase_v0.3.0"
+  current_version: "0.3.1"
+  architecture_version: "enhanced_6_phase_v0.3.1"
   compatibility_requirements:
-    minimal_system_version: "0.3.0"
+    minimal_system_version: "0.3.1"
     required_components: ["mcp_server_discovery", "error_handling_initialization", "dependency_resolver"]
 
   migration_support:

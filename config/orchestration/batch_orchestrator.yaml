@@ -3,7 +3,7 @@
 
 metadata:
   name: "batch_orchestrator"
-  version: "0.3.0"
+  version: "0.3.1"
   description: "Batch orchestration system for automatic detection, preparation, and coordination of parallel operations"
   tags: ["batch-orchestration", "parallel-coordination", "auto-detection", "workflow-automation"]
 
@@ -176,12 +176,12 @@ integration_interfaces:
 
 # Version Management
 version_management:
-  current_version: "0.3.0"
+  current_version: "0.3.1"
   architecture_version: "unified_batch_orchestration_v1"
   compatibility_requirements:
-    minimal_task_analysis_version: "0.3.0"
-    minimal_delegation_version: "0.3.0"
-    minimal_coordination_version: "0.3.0"
+    minimal_task_analysis_version: "0.3.1"
+    minimal_delegation_version: "0.3.1"
+    minimal_coordination_version: "0.3.1"
 
   evolution_plans:
     future_enhancements:

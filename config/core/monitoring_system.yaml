@@ -3,7 +3,7 @@
 
 metadata:
   name: "monitoring_system"
-  version: "0.3.0"
+  version: "0.3.1"
   description: "Centralized monitoring system orchestration for unified metrics collection, performance analytics, and health monitoring across all components"
   author: "Master Agent System"
   tags: ["monitoring", "metrics", "performance", "health-checks", "analytics", "alerting"]
@@ -279,10 +279,10 @@ configuration_management:
 
 # Version Management
 version_management:
-  current_version: "0.3.0"
+  current_version: "0.3.1"
   architecture_version: "unified_monitoring_v1"
   compatibility_requirements:
-    minimal_system_version: "0.3.0"
+    minimal_system_version: "0.3.1"
     required_components: ["error_handling_initialization", "mcp_server_discovery"]
 
   integration_support:

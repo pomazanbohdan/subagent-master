@@ -389,7 +389,7 @@ version_management:
   current_version: "0.3.1"
   architecture_version: "unified_performance_optimization_v1"
   compatibility_requirements:
-    minimal_system_version: "0.3.0"
+    minimal_system_version: "0.3.1"
     required_components: ["monitoring_system", "performance_tracking"]
     integration_support: true
 

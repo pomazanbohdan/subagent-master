@@ -3,7 +3,7 @@
 
 metadata:
   name: "agent_registry"
-  version: "0.3.0"
+  version: "0.3.1"
   description: "Enhanced agent registry system with dynamic discovery, MCP server integration, registration, and adaptive agent management with domain expertise integration and comprehensive MCP monitoring"
   author: "Master Agent System v0.3.0"
   tags: ["agent-registry", "dynamic-discovery", "agent-management", "domain-expertise", "capability-tracking", "mcp-integration", "mcp-monitoring"]
