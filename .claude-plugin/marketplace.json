@@ -5,8 +5,8 @@
     "email": "pomazan.bohdan@gmail.com"
   },
   "metadata": {
-    "description": "За МОНОЛІТ!",
-    "version": "0.2.2"
+    "description": "Advanced intelligent task orchestration with comprehensive parallel planning and real-time adaptation",
+    "version": "0.3.0"
   },
   "plugins": [
     {
@@ -119,7 +119,27 @@
         "agent-categorization",
         "mcp-server-categorization",
         "template-engine",
-        "system-announcement"
+        "system-announcement",
+        "intelligent-task-decomposition",
+        "dependency-graph-analysis",
+        "critical-path-optimization",
+        "parallel-resource-allocation",
+        "dynamic-scheduling-algorithms",
+        "deadlock-avoidance-systems",
+        "real-time-adaptation",
+        "machine-learning-optimization",
+        "performance-validation",
+        "system-health-monitoring",
+        "quality-assurance-framework",
+        "comprehensive-testing",
+        "resource-modeling",
+        "load-balancing-algorithms",
+        "synchronization-mechanisms",
+        "adaptive-execution-strategies",
+        "predictive-scaling",
+        "anomaly-detection",
+        "fault-tolerance",
+        "auto-healing-capabilities"
       ],
       "source": "./",
       "agents": [
