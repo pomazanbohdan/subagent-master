@@ -1,7 +1,7 @@
 {
   "name": "master",
-  "version": "0.3.3",
-  "description": "Unified orchestration system v0.3.3 - enhanced parallel execution with auto-batch detection for 60-80% performance improvement",
+  "version": "0.3.4",
+  "description": "Unified orchestration system v0.3.4 - YAML optimized configuration with 59% token reduction and enhanced performance",
   "author": {
     "name": "Bohdan",
     "email": "pomazan.bohdan@gmail.com"
