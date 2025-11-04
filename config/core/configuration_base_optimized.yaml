@@ -1,0 +1,255 @@
+component:
+  name: "configuration_base"
+  version: "0.3.1"
+  description: "Configuration base system with dependency resolution and resource management"
+  category: "core"
+  priority: 1
+  status: "stable"
+
+triggers:
+  primary:
+    keywords: ["load_config", "initialize_system", "resolve_dependencies"]
+    patterns: [".*load.*configuration.*", ".*system.*initialize.*"]
+    score: 1.0
+  secondary:
+    keywords: ["dependency_graph", "topological_sort", "resource_management"]
+    score: 0.7
+  contextual:
+    conditions: ["system_startup", "configuration_reload", "dependency_validation_required"]
+    score: 0.5
+
+implementation:
+  operations:
+    - name: "dependency_graph_analysis"
+      method: "topological_sort"
+      priority: 1
+      config:
+        algorithm:
+          type: "kahn_algorithm"
+          cycle_detection: true
+          validation: true
+        phases:
+          count: 6
+          parallel_loading: true
+          max_concurrent: 6
+      output:
+        sorted_configs: "array"
+        dependency_levels: "object"
+        loading_plan: "array"
+
+    - name: "parallel_loading_strategy"
+      method: "resource_aware_loading"
+      priority: 2
+      config:
+        thread_pools:
+          io_operations:
+            pool_size: 8
+            queue_size: 100
+            keep_alive: 60
+          cpu_operations:
+            pool_size: 4
+            queue_size: 50
+            keep_alive: 30
+          priority_operations:
+            pool_size: 2
+            queue_size: 20
+            keep_alive: 120
+        resource_monitoring:
+          memory_threshold_mb: 512
+          cpu_threshold_percent: 75
+          adaptive_scaling: true
+      output:
+        loading_status: "string"
+        resource_metrics: "object"
+        performance_data: "object"
+
+    - name: "adaptive_timeout_management"
+      method: "dynamic_timeout_calculation"
+      priority: 3
+      config:
+        base_timeout_ms: 3000
+        max_timeout_ms: 25000
+        complexity_multiplier: 1.1
+        priority_factors:
+          critical: 0.8
+          high: 1.0
+          medium: 1.2
+          low: 1.4
+        load_adjustment:
+          enabled: true
+          thresholds:
+            light_load: 50
+            medium_load: 75
+            heavy_load: 90
+            extreme_load: 100
+      output:
+        calculated_timeouts: "object"
+        adjustment_factors: "object"
+        load_status: "string"
+
+    - name: "dependency_validation"
+      method: "comprehensive_validation"
+      priority: 4
+      config:
+        validation:
+          strict_mode: true
+          missing_dependency_action: "error"
+          circular_dependency_action: "error"
+          timeout: 5000
+        caching:
+          enabled: true
+          cache_duration: 3600
+          max_size: 150
+      output:
+        validation_result: "boolean"
+        error_details: "array"
+        validation_metrics: "object"
+
+dependencies:
+  required:
+    - component: "mcp_server_discovery"
+      version: ">=0.3.1"
+      reason: "MCP server detection prerequisite"
+    - component: "error_handling_initialization"
+      version: ">=0.3.1"
+      reason: "Error handling for loading operations"
+  optional:
+    - component: "monitoring_system"
+      version: ">=0.3.1"
+      fallback: "use basic metrics collection"
+      reason: "Enhanced monitoring and metrics"
+
+output:
+  format: "structured"
+  validation: true
+  schema:
+    configuration_status: "string"
+    loading_plan: "array"
+    dependency_graph: "object"
+    resource_metrics: "object"
+    validation_results: "object"
+    performance_metrics: "object"
+
+fallback:
+  enabled: true
+  strategy: "graceful_degradation"
+  alternatives:
+    - "sequential_loading"
+    - "basic_dependency_resolution"
+    - "minimal_configuration_loading"
+  emergency_only: false
+  error_recovery:
+    max_retries: 3
+    backoff_strategy: "exponential"
+    base_delay: 1000
+    max_delay: 8000
+
+monitoring:
+  enabled: true
+  metrics:
+    - "dependency_resolution_time"
+    - "configuration_loading_time"
+    - "parallel_loading_efficiency"
+    - "resource_utilization"
+    - "error_recovery_time"
+    - "memory_usage"
+    - "cache_hit_rate"
+  targets:
+    dependency_resolution_time: 3000
+    configuration_loading_time: 25000
+    parallel_loading_efficiency: 0.85
+    resource_utilization: 0.75
+    error_rate: 0.05
+    memory_usage: 384
+    cache_hit_rate: 0.90
+  alerts:
+    dependency_resolution_time: 5000
+    configuration_loading_time: 30000
+    error_rate: 0.1
+    memory_usage: 512
+
+integration:
+  inputs:
+    - "configuration_files_list"
+    - "system_requirements"
+    - "resource_constraints"
+    - "dependency_specifications"
+  outputs:
+    - "loading_engine"
+    - "dependency_resolver"
+    - "resource_manager"
+    - "system_monitor"
+  events:
+    subscribe: ["system_startup", "configuration_reload_requested", "dependency_update"]
+    publish: ["configuration_loaded", "dependencies_resolved", "loading_completed", "error_detected"]
+  apis:
+    internal:
+      - "validate_configuration"
+      - "resolve_dependencies"
+      - "generate_loading_plan"
+      - "monitor_loading_progress"
+    external:
+      - "get_configuration_status"
+      - "reload_configuration"
+      - "get_dependency_graph"
+      - "get_performance_metrics"
+
+cache_system:
+  enabled: true
+  strategy: "intelligent_caching"
+  dependency_cache:
+    duration: 3600
+    max_size: 150
+    compression: false
+  configuration_cache:
+    duration: 1800
+    max_size_mb: 96
+    compression: true
+  invalidation_triggers:
+    - "configuration_change"
+    - "dependency_change"
+    - "error_threshold_exceeded"
+    - "system_restart"
+
+phase_configuration:
+  phase_0:
+    configs: ["mcp_server_discovery", "error_handling_initialization", "monitoring_system"]
+    parallel: true
+    priority: "critical"
+  phase_1:
+    configs: ["task_analysis", "agent_selection"]
+    parallel: true
+    priority: "critical"
+  phase_2:
+    configs: ["clarification"]
+    parallel: false
+    priority: "medium"
+  phase_3:
+    configs: ["todo_engine", "delegation", "coordination"]
+    parallel: true
+    priority: "critical"
+  phase_4:
+    configs: ["agent_registry"]
+    parallel: true
+    priority: "high"
+  phase_5:
+    configs: ["batch_orchestrator"]
+    parallel: false
+    priority: "high"
+
+error_handling:
+  strategies:
+    circular_dependency: "error_with_suggestions"
+    missing_dependency: "error_with_alternatives"
+    loading_timeout: "retry_with_backoff"
+    resource_exhaustion: "adaptive_scaling"
+    validation_failure: "log_warning_and_continue"
+  recovery_mechanisms:
+    automatic_retry: true
+    fallback_loading: true
+    graceful_degradation: true
+    emergency_mode: true
+  rollback:
+    enabled: true
+    cleanup_partial_loads: true
+    preserve_successful_loads: true

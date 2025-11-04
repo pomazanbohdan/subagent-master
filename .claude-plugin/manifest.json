@@ -1,6 +1,6 @@
 {
   "name": "orchestration",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Task orchestration system with agent coordination and MCP integration",
   "author": "Bohdan <pomazan.bohdan@gmail.com>",
   "license": "MIT",

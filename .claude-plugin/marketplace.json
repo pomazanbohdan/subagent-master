@@ -5,8 +5,8 @@
     "email": "pomazan.bohdan@gmail.com"
   },
   "metadata": {
-    "description": "Unified orchestration system v0.3.1 - resolved architecture conflicts with 6-phase initialization (Phase 0-5) and enhanced MCP integration",
-    "version": "0.3.1"
+    "description": "Unified orchestration system v0.3.2 - added optimized configuration files with 30-50% token reduction and enhanced structure",
+    "version": "0.3.2"
   },
   "plugins": [
     {

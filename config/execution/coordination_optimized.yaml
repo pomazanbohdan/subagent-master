@@ -1,0 +1,427 @@
+component:
+  name: "coordination"
+  version: "0.3.1"
+  description: "Parallel coordination system with auto-batch detection and intelligent synchronization"
+  category: "execution"
+  priority: 4
+  status: "stable"
+
+triggers:
+  primary:
+    keywords: ["coordinate", "parallel", "batch", "synchronize", "orchestrate"]
+    patterns: [".*parallel.*execution.*", ".*batch.*operation.*", ".*task.*coordination.*"]
+    score: 1.0
+  secondary:
+    keywords: ["decompose", "merge_results", "sync_tasks", "allocate_resources"]
+    score: 0.7
+  contextual:
+    conditions: ["multiple_independent_tasks", "batch_operations_detected", "complex_task_execution"]
+    score: 0.5
+
+implementation:
+  operations:
+    - name: "auto_batch_detection"
+      method: "pattern_analysis_algorithm"
+      priority: 1
+      config:
+        trigger_threshold: 3
+        scan_frequency: "on_task_creation"
+        pattern_types:
+          - read_operations: "Read file_path operations"
+          - edit_operations: "Edit file_path + old_string + new_string operations"
+          - grep_operations: "Grep pattern + path operations"
+          - write_operations: "Write file_path + content operations"
+          - glob_operations: "Glob pattern operations"
+          - bash_operations: "Bash command operations"
+        independence_validation:
+          file_independence_check: true
+          operation_conflict_detection: true
+          resource_contention_analysis: true
+          dependency_verification: true
+        batch_classification:
+          parallel_file_reading:
+            max_concurrent: 8
+            estimated_improvement: 0.80
+            safety_checks: ["file_access_validation", "permission_check"]
+          parallel_text_replacements:
+            max_concurrent: 6
+            estimated_improvement: 0.70
+            safety_checks: ["pattern_validation", "backup_verification", "overlap_prevention"]
+          parallel_pattern_searching:
+            max_concurrent: 8
+            estimated_improvement: 0.75
+            safety_checks: ["path_validation", "resource_limits_check"]
+          parallel_file_creation:
+            max_concurrent: 5
+            estimated_improvement: 0.65
+            safety_checks: ["path_conflict_check", "disk_space_validation"]
+      output:
+        batch_opportunities: "array"
+        execution_plan: "object"
+        performance_estimate: "object"
+
+    - name: "task_decomposition"
+      method: "intelligent_task_breakdown"
+      priority: 2
+      config:
+        decomposition_strategies:
+          parallel_decomposition:
+            trigger_conditions:
+              complexity_score: 4.0
+              multi_domain_tasks: true
+              independent_components_available: true
+              sufficient_agents: true
+          massive_batch_decomposition:
+            trigger_conditions:
+              identical_operation_count: 3
+              batch_modification_pattern: true
+              independent_file_operations: true
+              performance_optimization_required: true
+            optimization_targets:
+              version_updates: 0.75
+              text_replacements: 0.70
+              file_modifications: 0.60
+              structural_changes: 0.65
+          competitive_approach:
+            trigger_conditions:
+              critical_decisions_required: true
+              multiple_experts_available: true
+              quality_requirements: "high"
+              time_constraints: "tight_deadlines"
+          phased_execution:
+            trigger_conditions:
+              complex_systems: true
+              multiple_phases_required: true
+              cross_team_coordination: true
+              sequential_phases_beneficial: true
+        subtask_structure:
+          fields:
+            - subtask_id: "unique_identifier"
+            - description: "clear_actionable_subtask"
+            - domain: "primary_domain_category"
+            - agent_requirements: "required_capabilities"
+            - dependencies: "dependent_subtask_ids"
+            - estimated_effort: "time_estimate_with_confidence"
+            - priority: "strategic_importance_level"
+            - parallel_group: "parallel_execution_identification"
+      output:
+        subtask_definitions: "array"
+        dependency_graph: "object"
+        execution_plan: "object"
+
+    - name: "parallel_execution_coordination"
+      method: "orchestrated_parallel_execution"
+      priority: 3
+      config:
+        execution_modes:
+          independent_parallel:
+            coordination_requirements: "none"
+            synchronization_points: ["final_result_synthesis"]
+            failure_handling: "continue_with_available_results"
+            resource_optimization: "maximum_concurrent_utilization"
+          massive_parallel_operations:
+            coordination_requirements: "automatic_parallel_decomposition"
+            synchronization_points: ["batch_completion", "result_validation"]
+            failure_handling: "continue_with_successful_operations"
+            batch_threshold: 3
+            max_concurrent_operations: 8
+          sequential_dependency:
+            coordination_requirements: "strict_order_enforcement"
+            synchronization_points: ["each_completion_triggers_next"]
+            failure_handling: "stop_on_first_failure"
+          hybrid_execution:
+            coordination_requirements: "phase_based_synchronization"
+            synchronization_points: ["phase_transitions", "critical_checkpoints"]
+            failure_handling: "graceful_degradation"
+            adaptive_phasing: true
+          competitive_execution:
+            coordination_requirements: "final_result_selection"
+            synchronization_points: ["competition_completion", "result_merge"]
+            failure_handling: "quality_based_result_selection"
+          pipeline_execution:
+            coordination_requirements: "stage_handoff_synchronization"
+            synchronization_points: ["stage_transitions", "data_flow"]
+            failure_handling: "stage_isolation_and_recovery"
+        max_concurrent_todos: 8
+        load_threshold: 0.8
+      output:
+        execution_status: "object"
+        parallel_results: "array"
+        coordination_metrics: "object"
+
+    - name: "synchronization_management"
+      method: "intelligent_synchronization"
+      priority: 4
+      config:
+        coordination_points:
+          completion_sync:
+            description: "wait_for_all_parallel_tasks_to_complete"
+            trigger: "all_running_tasks_completed"
+            implementation: "result_collection_and_aggregation"
+            timeout_handling: "continue_with_available_results"
+          milestone_sync:
+            description: "synchronize_at_key_project_milestones"
+            trigger: "phase_milestone_reached"
+            implementation: "milestone_validation_and_handoff"
+            timeout_handling: "adjust_timeline_if_needed"
+          intermediate_sync:
+            description: "coordinate_intermediate_results"
+            trigger: "intermediate_deliverable_ready"
+            implementation: "partial_result_collection_and_validation"
+            timeout_handling: "continue_processing_with_partial_results"
+          result_merge:
+            description: "merge_results_from_multiple_execution_paths"
+            trigger: "parallel_execution_completed"
+            implementation: "result_integration_and_optimization"
+            conflict_resolution: "handle_contradictory_results"
+        conflict_resolution_strategies:
+          priority_based: "higher_priority_task_or_agent_wins"
+          merit_based: "best_quality_result_wins"
+          hybrid_approach: "combine_best_elements_from_multiple_results"
+          user_intervention: "user_decides_between_conflicting_options"
+      output:
+        synchronization_status: "object"
+        resolved_conflicts: "array"
+        merge_results: "object"
+
+    - name: "active_task_tracking"
+      method: "comprehensive_task_monitoring"
+      priority: 5
+      config:
+        tracked_data_fields:
+          - task_id: "unique_task_identifier"
+          - status: "pending,in_progress,completed,failed,blocked,timeout"
+          - start_time: "execution_start_timestamp"
+          - end_time: "execution_completion_timestamp"
+          - assigned_agent: "agent_handling_the_task"
+          - progress: "completion_percentage_0.0-1.0"
+          - partial_results: "partial_or_intermediate_results"
+          - coordination_points: "synchronization_waiting_points"
+          - error_history: "previous_error_attempts_and_recoveries"
+        status_transitions:
+          pending_to_in_progress: "agent_started_task_execution"
+          in_progress_to_completed: "task_finished_successfully"
+          in_progress_to_failed: "task_failed_intervention_required"
+          in_progress_to_blocked: "waiting_for_dependencies"
+          blocked_to_in_progress: "dependencies_resolved"
+          completed_to_in_progress: "re-execution_requested"
+          failed_to_pending: "recovery_attempt_initiated"
+          blocked_to_pending: "waiting_period_expired"
+        monitoring_aspects:
+          - individual_task_progress_tracking
+          - overall_system_progress_calculation
+          - agent_performance_monitoring
+          - resource_utilization_optimization
+          - blockage_detection_and_resolution
+          - error_pattern_recognition
+        calculation_methods:
+          - completion_percentage: "based_on_subtask_completion_status"
+          - critical_path_progress: "progress_along_critical_path"
+          - overall_progress: "weighted_progress_across_all_tasks"
+          - agent_performance: "historical_performance_vs_current_performance"
+          - resource_efficiency: "resource_utilization_optimization"
+      output:
+        task_progress: "object"
+        completion_predictions: "object"
+        blocked_tasks: "array"
+        performance_metrics: "object"
+
+    - name: "result_synthesis"
+      method: "intelligent_result_integration"
+      priority: 6
+      config:
+        synthesis_algorithms:
+          parallel_results:
+            collection_validation: true
+            quality_assessment: true
+            consistency_analysis: true
+            integration_strategy: "hybrid_approach"
+            final_validation: true
+          sequential_results:
+            sequential_integration: true
+            progress_tracking: true
+            final_integration: true
+            quality_assurance: true
+        quality_assessment_dimensions:
+          - technical_accuracy
+          - innovation_creativity
+          - domain_specific_metrics
+          - consistency_validation
+          - requirement_satisfaction
+        integration_approaches:
+          priority_based: "choose_highest_priority_results"
+          merit_based: "choose_best_overall_quality"
+          hybrid: "combine_best_elements_from_multiple_results"
+          user_intervention: "user_decides_conflicts"
+      output:
+        integrated_deliverable: "object"
+        confidence_scores: "object"
+        synthesis_metadata: "object"
+
+dependencies:
+  required:
+    - component: "todo_engine"
+      version: ">=0.3.1"
+      reason: "Primary task delegation and execution engine"
+    - component: "agent_selection"
+      version: ">=0.3.1"
+      reason: "Agent assignment and capability matching"
+    - component: "task_analysis"
+      version: ">=0.3.1"
+      reason: "Task complexity assessment and decomposition"
+  optional:
+    - component: "clarification"
+      version: ">=0.3.1"
+      fallback: "use_basic_requirement_handling"
+      reason: "Interactive requirement gathering during coordination"
+    - component: "monitoring_system"
+      version: ">=0.3.1"
+      fallback: "use_basic_progress_tracking"
+      reason: "Enhanced performance monitoring and metrics"
+
+output:
+  format: "structured"
+  validation: true
+  schema:
+    coordination_status: "string"
+    parallel_execution_results: "array"
+    synchronization_points: "object"
+    integrated_deliverable: "object"
+    performance_metrics: "object"
+
+fallback:
+  enabled: true
+  strategy: "graceful_degradation"
+  alternatives:
+    - "sequential_execution_only"
+    - "simplified_parallel_coordination"
+    - "basic_task_tracking"
+    - "manual_synchronization"
+  emergency_only: false
+  error_recovery:
+    max_retries: 3
+    backoff_strategy: "exponential"
+    base_delay: 1000
+    max_delay: 8000
+
+monitoring:
+  enabled: true
+  metrics:
+    - "parallel_execution_efficiency"
+    - "batch_operation_speedup"
+    - "synchronization_latency"
+    - "task_completion_rate"
+    - "resource_utilization"
+    - "conflict_resolution_time"
+    - "result_synthesis_quality"
+  targets:
+    parallel_execution_efficiency: 0.85
+    batch_operation_speedup: 1.5
+    synchronization_latency: 2000
+    task_completion_rate: 0.95
+    resource_utilization: 0.80
+    conflict_resolution_time: 5000
+    result_synthesis_quality: 0.90
+  alerts:
+    parallel_execution_efficiency: 0.70
+    task_completion_rate: 0.85
+    resource_utilization: 0.95
+    synchronization_latency: 5000
+
+integration:
+  inputs:
+    - "task_queue"
+    - "agent_availability"
+    - "resource_constraints"
+    - "execution_requirements"
+  outputs:
+    - "orchestrated_execution_plan"
+    - "synchronization_status"
+    - "integrated_results"
+    - "performance_feedback"
+  events:
+    subscribe: ["task_created", "agent_assigned", "execution_started", "result_ready"]
+    publish: ["coordination_complete", "synchronization_point_reached", "results_synthesized"]
+  apis:
+    internal:
+      - "coordinate_parallel_execution"
+      - "manage_synchronization"
+      - "track_active_tasks"
+      - "synthesize_results"
+    external:
+      - "get_execution_status"
+      - "get_parallel_results"
+      - "trigger_synchronization"
+      - "get_coordination_metrics"
+
+resource_management:
+  intelligent_allocation:
+    agent_workload_balancing:
+      enabled: true
+      strategy: "performance_based"
+      max_concurrent_todos: 8
+      load_threshold: 0.8
+    resource_optimization:
+      adaptive_scaling: true
+      memory_management: true
+      cpu_optimization: true
+      cache_management: true
+      connection_pooling: true
+    capacity_planning:
+      enabled: true
+      predictive_modeling: true
+      historical_patterns: true
+      contingency_planning: true
+  batch_operation_management:
+    parallel_execution_mandate:
+      enabled: true
+      threshold: 3
+      max_concurrent: 8
+      optimization_target: "performance_priority"
+    batch_execution_workflow:
+      - operation_analysis
+      - parallel_decomposition
+      - concurrent_execution
+      - result_integration
+
+performance_optimization:
+  optimization_strategies:
+    parallel_efficiency:
+      enabled: true
+      max_concurrent_todos: 8
+      dependency_aware_scheduling: true
+      load_balancing: true
+      resource_allocation: true
+    adaptive_timeout_management:
+      base_timeout: 10000
+      complexity_multiplier: 1.5
+      historical_adjustment: true
+      resource_availability_factor: true
+    memory_optimization:
+      efficient_data_structures: true
+      memory_usage_monitoring: true
+      garbage_collection_optimization: true
+      cache_management: true
+    network_optimization:
+      connection_pooling: true
+      request_batching: true
+      response_caching: true
+      latency_optimization: true
+
+error_handling:
+  fallback_strategies:
+    timeout_handling:
+      implementation: "intelligent_retry_with_exponential_backoff"
+      max_retries: 3
+      retry_delays: [1000, 2000, 4000]
+      timeout_adjustment: true
+    graceful_degradation:
+      enabled: true
+      performance_impact_reduction: true
+      capability_preservation: true
+      user_notification: false
+    error_recovery:
+      automatic: true
+      learning_enabled: true
+      pattern_recognition: true
+      escalation_procedures: true
