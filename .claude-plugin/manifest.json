@@ -1,7 +1,7 @@
 {
   "name": "orchestration",
-  "version": "0.2.1",
-  "description": "Hybrid event-driven task orchestration with dynamic agent discovery, parallel analysis processing and enhanced error recovery",
+  "version": "0.2.2",
+  "description": "Hybrid event-driven task orchestration with dynamic agent discovery, parallel analysis processing, enhanced error recovery and categorized system announcements",
   "author": "Bohdan <pomazan.bohdan@gmail.com>",
   "license": "MIT",
   "keywords": [
@@ -112,7 +112,16 @@
     "capability-verification",
     "persona-instruction-analysis",
     "filesystem-agent-search",
-    "mcp-server-agent-enumeration"
+    "mcp-server-agent-enumeration",
+    "categorized-greeting",
+    "dynamic-system-announcement",
+    "greeting-formation-engine",
+    "system-readiness-display",
+    "event-driven-greeting",
+    "agent-categorization",
+    "mcp-server-categorization",
+    "template-engine",
+    "system-announcement"
   ],
   "homepage": "https://github.com/pomazanbohdan/subagent-master",
   "repository": "https://github.com/pomazanbohdan/subagent-master.git",

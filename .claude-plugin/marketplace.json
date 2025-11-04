@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "За МОНОЛІТ!",
-    "version": "0.2.1"
+    "version": "0.2.2"
   },
   "plugins": [
     {
@@ -110,7 +110,16 @@
         "capability-verification",
         "persona-instruction-analysis",
         "filesystem-agent-search",
-        "mcp-server-agent-enumeration"
+        "mcp-server-agent-enumeration",
+        "categorized-greeting",
+        "dynamic-system-announcement",
+        "greeting-formation-engine",
+        "system-readiness-display",
+        "event-driven-greeting",
+        "agent-categorization",
+        "mcp-server-categorization",
+        "template-engine",
+        "system-announcement"
       ],
       "source": "./",
       "agents": [

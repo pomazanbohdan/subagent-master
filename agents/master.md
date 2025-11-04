@@ -19,11 +19,11 @@ capabilities: [
 ] # Do not change!
 triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage", "parallel", "team", "multiple-agents", "clarify", "search", "research", "unclear", "help", "details", "requirements", "batch", "multiple-files", "bulk-edit", "mass-update", "parallel-files"] # Do not change!
 tools: ["dynamic_agent_discovery"]  # Do not change!
-version: "0.1.1"
+version: "0.2.0"
 
 component:
   name: "master"
-  version: "0.1.1"
+  version: "0.2.0"
   description: "An AI agent that optimizes task execution through planning, parallelization, and execution in subtasks or delegation to existing agents in the system, which are automatically initialized taking into account their competencies." # Do not change!
   category: "orchestration"
   priority: 1
@@ -32,6 +32,10 @@ component:
     original_tokens: 6642
     optimized_tokens: 3300
     savings_percentage: 50
+  latest_update:
+    version: "0.2.0"
+    changes: ["Added categorized greeting formation engine", "Integrated event-driven system announcements", "Enhanced system readiness display"]
+    timestamp: "2025-01-XX"
 
 implementation:
   operations:
@@ -264,12 +268,19 @@ implementation:
             operation: "final_readiness_check"
             description: "Perform comprehensive system readiness assessment"
           - priority: 2
-            operation: "system_readiness_report_display"
-            description: "Display comprehensive system capabilities report"
-            source: "moved_from_system_initialization"
+            operation: "greeting_formation_engine"
+            description: "Generate categorized system greeting with dynamic lists"
+            source: "new_event_driven_component"
+            dependencies: ["final_readiness_check", "enhanced_agent_registry", "mcp_servers_discovered"]
           - priority: 3
+            operation: "integrated_system_readiness_display"
+            description: "Display integrated system announcement with categorized content"
+            source: "new_integration_component"
+            dependencies: ["greeting_formation_engine"]
+          - priority: 4
             operation: "capability_announcement"
             description: "Announce system capabilities to user"
+            dependencies: ["integrated_system_readiness_display"]
         readiness_parameters:
           readiness_threshold: 0.9
           comprehensive_check: true
@@ -282,6 +293,8 @@ implementation:
         output:
         system_ready: "boolean"
         readiness_complete: "boolean"
+        greeting_generated: "boolean"
+        greeting_data: "object"
         capabilities_announced: "boolean"
         readiness_report: "object"
         final_health_score: "float"
@@ -330,6 +343,248 @@ implementation:
     # MOVED: system_validation → system_integration_phase (priority 2)
 
     # MOVED: system_readiness_report_display → system_readiness_phase (priority 3)
+
+    # === GREETING FORMATION ENGINE (Priority 3.1) ===
+
+    - name: "greeting_formation_engine"
+      priority: 3.1
+      method: "event_driven_greeting_generation"
+      event_subscription:
+        listen_to: "system.readiness.verified"
+        correlation_field: "system_id"
+        processing_mode: "sequential"
+      dependencies:
+        system_readiness_dependency: "final_readiness_check"
+        agent_registry_dependency: "agent_registry_enhancement"
+        mcp_discovery_dependency: "system_discovery_phase"
+        required_outputs: ["system_ready", "enhanced_agent_registry", "mcp_servers_discovered"]
+        validation: "system_ready == true && enhanced_agent_registry != null && mcp_servers_discovered != null"
+      config:
+        greeting_generation:
+          data_sources:
+            agent_registry: "enhanced_agent_registry"
+            mcp_servers: "mcp_servers_discovered"
+            system_capabilities: "final_readiness_check_results"
+            performance_metrics: "monitoring_minimal_setup_results"
+
+          agent_categorization:
+            categories:
+              development_agents:
+                criteria: ["backend", "frontend", "fullstack", "developer"]
+                priority: 1
+                description: "Software development and implementation specialists"
+              system_agents:
+                criteria: ["devops", "infrastructure", "system", "architect"]
+                priority: 2
+                description: "System architecture and infrastructure specialists"
+              data_agents:
+                criteria: ["data", "analytics", "ml", "science", "database"]
+                priority: 3
+                description: "Data processing and analytics specialists"
+              quality_agents:
+                criteria: ["testing", "qa", "quality", "validation", "security"]
+                priority: 4
+                description: "Quality assurance and security specialists"
+              support_agents:
+                criteria: ["documentation", "technical", "writer", "support"]
+                priority: 5
+                description: "Documentation and support specialists"
+
+            agent_matching:
+              method: "semantic_capability_matching"
+              confidence_threshold: 0.7
+              fallback_to_general: true
+              uncategorized_handling: "general_category"
+
+          mcp_server_processing:
+            categories:
+              core_platforms:
+                criteria: ["context7", "magic", "sequential", "serena"]
+                priority: 1
+                description: "Core platform services"
+              specialized_tools:
+                criteria: ["playwright", "tavily", "chrome-devtools"]
+                priority: 2
+                description: "Specialized tool integrations"
+
+            server_analysis:
+              method: "capability_based_categorization"
+              health_check_integration: true
+              availability_validation: true
+
+          template_engine:
+            message_format: "structured_with_categories"
+            dynamic_content: true
+            localization_support: false
+            performance_summary: true
+            availability_indicators: true
+
+            template_structure:
+              greeting_section:
+                type: "welcome_message"
+                dynamic_content: true
+              capabilities_section:
+                type: "categorized_summary"
+                show_counts: true
+                show_health: true
+              availability_section:
+                type: "status_overview"
+                show_performance: true
+              next_steps_section:
+                type: "guidance_message"
+                contextual: true
+
+        event_integration:
+          input_events:
+            - "system.readiness.verified"
+            - "agent.registry.updated"
+            - "mcp.discovery.completed"
+
+          output_events:
+            - "greeting.generated"
+            - "system.announcement.ready"
+
+          event_data_mapping:
+            greeting_data: "generated_greeting_content"
+            system_status: "readiness_assessment_results"
+            agent_summary: "categorized_agent_counts"
+            mcp_summary: "server_capability_summary"
+
+        performance_optimization:
+          caching_enabled: true
+          cache_duration: 300  # 5 minutes
+          incremental_updates: true
+          background_refresh: true
+
+        error_handling:
+          categorization_failure:
+            action: "use_general_category"
+            fallback_categories: ["general", "uncategorized"]
+            log_warning: true
+          template_failure:
+            action: "use_basic_template"
+            preserve_core_information: true
+            log_error: true
+          data_source_unavailable:
+            action: "use_cached_data"
+            partial_generation: true
+            notify_user: "System ready with partial information"
+
+      output:
+        greeting_generated: "boolean"
+        greeting_content: "object"
+        categorized_agents: "object"
+        categorized_mcp_servers: "object"
+        system_status_summary: "object"
+        generation_metadata: "object"
+        template_used: "string"
+        event_published: "boolean"
+
+    # === INTEGRATED SYSTEM READINESS DISPLAY (Priority 3.2) ===
+
+    - name: "integrated_system_readiness_display"
+      priority: 3.2
+      method: "greeting_enhanced_system_display"
+      dependencies:
+        greeting_dependency: "greeting_formation_engine"
+        readiness_dependency: "final_readiness_check"
+        required_outputs: ["greeting_generated", "greeting_content", "system_ready"]
+        validation: "greeting_generated == true && system_ready == true"
+      config:
+        display_integration:
+          greeting_integration:
+            use_categorized_agents: true
+            use_categorized_mcp_servers: true
+            dynamic_template_selection: true
+            performance_summary_inclusion: true
+
+          readiness_enhancement:
+            incorporate_system_health: true
+            include_performance_metrics: true
+            availability_status_display: true
+            capability_summary_integration: true
+
+          template_system:
+            base_template: "comprehensive_system_announcement"
+            sections:
+              welcome_section:
+                source: "greeting_content.greeting_section"
+                priority: 1
+                dynamic_content: true
+              capabilities_summary:
+                source: "greeting_content.categorized_agents"
+                include_counts: true
+                include_health_status: true
+                priority: 2
+              infrastructure_status:
+                source: "greeting_content.categorized_mcp_servers"
+                include_availability: true
+                include_performance: true
+                priority: 3
+              system_performance:
+                source: "readiness_assessment.performance_metrics"
+                include_health_score: true
+                include_efficiency_ratings: true
+                priority: 4
+              next_steps_guidance:
+                source: "greeting_content.next_steps_section"
+                contextual_recommendations: true
+                priority: 5
+
+        output_format:
+          structure: "hierarchical_categories_with_counts"
+          include_performance_indicators: true
+          availability_status_format: "health_based"
+          categorization_method: "semantic_capability_grouping"
+
+        dynamic_content_generation:
+          agent_list_formatting:
+            show_specialization: true
+            show_confidence_scores: true
+            group_by_category: true
+            sort_by_priority: true
+
+          mcp_server_formatting:
+            show_capability_summary: true
+            show_health_status: true
+            group_by_platform_type: true
+            availability_indicators: true
+
+          system_metrics_formatting:
+            show_performance_scores: true
+            show_resource_utilization: true
+            show_health_indicators: true
+            trend_analysis: true
+
+        error_handling:
+          greeting_data_missing:
+            action: "use_basic_readiness_template"
+            fallback_content: "standard_system_capabilities"
+            log_warning: true
+          categorization_incomplete:
+            action: "display_available_categories"
+            note_uncategorized_items: true
+            partial_display: true
+          template_generation_failure:
+            action: "use_simple_text_format"
+            preserve_core_information: true
+            log_error: true
+
+        performance_optimization:
+          result_caching: true
+          cache_duration: 600  # 10 minutes
+          incremental_refresh: true
+          background_updates: true
+
+      output:
+        integrated_display_generated: "boolean"
+        display_content: "object"
+        agent_categories_summary: "object"
+        mcp_servers_summary: "object"
+        system_performance_summary: "object"
+        template_metadata: "object"
+        generation_time: "float"
+        user_ready_content: "string"
 
     # === SHARED COMPONENTS (Priority 9.5) ===
 
@@ -2308,6 +2563,7 @@ output:
   format: "structured"
   validation: true
   schema:
+    # Task execution outputs
     selected_agent: "string"
     execution_plan: "array"
     confidence_score: "float"
@@ -2315,6 +2571,13 @@ output:
     parallel_groups: "array"
     mcp_tools_required: "array"
     monitoring_metrics: "object"
+
+    # System readiness outputs
+    system_greeting: "object"
+    agent_categories: "object"
+    mcp_server_categories: "object"
+    system_capabilities: "object"
+    readiness_summary: "object"
 
 fallback:
   enabled: true
@@ -2410,6 +2673,51 @@ performance_optimization:
 event_system:
   enabled: true
   hybrid_mode: true  # Priority-based for system phases, event-driven for task processing
+
+  # System Lifecycle Events (Priority-based execution)
+  system_lifecycle_events:
+    system.readiness.verified:
+      description: "System readiness check completed successfully"
+      data_fields: ["system_id", "readiness_score", "health_status", "timestamp", "components_ready"]
+      handlers: ["greeting_formation_engine", "capability_announcement"]
+      priority: "critical"
+      activation_condition: "final_readiness_check.complete"
+
+    system.discovery.completed:
+      description: "System component discovery phase completed"
+      data_fields: ["discovery_id", "agents_found", "mcp_servers_found", "registry_status", "timestamp"]
+      handlers: ["system_integration_phase", "monitoring_system"]
+      priority: "high"
+
+    system.integration.complete:
+      description: "System integration and validation completed"
+      data_fields: ["integration_id", "integration_results", "validation_status", "timestamp"]
+      handlers: ["system_readiness_phase", "performance_optimizer"]
+      priority: "high"
+
+    greeting.generation.started:
+      description: "Greeting formation process initiated"
+      data_fields: ["greeting_id", "data_sources", "template_type", "timestamp"]
+      handlers: ["monitoring_system", "performance_tracker"]
+      priority: "medium"
+
+    greeting.categorization.completed:
+      description: "Agent and MCP server categorization completed"
+      data_fields: ["greeting_id", "agent_categories", "mcp_categories", "uncategorized_items", "timestamp"]
+      handlers: ["template_engine", "performance_optimizer"]
+      priority: "high"
+
+    greeting.template.generated:
+      description: "Greeting template generated with categorized content"
+      data_fields: ["greeting_id", "template_content", "category_counts", "performance_summary", "timestamp"]
+      handlers: ["integrated_system_readiness_display", "capability_announcement"]
+      priority: "high"
+
+    greeting.display.ready:
+      description: "Integrated system display ready for user presentation"
+      data_fields: ["greeting_id", "display_content", "ready_content", "generation_metadata", "timestamp"]
+      handlers: ["capability_announcement", "user_interface_system"]
+      priority: "critical"
 
   task_processing_events:
     # Core task lifecycle events
