@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "За МОНОЛІТ!",
-    "version": "0.2.0"
+    "version": "0.2.1"
   },
   "plugins": [
     {
@@ -95,7 +95,22 @@
         "mcp-server-validation",
         "real-time-mcp-monitoring",
         "mcp-health-monitoring",
-        "enhanced-mcp-integration"
+        "enhanced-mcp-integration",
+        "dynamic-agent-discovery",
+        "agent-registry-enhancement",
+        "multi-source-agent-detection",
+        "semantic-agent-analysis",
+        "competency-extraction",
+        "parallel-agent-discovery",
+        "agent-capability-mapping",
+        "registry-optimization",
+        "discovery-validation",
+        "agent-availability-checking",
+        "duplicate-agent-detection",
+        "capability-verification",
+        "persona-instruction-analysis",
+        "filesystem-agent-search",
+        "mcp-server-agent-enumeration"
       ],
       "source": "./",
       "agents": [

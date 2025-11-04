@@ -18,7 +18,7 @@ capabilities: [
   "tool-selection"
 ] # Do not change!
 triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage", "parallel", "team", "multiple-agents", "clarify", "search", "research", "unclear", "help", "details", "requirements", "batch", "multiple-files", "bulk-edit", "mass-update", "parallel-files"] # Do not change!
-tools: ["dynamic_mcp_discovery"]  # Do not change!
+tools: ["dynamic_agent_discovery"]  # Do not change!
 version: "0.1.1"
 
 component:
@@ -105,6 +105,16 @@ implementation:
             operation: "agent_registry_construction"
             description: "Build registry of available agents"
             source: "moved_from_system_initialization"
+          - priority: 2.5
+            operation: "dynamic_agent_discovery"
+            description: "Dynamic discovery of all available agents in system"
+            source: "new_discovery_capability"
+            discovery_methods:
+              - "task_tool_api_discovery"
+              - "persona_instruction_scan"
+              - "filesystem_agent_search"
+              - "mcp_server_agent_enumeration"
+              - "configuration_based_discovery"
         discovery_parameters:
           scan_timeout: 120
           retry_on_failure: true
@@ -127,7 +137,75 @@ implementation:
         discovery_summary: "object"
         discovery_time: "float"
 
-    # === SYSTEM INTEGRATION PHASE (Priority 2) ===
+    # === DYNAMIC AGENT DISCOVERY PHASE (Priority 2.5) ===
+
+    - name: "dynamic_agent_discovery_phase"
+      priority: 2.5
+      method: "comprehensive_agent_discovery"
+      dependencies:
+        required_inputs:
+          - component: "system_discovery_phase"
+            expected_outputs: ["discovery_complete", "mcp_servers_discovered", "agents_registry_built"]
+            validation: "discovery_complete == true && agents_registry_built == true"
+      config:
+        discovery_operations:
+          - priority: 1
+            operation: "task_tool_agent_discovery"
+            description: "Discover agents via Task tool API"
+            method: "api_based_enumeration"
+            source: "task_tool_interface"
+          - priority: 2
+            operation: "persona_instruction_discovery"
+            description: "Find SuperClaude personas in instruction files"
+            method: "instruction_parsing"
+            source: "persona_analysis"
+          - priority: 3
+            operation: "filesystem_agent_search"
+            description: "Scan filesystem for agent definitions"
+            method: "pattern_based_search"
+            source: "file_system_scan"
+          - priority: 4
+            operation: "mcp_server_agent_enumeration"
+            description: "Enumerate agents from MCP servers"
+            method: "server_based_discovery"
+            source: "mcp_integration"
+          - priority: 5
+            operation: "agent_capability_analysis"
+            description: "Analyze discovered agents' capabilities"
+            method: "semantic_competency_extraction"
+            source: "capability_analysis"
+        discovery_parameters:
+          parallel_execution: true
+          scan_timeout: 180
+          confidence_threshold: 0.7
+          semantic_analysis: true
+          competency_extraction: true
+        validation_parameters:
+          agent_availability_check: true
+          capability_validation: true
+          duplicate_detection: true
+          conflict_resolution: true
+        error_handling:
+          discovery_failure:
+            action: "continue_with_available_agents"
+            log_warning: true
+            notify_user: "Some agent discovery methods failed, using available agents"
+          partial_discovery:
+            action: "continue_with_partial_registry"
+            log_info: true
+          validation_failure:
+            action: "use_best_effort_analysis"
+            log_warning: true
+      output:
+        dynamic_discovery_complete: "boolean"
+        discovered_agents: "array"
+        agent_capabilities_mapped: "boolean"
+        agent_registry_enhanced: "object"
+        discovery_summary: "object"
+        confidence_scores: "object"
+        duplicate_agents_removed: "integer"
+
+    # === SYSTEM INTEGRATION PHASE (Priority 3) ===
 
     - name: "system_integration_phase"
       priority: 2
@@ -409,10 +487,270 @@ implementation:
         error_status: "boolean"
         processing_time: "float"
 
-    # === TASK RECEIVING & COORDINATION (Priority 10) ===
+  # === DYNAMIC AGENT DISCOVERY OPERATIONS (Priority 15-20) ===
+
+    - name: "task_tool_agent_discovery"
+      priority: 15
+      method: "api_based_agent_enumeration"
+      dependencies:
+        system_discovery_dependency: "system_discovery_phase"
+      config:
+        api_discovery:
+          task_tool_interface:
+            enumeration_method: "subagent_type_discovery"
+            capability_extraction: "description_parsing"
+            validation_method: "availability_check"
+          discovery_patterns:
+            known_subagent_types:
+              - "backend-architect"
+              - "frontend-developer"
+              - "security-engineer"
+              - "devops-engineer"
+              - "data-scientist"
+              - "testing-specialist"
+              - "ui-designer"
+              - "technical-writer"
+              - "performance-optimizer"
+              - "api-specialist"
+            dynamic_type_detection:
+              pattern_matching: true
+              semantic_analysis: true
+              capability_inference: true
+          validation_criteria:
+            availability_check: true
+            capability_verification: true
+            response_time_threshold: 30
+      output:
+        task_tool_agents: "array"
+        agent_capabilities: "object"
+        discovery_metadata: "object"
+        validation_results: "object"
+
+    - name: "persona_instruction_discovery"
+      priority: 16
+      method: "instruction_based_persona_extraction"
+      config:
+        instruction_analysis:
+          search_locations:
+            - "/home/user/.claude/"
+            - "/home/user/.claude/MODE_*.md"
+            - "/home/user/.claude/MCP_*.md"
+            - "/home/user/tools/subagent-master/CLAUDE.md"
+          search_patterns:
+            - "agent.*activation"
+            - "persona.*specialist"
+            - "expert.*activation"
+            - "specialist.*agent"
+            - "subagent.*type"
+          extraction_patterns:
+            persona_definitions:
+              - "Backend Architect"
+              - "Frontend Developer"
+              - "Security Engineer"
+              - "DevOps Engineer"
+              - "Data Scientist"
+              - "Testing Specialist"
+              - "UI Designer"
+              - "Technical Writer"
+              - "Performance Optimizer"
+              - "API Specialist"
+              - "Business Analyst"
+              - "System Integrator"
+          capability_extraction:
+            trigger_keywords: true
+            domain_expertise: true
+            tool_preferences: true
+            methodology_patterns: true
+        analysis_parameters:
+          semantic_matching: true
+          confidence_threshold: 0.6
+          duplicate_detection: true
+      output:
+        persona_agents: "array"
+        persona_capabilities: "object"
+        instruction_mappings: "object"
+        extraction_confidence: "float"
+
+    - name: "filesystem_agent_search"
+      priority: 17
+      method: "pattern_based_filesystem_discovery"
+      config:
+        filesystem_scan:
+          search_directories:
+            - "/home/user/tools/subagent-master/agents/"
+            - "/home/user/tools/*/agents/"
+            - "/home/user/*agents*/"
+            - "/home/user/*specialist*/"
+          file_patterns:
+            - "*.md"
+            - "*.yaml"
+            - "*.yml"
+            - "agent.*"
+            - "specialist.*"
+            - "expert.*"
+          content_patterns:
+            agent_indicators:
+              - "name:"
+              - "description:"
+              - "capabilities:"
+              - "triggers:"
+              - "component:"
+              - "subagent_type:"
+            expertise_indicators:
+              - "backend"
+              - "frontend"
+              - "security"
+              - "devops"
+              - "data"
+              - "testing"
+              - "ui"
+              - "api"
+          analysis_methods:
+            semantic_parsing: true
+            competency_extraction: true
+            capability_mapping: true
+            availability_inference: true
+        filtering_criteria:
+          min_capability_count: 3
+          description_length_min: 50
+          trigger_presence_required: true
+      output:
+        filesystem_agents: "array"
+        agent_files_found: "array"
+        capability_mappings: "object"
+        scan_summary: "object"
+
+    - name: "mcp_server_agent_enumeration"
+      priority: 18
+      method: "server_based_agent_discovery"
+      dependencies:
+        mcp_discovery_dependency: "system_discovery_phase"
+      config:
+        mcp_server_analysis:
+          server_capabilities:
+            context7_agents:
+              search_method: "tool_capability_analysis"
+              capability_patterns:
+                - "documentation_specialist"
+                - "research_analyst"
+                - "knowledge_manager"
+            magic_agents:
+              search_method: "ui_component_analysis"
+              capability_patterns:
+                - "frontend_developer"
+                - "ui_designer"
+                - "component_specialist"
+            playwright_agents:
+              search_method: "testing_capability_analysis"
+              capability_patterns:
+                - "testing_engineer"
+                - "automation_specialist"
+                - "e2e_tester"
+            sequential_agents:
+              search_method: "analysis_capability_inference"
+              capability_patterns:
+                - "system_analyst"
+                - "architect"
+                - "problem_solver"
+            serena_agents:
+              search_method: "symbol_operation_analysis"
+              capability_patterns:
+                - "code_analyst"
+                - "symbol_specialist"
+                - "project_manager"
+            tavily_agents:
+              search_method: "research_capability_analysis"
+              capability_patterns:
+                - "research_specialist"
+                - "information_analyst"
+                - "data_researcher"
+          agent_inference:
+            capability_to_agent_mapping: true
+            expertise_extraction: true
+            availability_assessment: true
+      output:
+        mcp_based_agents: "array"
+        server_capability_mappings: "object"
+        inferred_agent_types: "array"
+
+    - name: "agent_capability_analysis"
+      priority: 19
+      method: "semantic_competency_extraction_and_analysis"
+      dependencies:
+        discovery_inputs: ["task_tool_agent_discovery", "persona_instruction_discovery", "filesystem_agent_search", "mcp_server_agent_enumeration"]
+        tfidf_dependency: "unified_tfidf_processor"
+      config:
+        capability_analysis:
+          semantic_extraction:
+            tfidf_vectorization: true
+            competency_keyword_extraction: true
+            domain_classification: true
+            expertise_level_assessment: true
+          competency_dimensions:
+            technical_skills:
+              categories: ["programming", "frameworks", "databases", "cloud", "devops"]
+              extraction_method: "keyword_pattern_matching"
+            domain_expertise:
+              categories: ["backend", "frontend", "security", "data", "testing"]
+              extraction_method: "semantic_domain_analysis"
+            problem_solving:
+              categories: ["analysis", "design", "implementation", "optimization"]
+              extraction_method: "capability_inference"
+            tool_specialization:
+              categories: ["mcp_tools", "native_tools", "framework_tools"]
+              extraction_method: "tool_preference_analysis"
+          confidence_scoring:
+            multi_source_validation: true
+            cross_reference_checking: true
+            consistency_verification: true
+        duplicate_detection:
+          similarity_threshold: 0.8
+          capability_overlap_analysis: true
+          name_variation_handling: true
+          priority_resolution: "most_capable"
+      output:
+        analyzed_agents: "array"
+        competency_matrix: "object"
+        confidence_scores: "object"
+        duplicate_groups: "array"
+        final_agent_registry: "object"
+
+    - name: "agent_registry_enhancement"
+      priority: 20
+      method: "registry_consolidation_and_optimization"
+      dependencies:
+        analysis_dependency: "agent_capability_analysis"
+      config:
+        registry_operations:
+          consolidation:
+            merge_duplicate_agents: true
+            resolve_conflicts: true
+            optimize_structure: true
+          enhancement:
+            add_missing_metadata: true
+            calculate_compatibility_scores: true
+            generate_usage_recommendations: true
+          validation:
+            capability_consistency_check: true
+            availability_verification: true
+            performance_baseline_establishment: true
+        registry_structure:
+          agent_entries:
+            required_fields: ["name", "type", "capabilities", "confidence", "source"]
+            optional_fields: ["description", "triggers", "tools", "expertise_level", "availability"]
+          capability_format:
+            standardized_categories: true
+            confidence_scores: true
+            source_attribution: true
+      output:
+        enhanced_agent_registry: "object"
+        registry_statistics: "object"
+        optimization_summary: "object"
+
+    # === TASK RECEIVING & COORDINATION (Priority 21) ===
 
     - name: "task_received_coordinator"
-      priority: 10
+      priority: 21
       method: "central_task_handler"
       trigger: "on_task_received"
       dependencies:
@@ -420,6 +758,10 @@ implementation:
           component: "system_readiness_phase"
           expected_outputs: ["system_ready", "readiness_complete", "final_health_score"]
           validation: "system_ready == true && readiness_complete == true && final_health_score >= 0.9"
+        agent_discovery_dependency:
+          component: "dynamic_agent_discovery_phase"
+          expected_outputs: ["dynamic_discovery_complete", "enhanced_agent_registry"]
+          validation: "dynamic_discovery_complete == true && enhanced_agent_registry != null"
       config:
         task_handling:
           validation_phase:
@@ -439,8 +781,8 @@ implementation:
             user_notification: true
         activation_rules:
           minimum_system_readiness: 0.9
-          required_phases_complete: ["system_initialization", "system_discovery_phase", "system_integration_phase", "system_readiness_phase"]
-          required_components_active: ["error_system", "monitoring", "mcp_servers", "agent_registry"]
+          required_phases_complete: ["system_initialization", "system_discovery_phase", "dynamic_agent_discovery_phase", "system_integration_phase", "system_readiness_phase"]
+          required_components_active: ["error_system", "monitoring", "mcp_servers", "enhanced_agent_registry"]
           task_validation_enabled: true
         coordination_protocols:
           analysis_sequence: ["task_semantic_analysis", "task_complexity_assessment", "domain_classification"]
@@ -913,8 +1255,8 @@ implementation:
       method: "matrix_scoring"
       dependencies:
         domain_classification_dependency: "domain_classification"
-        agent_registry_dependency: "agent_registry_construction"
-        activation_condition: "primary_domain assigned AND registered_agents available"
+        agent_registry_dependency: "agent_registry_enhancement"
+        activation_condition: "primary_domain assigned AND enhanced_agent_registry available"
       error_handling:
         domain_classification_failure:
           action: "use_cross_domain_analysis"
@@ -2075,6 +2417,25 @@ event_system:
       description: "Task received from user, starts parallel analysis"
       data_fields: ["task_id", "description", "metadata", "timestamp", "user_id"]
       handlers: ["task_analysis_coordinator", "monitoring_system"]
+      priority: "high"
+
+    # Agent discovery events
+    agent.discovery.started:
+      description: "Dynamic agent discovery process started"
+      data_fields: ["discovery_id", "methods", "timestamp", "scope"]
+      handlers: ["dynamic_agent_discovery_phase", "monitoring_system"]
+      priority: "medium"
+
+    agent.discovery.method.completed:
+      description: "Individual discovery method completed"
+      data_fields: ["discovery_id", "method_name", "agents_found", "confidence", "processing_time"]
+      handlers: ["agent_capability_analysis", "progress_tracker"]
+      priority: "medium"
+
+    agent.registry.updated:
+      description: "Agent registry updated with new discoveries"
+      data_fields: ["registry_version", "agents_added", "agents_removed", "optimizations"]
+      handlers: ["agent_competency_matching", "system_integration_phase"]
       priority: "high"
 
     task.analysis.started:
