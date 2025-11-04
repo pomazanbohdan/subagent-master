@@ -25,6 +25,7 @@ imports: [
   "config/core/mcp_server_discovery.yaml",
   "config/core/configuration_base.yaml",
   "config/core/error_handling_initialization.yaml",
+  "config/core/monitoring_system.yaml",
   "config/analysis/task_analysis.yaml",
   "config/analysis/agent_selection.yaml",
   "config/analysis/clarification.yaml",
@@ -129,13 +130,13 @@ Infrastructure: infrastructure, devops, deployment, operations
 
 - Load configuration base and analysis systems with MCP integration
 - Components: `configuration_base`, `task_analysis`, `agent_selection`, `clarification`
-- Dependencies: Requires Phase 0 completion
+- Dependencies: Requires Phase 0 completion + explicit dependency: `clarification` depends on `task_analysis`
 - Features:
   - TF-IDF system integrated into agent selection with MCP tool awareness
   - Vector similarity analysis for agent-MCP tool matching
-  - Uncertainty detection for clarification with MCP context
+  - Uncertainty detection for clarification with MCP context (requires task_analysis completion)
   - Task categorization with MCP-enhanced capabilities
-- Success Criteria: Configuration loaded, task analysis operational, agent selection ready with MCP integration
+- Success Criteria: Configuration loaded, task analysis operational, agent selection ready with MCP integration, clarification operational with task_analysis dependency resolved
 
 **Phase 2: Execution & Discovery Systems**
 

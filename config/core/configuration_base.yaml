@@ -30,6 +30,14 @@ dependency_graph:
       retry_count: 3
       description: "Enhanced error handling and initialization system with MCP integration"
 
+    config/core/monitoring_system.yaml:
+      level: 0
+      dependencies: ["config/core/mcp_server_discovery.yaml"]
+      priority: "high"
+      load_timeout: 10000
+      retry_count: 3
+      description: "Centralized monitoring system orchestration for unified metrics and performance analytics"
+
     # Analysis Components (Level 1 - Depends on Core)
     config/analysis/task_analysis.yaml:
       level: 1
@@ -48,16 +56,21 @@ dependency_graph:
       description: "Ultimate agent selection with TF-IDF and MCP integration"
 
     config/analysis/clarification.yaml:
-      level: 1
-      dependencies: ["config/analysis/task_analysis.yaml", "config/core/mcp_server_discovery.yaml"]
-      priority: "medium"
-      load_timeout: 5000
-      retry_count: 2
-      description: "Enhanced clarification with MCP tool awareness"
-
-    # Execution Components (Level 2 - Depends on Analysis)
-    config/execution/todo_engine.yaml:
       level: 2
+      dependencies: [
+        "config/analysis/task_analysis.yaml",
+        "config/analysis/agent_selection.yaml",
+        "config/core/mcp_server_discovery.yaml"
+      ]
+      priority: "medium"
+      load_timeout: 8000  # Increased for fallback system
+      retry_count: 3      # Increased retry count
+      fallback_enabled: true
+      description: "Enhanced clarification with MCP tool awareness and graceful degradation fallback system"
+
+    # Execution Components (Level 3 - Depends on Analysis)
+    config/execution/todo_engine.yaml:
+      level: 3
       dependencies: [
         "config/analysis/task_analysis.yaml",
         "config/analysis/agent_selection.yaml",
@@ -69,7 +82,7 @@ dependency_graph:
       description: "Enhanced TODO execution engine with MCP integration"
 
     config/execution/coordination.yaml:
-      level: 2
+      level: 3
       dependencies: ["config/core/error_handling_initialization.yaml", "config/core/mcp_server_discovery.yaml"]
       priority: "high"
       load_timeout: 5000
@@ -77,21 +90,35 @@ dependency_graph:
       description: "Enhanced parallel coordination with MCP support"
 
     config/execution/delegation.yaml:
-      level: 2
+      level: 3
       dependencies: ["config/execution/todo_engine.yaml", "config/core/mcp_server_discovery.yaml"]
       priority: "high"
       load_timeout: 5000
       retry_count: 2
       description: "Enhanced delegation with MCP tool integration"
 
-    # Discovery Components (Level 3 - Depends on Execution)
+    # Discovery Components (Level 4 - Depends on Execution)
     config/discovery/agent_registry.yaml:
-      level: 3
-      dependencies: ["config/core/mcp_server_discovery.yaml", "config/execution/delegation.yaml"]
+      level: 4
+      dependencies: [
+        "config/core/mcp_server_discovery.yaml",
+        "config/execution/delegation.yaml",
+        "config/analysis/task_analysis.yaml",
+        "config/analysis/agent_selection.yaml"
+      ]
       priority: "high"
       load_timeout: 8000
       retry_count: 3
       description: "Dynamic agent discovery with comprehensive MCP integration"
+
+    # Orchestration Components (Level 4 - Depends on Execution & Discovery)
+    config/orchestration/batch_orchestrator.yaml:
+      level: 4
+      dependencies: ["config/execution/coordination.yaml"]
+      priority: "high"
+      load_timeout: 6000
+      retry_count: 2
+      description: "Unified batch orchestration system for parallel operations"
 
 # Enhanced Loading Strategy Configuration
 loading_strategy:
@@ -140,10 +167,11 @@ loading_strategy:
     # Load configurations by dependency level (optimized for enhanced 5-phase architecture)
     level_loading:
       level_-1: 1  # Sequential - MCP discovery prerequisite (mcp_server_discovery)
-      level_0: 1   # Sequential - critical foundation (error_handling_initialization)
-      level_1: 3   # Parallel - analysis components (task_analysis, agent_selection, clarification)
-      level_2: 3   # Parallel - execution components (todo_engine, coordination, delegation)
-      level_3: 1   # Sequential - discovery components (agent_registry)
+      level_0: 2   # Parallel - critical foundation (error_handling_initialization, monitoring_system)
+      level_1: 2   # Parallel - analysis components (task_analysis, agent_selection)
+      level_2: 1   # Sequential - clarification component (depends on Level 1)
+      level_3: 3   # Parallel - execution components (todo_engine, coordination, delegation)
+      level_4: 2   # Parallel - orchestration and discovery (agent_registry, batch_orchestrator)
 
   # Enhanced Adaptive Timeout Configuration
   adaptive_timeouts:
@@ -190,12 +218,32 @@ loading_strategy:
       non_critical_dependency_failure: "continue_with_warnings"
       partial_failure_recovery: "attempt_best_effort_loading"
       cascade_failure_prevention: true
+      clarification_dependency_failure: "activate_fallback_mode"
 
     rollback_strategy:
       enabled: true
       rollback_on_failure: true
       cleanup_partial_loads: true
       preserve_successful_loads: true
+
+    dependency_failure_handling:
+      task_analysis_unavailable_for_clarification:
+        action: "activate_clarification_fallback"
+        logging: "log_task_analysis_dependency_failure"
+        continue_initialization: true
+        fallback_mode: "degraded_clarification"
+
+      multiple_dependencies_unavailable:
+        action: "emergency_mode_activation"
+        logging: "log_multiple_system_failures"
+        continue_initialization: true
+        fallback_mode: "emergency_clarification"
+
+      recovery_mechanisms:
+        automatic_retry: true
+        periodic_health_checks: true
+        graceful_degradation: true
+        user_notification: true
 
 # Enhanced Topological Sort Implementation
 topological_sort_algorithm: |

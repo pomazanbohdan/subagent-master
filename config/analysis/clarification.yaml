@@ -357,11 +357,96 @@ quality_metrics_system:
     user_preference_learning: "Measure improvement in personalization accuracy"
     domain_adaptation_effectiveness: "Assess domain-specific learning success"
 
+# Enhanced Fallback System for Clarification Component
+clarification_fallback_system:
+  enabled: true
+  fallback_strategy: "graceful_degradation_with_task_analysis_dependency"
+
+  dependency_resolution:
+    primary_dependency: "task_analysis.yaml"
+    dependency_check_timeout: 5000  # 5 seconds
+    retry_attempts: 3
+    backoff_strategy: "exponential"
+
+  fallback_modes:
+    full_functionality:
+      description: "Complete clarification system with task_analysis integration"
+      requirements:
+        - task_analysis_system: "operational"
+        - semantic_analysis: "available"
+        - tfidf_processing: "functional"
+      activation_criteria: "all_dependencies_available"
+      confidence_threshold: 0.8
+
+    degraded_functionality:
+      description: "Basic clarification without task_analysis integration"
+      requirements:
+        - basic_ambiguity_detection: "available"
+        - simple_question_generation: "functional"
+        - user_response_processing: "operational"
+      activation_criteria: "task_analysis_unavailable"
+      confidence_threshold: 0.6
+      limitations:
+        - "No TF-IDF enhancement"
+        - "Basic ambiguity detection only"
+        - "Reduced question quality"
+        - "No semantic analysis"
+
+    emergency_mode:
+      description: "Minimal clarification functionality"
+      requirements:
+        - rule_based_detection: "available"
+        - template_questions: "available"
+        - basic_processing: "functional"
+      activation_criteria: "multiple_dependencies_unavailable"
+      confidence_threshold: 0.4
+      limitations:
+        - "Static question templates only"
+        - "No adaptive workflows"
+        - "No learning capabilities"
+        - "Basic pattern matching"
+
+  failure_handling:
+    task_analysis_unavailable:
+      action: "switch_to_degraded_mode"
+      logging: "log_task_analysis_dependency_failure"
+      user_notification: "Using basic clarification mode"
+      recovery_attempt: "periodic_dependency_check"
+
+    multiple_systems_unavailable:
+      action: "switch_to_emergency_mode"
+      logging: "log_multiple_system_failures"
+      user_notification: "Using emergency clarification mode"
+      recovery_attempt: "full_system_restart_check"
+
+    complete_failure:
+      action: "disable_clarification_and_proceed"
+      logging: "log_complete_clarification_failure"
+      user_notification: "Clarification temporarily unavailable"
+      fallback: "direct_task_execution_with_warnings"
+
+  recovery_protocols:
+    automatic_recovery:
+      enabled: true
+      check_interval: 30  # seconds
+      max_recovery_attempts: 5
+      success_criteria: "all_primary_dependencies_available"
+
+    manual_recovery:
+      trigger: "user_request_or_system_restart"
+      validation_required: true
+      full_system_check: true
+
+    health_monitoring:
+      dependency_health_checks: true
+      performance_monitoring: true
+      automatic_fallback_switching: true
+
 # Integration Points (Updated for Consolidated Architecture)
 integration_interface:
   input_sources:
-    task_analysis: "Enhanced task complexity and domain classification"
-    semantic_analysis: "TF-IDF text similarity and semantic understanding"
+    task_analysis: "Enhanced task complexity and domain classification (with fallback)"
+    semantic_analysis: "TF-IDF text similarity and semantic understanding (optional)"
     domain_system: "Domain expertise and specialization mapping"
     user_history: "User preferences and communication patterns"
     agent_registry: "Agent capability and availability"
@@ -373,8 +458,8 @@ integration_interface:
     user_interface: "Enhanced selection transparency and communication"
 
   system_dependencies:
-    task_analysis_system: "Enhanced task classification with semantic analysis"
-    tfidf_text_processing: "Enhanced semantic similarity analysis"
+    task_analysis_system: "Enhanced task classification with semantic analysis (primary dependency with fallback)"
+    tfidf_text_processing: "Enhanced semantic similarity analysis (optional)"
     agent_registry: "Agent capability and availability with semantic matching"
     performance_tracking: "Enhanced historical performance data with semantic insights"
     learning_module: "Enhanced adaptive model updates with semantic learning"
