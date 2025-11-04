@@ -1,0 +1,479 @@
+# Agent Registry System (Optimized v1.0.0)
+# Dynamic agent discovery, MCP server integration, and registry management
+
+component:
+  name: "agent_registry"
+  version: "1.0.0"
+  description: "Enhanced agent registry system with dynamic discovery, MCP server integration, and adaptive agent management"
+  category: "discovery"
+  priority: 1  # Critical for agent discovery
+  status: "stable"
+
+triggers:
+  primary:
+    keywords: ["agent", "registry", "discovery", "register", "available_agents", "find_agent"]
+    patterns: [".*agent.*discover.*", ".*register.*agent.*", ".*find.*agent.*", ".*available.*agents.*"]
+    score: 1.0
+  secondary:
+    keywords: ["mcp", "server", "capability", "tool", "domain"]
+    patterns: [".*mcp.*server.*", ".*tool.*discovery.*", ".*capability.*mapping.*", ".*domain.*expertise.*"]
+    score: 0.7
+  contextual:
+    conditions:
+      - "agent_selection_requested"
+      - "new_agent_detected"
+      - "mcp_server_added"
+      - "domain_analysis_required"
+    score: 0.5
+
+implementation:
+  operations:
+    - name: "agent_discovery"
+      method: "filesystem_scan_with_pattern_matching"
+      priority: 1
+      config:
+        discovery_sources:
+          filesystem:
+            enabled: true
+            scan_paths:
+              - "agents/"
+              - "subagents/"
+              - ".claude/agents/"
+              - "system/agents/"
+              - "user/agents/"
+            file_patterns: ["*.md", "*.yaml", "*.json"]
+            extraction_method: "yaml_frontmatter"
+            fallback_on_empty: true
+
+          agent_categories:
+            development:
+              enabled: true
+              patterns: ["frontend", "ui", "ux", "css", "javascript", "react", "vue", "angular", "backend", "api", "server", "database", "microservice", "fullstack", "development", "coding", "programming", "implementation", "build", "create", "develop", "code"]
+            operations:
+              enabled: true
+              patterns: ["devops", "deployment", "infrastructure", "ci", "pipeline", "build", "test", "deploy", "cloud", "infrastructure", "cloud_platform", "hosting", "monitoring", "observability", "alerting", "logging"]
+            testing:
+              enabled: true
+              patterns: ["test", "testing", "qa", "quality", "automation", "automated", "e2e", "validate", "verify"]
+            security:
+              enabled: true
+              patterns: ["security", "security_audit", "vulnerability", "penetration", "authentication", "authorization", "access_control", "identity", "encryption", "cryptography", "privacy", "compliance", "audit", "governance"]
+            research:
+              enabled: true
+              patterns: ["research", "analyze", "investigate", "explore", "analysis", "study", "examine", "discover"]
+            performance:
+              enabled: true
+              patterns: ["optimize", "performance", "optimization", "speed", "tune", "benchmark", "performance_test", "monitoring", "performance_tracking"]
+            architecture:
+              enabled: true
+              patterns: ["architecture", "design", "system_architecture", "patterns", "scalability", "scalable", "design_patterns", "pattern", "architectural_pattern", "system_design", "software_design", "software_architecture"]
+
+        validation_rules:
+          name_validation:
+            pattern: "^[a-zA-Z][a-zA-Z0-9_-]+$"
+            max_length: 50
+            no_spaces: true
+            no_special_characters: true
+          capability_validation:
+            required_capabilities: true
+            check_availability: true
+            check_responsive: true
+            check_compatibility: true
+          fallback_handling:
+            invalid_name_format: "convert_to_lowercase_and_validate"
+            missing_capabilities: "request_basic_capabilities"
+            unavailable_agent: "mark_as_unavailable"
+      output:
+        discovered_agents: "array"
+        validation_results: "object"
+        categories_assigned: "object"
+        registration_status: "object"
+
+    - name: "mcp_server_discovery"
+      method: "comprehensive_mcp_analysis"
+      priority: 2
+      config:
+        discovery_config:
+          enabled: true
+          auto_discovery: true
+          discovery_frequency: "on_startup"
+          validation_required: true
+          server_sources: ["builtin_mcp_servers", "user_defined_mcp_servers", "plugin_mcp_servers", "external_mcp_servers"]
+
+        discovery_methods:
+          port_scanning:
+            enabled: true
+            port_range: [3000, 9000]
+            timeout: 5
+            parallel_scan: true
+          manifest_detection:
+            enabled: true
+            search_paths: [".claude/", "config/", "plugins/"]
+            file_patterns: ["mcp.json", "mcp-config.json", "*.mcp.json"]
+          api_discovery:
+            enabled: true
+            endpoint_detection: true
+            capability_negotiation: true
+
+        capability_analysis:
+          enabled: true
+          analysis_depth: "comprehensive"
+          tool_analysis:
+            tool_extraction: true
+            capability_mapping: true
+            performance_profiling: true
+            compatibility_testing: true
+          server_analysis:
+            health_monitoring: true
+            performance_benchmarking: true
+            reliability_assessment: true
+            capacity_evaluation: true
+          license_validation:
+            permission_checking: true
+            compliance_verification: true
+            usage_limit_monitoring: true
+      output:
+        mcp_servers: "array"
+        server_capabilities: "object"
+        tool_registry: "object"
+        performance_metrics: "object"
+
+    - name: "agent_registration"
+      method: "dynamic_registration_with_validation"
+      priority: 3
+      config:
+        registration_process:
+          automatic_registration:
+            enabled: true
+            auto_categorization: true
+            confidence_threshold: 0.6
+            dynamic_name_generation: true
+
+          name_generation:
+            strategy: "category-based"
+            format_template: "{category}:{agent_name}"
+            auto_increment: true
+
+          registration_validation:
+            enabled: true
+            validation_rules:
+              - "Name must match simple-name format"
+              - "Required capabilities must be available"
+              - "Agent must be responsive and available"
+
+          cache_registration:
+            enabled: true
+            cache_duration: 3600
+            auto_cleanup: true
+
+        domain_integration:
+          integration_enabled: true
+          domain_sources: ["domain_system.yaml", "agent_selection.yaml", "task_analysis.yaml", "clarification.yaml"]
+          integration_points:
+            - "TF-IDF domain matching for semantic relevance"
+            - "Domain expertise alignment scoring"
+            - "Dynamic category discovery"
+          dynamic_domain_categorization:
+            enabled: true
+            learning_enabled: true
+            confidence_threshold: 0.7
+            semantic_analysis: true
+            pattern_recognition: true
+      output:
+        registered_agents: "array"
+        registration_metadata: "object"
+        domain_mappings: "object"
+        cache_status: "object"
+
+    - name: "capability_registry_management"
+      method: "dynamic_capability_tracking"
+      priority: 4
+      config:
+        capability_categories:
+          technical_skills:
+            programming_languages:
+              examples: ["python", "javascript", "java", "go", "rust", "typescript", "php", "ruby", "c++"]
+              importance_weight: 1.0
+            frameworks:
+              examples: ["react", "vue", "angular", "django", "flask", "express", "spring"]
+              importance_weight: 0.8
+
+          expertise_areas:
+            security:
+              examples: ["penetration_testing", "vulnerability_assessment", "compliance"]
+              importance_weight: 1.0
+              domain_matching: "security"
+            cloud_platforms:
+              examples: ["aws", "azure", "gcp", "heroku", "digitalocean"]
+              importance_weight: 0.8
+              domain_matching: "infrastructure"
+
+          tools:
+            mcp_tools:
+              examples: ["context7", "magic", "playwright", "tavily"]
+              importance_weight: 0.6
+            system_tools:
+              examples: ["bash", "file_operations", "web_search", "terminal", "debugging"]
+              importance_weight: 0.4
+
+        tool_categories:
+          search_discovery:
+            tools: ["tavily", "web-search-prime", "context7"]
+            capabilities: ["web_search", "documentation_lookup", "real_time_search"]
+            fallback_priority: 1
+          code_analysis:
+            tools: ["serena", "sequential", "morphllm"]
+            capabilities: ["semantic_understanding", "symbolic_analysis", "pattern_matching"]
+            fallback_priority: 2
+          ui_generation:
+            tools: ["magic", "21st"]
+            capabilities: ["component_generation", "design_systems", "responsive_ui"]
+            fallback_priority: 3
+          browser_testing:
+            tools: ["playwright", "chrome-devtools"]
+            capabilities: ["automation", "e2e_testing", "performance_testing"]
+            fallback_priority: 2
+          file_operations:
+            tools: ["fast-filesystem", "file-management"]
+            capabilities: ["high_performance_ops", "bulk_operations", "file_search"]
+            fallback_priority: 1
+          collaboration:
+            tools: ["github", "documentation"]
+            capabilities: ["version_control", "project_management", "documentation"]
+            fallback_priority: 2
+      output:
+        capability_mapping: "object"
+        tool_categories: "object"
+        expertise_registry: "object"
+        fallback_hierarchy: "object"
+
+    - name: "mcp_monitoring"
+      method: "real_time_health_monitoring"
+      priority: 5
+      config:
+        monitoring_system:
+          enabled: true
+          monitoring_frequency: "real_time"
+
+          health_checks:
+            server_connectivity:
+              check_interval: 30
+              timeout: 5
+              retry_attempts: 3
+            tool_functionality:
+              check_interval: 60
+              test_operations: true
+              performance_validation: true
+            performance_monitoring:
+              metrics_collected: ["response_times", "success_rates", "error_patterns", "capacity_usage", "availability_percentages"]
+
+          alerting_system:
+            alerts_enabled: true
+            alert_thresholds:
+              server_unavailable: 0
+              high_error_rate: 5
+              slow_response: 2000
+              capacity_limit: 80
+            notification_channels: ["system_logs", "monitoring_dashboard", "performance_reports"]
+
+        fallback_system:
+          enabled: true
+          fallback_strategy: "automatic"
+          fallback_hierarchy:
+            level_1_primary:
+              description: "Primary MCP tool optimal for task"
+              selection_criteria: ["performance", "reliability", "capabilities"]
+              auto_switch: true
+            level_2_alternative:
+              description: "Alternative MCP tool with similar capabilities"
+              selection_criteria: ["capability_match", "availability"]
+              auto_switch: true
+            level_3_native:
+              description: "Native Claude Code tools"
+              selection_criteria: ["basic_functionality", "reliability"]
+              auto_switch: true
+            level_4_manual:
+              description: "Manual execution as last resort"
+              selection_criteria: ["emergency_only"]
+              auto_switch: false
+
+          recovery_protocols:
+            automatic_retry:
+              max_attempts: 3
+              backoff_strategy: "exponential"
+              retry_intervals: [5, 15, 30]
+            server_reconnection:
+              enabled: true
+              reconnection_interval: 60
+              max_reconnection_attempts: 5
+            performance_degradation:
+              enabled: true
+              degradation_threshold: 50
+              auto_recovery: true
+
+        performance_optimization:
+          enabled: true
+          optimization_strategy: "adaptive"
+          tool_selection_algorithm:
+            primary_factors:
+              task_requirement_match: 0.4
+              performance_score: 0.3
+              reliability_score: 0.2
+              availability_score: 0.1
+            secondary_factors:
+              historical_performance: 0.15
+              user_preferences: 0.10
+              system_load: 0.05
+          load_balancing:
+            strategy: "performance_based"
+            distribution_method: "weighted_round_robin"
+            capacity_management: true
+          caching_system:
+            tool_response_cache: true
+            cache_ttl: 300
+            cache_size_limit: 100MB
+            cache_validation: true
+      output:
+        health_status: "object"
+        performance_metrics: "object"
+        alerts_triggered: "array"
+        fallback_status: "object"
+
+    - name: "performance_tracking"
+      method: "comprehensive_metrics_collection"
+      priority: 6
+      config:
+        execution_metrics:
+          agent_performance:
+            metrics: ["success_rate", "response_times", "quality_scores", "user_satisfaction"]
+            learning_metrics: ["pattern_recognition_accuracy", "adaptation_success_rate", "model_performance"]
+          system_metrics:
+            resource_utilization: ["CPU_usage", "memory_usage", "network_bandwidth"]
+            performance_metrics: ["response_times", "throughput", "error_rates"]
+            quality_metrics: ["success_rate", "satisfaction_scores", "efficiency_scores"]
+
+        learning_system:
+          pattern_recognition:
+            enabled: true
+            feedback_integration: true
+            learning_rate: 0.1
+            confidence_threshold: 0.7
+            success_rate_target: 0.85
+          model_optimization:
+            enabled: true
+            update_frequency: "weekly"
+            learning_rate: 0.1
+            performance_target: "improvement"
+      output:
+        performance_data: "object"
+        learning_metrics: "object"
+        optimization_recommendations: "array"
+
+dependencies:
+  required:
+    - component: "domain_system"
+      version: ">=1.0.0"
+      reason: "Domain expertise mapping and classification"
+  optional:
+    - component: "tfidf_processing"
+      version: ">=1.0.0"
+      fallback: "use basic pattern matching"
+    - component: "learning_module"
+      version: ">=1.0.0"
+      fallback: "disable adaptive learning"
+    - component: "monitoring_system"
+      version: ">=1.0.0"
+      fallback: "use basic logging"
+
+output:
+  format: "structured"
+  validation: true
+  schema:
+    agent_registry: "array"
+    mcp_servers: "array"
+    capability_mapping: "object"
+    performance_metrics: "object"
+    domain_integrations: "object"
+    health_status: "object"
+
+fallback:
+  enabled: true
+  strategy: "graceful_degradation"
+  modes:
+    full_functionality:
+      description: "Complete registry with all integrations"
+      confidence_threshold: 0.8
+      requirements: ["domain_system", "mcp_discovery", "performance_tracking"]
+    degraded_functionality:
+      description: "Basic registry without advanced features"
+      confidence_threshold: 0.6
+      limitations: ["no_mcp_monitoring", "basic_domain_matching", "reduced_learning"]
+    emergency_mode:
+      description: "Minimal registry functionality"
+      confidence_threshold: 0.4
+      limitations: ["static_agent_list", "no_dynamic_discovery", "no_mcp_integration"]
+  recovery:
+    automatic: true
+    check_interval: 60
+    max_attempts: 3
+
+monitoring:
+  enabled: true
+  metrics:
+    - "agent_discovery_success_rate"
+    - "mcp_server_availability"
+    - "registration_processing_time"
+    - "capability_mapping_accuracy"
+    - "performance_tracking_completeness"
+    - "fallback_activation_frequency"
+  performance_targets:
+    discovery_success_rate: 0.95
+    mcp_availability: 0.90
+    registration_time: 2000  # ms
+    mapping_accuracy: 0.85
+    tracking_completeness: 0.90
+    fallback_frequency: 0.05
+
+integration:
+  inputs:
+    - "filesystem_agent_definitions"
+    - "mcp_server_configurations"
+    - "domain_knowledge_base"
+    - "user_agent_preferences"
+    - "performance_history"
+  outputs:
+    - "agent_selection_system"
+    - "orchestration_engine"
+    - "learning_system"
+    - "monitoring_dashboard"
+    - "mcp_integration_manager"
+  events:
+    - subscribe: "agent_discovery_requested"
+    - subscribe: "mcp_server_added"
+    - subscribe: "capability_update_needed"
+    - publish: "agent_registered"
+    - publish: "mcp_server_discovered"
+    - publish: "performance_alert"
+
+# Quality Assurance System
+quality_assurance:
+  validation_rules:
+    agent_validation: "proper format, capabilities, and responsiveness"
+    mcp_server_validation: "connectivity, capabilities, and performance"
+    registration_integrity: "consistent and complete registration data"
+    capability_accuracy: "correct mapping of agent capabilities"
+    performance_reliability: "accurate and timely performance tracking"
+
+  consistency_checks:
+    registry_consistency: true
+    domain_mapping_accuracy: true
+    mcp_integration_validity: true
+    performance_data_integrity: true
+    fallback_system_reliability: true
+
+  performance_standards:
+    discovery_processing: "< 5 seconds"
+    registration_processing: "< 2 seconds"
+    mcp_analysis: "< 10 seconds"
+    performance_update: "< 1 second"
+    health_check_interval: "30 seconds"

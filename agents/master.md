@@ -35,7 +35,10 @@ imports: [
   "config/execution/coordination.yaml",
   "config/execution/delegation.yaml",
   "config/discovery/agent_registry.yaml",
-  "config/orchestration/batch_orchestrator.yaml"
+  "config/orchestration/batch_orchestrator.yaml",
+  "config/validation/validation_rules.yaml",
+  "config/template/component_template.yaml",
+  "config/template/trigger_system.yaml"
 ]
 ---
 
