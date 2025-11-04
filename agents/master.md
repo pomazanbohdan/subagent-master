@@ -101,9 +101,9 @@ Infrastructure: infrastructure, devops, deployment, operations
 - **Return**: `master` (valid Task() agent type)
 - **Cache Result**: Store resolved name for future requests
 
-### System Initialization (Phase -1 to 4)
+### System Initialization (Phase 1 to 5)
 
-**Phase -1: MCP Server Discovery & Validation**
+**Phase 1: MCP Server Discovery & Validation**
 
 - MCP server analysis before other operations
 - Components: `config/core/mcp_server_discovery.yaml` system
@@ -118,7 +118,7 @@ Infrastructure: infrastructure, devops, deployment, operations
 - Success Criteria: MCP servers discovered, capabilities analyzed, health monitoring active, fallback strategies ready
 - Failure Handling: Continue with degraded MCP functionality or native tools if MCP unavailable
 
-**Phase 0: Core Foundation**
+**Phase 2: Core Foundation**
 
 - Initialize error handling, logging, and system monitoring with MCP integration
 - Components: `error_handling_system`, `basic_logging`, `system_monitoring`, `mcp_health_monitoring`
@@ -126,17 +126,44 @@ Infrastructure: infrastructure, devops, deployment, operations
 - Success Criteria: Error handling operational, logging functional, monitoring active, MCP health tracked
 - Failure Handling: Continue with degraded logging or emergency mode with MCP fallback
 
-**Phase 1: Configuration & Analysis Foundation**
+**Phase 3: Analysis Foundation**
 
 - Load configuration base and analysis systems with MCP integration
-- Components: `configuration_base`, `task_analysis`, `agent_selection`, `clarification`
-- Dependencies: Requires Phase 0 completion + explicit dependency: `clarification` depends on `task_analysis`
+- Components: `configuration_base`, `task_analysis`, `agent_selection`
+- Dependencies: Requires Phase 2 completion
 - Features:
   - TF-IDF system integrated into agent selection with MCP tool awareness
   - Vector similarity analysis for agent-MCP tool matching
-  - Uncertainty detection for clarification with MCP context (requires task_analysis completion)
   - Task categorization with MCP-enhanced capabilities
-- Success Criteria: Configuration loaded, task analysis operational, agent selection ready with MCP integration, clarification operational with task_analysis dependency resolved
+  - Performance profiling with MCP integration
+- Success Criteria: Configuration loaded, task analysis operational, agent selection ready with MCP integration
+
+**Phase 4: Advanced Analysis & Clarification**
+
+- Enhanced analysis with uncertainty detection and clarification workflows
+- Components: `clarification` (moved from Level 2 to Level 4)
+- Dependencies: Requires Phase 3 completion
+- Features:
+  - Advanced ambiguity detection with uncertainty quantification
+  - Contextual question generation with semantic enhancement
+  - Multi-domain analysis integration
+  - Performance optimization through intelligent caching
+  - Real-time user feedback integration
+- Success Criteria: Clarification operational with all analysis components available
+
+**Phase 5: Execution & Discovery Systems**
+
+- Initialize task execution and agent discovery systems with batch capabilities
+- Components: `todo_engine`, `coordination`, `delegation`, `agent_registry`, `batch_orchestrator`
+- Dependencies: Requires Phase 4 completion
+- Features:
+  - Backup system for execution reliability
+  - Enhanced parallel coordination with resource management
+  - Dynamic agent discovery with auto-registration
+  - Integrated batch processing capabilities
+  - MCP integration with tool management
+  - Performance optimization with real-time monitoring
+- Success Criteria: Task execution ready, agent discovery ready, batch orchestration operational, MCP tools available
 
 **Phase 2: Execution & Discovery Systems**
 
