@@ -1,7 +1,7 @@
 {
   "name": "orchestration",
-  "version": "0.3.0",
-  "description": "Advanced intelligent task orchestration with comprehensive parallel planning, dynamic scheduling, deadlock avoidance, and real-time adaptation capabilities",
+  "version": "0.4.0",
+  "description": "Advanced intelligent task orchestration with comprehensive parallel planning, dynamic scheduling, deadlock avoidance, real-time adaptation, and adaptive memory learning capabilities",
   "author": "Bohdan <pomazan.bohdan@gmail.com>",
   "license": "MIT",
   "keywords": [
@@ -141,7 +141,19 @@
     "predictive-scaling",
     "anomaly-detection",
     "fault-tolerance",
-    "auto-healing-capabilities"
+    "auto-healing-capabilities",
+    "adaptive-memory-system",
+    "pattern-learning",
+    "success-pattern-storage",
+    "failure-pattern-avoidance",
+    "memory-based-adaptation",
+    "serena-mcp-integration",
+    "sequential-thinking-pattern-analysis",
+    "cross-session-learning",
+    "intelligent-memory-management",
+    "dynamic-strategy-refinement",
+    "experience-based-optimization",
+    "memory-driven-decision-making"
   ],
   "homepage": "https://github.com/pomazanbohdan/subagent-master",
   "repository": "https://github.com/pomazanbohdan/subagent-master.git",

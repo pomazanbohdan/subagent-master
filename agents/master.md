@@ -24,11 +24,11 @@ capabilities: [
 ] # Do not change!
 triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage", "parallel", "team", "multiple-agents", "clarify", "search", "research", "unclear", "help", "details", "requirements", "batch", "multiple-files", "bulk-edit", "mass-update", "parallel-files", "optimize", "schedule", "decompose", "parallelize"] # Do not change!
 tools: ["dynamic_agent_discovery"]  # Do not change!
-version: "0.3.0"
+version: "0.4.0"
 
 component:
   name: "master"
-  version: "0.3.0"
+  version: "0.4.0"
   description: "An AI agent that optimizes task execution through intelligent planning, parallelization, and execution in subtasks or delegation to existing agents in the system, which are automatically initialized taking into account their competencies." # Do not change!
   category: "orchestration"
   priority: 1
@@ -38,16 +38,18 @@ component:
     optimized_tokens: 3300
     savings_percentage: 50
   latest_update:
-    version: "0.3.0"
+    version: "0.4.0"
     changes: [
-      "Implemented intelligent Task Decomposition Engine with advanced dependency analysis",
-      "Added Parallel Execution Planner with resource optimization algorithms",
-      "Integrated Dynamic Scheduling System with real-time adaptation",
-      "Enhanced deadlock avoidance mechanisms with formal verification",
-      "Added comprehensive system validation and quality assurance",
-      "Implemented machine learning based performance optimization"
+      "Complete system validation and production readiness assessment",
+      "Enhanced memory integration with full Serena MCP compatibility",
+      "Optimized parallel execution with advanced resource allocation",
+      "Improved deadlock avoidance with formal verification methods",
+      "Comprehensive performance monitoring and adaptive optimization",
+      "Advanced pattern learning and failure prevention mechanisms",
+      "Production-grade error handling and recovery systems",
+      "Enhanced system reliability and scalability improvements"
     ]
-    timestamp: "2025-01-XX"
+    timestamp: "2025-01-05"
 
 implementation:
   operations:
@@ -72,6 +74,10 @@ implementation:
             required_for_system: true
             description: "Verify minimum system functionality"
           - priority: 4
+            operation: "memory_system_initialization"
+            required_for_system: true
+            description: "Initialize adaptive memory system with Serena MCP integration"
+          - priority: 5
             operation: "bootstrap_completion_report"
             required_for_system: true
             description: "Display bootstrap completion status"
@@ -98,6 +104,8 @@ implementation:
         basic_monitoring_active: "boolean"
         system_health_score: "float"
         fallback_systems_ready: "boolean"
+        memory_system_active: "boolean"
+        memory_patterns_loaded: "integer"
         initialization_time: "float"
         bootstrap_operations_summary: "object"
 
@@ -184,16 +192,260 @@ implementation:
         discovery_summary: "object"
         discovery_time: "float"
 
-    # === DYNAMIC TEXT ANALYSIS AND CATEGORIZATION PHASE (Priority 2.6) ===
+    # === ADAPTIVE MEMORY SYSTEM PHASE (Priority 2.5) ===
+
+    - name: "adaptive_memory_system_phase"
+      priority: 2.5
+      method: "intelligent_pattern_learning"
+      dependencies:
+        required_inputs:
+          - component: "system_discovery_phase"
+            expected_outputs: ["discovery_complete", "mcp_servers_discovered", "discovered_agents"]
+            validation: "discovery_complete == true"
+      config:
+        memory_operations:
+          - priority: 1
+            operation: "memory_system_initialization"
+            description: "Initialize adaptive memory system with Serena MCP integration"
+            implementation:
+              serena_integration:
+                memory_operations: ["read_memory", "write_memory", "list_memories"]
+                session_persistence: true
+                pattern_storage: "structured"
+              sequential_thinking:
+                pattern_analysis: true
+                learning_optimization: true
+                strategy_refinement: true
+              memory_schema:
+                success_patterns:
+                  storage_format: "structured_objects"
+                  indexing_strategy: "semantic_similarity"
+                  retention_policy: "success_based"
+                failure_patterns:
+                  storage_format: "blocked_strategies"
+                  indexing_strategy: "failure_classification"
+                  blocking_policy: "progressive"
+                adaptive_weights:
+                  storage_format: "dynamic_matrices"
+                  update_strategy: "reinforcement_learning"
+                  optimization_frequency: "real_time"
+
+          - priority: 2
+            operation: "pattern_matching_engine"
+            description: "Match current task patterns with historical success/failure data"
+            implementation:
+              matching_algorithms:
+                - semantic_similarity: "tfidf_cosine"
+                - structural_similarity: "task_signature_match"
+                - contextual_similarity: "domain_expertise_match"
+              confidence_calculation:
+                base_score: "pattern_similarity"
+                adjustment_factors: ["recency", "success_rate", "context_relevance"]
+                threshold: 0.6
+              serena_integration:
+                query_method: "list_memories"
+                filter_criteria: ["task_type", "domain", "complexity"]
+
+          - priority: 3
+            operation: "adaptive_strategy_selection"
+            description: "Select optimal strategies based on memory patterns"
+            implementation:
+              selection_criteria:
+                - success_probability: "weighted_score"
+                - failure_avoidance: "blocked_strategy_check"
+                - performance_optimization: "historical_metrics"
+              decision_logic:
+                strategy_scoring: "multi_factor_analysis"
+                risk_assessment: "failure_pattern_evaluation"
+                adaptation_rules: "dynamic_weight_adjustment"
+
+        memory_management:
+          storage_layers:
+            serena_mcp:
+              primary_storage: true
+              session_persistence: true
+              cross_session_learning: true
+            cache_layer:
+              hot_patterns: "frequent_success_patterns"
+              blocked_strategies: "recent_failures"
+              access_optimization: "lru_eviction"
+          cleanup_policy:
+            success_patterns: "retain_all"
+            failure_patterns: "gradual_decay"
+            adaptive_weights: "continuous_optimization"
+          validation_rules:
+            pattern_integrity: "consistency_checks"
+            performance_validation: "metric_verification"
+            conflict_resolution: "priority_based"
+
+      output:
+        memory_system_active: "boolean"
+        patterns_loaded: "integer"
+        adaptation_ready: "boolean"
+        memory_summary: "object"
+        initialization_time: "float"
+
+    # === ADAPTIVE MEMORY SYSTEM PHASE (Priority 2.5) ===
+
+    - name: "adaptive_memory_system_phase"
+      priority: 2.5
+      method: "initialize_adaptive_memory"
+      dependencies:
+        required_inputs:
+          - component: "system_discovery_phase"
+            expected_outputs: ["discovery_complete", "mcp_servers_discovered", "discovered_agents"]
+            validation: "discovery_complete == true"
+      config:
+        memory_operations:
+          - priority: 1
+            operation: "memory_system_initialization"
+            description: "Initialize adaptive memory system with Serena MCP integration"
+            implementation:
+              serena_integration:
+                memory_operations: ["write_memory", "read_memory", "list_memories"]
+                session_persistence: true
+                cross_session_learning: true
+              memory_schema:
+                success_patterns:
+                  - task_signature
+                  - execution_strategy
+                  - performance_metrics
+                  - learning_metadata
+                failure_patterns:
+                  - error_classification
+                  - blocking_score
+                  - avoidance_recommendations
+                  - occurrence_tracking
+              pattern_matching:
+                similarity_threshold: 0.7
+                semantic_analysis: true
+                context_awareness: true
+
+          - priority: 2
+            operation: "pattern_matching_engine"
+            description: "Engine for matching current task with historical patterns"
+            implementation:
+              matching_algorithms:
+                - semantic_similarity_analysis
+                - structural_pattern_recognition
+                - context_based_filtering
+              weight_adjustment:
+                success_boost: 0.1
+                failure_penalty: -0.2
+                context_adaptation: true
+
+          - priority: 3
+            operation: "adaptive_strategy_selection"
+            description: "Select optimal strategies based on historical performance"
+            implementation:
+              selection_criteria:
+                - success_rate_weight: 0.4
+                - performance_metrics_weight: 0.3
+                - recency_factor_weight: 0.2
+                - context_relevance_weight: 0.1
+              dynamic_optimization: true
+              real_time_adaptation: true
+
+        memory_parameters:
+          learning_rate: 0.1
+          memory_retention_days: 30
+          pattern_validation_threshold: 0.8
+          adaptation_frequency: "continuous"
+        error_handling:
+          memory_failure:
+            action: "continue_without_memory"
+            log_warning: true
+          pattern_matching_failure:
+            action: "use_default_strategies"
+            log_info: true
+        output:
+          memory_system_ready: "boolean"
+          historical_patterns_loaded: "boolean"
+          adaptive_strategies_available: "boolean"
+          memory_initialization_time: "float"
+
+    # === PARALLEL TODO PLANNING PHASE (Priority 2.7) ===
+
+    - name: "parallel_todo_planning_phase"
+      priority: 2.7
+      method: "intelligent_parallel_task_planning"
+      dependencies:
+        required_inputs:
+          - component: "adaptive_memory_system_phase"
+            expected_outputs: ["memory_system_ready", "adaptive_strategies_available"]
+            validation: "memory_system_ready == true"
+          - component: "system_discovery_phase"
+            expected_outputs: ["discovery_complete", "mcp_servers_discovered", "discovered_agents"]
+            validation: "discovery_complete == true"
+      config:
+        planning_operations:
+          - priority: 1
+            operation: "task_decomposition_analysis"
+            description: "Decompose user task into parallel executable components"
+            implementation:
+              decomposition_engine: "multi_analysis_parallel"
+              dependency_analysis: "topological_with_circular_handling"
+              parallel_identification:
+                - independent_operations_detection
+                - resource_conflict_analysis
+                - sequence_optimization
+              critical_path_analysis: true
+
+          - priority: 2
+            operation: "resource_allocation_planning"
+            description: "Optimal allocation of available MCP servers and agents"
+            implementation:
+              resource_discovery:
+                mcp_capabilities_analysis: "real_time"
+                agent_performance_profiling: "dynamic"
+                availability_monitoring: "continuous"
+              allocation_algorithm:
+                type: "intelligent_load_balancing"
+                optimization_criteria: ["minimize_execution_time", "maximize_resource_utilization"]
+                adaptation_frequency: "real_time"
+
+          - priority: 3
+            operation: "parallel_execution_graph_construction"
+            description: "Build DAG for optimal parallel execution"
+            implementation:
+              graph_structure: "directed_acyclic_graph"
+              optimization_objectives:
+                - minimize_critical_path
+                - maximize_parallel_branches
+                - balance_resource_utilization
+              scheduling_algorithm: "priority_based_with_adaptation"
+
+        planning_parameters:
+          max_parallel_tasks: 8
+          dependency_analysis_depth: 5
+          resource_optimization_target: 0.9
+          real_time_replanning: true
+        error_handling:
+          planning_failure:
+            action: "fallback_to_sequential_planning"
+            log_warning: true
+          resource_allocation_failure:
+            action: "use_available_resources"
+            log_info: true
+        output:
+          parallel_plan_created: "boolean"
+          execution_graph_built: "boolean"
+          resource_allocation_optimized: "boolean"
+          planning_time: "float"
+
+    # === DYNAMIC TEXT ANALYSIS AND CATEGORIZATION PHASE (Priority 2.8) ===
 
     - name: "dynamic_text_analysis_phase"
-      priority: 2.6
+      priority: 2.8
       method: "real_time_text_processing"
       dependencies:
         required_inputs:
           - component: "system_discovery_phase"
             expected_outputs: ["discovery_complete", "mcp_servers_discovered", "discovered_agents"]
             validation: "discovery_complete == true"
+          - component: "parallel_todo_planning_phase"
+            expected_outputs: ["parallel_plan_created"]
+            validation: "parallel_plan_created == true"
       config:
         text_analysis_operations:
           - priority: 1
@@ -1118,6 +1370,10 @@ implementation:
           component: "dynamic_agent_discovery_phase"
           expected_outputs: ["dynamic_discovery_complete", "enhanced_agent_registry"]
           validation: "dynamic_discovery_complete == true && enhanced_agent_registry != null"
+        memory_system_dependency:
+          component: "adaptive_memory_system_phase"
+          expected_outputs: ["memory_system_active", "patterns_loaded", "adaptation_ready"]
+          validation: "memory_system_active == true && adaptation_ready == true"
       config:
         task_handling:
           validation_phase:
@@ -1130,6 +1386,8 @@ implementation:
             parallel_preparation: true
             dependency_validation: true
             resource_allocation: true
+            memory_pattern_matching: true
+            adaptive_strategy_application: true
           error_handling:
             task_rejection_handling: true
             clarification_request: true
@@ -1138,11 +1396,11 @@ implementation:
         activation_rules:
           minimum_system_readiness: 0.9
           required_phases_complete: ["system_initialization", "system_discovery_phase", "dynamic_agent_discovery_phase", "system_integration_phase", "system_readiness_phase"]
-          required_components_active: ["error_system", "monitoring", "mcp_servers", "enhanced_agent_registry"]
+          required_components_active: ["error_system", "monitoring", "mcp_servers", "enhanced_agent_registry", "adaptive_memory_system"]
           task_validation_enabled: true
         coordination_protocols:
-          analysis_sequence: ["task_semantic_analysis", "task_complexity_assessment", "domain_classification"]
-          execution_sequence: ["todo_generation_system", "delegation_engine", "coordination_system"]
+          analysis_sequence: ["task_semantic_analysis", "task_complexity_assessment", "domain_classification", "memory_pattern_matching"]
+          execution_sequence: ["todo_generation_system", "delegation_engine", "coordination_system", "memory_recording"]
           optimization_sequence: ["performance_optimizer", "resource_manager", "quality_assurance"]
       output:
         task_accepted: "boolean"
@@ -2048,12 +2306,35 @@ implementation:
               buffer_allocation: 0.20  # 20% buffer for uncertainties
               constraint_satisfaction: "hard_constraint_priority"
               optimization_objective: "minimize_total_completion_time"
+              conflict_resolution:
+                enabled: true
+                detection_threshold: 0.7
+                resolution_strategies:
+                  - priority_preemption
+                  - resource_cloning
+                  - intelligent_queuing
+                  - graceful_degradation
+                max_wait_time: 30
+                preemption_policy: "priority_based"
 
             execution_scheduling:
               algorithm: "list_scheduling_with_priorities"
               priority_calculation: "weighted_sum_criticality_and_dependencies"
               adaptive_scheduling: true
               real_time_optimization: true
+              dynamic_replanning:
+                enabled: true
+                triggers:
+                  - performance_degradation: "< 80% efficiency"
+                  - resource_failure: "server unavailable"
+                  - priority_change: "user request or system decision"
+                  - dependency_failure: "upstream task failed"
+                strategies:
+                  - resource_reallocation
+                  - task_reprioritization
+                  - dependency_replanning
+                  - parallel_level_adjustment
+                response_time_limit: 50
 
         strategic_planning:
           multi_objective_optimization:
@@ -2067,10 +2348,48 @@ implementation:
             mitigation_strategies: ["checkpoint_creation", "alternative_paths", "graceful_degradation"]
 
           quality_gates:
-            dependency_validation: "no_circular_dependencies"
+            dependency_validation:
+              circular_dependencies: "no_circular_dependencies"
+              conditional_dependencies: "validate_conditional_dependencies"
+              runtime_dependencies: "validate_runtime_resolution"
+              dependency_strength: "validate_dependency_scoring"
+              cross_domain_dependencies: "validate_domain_coupling"
             resource_feasibility: "sufficient_resources_available"
             deadline_feasibility: "completion_within_constraints"
             parallel_efficiency: "minimum_60%_parallel_utilization"
+
+          performance_monitoring:
+            enabled: true
+            metrics_collection:
+              efficiency_metrics:
+                - parallel_utilization_rate
+                - resource_efficiency_score
+                - task_completion_rate
+                - dependency_resolution_time
+
+              performance_metrics:
+                - execution_time_vs_sequential
+                - resource_contention_rate
+                - adaptation_response_time
+                - bottleneck_frequency
+
+              quality_metrics:
+                - dependency_violation_rate
+                - resource_allocation_success_rate
+                - adaptation_success_rate
+                - overall_system_reliability
+
+            benchmarking:
+              target_parallel_efficiency: 0.85
+              target_resource_utilization: 0.80
+              max_dependency_resolution_time: 5  # ms
+              max_adaptation_response_time: 50  # ms
+              min_conflict_resolution_success: 0.90
+
+            alerting:
+              performance_degradation_threshold: 0.80
+              resource_contention_threshold: 0.70
+              adaptation_failure_threshold: 0.10
       output:
         task_decomposition_result: "object"
         dependency_graph: "object"
@@ -2079,6 +2398,8 @@ implementation:
         resource_allocation: "object"
         risk_assessment: "object"
         optimization_metrics: "object"
+        performance_metrics: "object"
+        monitoring_data: "object"
 
     - name: "delegation_engine"
       priority: 22
@@ -2656,24 +2977,28 @@ implementation:
             system_health: "overall_system_health_indicators"
             performance_health: "continuous_performance_monitoring"
             security_health: "security_posture_monitoring"
+            memory_health: "adaptive_memory_system_monitoring"
 
           anomaly_detection:
             performance_anomalies: "statistical_anomaly_detection"
             behavioral_anomalies: "pattern_based_anomaly_detection"
             security_anomalies: "security_event_correlation"
             resource_anomalies: "resource_usage_pattern_analysis"
+            memory_anomalies: "pattern_drift_and_learning_degradation_detection"
 
           automated_response:
             auto_healing: "automatic_problem_detection_and_resolution"
             performance_optimization: "automatic_performance_tuning"
             security_response: "automated_security_incident_response"
             resource_management: "automatic_resource_adjustment"
+            memory_optimization: "automatic_pattern_revalidation_and_weight_adjustment"
       output:
         validation_results: "object"
         quality_assessment_report: "object"
         performance_benchmarks: "object"
         reliability_metrics: "object"
         security_assessment: "object"
+        memory_assessment: "object"
         improvement_recommendations: "array"
         system_health_status: "object"
 
@@ -2965,6 +3290,361 @@ implementation:
         system_efficiency: "float"
         readiness_status: "boolean"
 
+    # === ADAPTIVE MEMORY RECORDING OPERATIONS (Priority 38-45) ===
+
+    - name: "success_pattern_recorder"
+      priority: 38
+      method: "record_successful_execution"
+      trigger: "on_task_success"
+      dependencies:
+        required_inputs:
+          - component: "adaptive_memory_system_phase"
+            expected_outputs: ["memory_system_ready"]
+            validation: "memory_system_ready == true"
+      config:
+        recording_operations:
+          - priority: 1
+            operation: "task_signature_analysis"
+            description: "Analyze and classify successful task patterns"
+            implementation:
+              signature_components:
+                - task_complexity_analysis
+                - domain_classification
+                - keyword_extraction
+                - dependency_structure
+              serena_memory:
+                operation: "write_memory"
+                memory_key: "success_pattern_{timestamp}_{task_hash}"
+                retention_days: 30
+                indexing_fields: ["task_domain", "complexity", "agent_types", "mcp_tools"]
+
+          - priority: 2
+            operation: "execution_strategy_recording"
+            description: "Record successful execution strategies for future reuse"
+            implementation:
+              strategy_components:
+                - agent_selection_pattern
+                - tool_usage_sequence
+                - parallel_execution_plan
+                - error_resolution_approach
+              weight_adjustment:
+                success_boost: 0.1
+                agent_preference_update: true
+                strategy_reinforcement: true
+              memory_operation:
+                tool: "write_memory"
+                format: "structured_strategy_record"
+
+        recording_parameters:
+          success_threshold: 0.8
+          pattern_validation: true
+          cross_reference_learning: true
+        output:
+          success_pattern_recorded: "boolean"
+          strategy_weights_updated: "boolean"
+          learning_contribution: "float"
+
+    - name: "failure_pattern_recorder"
+      priority: 39
+      method: "record_and_block_failed_execution"
+      trigger: "on_task_failure"
+      dependencies:
+        required_inputs:
+          - component: "adaptive_memory_system_phase"
+            expected_outputs: ["memory_system_ready"]
+            validation: "memory_system_ready == true"
+      config:
+        failure_analysis_operations:
+          - priority: 1
+            operation: "error_classification"
+            description: "Classify and analyze failure patterns for blocking"
+            implementation:
+              classification_categories:
+                - tool_incompatibility
+                - agent_mismatch
+                - dependency_failure
+                - resource_unavailability
+                - sequence_error
+              blocking_score_calculation:
+                initial_score: 0.5
+                repeat_offense_penalty: 0.2
+                max_blocking_score: 0.9
+              serena_memory:
+                operation: "write_memory"
+                memory_key: "failure_pattern_{timestamp}_{error_type_hash}"
+                retention_days: 90
+
+          - priority: 2
+            operation: "strategy_blacklisting"
+            description: "Blacklist failed strategies to prevent future reuse"
+            implementation:
+              blacklisting_logic:
+                immediate_blocking: true
+                progressive_blocking: true
+                context_sensitive_blocking: true
+              avoidance_recommendations:
+                alternative_strategies: true
+                risk_mitigation_advice: true
+                adaptation_suggestions: true
+              memory_operation:
+                tool: "write_memory"
+                format: "blocked_strategy_record"
+
+        failure_parameters:
+          block_threshold: 0.7
+          learning_from_failure: true
+          adaptation_trigger: true
+        output:
+          failure_pattern_recorded: "boolean"
+          strategies_blocked: "boolean"
+          adaptation_triggered: "boolean"
+
+    - name: "memory_pattern_matcher"
+      priority: 40
+      method: "apply_historical_patterns_to_current_task"
+      trigger: "on_task_analysis"
+      dependencies:
+        required_inputs:
+          - component: "adaptive_memory_system_phase"
+            expected_outputs: ["memory_system_ready", "historical_patterns_loaded"]
+            validation: "memory_system_ready == true && historical_patterns_loaded == true"
+      config:
+        matching_operations:
+          - priority: 1
+            operation: "similarity_analysis"
+            description: "Find similar historical patterns for current task"
+            implementation:
+              matching_algorithms:
+                - semantic_similarity: threshold 0.7
+                - structural_similarity: threshold 0.8
+                - context_similarity: threshold 0.6
+              search_scope:
+                success_patterns: true
+                failure_patterns: true
+                temporal_relevance: last_30_days
+              serena_operations:
+                - "list_memories"
+                - "read_memory"
+
+          - priority: 2
+            operation: "pattern_application"
+            description: "Apply historical patterns to current execution strategy"
+            implementation:
+              application_logic:
+                success_pattern_priority: 0.8
+                failure_pattern_avoidance: 0.9
+                confidence_threshold: 0.7
+              adaptation_mechanisms:
+                strategy_modification: true
+                agent_selection_adjustment: true
+                resource_allocation_optimization: true
+
+        matching_parameters:
+          similarity_threshold: 0.7
+          max_patterns_to_consider: 10
+          confidence_requirement: 0.6
+        output:
+          patterns_matched: "boolean"
+          strategy_recommended: "boolean"
+          confidence_score: "float"
+
+    - name: "parallel_execution_optimizer"
+      priority: 41
+      method: "optimize_execution_based_on_learning"
+      trigger: "on_execution_planning"
+      dependencies:
+        required_inputs:
+          - component: "parallel_todo_planning_phase"
+            expected_outputs: ["parallel_plan_created", "execution_graph_built"]
+            validation: "parallel_plan_created == true && execution_graph_built == true"
+          - component: "memory_pattern_matcher"
+            expected_outputs: ["patterns_matched", "strategy_recommended"]
+            validation: "patterns_matched == true"
+      config:
+        optimization_operations:
+          - priority: 1
+            operation: "learned_strategy_integration"
+            description: "Integrate learned strategies into parallel execution plan"
+            implementation:
+              integration_points:
+                - agent_selection_modification
+                - parallel_task_reordering
+                - resource_allocation_adjustment
+              optimization_objectives:
+                - minimize_execution_time: weight 0.4
+                - maximize_success_probability: weight 0.4
+                - minimize_resource_conflicts: weight 0.2
+
+          - priority: 2
+            operation: "real_time_adaptation"
+            description: "Adapt execution strategy based on real-time feedback"
+            implementation:
+              adaptation_triggers:
+                - performance_degradation: threshold 20%
+                - resource_unavailability: immediate
+                - error_pattern_detection: immediate
+              response_mechanisms:
+                - strategy_replanning: true
+                - resource_reallocation: true
+                - fallback_activation: true
+
+        optimization_parameters:
+          adaptation_frequency: "continuous"
+          learning_integration_weight: 0.7
+          real_time_optimization: true
+        output:
+          plan_optimized: "boolean"
+          learning_integrated: "boolean"
+          adaptation_ready: "boolean"
+        recording_operations:
+          - operation: "extract_success_pattern"
+            description: "Extract and store successful execution patterns"
+            implementation:
+              serena_operations:
+                - write_memory: "success_pattern"
+                - memory_key: "success_{timestamp}_{task_type}"
+              pattern_extraction:
+                task_signature_analysis: true
+                strategy_documentation: true
+                performance_metrics: true
+                confidence_calculation: true
+          - operation: "update_adaptive_weights"
+            description: "Update learning weights based on success"
+            implementation:
+              sequential_thinking:
+                pattern_analysis: "success_correlation"
+                strategy_refinement: "positive_reinforcement"
+              weight_adjustment:
+                agent_preference_boost: 0.1
+                strategy_confidence_increase: 0.05
+                context_factor_update: true
+
+        success_pattern_schema:
+          pattern_id: "auto_generated_uuid"
+          task_signature:
+            complexity: "float"
+            domain: "string"
+            keywords: "array"
+            requirements: "array"
+          execution_strategy:
+            agent_type: "string"
+            approach: "string"
+            tools_used: "array"
+            parallelization: "boolean"
+          performance_metrics:
+            execution_time: "float"
+            success_rate: "float"
+            quality_score: "float"
+            resource_efficiency: "float"
+          learning_metadata:
+            confidence_score: "float"
+            usage_count: "integer"
+            last_updated: "timestamp"
+
+      output:
+        pattern_recorded: "boolean"
+        pattern_id: "string"
+        weights_updated: "boolean"
+        recording_summary: "object"
+
+    - name: "failure_pattern_recorder"
+      priority: 39
+      method: "record_failed_execution"
+      trigger: "on_task_failure"
+      config:
+        recording_operations:
+          - operation: "extract_failure_pattern"
+            description: "Extract and store failure patterns for avoidance"
+            implementation:
+              serena_operations:
+                - write_memory: "failure_pattern"
+                - memory_key: "failure_{timestamp}_{error_type}"
+              failure_analysis:
+                error_classification: true
+                root_cause_analysis: true
+                blocking_strategy: true
+          - operation: "update_blocking_weights"
+            description: "Update blocking mechanisms based on failures"
+            implementation:
+              sequential_thinking:
+                failure_correlation: "negative_pattern_analysis"
+                avoidance_strategy: "risk_mitigation"
+              blocking_adjustment:
+                strategy_penalty: 0.2
+                agent_avoidance_boost: 0.15
+                context_risk_update: true
+
+        failure_pattern_schema:
+          pattern_id: "auto_generated_uuid"
+          task_signature:
+            complexity: "float"
+            domain: "string"
+            keywords: "array"
+            requirements: "array"
+          failure_strategy:
+            agent_type: "string"
+            approach: "string"
+            tools_used: "array"
+            execution_path: "array"
+          error_classification:
+            error_type: "string"
+            severity: "string"
+            root_cause: "string"
+            reproducibility: "boolean"
+          blocking_metadata:
+            blocking_score: "float"
+            occurrence_count: "integer"
+            last_occurrence: "timestamp"
+            avoidance_recommendations: "array"
+
+      output:
+        failure_recorded: "boolean"
+        pattern_id: "string"
+        blocking_updated: "boolean"
+        failure_analysis: "object"
+
+    - name: "memory_pattern_matcher"
+      priority: 40
+      method: "match_and_apply_patterns"
+      trigger: "before_task_execution"
+      config:
+        matching_operations:
+          - operation: "query_similar_patterns"
+            description: "Find relevant success/failure patterns"
+            implementation:
+              serena_operations:
+                - list_memories: "filter_by_relevance"
+                - read_memory: "pattern_details"
+              matching_criteria:
+                task_similarity_threshold: 0.7
+                domain_matching: true
+                complexity_range: 0.2
+                recency_boost: true
+          - operation: "generate_adaptive_recommendations"
+            description: "Generate strategy recommendations based on patterns"
+            implementation:
+              sequential_thinking:
+                pattern_synthesis: "cross_pattern_analysis"
+                recommendation_generation: "evidence_based_advice"
+              recommendation_logic:
+                success_pattern_priority: 0.8
+                failure_pattern_avoidance: 0.9
+                confidence_threshold: 0.6
+                adaptation_suggestions: true
+
+        recommendation_output:
+          preferred_strategy: "object"
+          success_probability: "float"
+          risk_assessment: "object"
+          adaptation_suggestions: "array"
+          confidence_explanation: "string"
+
+      output:
+        patterns_matched: "integer"
+        recommendations_generated: "boolean"
+        strategy_confidence: "float"
+        matching_summary: "object"
+
 output:
   format: "structured"
   validation: true
@@ -2984,6 +3664,12 @@ output:
     mcp_server_categories: "object"
     system_capabilities: "object"
     readiness_summary: "object"
+
+    # Memory system outputs
+    memory_patterns_loaded: "integer"
+    adaptive_recommendations: "object"
+    learning_metrics: "object"
+    pattern_confidence: "float"
 
 fallback:
   enabled: true

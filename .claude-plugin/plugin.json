@@ -1,7 +1,7 @@
 {
   "name": "master",
-  "version": "0.3.0",
-  "description": "Advanced intelligent task orchestration with comprehensive parallel planning and real-time adaptation",
+  "version": "0.4.0",
+  "description": "Advanced intelligent task orchestration with comprehensive parallel planning, real-time adaptation, and adaptive memory learning",
   "author": {
     "name": "Bohdan",
     "email": "pomazan.bohdan@gmail.com"
@@ -139,6 +139,18 @@
     "predictive-scaling",
     "anomaly-detection",
     "fault-tolerance",
-    "auto-healing-capabilities"
+    "auto-healing-capabilities",
+    "adaptive-memory-system",
+    "pattern-learning",
+    "success-pattern-storage",
+    "failure-pattern-avoidance",
+    "memory-based-adaptation",
+    "serena-mcp-integration",
+    "sequential-thinking-pattern-analysis",
+    "cross-session-learning",
+    "intelligent-memory-management",
+    "dynamic-strategy-refinement",
+    "experience-based-optimization",
+    "memory-driven-decision-making"
   ]
 }
