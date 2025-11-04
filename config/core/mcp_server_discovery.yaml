@@ -1,377 +1,411 @@
-# MCP Server Discovery System (Phase 0)
+# MCP Server Discovery System (Optimized v1.0.0)
 # MCP server detection, analysis, and validation system
 
-metadata:
+component:
   name: "mcp_server_discovery"
-  version: "0.3.1"
-  description: "MCP Server Discovery and Validation system for Phase 0 initialization with automatic detection, capability analysis, and health monitoring"
-  author: "Master Agent System"
-  tags: ["mcp-discovery", "server-detection", "capability-analysis", "validation", "health-monitoring", "tool-selection"]
+  version: "1.0.0"
+  description: "MCP Server Discovery and Validation system with automatic detection, capability analysis, and health monitoring"
+  category: "core"
+  priority: 1  # Critical for Phase 0 initialization
+  status: "stable"
 
-# MCP Server Discovery Protocol
-mcp_server_discovery_system:
-  discovery_protocols:
-    automatic_scanning:
-      enabled: true
-      scan_frequency: "on_startup"
-      scan_methods:
-        - port_scanning:
+triggers:
+  primary:
+    keywords: ["mcp", "server", "discovery", "detect", "tool", "capability"]
+    patterns: [".*mcp.*server.*", ".*server.*discovery.*", ".*tool.*detect.*", ".*capability.*analysis.*"]
+    score: 1.0
+  secondary:
+    keywords: ["scan", "analyze", "validate", "monitor", "benchmark"]
+    patterns: [".*scan.*server.*", ".*analyze.*tool.*", ".*validate.*mcp.*", ".*monitor.*performance.*"]
+    score: 0.7
+  contextual:
+    conditions:
+      - "system_startup_initiated"
+      - "mcp_server_registry_needed"
+      - "tool_capability_update_required"
+      - "performance_monitoring_needed"
+    score: 0.5
+
+implementation:
+  operations:
+    - name: "mcp_server_discovery"
+      method: "multi_protocol_server_detection"
+      priority: 1
+      config:
+        discovery_protocols:
+          automatic_scanning:
             enabled: true
-            port_range: [3000, 9000]
+            scan_frequency: "on_startup"
+            scan_methods:
+              port_scanning:
+                enabled: true
+                port_range: [3000, 9000]
+                timeout: 5
+                parallel_scan: true
+              manifest_detection:
+                enabled: true
+                search_paths: [".claude/", "config/", "plugins/"]
+                file_patterns: ["mcp.json", "mcp-config.json", "*.mcp.json"]
+              api_discovery:
+                enabled: true
+                endpoint_detection: true
+                capability_negotiation: true
+              builtin_servers:
+                enabled: true
+                server_list: ["tavily", "serena", "context7", "magic", "playwright", "sequential", "chrome-devtools", "fast-filesystem", "web-search-prime"]
+
+        server_sources:
+          - "builtin_mcp_servers"
+          - "user_defined_mcp_servers"
+          - "plugin_mcp_servers"
+          - "external_mcp_servers"
+      output:
+        discovered_servers: "array"
+        server_metadata: "object"
+        discovery_status: "object"
+        server_availability: "object"
+
+    - name: "mcp_capability_analysis"
+      method: "comprehensive_tool_assessment"
+      priority: 2
+      config:
+        analysis_depth: "full"
+        tool_analysis:
+          tool_extraction: true
+          capability_mapping: true
+          performance_profiling: true
+          compatibility_testing: true
+          validation_tests: true
+        server_analysis:
+          health_monitoring: true
+          performance_benchmarking: true
+          reliability_assessment: true
+          capacity_evaluation: true
+          load_testing: true
+        license_validation:
+          permission_checking: true
+          compliance_verification: true
+          usage_limit_monitoring: true
+          security_clearance: true
+          audit_trail_verification: true
+      output:
+        capability_mapping: "object"
+        performance_profiles: "object"
+        compliance_status: "object"
+        tool_inventory: "object"
+
+    - name: "mcp_tool_registry"
+      method: "structured_tool_classification"
+      priority: 3
+      config:
+        registry_structure:
+          server_info:
+            server_name: "string"
+            server_version: "string"
+            server_status: "active|inactive|degraded|error"
+            capabilities: "array"
+            tools: "array"
+            health_metrics: "object"
+          tool_info:
+            tool_name: "string"
+            tool_category: "string"
+            tool_performance: "object"
+            tool_reliability: "float"
+            fallback_options: "array"
+            usage_patterns: "object"
+          performance_metrics:
+            response_time: "float"
+            success_rate: "float"
+            error_rate: "float"
+            capacity_usage: "float"
+            last_health_check: "timestamp"
+
+        tool_categories:
+          search_discovery:
+            tools: ["tavily", "web-search-prime", "context7"]
+            capabilities: ["web_search", "documentation_lookup", "real_time_search"]
+            fallback_priority: 1
+            performance_requirements: ["fast_response", "high_accuracy"]
+          code_analysis:
+            tools: ["serena", "sequential", "morphllm"]
+            capabilities: ["semantic_understanding", "symbolic_analysis", "pattern_matching"]
+            fallback_priority: 2
+            performance_requirements: ["deep_analysis", "context_aware"]
+          ui_generation:
+            tools: ["magic", "21st"]
+            capabilities: ["component_generation", "design_systems", "responsive_ui"]
+            fallback_priority: 3
+            performance_requirements: ["modern_frameworks", "accessibility"]
+          browser_testing:
+            tools: ["playwright", "chrome-devtools"]
+            capabilities: ["automation", "e2e_testing", "performance_testing"]
+            fallback_priority: 2
+            performance_requirements: ["real_browser", "comprehensive_testing"]
+          file_operations:
+            tools: ["fast-filesystem", "file-management"]
+            capabilities: ["high_performance_ops", "bulk_operations", "file_search"]
+            fallback_priority: 1
+            performance_requirements: ["speed", "reliability"]
+          collaboration:
+            tools: ["github", "documentation"]
+            capabilities: ["version_control", "project_management", "documentation"]
+            fallback_priority: 2
+            performance_requirements: ["integration", "reliability"]
+      output:
+        tool_registry: "object"
+        category_mapping: "object"
+        fallback_hierarchy: "object"
+        tool_metadata: "object"
+
+    - name: "mcp_performance_profiling"
+      method: "comprehensive_benchmarking_system"
+      priority: 4
+      config:
+        profiling_enabled: true
+        benchmark_frequency: "on_initialization"
+        performance_metrics:
+          response_time_targets:
+            excellent: 500  # ms
+            good: 1000
+            acceptable: 2000
+            poor: 2000
+          reliability_targets:
+            excellent: 0.99
+            good: 0.95
+            acceptable: 0.90
+            poor: 0.90
+          capacity_metrics:
+            concurrent_requests: "integer"
+            memory_usage: "MB"
+            cpu_usage: "percentage"
+            throughput: "requests_per_minute"
+      output:
+        performance_benchmarks: "object"
+        performance_tiers: "object"
+        capacity_analysis: "object"
+        reliability_metrics: "object"
+
+    - name: "mcp_validation_system"
+      method: "multi_layer_validation_gates"
+      priority: 5
+      config:
+        validation_gates:
+          server_availability_validation:
+            enabled: true
+            checks:
+              server_connectivity: "Test connection to all MCP servers"
+              response_time_validation: "Verify response times within acceptable limits"
+              tool_accessibility: "Confirm all tools are accessible and functional"
+              capacity_assessment: "Evaluate server load and handling capacity"
+              error_rate_monitoring: "Track error rates are within thresholds"
+            success_criteria: "all_checks_pass"
+            failure_handling: "graceful_degradation"
+
+          tool_compatibility_testing:
+            enabled: true
+            tests:
+              task_type_matching: "Validate tools for specific task categories"
+              performance_benchmarking: "Test tool performance against standards"
+              integration_testing: "Verify integration with existing systems"
+              fallback_verification: "Test fallback mechanisms work correctly"
+              cross_server_compatibility: "Ensure tools work across different server combinations"
+            success_criteria: "compatibility_score > 0.8"
+            failure_handling: "alternative_tool_selection"
+
+          license_compliance_validation:
+            enabled: true
+            checks:
+              license_verification: "Confirm all MCP tools have proper licensing"
+              permission_validation: "Verify required permissions are available"
+              usage_limit_checks: "Validate within usage limits and quotas"
+              security_clearance: "Ensure tools meet security requirements"
+              audit_trail_verification: "Maintain compliance audit records"
+            success_criteria: "compliance_score = 1.0"
+            failure_handling: "restricted_usage_mode"
+      output:
+          validation_results: "object"
+          compliance_status: "object"
+          test_reports: "array"
+          validation_metrics: "object"
+
+    - name: "mcp_fallback_system"
+      method: "intelligent_failure_recovery"
+      priority: 6
+      config:
+        enabled: true
+        fallback_strategy: "automatic"
+        fallback_hierarchy:
+          level_1_primary:
+            description: "Primary MCP tool optimal for task"
+            selection_criteria: ["performance", "reliability", "capabilities"]
+            auto_switch: true
+            validation_required: true
+          level_2_alternative:
+            description: "Alternative MCP tool with similar capabilities"
+            selection_criteria: ["capability_match", "availability"]
+            auto_switch: true
+            validation_required: true
+          level_3_native:
+            description: "Native Claude Code tools"
+            selection_criteria: ["basic_functionality", "reliability"]
+            auto_switch: true
+            validation_required: false
+          level_4_manual:
+            description: "Manual execution as last resort"
+            selection_criteria: ["emergency_only"]
+            auto_switch: false
+            validation_required: false
+
+        recovery_protocols:
+          automatic_retry:
+            max_attempts: 3
+            backoff_strategy: "exponential"
+            retry_intervals: [5, 15, 30]  # seconds
+          server_reconnection:
+            enabled: true
+            reconnection_interval: 60  # seconds
+            max_reconnection_attempts: 5
+          performance_degradation:
+            enabled: true
+            degradation_threshold: 50  # 50% performance reduction
+            auto_recovery: true
+      output:
+        fallback_status: "object"
+        recovery_attempts: "integer"
+        fallback_strategy_active: "string"
+        recovery_metrics: "object"
+
+    - name: "mcp_health_monitoring"
+      method: "real_time_system_health_tracking"
+      priority: 7
+      config:
+        enabled: true
+        monitoring_frequency: "real_time"
+        health_checks:
+          server_connectivity:
+            check_interval: 30  # seconds
             timeout: 5
-            parallel_scan: true
-        - manifest_detection:
-            enabled: true
-            search_paths: [".claude/", "config/", "plugins/"]
-            file_patterns: ["mcp.json", "mcp-config.json", "*.mcp.json"]
-        - api_discovery:
-            enabled: true
-            endpoint_detection: true
-            capability_negotiation: true
-        - builtin_servers:
-            enabled: true
-            server_list: ["tavily", "serena", "context7", "magic", "playwright", "sequential", "chrome-devtools", "fast-filesystem", "web-search-prime"]
+            retry_attempts: 3
+          tool_functionality:
+            check_interval: 60  # seconds
+            test_operations: true
+            performance_validation: true
+          performance_monitoring:
+            metrics_collected: ["response_times", "success_rates", "error_patterns", "capacity_usage", "availability_percentages"]
 
-    server_sources:
-      - builtin_mcp_servers
-      - user_defined_mcp_servers
-      - plugin_mcp_servers
-      - external_mcp_servers
+        alerting_system:
+          alerts_enabled: true
+          alert_thresholds:
+            server_unavailable: 0  # immediate
+            high_error_rate: 5     # 5% error rate
+            slow_response: 2000    # 2 seconds
+            capacity_limit: 80     # 80% capacity usage
+          notification_channels: ["system_logs", "monitoring_dashboard", "performance_reports"]
+      output:
+        health_status: "object"
+        performance_metrics: "object"
+        alert_status: "object"
+        monitoring_data: "object"
 
-# MCP Capability Analysis
-mcp_capability_analysis:
-  analysis_depth: "full"
+dependencies:
+  required:
+    - component: "error_handling_initialization"
+      version: ">=1.0.0"
+      reason: "Error handling and fallback support"
+  optional:
+    - component: "monitoring_system"
+      version: ">=1.0.0"
+      fallback: "basic_health_monitoring"
+    - component: "performance_tracking"
+      version: ">=1.0.0"
+      fallback: "basic_performance_logging"
 
-  tool_analysis:
-    tool_extraction: true
-    capability_mapping: true
-    performance_profiling: true
-    compatibility_testing: true
-    validation_tests: true
+output:
+  format: "structured"
+  validation: true
+  schema:
+    server_registry: "object"
+    tool_inventory: "object"
+    performance_benchmarks: "object"
+    validation_results: "object"
+    health_monitoring: "object"
 
-  server_analysis:
-    health_monitoring: true
-    performance_benchmarking: true
-    reliability_assessment: true
-    capacity_evaluation: true
-    load_testing: true
-
-  license_validation:
-    permission_checking: true
-    compliance_verification: true
-    usage_limit_monitoring: true
-    security_clearance: true
-    audit_trail_verification: true
-
-# MCP Tool Registry System
-mcp_tool_registry:
-  registry_structure:
-    server_info:
-      server_name: string
-      server_version: string
-      server_status: "active|inactive|degraded|error"
-      capabilities: array
-      tools: array
-      health_metrics: object
-
-    tool_info:
-      tool_name: string
-      tool_category: string
-      tool_performance: object
-      tool_reliability: float
-      fallback_options: array
-      usage_patterns: object
-
-    performance_metrics:
-      response_time: float
-      success_rate: float
-      error_rate: float
-      capacity_usage: float
-      last_health_check: timestamp
-
-  tool_categories:
-    search_discovery:
-      tools: ["tavily", "web-search-prime", "context7"]
-      capabilities: ["web_search", "documentation_lookup", "real_time_search"]
-      fallback_priority: 1
-      performance_requirements: ["fast_response", "high_accuracy"]
-
-    code_analysis:
-      tools: ["serena", "sequential", "morphllm"]
-      capabilities: ["semantic_understanding", "symbolic_analysis", "pattern_matching"]
-      fallback_priority: 2
-      performance_requirements: ["deep_analysis", "context_aware"]
-
-    ui_generation:
-      tools: ["magic", "21st"]
-      capabilities: ["component_generation", "design_systems", "responsive_ui"]
-      fallback_priority: 3
-      performance_requirements: ["modern_frameworks", "accessibility"]
-
-    browser_testing:
-      tools: ["playwright", "chrome-devtools"]
-      capabilities: ["automation", "e2e_testing", "performance_testing"]
-      fallback_priority: 2
-      performance_requirements: ["real_browser", "comprehensive_testing"]
-
-    file_operations:
-      tools: ["fast-filesystem", "file-management"]
-      capabilities: ["high_performance_ops", "bulk_operations", "file_search"]
-      fallback_priority: 1
-      performance_requirements: ["speed", "reliability"]
-
-    collaboration:
-      tools: ["github", "documentation"]
-      capabilities: ["version_control", "project_management", "documentation"]
-      fallback_priority: 2
-      performance_requirements: ["integration", "reliability"]
-
-# MCP Performance Profiling
-mcp_performance_profiling:
-  profiling_enabled: true
-  benchmark_frequency: "on_initialization"
-
-  performance_metrics:
-    response_time_targets:
-      excellent: "< 500ms"
-      good: "< 1000ms"
-      acceptable: "< 2000ms"
-      poor: "> 2000ms"
-
-    reliability_targets:
-      excellent: "> 99%"
-      good: "> 95%"
-      acceptable: "> 90%"
-      poor: "< 90%"
-
-    capacity_metrics:
-      concurrent_requests: integer
-      memory_usage: "MB"
-      cpu_usage: "percentage"
-      throughput: "requests_per_minute"
-
-# MCP Validation System
-mcp_validation_system:
-  validation_gates:
-    server_availability_validation:
-      enabled: true
-      checks:
-        - server_connectivity: "Test connection to all MCP servers"
-        - response_time_validation: "Verify response times within acceptable limits"
-        - tool_accessibility: "Confirm all tools are accessible and functional"
-        - capacity_assessment: "Evaluate server load and handling capacity"
-        - error_rate_monitoring: "Track error rates are within thresholds"
-      success_criteria: "all_checks_pass"
-      failure_handling: "graceful_degradation"
-
-    tool_compatibility_testing:
-      enabled: true
-      tests:
-        - task_type_matching: "Validate tools for specific task categories"
-        - performance_benchmarking: "Test tool performance against standards"
-        - integration_testing: "Verify integration with existing systems"
-        - fallback_verification: "Test fallback mechanisms work correctly"
-        - cross_server_compatibility: "Ensure tools work across different server combinations"
-      success_criteria: "compatibility_score > 0.8"
-      failure_handling: "alternative_tool_selection"
-
-    license_compliance_validation:
-      enabled: true
-      checks:
-        - license_verification: "Confirm all MCP tools have proper licensing"
-        - permission_validation: "Verify required permissions are available"
-        - usage_limit_checks: "Validate within usage limits and quotas"
-        - security_clearance: "Ensure tools meet security requirements"
-        - audit_trail_verification: "Maintain compliance audit records"
-      success_criteria: "compliance_score = 1.0"
-      failure_handling: "restricted_usage_mode"
-
-# MCP Fallback Strategy System
-mcp_fallback_system:
+fallback:
   enabled: true
-  fallback_strategy: "automatic"
+  strategy: "multi_level_fallback"
+  levels:
+    full_functionality:
+      description: "Complete MCP discovery with all features"
+      confidence_threshold: 0.8
+      capabilities: ["auto_discovery", "capability_analysis", "performance_profiling", "validation", "health_monitoring"]
+    degraded_functionality:
+      description: "Basic MCP discovery with limited analysis"
+      confidence_threshold: 0.6
+      capabilities: ["basic_discovery", "simple_validation", "health_checks"]
+    emergency_mode:
+      description: "Minimal MCP discovery with cached data"
+      confidence_threshold: 0.4
+      capabilities: ["cached_server_info", "basic_tool_listing", "limited_monitoring"]
+  recovery:
+    automatic: true
+    check_interval: 60000  # 1 minute
+    max_attempts: 3
 
-  fallback_hierarchy:
-    level_1_primary:
-      description: "Primary MCP tool optimal for task"
-      selection_criteria: ["performance", "reliability", "capabilities"]
-      auto_switch: true
-      validation_required: true
-
-    level_2_alternative:
-      description: "Alternative MCP tool with similar capabilities"
-      selection_criteria: ["capability_match", "availability"]
-      auto_switch: true
-      validation_required: true
-
-    level_3_native:
-      description: "Native Claude Code tools"
-      selection_criteria: ["basic_functionality", "reliability"]
-      auto_switch: true
-      validation_required: false
-
-    level_4_manual:
-      description: "Manual execution as last resort"
-      selection_criteria: ["emergency_only"]
-      auto_switch: false
-      validation_required: false
-
-  recovery_protocols:
-    automatic_retry:
-      max_attempts: 3
-      backoff_strategy: "exponential"
-      retry_intervals: [5, 15, 30]  # seconds
-
-    server_reconnection:
-      enabled: true
-      reconnection_interval: 60  # seconds
-      max_reconnection_attempts: 5
-
-    performance_degradation:
-      enabled: true
-      degradation_threshold: 50  # 50% performance reduction
-      auto_recovery: true
-
-# MCP Health Monitoring
-mcp_health_monitoring:
+monitoring:
   enabled: true
-  monitoring_frequency: "real_time"
+  metrics:
+    - "discovery_success_rate"
+    - "server_availability"
+    - "tool_functionality_rate"
+    - "performance_compliance"
+    - "validation_success_rate"
+    - "fallback_activation_frequency"
+    - "health_check_status"
+  performance_targets:
+    discovery_success_rate: 0.95
+    server_availability_detection: 0.99
+    tool_functionality_validation: 0.98
+    total_discovery_time: 30000  # 30 seconds
+    memory_usage_limit: 64  # MB
 
-  health_checks:
-    server_connectivity:
-      check_interval: 30  # seconds
-      timeout: 5
-      retry_attempts: 3
+integration:
+  inputs:
+    - "system_startup_triggers"
+    - "mcp_server_configurations"
+    - "performance_requirements"
+    - "validation_criteria"
+  outputs:
+    - "agent_selection_system"
+    - "todo_engine"
+    - "coordination_system"
+    - "error_handling_system"
+    - "monitoring_system"
+  events:
+    - subscribe: "system_initialization_started"
+    - subscribe: "mcp_server_configuration_update"
+    - publish: "mcp_servers_discovered"
+    - publish: "mcp_tools_validated"
+    - publish: "mcp_performance_report"
 
-    tool_functionality:
-      check_interval: 60  # seconds
-      test_operations: true
-      performance_validation: true
+# Quality Assurance System
+quality_assurance:
+  validation_rules:
+    server_discovery: "comprehensive detection with multiple protocols"
+    capability_analysis: "thorough tool assessment and mapping"
+    performance_profiling: "accurate benchmarking and capacity analysis"
+    validation_system: "multi-layer validation with clear success criteria"
+    health_monitoring: "real-time tracking with proactive alerting"
 
-    performance_monitoring:
-      metrics_collected:
-        - response_times
-        - success_rates
-        - error_patterns
-        - capacity_usage
-        - availability_percentages
+  consistency_checks:
+    discovery_completeness: true
+    capability_accuracy: true
+    performance_reliability: true
+    validation_thoroughness: true
+    health_monitoring_effectiveness: true
 
-  alerting_system:
-    alerts_enabled: true
-    alert_thresholds:
-      server_unavailable: 0  # immediate
-      high_error_rate: 5     # 5% error rate
-      slow_response: 2000    # 2 seconds
-      capacity_limit: 80     # 80% capacity usage
-
-    notification_channels:
-      - system_logs
-      - monitoring_dashboard
-      - performance_reports
-
-# MCP Server Discovery Results Structure
-discovery_results_structure:
-  server_registry:
-    discovered_servers:
-      server_id: string
-      server_name: string
-      server_version: string
-      server_status: string
-      capabilities: array
-      tools: object
-      performance_metrics: object
-      health_status: object
-
-    tool_inventory:
-      tool_id: string
-      tool_name: string
-      tool_category: string
-      server_source: string
-      capabilities: array
-      performance_profile: object
-      fallback_options: array
-
-    performance_benchmarks:
-      server_performance: object
-      tool_performance: object
-      reliability_metrics: object
-      capacity_analysis: object
-
-    validation_results:
-      server_validation: object
-      tool_validation: object
-      compliance_validation: object
-      performance_validation: object
-
-# Integration Points
-integration_points:
-  initialization_integration:
-    phase: 0  # Critical prerequisite phase
-    dependencies: []
-    provides: ["mcp_server_registry", "tool_capabilities", "performance_data"]
-
-  system_integration:
-    components_informed:
-      - "agent_selection" (tool availability)
-      - "todo_engine" (MCP tool integration)
-      - "coordination" (parallel MCP execution)
-      - "error_handling" (MCP failure recovery)
-
-  monitoring_integration:
-    provides_data_to:
-      - "system_health_monitoring"
-      - "performance_tracking"
-      - "error_handling_system"
-
-# Performance Targets
-performance_targets:
-  discovery_timing:
-    total_discovery_time: "< 30 seconds"
-    server_analysis_time: "< 20 seconds"
-    tool_validation_time: "< 10 seconds"
-
-  reliability_targets:
-    discovery_success_rate: "> 95%"
-    server_availability_detection: "> 99%"
-    tool_functionality_validation: "> 98%"
-
-  resource_usage:
-    memory_usage_during_discovery: "< 64MB"
-    cpu_usage_during_discovery: "< 40%"
-    network_usage_during_discovery: "minimal"
-
-# Error Handling
-error_handling:
-  discovery_failures:
-    server_unavailable:
-      action: "continue_with_available_servers"
-      logging: "log_unavailable_server"
-      fallback: "use_cached_server_info"
-
-    tool_validation_failure:
-      action: "disable_problematic_tools"
-      logging: "log_validation_issues"
-      fallback: "use_alternative_tools"
-
-    performance_issues:
-      action: "adjust_performance_expectations"
-      logging: "log_performance_degradation"
-      fallback: "use_degraded_mode"
-
-# Version Management
-version_management:
-  current_version: "0.3.1"
-  architecture_version: "v0.3.0"
-  compatibility_requirements:
-    minimal_system_version: "0.3.1"
-    required_components: ["error_handling_initialization"]
-
-  phase_integration:
-    initialization_phase: 0
-    phase_dependencies: []
-    phase_success_criteria: ["all_mcp_servers_discovered", "tools_validated", "fallback_strategies_ready"]
-
-  migration_support:
-    previous_version_support: false
-    migration_strategy: "clean_initialization"
-    configuration_migration: "automatic_with_validation"
+  performance_standards:
+    discovery_processing: "< 30 seconds"
+    server_analysis: "< 20 seconds"
+    tool_validation: "< 10 seconds"
+    health_check_interval: "30 seconds"
+    alert_response: "< 5 seconds"

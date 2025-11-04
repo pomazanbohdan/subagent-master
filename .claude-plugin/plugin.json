@@ -1,7 +1,7 @@
 {
   "name": "master",
-  "version": "0.3.4",
-  "description": "Unified orchestration system v0.3.4 - YAML optimized configuration with 59% token reduction and enhanced performance",
+  "version": "0.3.5",
+  "description": "Enhanced orchestration system v0.3.5 - YAML optimized configuration with complete functionality restoration and improved performance",
   "author": {
     "name": "Bohdan",
     "email": "pomazan.bohdan@gmail.com"

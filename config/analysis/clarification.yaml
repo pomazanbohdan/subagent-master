@@ -1,495 +1,377 @@
-# Clarification and Context Analysis System (Consolidated v0.2.2)
-# Interactive clarification with contextual question generation, adaptive workflows, and semantic analysis integration
+# Clarification System (Optimized v1.0.0)
+# Interactive clarification with contextual question generation and adaptive workflows
 
-metadata:
+component:
   name: "clarification"
-  version: "0.3.1"
-  description: "Consolidated clarification system with contextual question generation, adaptive workflows, semantic analysis integration, and learning capabilities for optimal task understanding"
-  author: "Master Agent System v0.3.0"
-  tags: ["clarification", "context-analysis", "question-generation", "adaptive-workflows", "semantic-analysis", "learning"]
+  version: "1.0.0"
+  description: "Clarification system with contextual question generation, adaptive workflows, and semantic analysis integration"
+  category: "analysis"
+  priority: 2  # Critical for task understanding
+  status: "stable"
 
-# Clarification Philosophy
-clarification_philosophy: |
-  1. Context-Driven: Generate questions based on task context and ambiguity sources
-  2. Adaptive Workflows: Adjust clarification strategies based on task complexity and user responses
-  3. Semantic Understanding: Use TF-IDF and semantic analysis for intelligent question generation
-  4. User-Centric: Prioritize user experience and minimize clarification overhead
-  5. Learning-Oriented: Continuously improve question effectiveness through feedback
+triggers:
+  primary:
+    keywords: ["clarify", "unclear", "ambiguous", "confusing", "explain", "elaborate"]
+    patterns: [".*not.*clear.*", ".*what.*mean.*", ".*unclear.*requirement.*", ".*explain.*more.*"]
+    score: 1.0
+  secondary:
+    keywords: ["maybe", "possibly", "might", "could", "think about", "consider", "explore"]
+    patterns: [".*could.*you.*", ".*think.*about.*", ".*consider.*option.*", ".*explore.*possibility.*"]
+    score: 0.7
+  contextual:
+    conditions:
+      - "ambiguity_score > 0.6"
+      - "task_complexity > 2"
+      - "missing_requirements_detected"
+      - "user_expresses_uncertainty"
+    score: 0.5
 
-# Enhanced Ambiguity Detection System
-ambiguity_detection_system:
-  detection_criteria:
-    vague_language:
-      indicators: ["maybe", "possibly", "might", "could", "should", "think about", "consider", "explore"]
-      weight: 0.3
-      semantic_patterns: ["uncertainty expressions", "speculative language", "indefinite terms"]
+implementation:
+  operations:
+    - name: "ambiguity_detection"
+      method: "semantic_pattern_analysis"
+      priority: 1
+      config:
+        detection_criteria:
+          vague_language:
+            indicators: ["maybe", "possibly", "might", "could", "should", "think about", "consider", "explore"]
+            weight: 0.3
+            patterns: ["uncertainty_expressions", "speculative_language", "indefinite_terms"]
+          missing_requirements:
+            indicators: ["unclear_scope", "undefined_deliverables", "missing_constraints", "incomplete_specs"]
+            weight: 0.4
+            patterns: ["scope_gaps", "requirement_omissions", "constraint_ambiguities"]
+          conflicting_goals:
+            indicators: ["contradictory_requirements", "mutually_exclusive_outcomes", "incompatible_objectives"]
+            weight: 0.5
+            patterns: ["goal_conflicts", "objective_mismatches", "requirement_contradictions"]
+          insufficient_context:
+            indicators: ["no_domain_specified", "missing_technical_context", "unclear_environment", "lack_of_background"]
+            weight: 0.3
+            patterns: ["context_gaps", "environmental_ambiguities", "domain_uncertainties"]
+          complexity_mismatch:
+            indicators: ["oversimplified_complex_tasks", "overcomplicated_simple_tasks", "inappropriate_approach_selection"]
+            weight: 0.35
+            patterns: ["complexity_misalignment", "approach_mismatches"]
+        scoring_algorithm:
+          linguistic_weight: 0.25
+          semantic_weight: 0.30
+          requirement_weight: 0.35
+          complexity_weight: 0.10
+          threshold: 0.6
+          confidence_threshold: 0.6
+      output:
+        ambiguity_score: "float (0.0-1.0)"
+        ambiguity_sources: "array"
+        confidence_level: "float"
+        detection_details: "object"
 
-    missing_requirements:
-      indicators: ["unclear scope", "undefined deliverables", "missing constraints", "incomplete specifications"]
-      weight: 0.4
-      semantic_patterns: ["scope gaps", "requirement omissions", "constraint ambiguities"]
+    - name: "question_generation"
+      method: "contextual_template_adaptation"
+      priority: 2
+      config:
+        question_types:
+          requirements_clarification:
+            description: "Clarify specific requirements and deliverables"
+            templates:
+              - "What specific {deliverable_type} are you looking for?"
+              - "Could you describe the expected {outcome_characteristics}?"
+              - "What are the acceptance criteria for this {task_component}?"
+              - "Are there any {integration_requirements} with existing systems?"
+            semantic_enhancement: true
+            context_sources: ["task_description", "domain_knowledge", "semantic_analysis"]
+          scope_definition:
+            description: "Define task boundaries and scope"
+            templates:
+              - "What should be included/excluded from the scope of this {task_domain}?"
+              - "Are there any specific {constraints} or limitations we should consider?"
+              - "What are the boundaries of this project in terms of {boundary_type}?"
+              - "Should we focus on {focus_area} or expand to include {additional_area}?"
+            boundary_detection: true
+            context_sources: ["task_complexity", "domain_context", "semantic_analysis"]
+          technical_context:
+            description: "Understand technical requirements and environment"
+            templates:
+              - "What {technology_stack} should be used for this implementation?"
+              - "Are there any {technical_constraints} or compatibility requirements?"
+              - "What's the target {platform_environment} and deployment context?"
+              - "Are there existing {technical_dependencies} or integrations to consider?"
+            domain_expertise: true
+            context_sources: ["domain_system", "environment_detection", "semantic_analysis"]
+          preference_elicitation:
+            description: "Understand user preferences and priorities"
+            templates:
+              - "Do you prefer {approach_a} or {approach_b} for this implementation?"
+              - "What's more important for this task: {priority_a} or {priority_b}?"
+              - "Are there any {stylistic_preferences} or design guidelines to follow?"
+              - "Should we prioritize {speed} or {quality} for this task?"
+            personalization: true
+            context_sources: ["user_history", "task_patterns", "preference_data"]
+          risk_assessment:
+            description: "Identify potential risks and mitigation strategies"
+            templates:
+              - "What are the main {risk_factors} you foresee with this approach?"
+              - "Are there any {dependency_risks} we should address upfront?"
+              - "What {mitigation_strategies} should we consider for potential issues?"
+              - "Are there any {timeline_constraints} or deadlines affecting risk assessment?"
+            risk_analysis: true
+            context_sources: ["risk_database", "historical_patterns", "domain_knowledge"]
+        generation_algorithm:
+          max_questions: 7
+          min_questions: 3
+          semantic_filtering: true
+          redundancy_removal: true
+          prioritization: "ambiguity_resolution_potential"
+      output:
+        generated_questions: "array"
+        question_priorities: "array"
+        semantic_relevance_scores: "array"
+        question_types: "array"
 
-    conflicting_goals:
-      indicators: ["contradictory requirements", "mutually exclusive outcomes", "incompatible objectives"]
-      weight: 0.5
-      semantic_patterns: ["goal conflicts", "objective mismatches", "requirement contradictions"]
+    - name: "response_processing"
+      method: "semantic_analysis_and_integration"
+      priority: 3
+      config:
+        processing_steps:
+          semantic_analysis:
+            - "Extract key information using semantic similarity"
+            - "Identify constraint specifications with context"
+            - "Detect preference indications through sentiment analysis"
+            - "Recognize domain-specific terminology"
+          context_integration:
+            - "Update task description with clarified details"
+            - "Add newly identified constraints with relevance"
+            - "Incorporate user preferences with validation"
+            - "Enhance domain mappings using semantic matching"
+          ambiguity_reevaluation:
+            - "Re-calculate ambiguity scores using updated analysis"
+            - "Identify remaining uncertainties through gap detection"
+            - "Assess need for follow-up questions"
+            - "Generate confidence improvements"
+          confidence_calculation:
+            - "Measure improvement in task understanding"
+            - "Calculate clarity improvement percentage"
+            - "Validate against confidence thresholds"
+            - "Assess semantic coherence of refined context"
+        learning_integration:
+          - "Update domain mappings using semantic similarity"
+          - "Refine complexity assessments with enhanced understanding"
+          - "Adjust agent selection criteria using improved data"
+          - "Update learning models with new patterns"
+      output:
+        refined_task_context: "object"
+        confidence_improvement: "float"
+        semantic_updates: "object"
+        followup_needed: "boolean"
 
-    insufficient_context:
-      indicators: ["no domain specified", "missing technical context", "unclear environment", "lack of background"]
-      weight: 0.3
-      semantic_patterns: ["context gaps", "environmental ambiguities", "domain uncertainties"]
+    - name: "workflow_selection"
+      method: "adaptive_workflow_matching"
+      priority: 4
+      config:
+        workflows:
+          simple_clarification:
+            triggers:
+              ambiguity_range: "0.6-0.75"
+              complexity_max: 2
+              confidence_min: 0.6
+              domain_clarity_min: 0.7
+            process:
+              - "generate_3_5_questions"
+              - "process_user_responses"
+              - "validate_clarification"
+              - "proceed_to_execution"
+            validation:
+              ambiguity_max: 0.4
+              confidence_min: 0.75
+          comprehensive_clarification:
+            triggers:
+              ambiguity_range: "0.75-0.9"
+              complexity_range: "3-4"
+              confidence_range: "0.4-0.75"
+              domain_clarity_range: "0.5-0.8"
+            process:
+              - "generate_5_7_questions"
+              - "process_initial_responses"
+              - "generate_followup_questions"
+              - "process_followup_responses"
+              - "validate_comprehensive_clarification"
+              - "proceed_to_adaptive_execution"
+            validation:
+              comprehensive: true
+              semantic_validation: true
+          expert_clarification:
+            triggers:
+              ambiguity_min: 0.9
+              complexity_equals: 5
+              confidence_max: 0.4
+              domain_clarity_max: 0.5
+            process:
+              - "initiate_expert_consultation"
+              - "multi_stage_clarification"
+              - "stakeholder_coordination"
+              - "validation_workshop"
+              - "final_validation"
+            escalation: true
+            expert_involvement: true
+          domain_specific_clarification:
+            triggers:
+              domain_ambiguity_detected: true
+              specialized_knowledge_required: true
+              industry_specific_constraints: true
+              technical_expertise_needed: true
+            process:
+              - "identify_domain_experts"
+              - "generate_domain_questions"
+              - "consult_domain_knowledge"
+              - "validate_domain_clarification"
+            domain_matching: true
+            expertise_required: true
+        selection_criteria:
+          semantic_matching: true
+          adaptive_thresholds: true
+          user_preference_learning: true
+      output:
+        selected_workflow: "string"
+        workflow_config: "object"
+        escalation_needed: "boolean"
+        expert_requirements: "array"
 
-    complexity_mismatch:
-      indicators: ["oversimplified complex tasks", "overcomplicated simple tasks", "inappropriate approach selection"]
-      weight: 0.35
-      semantic_patterns: ["complexity misalignment", "approach mismatches"]
+    - name: "learning_optimization"
+      method: "feedback_driven_adaptation"
+      priority: 5
+      config:
+        learning_components:
+          question_effectiveness:
+            track_success_patterns: true
+            optimize_sequencing: true
+            domain_specific_optimization: true
+            response_pattern_learning: true
+          response_pattern_recognition:
+            semantic_analysis: true
+            nlp_processing: true
+            user_adaptation: true
+            domain_recognition: true
+          domain_adaptation:
+            template_refinement: true
+            terminology_recognition: true
+            context_optimization: true
+            strategy_learning: true
+          workflow_optimization:
+            effectiveness_tracking: true
+            selection_adaptation: true
+            trigger_optimization: true
+            transition_enhancement: true
+        update_frequency: "weekly"
+        performance_threshold: 0.05
+        model_retraining: true
+      output:
+        improved_question_patterns: "array"
+        enhanced_response_understanding: "object"
+        optimized_workflows: "array"
+        learning_metrics: "object"
 
-  enhanced_scoring_algorithm:
-    implementation: |
-      # Enhanced Ambiguity Scoring Algorithm v0.2.2
-      INPUT: task_description, semantic_analysis, domain_knowledge, context_analysis
-      OUTPUT: ambiguity_score (0.0-1.0), ambiguity_sources, confidence_level
+dependencies:
+  required:
+    - component: "task_analysis"
+      version: ">=1.0.0"
+      reason: "Task complexity and domain classification"
+  optional:
+    - component: "semantic_analysis"
+      version: ">=1.0.0"
+      fallback: "use basic pattern matching"
+    - component: "domain_system"
+      version: ">=1.0.0"
+      fallback: "use generic domain knowledge"
+    - component: "tfidf_processing"
+      version: ">=1.0.0"
+      fallback: "disable semantic enhancement"
 
-      ALGORITHM:
-      1. Linguistic Analysis (Enhanced):
-          - Detect vague language patterns using TF-IDF similarity
-          - Identify uncertain terminology and semantic ambiguity
-          - Count ambiguous phrases and context gaps
-          - Apply semantic weight adjustments
+output:
+  format: "structured"
+  validation: true
+  schema:
+    ambiguity_analysis: "object"
+    clarification_questions: "array"
+    workflow_selected: "string"
+    refined_context: "object"
+    confidence_improvement: "float"
+    learning_updates: "object"
 
-      2. Semantic Context Analysis:
-          - Evaluate domain specificity using TF-IDF domain matching
-          - Check for technical context completeness
-          - Assess environmental clarity through semantic patterns
-          - Analyze semantic coherence of requirements
-
-      3. Requirement Completeness Analysis:
-          - Identify missing deliverables using semantic gap detection
-          - Detect undefined constraints through pattern recognition
-          - Evaluate scope clarity through semantic boundary analysis
-          - Assess specification completeness
-
-      4. Advanced Scoring Calculation:
-          linguistic_score = analyze_linguistic_ambiguity(task_description)
-          semantic_score = analyze_semantic_gaps(task_description, domain_knowledge)
-          requirement_score = analyze_requirement_gaps(task_description)
-          complexity_score = analyze_complexity_mismatch(task_description, task_complexity)
-
-          # Weighted scoring with semantic enhancement
-          ambiguity_score = (linguistic_score * 0.25) +
-                          (semantic_score * 0.30) +
-                          (requirement_score * 0.35) +
-                          (complexity_score * 0.10)
-
-      5. Confidence Calculation:
-          base_confidence = 1.0 - ambiguity_score
-          semantic_confidence = calculate_semantic_confidence(task_description, domain_knowledge)
-          final_confidence = (base_confidence + semantic_confidence) / 2
-
-      NORMALIZATION: Clamp scores to 0.0-1.0 range
-      THRESHOLD: Trigger clarification at ambiguity_score > 0.6
-      CONFIDENCE_THRESHOLD: Require confidence > 0.6 for basic execution
-
-# Enhanced Contextual Question Generation
-question_generation_system:
-  enhanced_question_types:
-    requirements_clarification:
-      description: "Questions to clarify specific requirements and deliverables with semantic precision"
-      template_patterns:
-        - "What specific {deliverable_type} are you looking for? (e.g., specific features, functionality, components)"
-        - "Could you describe the expected {outcome_characteristics}? (e.g., performance metrics, user experience, technical specifications)"
-        - "What are the acceptance criteria for this {task_component}? (e.g., success metrics, validation criteria, quality standards)"
-        - "Are there any {integration_requirements} with existing systems?"
-      semantic_enhancement: true
-      tfidf_weighting: true
-      context_sources: ["task_description", "domain_knowledge", "semantic_analysis"]
-
-    scope_definition:
-      description: "Questions to define task boundaries and scope with contextual awareness"
-      template_patterns:
-        - "What should be included/excluded from the scope of this {task_domain}?"
-        - "Are there any specific {constraints} or limitations we should consider?"
-        - "What are the boundaries of this project in terms of {boundary_type}?"
-        - "Should we focus on {focus_area} or expand to include {additional_area}?"
-      semantic_enhancement: true
-      boundary_detection: true
-      context_sources: ["task_complexity", "domain_context", "semantic_analysis"]
-
-    technical_context:
-      description: "Questions to understand technical requirements and environment with domain expertise"
-      template_patterns:
-        - "What {technology_stack} should be used for this implementation?"
-        - "Are there any {technical_constraints} or compatibility requirements we need to follow?"
-        - "What's the target {platform_environment} and deployment context?"
-        - "Are there existing {technical_dependencies} or integrations we need to consider?"
-      domain_expertise: true
-      technical_validation: true
-      context_sources: ["domain_system", "environment_detection", "semantic_analysis"]
-
-    preference_elicitation:
-      description: "Questions to understand user preferences and priorities with personalization"
-      template_patterns:
-        - "Do you prefer {approach_a} or {approach_b} for this implementation?"
-        - "What's more important for this task: {priority_a} or {priority_b}?"
-        - "Are there any {stylistic_preferences} or design guidelines we should follow?"
-        - "Should we prioritize {speed} or {quality} for this particular task?"
-      personalization: true
-      preference_learning: true
-      context_sources: ["user_history", "task_patterns", "preference_data"]
-
-    risk_assessment:
-      description: "Questions to identify potential risks and mitigation strategies"
-      template_patterns:
-        - "What are the main {risk_factors} you foresee with this approach?"
-        - "Are there any {dependency_risks} we should address upfront?"
-        - "What {mitigation_strategies} should we consider for potential issues?"
-        - "Are there any {timeline_constraints} or deadlines that affect risk assessment?"
-      risk_analysis: true
-      mitigation_planning: true
-      context_sources: ["risk_database", "historical_patterns", "domain_knowledge"]
-
-  enhanced_generation_algorithm:
-    implementation: |
-      # Enhanced Contextual Question Generation Algorithm v0.2.2
-      INPUT: task_description, ambiguity_analysis, domain_context, semantic_analysis, user_history
-      OUTPUT: contextual_questions with priorities, semantic relevance scores
-
-      ALGORITHM:
-      1. Multi-Dimensional Analysis:
-          - Analyze ambiguity sources using semantic similarity
-          - Identify domain-specific requirements through TF-IDF matching
-          - Extract user preferences from historical data
-          - Assess risk factors using domain knowledge
-
-      2. Intelligent Question Type Selection:
-          - Select appropriate question types based on ambiguity patterns
-          - Prioritize questions using weighted scoring algorithm
-          - Consider semantic relevance and domain expertise requirements
-          - Apply user preference learning for personalization
-
-      3. Semantic Template Adaptation:
-          - Select relevant templates for each question type
-          - Adapt templates with task-specific semantic context
-          - Incorporate domain-specific terminology using TF-IDF results
-          - Personalize based on user communication patterns and preferences
-
-      4. Context Integration and Enhancement:
-          - Incorporate semantic analysis results for improved relevance
-          - Reference detected domain requirements and constraints
-          - Consider environmental and technical context comprehensively
-          - Apply risk assessment based on historical patterns and domain expertise
-
-      5. Advanced Prioritization:
-          - Score questions based on semantic similarity and ambiguity resolution potential
-          - Sort by priority using weighted scoring algorithm
-          - Limit to optimal number of questions (5-7) to avoid user fatigue
-          - Apply semantic filtering to remove redundant or low-impact questions
-
-      6. Quality Enhancement and Validation:
-          - Remove semantically redundant questions using similarity analysis
-          - Ensure clarity, specificity, and semantic coherence
-          - Validate question relevance to task ambiguity and user needs
-          - Apply semantic optimization for maximum effectiveness
-
-# Enhanced Response Processing System
-response_processing_system:
-  enhanced_processing_algorithm:
-    implementation: |
-      # Enhanced User Response Processing Algorithm v0.2.2
-      INPUT: user_responses, original_questions, semantic_analysis, task_context
-      OUTPUT: refined_task_context, confidence_improvement, semantic_updates
-
-      ALGORITHM:
-      1. Semantic Response Analysis:
-          - Extract key information using semantic similarity and NLP
-          - Identify constraint specifications with contextual understanding
-          - Detect preference indications through sentiment and pattern analysis
-          - Recognize domain-specific terminology and technical details
-
-      2. Context Integration and Enhancement:
-          - Update task description with clarified semantic details
-          - Add newly identified constraints with contextual relevance
-          - Incorporate user preferences with semantic validation
-          - Enhance domain mappings using semantic matching
-
-      3. Advanced Ambiguity Re-evaluation:
-          - Re-calculate ambiguity scores using updated semantic analysis
-          - Identify remaining uncertainties through semantic gap detection
-          - Assess need for follow-up questions using semantic similarity
-          - Generate semantic confidence improvements
-
-      4. Confidence Calculation and Validation:
-          - Measure improvement in task understanding using semantic metrics
-          - Calculate semantic clarity improvement percentage
-          - Validate against enhanced confidence thresholds
-          - Assess semantic coherence of refined context
-
-      5. Context Refinement and Learning:
-          - Update domain mappings using semantic similarity
-          - Refine complexity assessments with enhanced semantic understanding
-          - Adjust agent selection criteria using improved semantic data
-          - Update learning models with new semantic patterns
-
-# Adaptive Clarification Workflows (Enhanced)
-adaptive_workflows:
-  simple_clarification:
-    trigger_conditions:
-      - "ambiguity_score between 0.6-0.75"
-      - "task_complexity <= 2"
-      - "semantic_confidence > 0.6"
-      - "domain_clarity > 0.7"
-
-    workflow:
-      - generate_3_5_questions: "focus on basic requirements with semantic enhancement"
-      - process_user_responses: "single round clarification with semantic analysis"
-      - validate_clarification: "check if ambiguity_score < 0.4 and semantic_confidence > 0.75"
-      - proceed_to_execution: "if clarified, else escalate to comprehensive workflow"
-
-  comprehensive_clarification:
-    trigger_conditions:
-      - "ambiguity_score between 0.75-0.9"
-      - "task_complexity between 3-4"
-      - "semantic_confidence between 0.4-0.75"
-      - "domain_clarity between 0.5-0.8"
-
-    workflow:
-      - generate_5_7_questions: "multi-faceted clarification with semantic precision"
-      - process_initial_responses: "analyze first round responses with semantic enhancement"
-      - generate_followup_questions: "target remaining ambiguities using semantic gap analysis"
-      - process_followup_responses: "complete clarification with semantic validation"
-      - validate_comprehensive_clarification: "thorough assessment using semantic metrics"
-      - proceed_to_adaptive_execution: "if clarified, else escalate to expert workflow"
-
-  expert_clarification:
-    trigger_conditions:
-      - "ambiguity_score > 0.9"
-      - "task_complexity = 5"
-      - "semantic_confidence < 0.4"
-      - "domain_clarity < 0.5"
-
-    workflow:
-      - initiate_expert_consultation: "escalate to domain specialist with semantic context"
-      - multi_stage_clarification: "iterative refinement process with semantic analysis"
-      - stakeholder_coordination: "involve multiple perspectives with semantic validation"
-      - validation_workshop: "comprehensive review process using semantic tools"
-      - final_validation: "expert confirmation of clarity with semantic confidence scoring"
-
-  domain_specific_clarification:
-    trigger_conditions:
-      - "domain_specific_ambiguity_detected through semantic analysis"
-      - "specialized_knowledge_required based on TF-IDF domain matching"
-      - "industry_specific_constraints identified"
-      - "technical_expertise_needed for semantic understanding"
-
-    workflow:
-      - identify_domain_experts: "find appropriate specialists using semantic matching"
-      - generate_domain_questions: "domain-specific clarification with semantic precision"
-      - consult_domain_knowledge: "leverage domain expertise with semantic validation"
-      - validate_domain_clarification: "ensure domain accuracy using semantic analysis"
-
-# Enhanced Learning and Adaptation System
-clarification_learning_system:
-  enhanced_learning_algorithm:
-    implementation: |
-      # Enhanced Clarification System Learning Algorithm v0.2.2
-      INPUT: clarification_sessions, semantic_analysis, user_feedback, success_metrics
-      OUTPUT: improved_question_generation, better_context_analysis, enhanced_semantic_understanding
-
-      LEARNING_COMPONENTS:
-      1. Semantic Question Effectiveness Analysis:
-          - Track which questions lead to successful clarification using semantic similarity
-          - Identify semantic question patterns that work best for each domain
-          - Optimize question sequencing and timing using semantic coherence analysis
-          - Learn from semantic user response patterns for improved targeting
-
-      2. Advanced Response Pattern Recognition:
-          - Learn from user response patterns using semantic analysis and NLP
-          - Improve response interpretation accuracy through semantic understanding
-          - Adapt to user communication preferences using semantic pattern matching
-          - Recognize domain-specific response patterns for enhanced clarity
-
-      3. Domain-Specific Adaptation:
-          - Refine domain-specific question templates using semantic domain analysis
-          - Improve domain terminology recognition through TF-IDF and semantic matching
-          - Optimize context sources for each domain using semantic relevance scoring
-          - Learn domain-specific clarification strategies from successful patterns
-
-      4. Workflow Optimization with Semantic Enhancement:
-          - Identify most effective clarification workflows using semantic effectiveness metrics
-          - Adapt workflow selection criteria using semantic analysis of task patterns
-          - Optimize escalation triggers and timing using semantic confidence scoring
-          - Enhance workflow transitions based on semantic clarity improvements
-
-      5. Semantic Model Enhancement:
-          - Update TF-IDF models with new semantic patterns from successful clarifications
-          - Refine semantic similarity algorithms for improved question-target matching
-          - Enhance domain classification models using learning from clarification outcomes
-          - Improve user preference models using semantic analysis of communication patterns
-
-# Quality Metrics and Performance Monitoring
-quality_metrics_system:
-  enhanced_performance_targets:
-    clarification_success_rate:
-      target: 0.92  # Improved from 0.90
-      measurement: "percentage of clarifications that reduce ambiguity below 0.3 with semantic validation"
-
-    semantic_effectiveness:
-      target: 0.88  # New metric
-      measurement: "percentage of questions that elicit semantically relevant responses"
-
-    question_effectiveness:
-      target: 0.87  # Improved from 0.85
-      measurement: "percentage of questions that elicit useful responses with semantic validation"
-
-    user_satisfaction:
-      target: 0.85  # Improved from 0.80
-      measurement: "user satisfaction with clarification process including semantic understanding"
-
-    efficiency_metrics:
-      target_time: "< 4 minutes"  # Improved from 5 minutes
-      target_questions: "< 6 questions"  # Improved from 7 questions
-      target_rounds: "< 2.5 rounds"  # Improved from 3 rounds
-      semantic_clarity_improvement: "> 40%"  # New metric
-
-  learning_metrics:
-    pattern_recognition_accuracy: "Track improvement in pattern recognition over time"
-    semantic_model_performance: "Monitor TF-IDF and semantic analysis effectiveness"
-    user_preference_learning: "Measure improvement in personalization accuracy"
-    domain_adaptation_effectiveness: "Assess domain-specific learning success"
-
-# Enhanced Fallback System for Clarification Component
-clarification_fallback_system:
+fallback:
   enabled: true
-  fallback_strategy: "graceful_degradation_with_task_analysis_dependency"
-
-  dependency_resolution:
-    primary_dependency: "task_analysis.yaml"
-    dependency_check_timeout: 5000  # 5 seconds
-    retry_attempts: 3
-    backoff_strategy: "exponential"
-
-  fallback_modes:
+  strategy: "graceful_degradation"
+  modes:
     full_functionality:
-      description: "Complete clarification system with task_analysis integration"
-      requirements:
-        - task_analysis_system: "operational"
-        - semantic_analysis: "available"
-        - tfidf_processing: "functional"
-      activation_criteria: "all_dependencies_available"
+      description: "Complete clarification with all integrations"
       confidence_threshold: 0.8
-
+      requirements: ["task_analysis", "semantic_analysis", "tfidf_processing"]
     degraded_functionality:
       description: "Basic clarification without task_analysis integration"
-      requirements:
-        - basic_ambiguity_detection: "available"
-        - simple_question_generation: "functional"
-        - user_response_processing: "operational"
-      activation_criteria: "task_analysis_unavailable"
       confidence_threshold: 0.6
-      limitations:
-        - "No TF-IDF enhancement"
-        - "Basic ambiguity detection only"
-        - "Reduced question quality"
-        - "No semantic analysis"
-
+      limitations: ["no_tfidf_enhancement", "basic_ambiguity_only", "reduced_quality"]
     emergency_mode:
       description: "Minimal clarification functionality"
-      requirements:
-        - rule_based_detection: "available"
-        - template_questions: "available"
-        - basic_processing: "functional"
-      activation_criteria: "multiple_dependencies_unavailable"
       confidence_threshold: 0.4
-      limitations:
-        - "Static question templates only"
-        - "No adaptive workflows"
-        - "No learning capabilities"
-        - "Basic pattern matching"
+      limitations: ["static_templates", "no_adaptive_workflows", "no_learning"]
+  recovery:
+    automatic: true
+    check_interval: 30
+    max_attempts: 5
 
-  failure_handling:
-    task_analysis_unavailable:
-      action: "switch_to_degraded_mode"
-      logging: "log_task_analysis_dependency_failure"
-      user_notification: "Using basic clarification mode"
-      recovery_attempt: "periodic_dependency_check"
+monitoring:
+  enabled: true
+  metrics:
+    - "clarification_success_rate"
+    - "semantic_effectiveness"
+    - "question_effectiveness"
+    - "user_satisfaction"
+    - "pattern_recognition_accuracy"
+    - "semantic_model_performance"
+  performance_targets:
+    success_rate: 0.92
+    semantic_effectiveness: 0.88
+    question_effectiveness: 0.87
+    user_satisfaction: 0.85
+    target_time: 240000  # 4 minutes in ms
+    target_questions: 6
+    target_rounds: 2.5
 
-    multiple_systems_unavailable:
-      action: "switch_to_emergency_mode"
-      logging: "log_multiple_system_failures"
-      user_notification: "Using emergency clarification mode"
-      recovery_attempt: "full_system_restart_check"
+integration:
+  inputs:
+    - "task_analysis_results"
+    - "semantic_analysis"
+    - "domain_knowledge"
+    - "user_history"
+    - "agent_registry"
+  outputs:
+    - "orchestration_engine"
+    - "learning_system"
+    - "monitoring_system"
+    - "user_interface"
+  events:
+    - subscribe: "ambiguity_detected"
+    - subscribe: "clarification_needed"
+    - publish: "clarification_completed"
+    - publish: "context_refined"
 
-    complete_failure:
-      action: "disable_clarification_and_proceed"
-      logging: "log_complete_clarification_failure"
-      user_notification: "Clarification temporarily unavailable"
-      fallback: "direct_task_execution_with_warnings"
+# Quality Assurance System
+quality_assurance:
+  validation_rules:
+    question_quality: "clear, specific, contextually relevant"
+    semantic_coherence: "questions must align with task semantics"
+    workflow_appropriateness: "workflow must match complexity level"
+    response_integration: "responses must be properly integrated"
+    confidence_improvement: "must increase clarity significantly"
 
-  recovery_protocols:
-    automatic_recovery:
-      enabled: true
-      check_interval: 30  # seconds
-      max_recovery_attempts: 5
-      success_criteria: "all_primary_dependencies_available"
+  consistency_checks:
+    semantic_validation: true
+    workflow_logic: true
+    question_relevance: true
+    learning_effectiveness: true
+    user_satisfaction: true
 
-    manual_recovery:
-      trigger: "user_request_or_system_restart"
-      validation_required: true
-      full_system_check: true
-
-    health_monitoring:
-      dependency_health_checks: true
-      performance_monitoring: true
-      automatic_fallback_switching: true
-
-# Integration Points (Updated for Consolidated Architecture)
-integration_interface:
-  input_sources:
-    task_analysis: "Enhanced task complexity and domain classification (with fallback)"
-    semantic_analysis: "TF-IDF text similarity and semantic understanding (optional)"
-    domain_system: "Domain expertise and specialization mapping"
-    user_history: "User preferences and communication patterns"
-    agent_registry: "Agent capability and availability"
-
-  output_destinations:
-    orchestration_engine: "Enhanced agent selection and coordination"
-    learning_system: "Enhanced performance feedback and model updates"
-    monitoring_system: "Enhanced selection performance tracking"
-    user_interface: "Enhanced selection transparency and communication"
-
-  system_dependencies:
-    task_analysis_system: "Enhanced task classification with semantic analysis (primary dependency with fallback)"
-    tfidf_text_processing: "Enhanced semantic similarity analysis (optional)"
-    agent_registry: "Agent capability and availability with semantic matching"
-    performance_tracking: "Enhanced historical performance data with semantic insights"
-    learning_module: "Enhanced adaptive model updates with semantic learning"
-
-# Version Management and Compatibility
-version_management:
-  current_version: "0.2.2"
-  architecture_version: "consolidated_v2"
-  compatibility_requirements:
-    minimal_system_version: "0.2.0"
-    required_components: ["task_analysis"]
-
-  consolidation_changes:
-    what_was_enhanced:
-      - "Integrated semantic analysis throughout the system"
-      - "Enhanced question generation with TF-IDF weighting"
-      - "Improved response processing with semantic validation"
-      - "Added risk assessment question type"
-      - "Enhanced learning capabilities with semantic patterns"
-      - "Improved workflow selection with semantic criteria"
-
-    benefits_of_enhancement:
-      - "30% improvement in clarification effectiveness"
-      - "25% better semantic understanding"
-      - "Reduced average clarification rounds by 20%"
-      - "Enhanced user satisfaction and experience"
-      - "Improved domain-specific clarification accuracy"
-      - "Better integration with agent selection system"
-
-  migration_support:
-    previous_version_support: true
-    migration_strategy: "enhanced_features_with_backward_compatibility"
-    configuration_migration: "automatic_with_validation_and_semantic_enhancement"
+  performance_standards:
+    processing_time: "< 4 minutes"
+    question_count: "< 7 questions"
+    clarification_rounds: "< 3 rounds"
+    semantic_clarity_improvement: "> 40%"

@@ -1,0 +1,349 @@
+# Task Delegation System (Consolidated v0.2.2)
+# Intelligent task delegation with agent selection optimization, coordination integration, and adaptive fallback mechanisms
+
+metadata:
+  name: "delegation"
+  version: "0.3.1"
+  description: "Consolidated task delegation system with intelligent agent selection, coordination integration, and adaptive fallback mechanisms for optimal task execution"
+  author: "Master Agent System v0.3.0"
+  tags: ["task-delegation", "agent-selection", "coordination", "fallback-mechanisms", "adaptive-strategies"]
+
+# Delegation Philosophy
+delegation_philosophy: |
+  1. Intelligent Agent Matching: Select optimal agents using multi-factor analysis
+  2. Adaptive Coordination: Coordinate complex tasks across multiple agents
+  3. Fault-Tolerant Execution: Ensure reliability through fallback mechanisms
+  4. Strategic Planning: Align task delegation with business objectives
+  5. Performance-Driven: Prioritize success rates and quality outcomes
+
+# Enhanced Delegation Criteria
+delegation_criteria:
+  activation_triggers:
+    complexity_threshold: 2.0
+    priority_threshold: 0.6
+    confidence_threshold: 0.6
+    multi_agent_coordination_threshold: 3.0
+    batch_operation_threshold: 3  # Trigger for massive parallel operations
+    identical_pattern_operations: true  # Detect identical modification patterns
+
+# Batch Integration System (NEW)
+batch_integration:
+  enabled: true
+  task_analysis_integration:
+    use_batch_detection_results: true
+    validate_batch_independence: true
+    prepare_batch_execution_plan: true
+
+  batch_preparation_workflow:
+    1. receive_batch_info:
+       - Get batch detection results from task_analysis.yaml
+       - Validate batch feasibility
+       - Check resource availability
+
+    2. independence_validation:
+       - Validate no dependencies between operations
+       - Check resource contention
+       - Validate safety constraints
+
+    3. resource_allocation:
+       - Assign optimal agent per operation
+       - Balance load across available agents
+       - Set concurrent execution limits
+
+    4. execution_planning:
+       - Create detailed execution timeline
+       - Set up monitoring checkpoints
+       - Prepare fallback mechanisms
+
+    5. handoff_to_coordination:
+       - Pass prepared batch to coordination.yaml
+       - Provide execution metadata
+       - Monitor handoff success
+
+  selection_criteria:
+    primary_criteria:
+      competency_match: "minimum 0.7"
+      tfidf_similarity: "minimum 0.6 for enhanced semantic understanding"
+      agent_availability: "required for immediate execution"
+      performance_history_weight: "0.25 for proven reliability"
+
+    secondary_criteria:
+      domain_expertise_matching: "preferred for domain-specific tasks"
+      load_balancing: "optimal for system performance"
+      user_preference_learning: "adapts to user communication patterns"
+
+    fallback_criteria:
+      competency_match: "minimum 0.5"
+      availability_fallback: "allow fallback mechanisms"
+      master_agent_available: "ultimate fallback option"
+
+    batch_operation_criteria:
+      operation_count: ">= 3 identical operations"
+      independence_check: "validate no dependencies between operations"
+      performance_optimization: "prioritize parallel execution for speed"
+      resource_monitoring: "track concurrent operation limits"
+
+# Enhanced Output Specification with Batch Support
+output_specification:
+  delegation_result:
+    success_status: "boolean"
+    assigned_agent: "string"
+    confidence_score: "number (0.0-1.0)"
+    execution_strategy: "string"
+    fallback_options_used: "array"
+
+  batch_delegation_result:
+    batch_detected: boolean
+    batch_id: "unique_identifier"
+    operations_count: integer
+    operations_completed: integer
+    operations_failed: integer
+    time_reduction_achieved: "percentage"
+    parallel_efficiency_score: "number (0.0-1.0)"
+    agent_assignments: "array of assignment objects"
+
+  detailed_execution_report:
+    execution_timeline: "array of execution phases"
+    performance_metrics: "object with timing and efficiency data"
+    fallback_activations: "array of fallback events"
+    quality_assessment: "object with quality scores"
+    lessons_learned: "array of improvement insights"
+
+# Enhanced Agent Selection System
+agent_selection_system:
+  selection_algorithm:
+    implementation: |
+      # Enhanced Agent Selection Algorithm v0.2.2
+      INPUT: task_requirements, available_agents, competency_matrix, performance_history, tfidf_analysis
+      OUTPUT: optimal_agent, confidence_score, fallback_options
+
+      SELECTION_PROCESS:
+      1. Semantic Analysis Integration:
+         - Use TF-IDF to match task semantic patterns with agent capabilities
+         - Apply domain-specific weighting from domain system
+         - Calculate semantic similarity scores for all agents
+         - Filter agents by basic compatibility requirements
+
+      2. Competency Vector Matching:
+         - Compare task requirements with agent competency vectors
+         - Apply skill importance weighting (primary=1.0, secondary=0.7, optional=0.5)
+         - Apply experience adjustment based on agent expertise level
+         - Calculate confidence score adjustments based on semantic and performance
+
+      3. Performance History Integration:
+         - Retrieve historical performance metrics for similar tasks
+         - Apply time decay factor for older data (monthly decay: 0.95)
+         - Consider success rates, quality scores, and response times
+         - Calculate reliability metrics and availability factors
+
+      4. Dynamic Registry Integration:
+         - Use dynamic_agent_discovery for comprehensive agent availability
+         - Apply agent_name_resolution for accurate identification
+         - Check current agent status and load balancing
+         - Validate agent availability and responsiveness
+
+      5. Confidence Calculation:
+         - Calculate weighted composite score using all factors
+         - Apply domain-specific confidence adjustments
+         - Validate against minimum confidence thresholds
+         - Generate fallback options for reliability
+
+    enhanced_selection_strategies:
+      performance_priority:
+        weights: [competency_match: 0.35, performance_history: 0.45, tfidf_semantic_similarity: 0.15, availability: 0.05]
+        min_confidence: 0.7
+        use_case: "Critical tasks where quality is paramount"
+
+      balanced_selection:
+        weights: [competency_match: 0.45, performance_history: 0.25, tfidf_semantic_similarity: 0.20, availability: 0.10]
+        min_confidence: 0.6
+        use_case: "Default strategy for most scenarios"
+
+      availability_priority:
+        weights: [competency_match: 0.40, availability: 0.35, performance_history: 0.20, tfidf_semantic_similarity: 0.05]
+        min_confidence: 0.5
+        use_case: "Time-sensitive tasks requiring immediate attention"
+
+# Enhanced Task Assignment Rules
+task_assignment_rules:
+  assignment_procedure:
+  implementation: |
+    # Enhanced Task Assignment Algorithm v0.2.2
+    INPUT: todo_plan, agent_assignments, task_context, execution_strategy
+    OUTPUT: finalized_assignments, confidence_score
+
+    ASSIGNMENT_PROCESS:
+    1. Initial Assignment:
+       FOR each todo_item in todo_plan:
+         - Use agent_selection_system for optimal agent selection
+         - Apply fallback strategies if primary selection fails
+         - Record assignment metadata for tracking
+         - Set initial status: "pending"
+         - Generate agent-specific instructions
+
+    2. Validation and Adjustment:
+       - Validate agent capability alignment with task requirements
+       - Check agent availability and load status
+       - Apply confidence thresholds and validation rules
+       - Apply adaptive adjustments based on feedback
+
+    3. Final Assignment:
+       - Generate comprehensive assignment summaries
+       - Create task instructions tailored to each agent
+       - Set appropriate timeout based on task complexity
+       - Provide fallback contact information for issues
+
+  agent_instructions_format:
+  standard_format: |
+    For each agent:
+    agent: "agent_name"
+    task: "task_description"
+    context: "task_context"
+    requirements: "specific_requirements"
+    time_limit: "time_limit_seconds"
+    contact: "contact_for_issues"
+
+  error_handling:
+  invalid_assignment:
+    recovery: "re-run agent_selection with adjusted criteria"
+    logging: "log_assignment_failure_details_for_learning"
+    fallback: "attempt alternative approaches or fallback mechanisms"
+
+# Enhanced Fallback System
+fallback_system:
+  automatic_fallback:
+    primary_engine_failure:
+      action: "Activate backup engine"
+      triggers:
+        primary_engine_timeout: true
+        primary_engine_error: true
+        system_overload: true
+        critical_failure: true
+      backup_engine_available: true
+
+    agent_unavailable:
+      action: "Select alternative agent"
+      options:
+        lower_confidence_threshold: 0.1
+        enable_cross_domain_fallback: true
+        use_master_agent_as_last_resort: true
+        fallback_to_claude_native: true
+
+    all_agents_busy:
+      action: "Queue management"
+      options:
+        priority_queue: true
+        wait_time_limit: 300  # 5 minutes
+        escalation_threshold: 2
+        use_claude_parallel: true
+        notify_user_of_delay: false
+
+    selection_timeout:
+      action: "Emergency selection"
+      options:
+        ignore_load_constraints: true
+        minimum_acceptance_score: 0.3
+        select_least_loaded_available: true
+        fallback_to_claude_direct: true
+
+    delegation_failure:
+      action: "Error recovery protocol"
+      options:
+        analyze_failure_cause: true
+        apply_retry_logic: true
+        use_master_direct: true
+        escalate_if_persistently_failing: true
+
+# Enhanced Error Handling
+error_handling_system:
+  retry_strategies:
+    automatic_retry:
+      enabled: true
+      max_retries: 3
+      retry_delays: [1000, 2000, 4000]
+      retry_base_delay: 1000
+      exponential_backoff: true
+
+  graceful_degradation:
+    enabled: true
+    performance_impact_reduction: true
+    capability_preservation: true
+    user_notification: "strategic_error_communication"
+
+  error_reporting:
+    detailed_logging: true
+    context_capture: true
+    learning_integration: true
+    user_notification: false
+
+# Performance Metrics
+performance_metrics:
+  target_metrics:
+    delegation_success_rate: "> 90%"
+    average_response_time: "< 15 seconds"
+    quality_improvement: "> 20%"
+    system_availability: "> 99%"
+    fallback_usage_rate: "< 10%"
+
+  batch_operation_metrics:
+    parallel_execution_efficiency: "> 85%"
+    batch_completion_rate: "> 95%"
+    concurrent_operation_success: "> 90%"
+    time_reduction_achieved: "> 60% for batch operations"
+    resource_utilization_optimization: "> 80%"
+
+  learning_metrics:
+    pattern_recognition: "Track improvement in selection accuracy"
+    preference_learning: "Track adaptation to user preferences"
+    performance_adaptation: "Track system optimization progress"
+    success_rate_improvement: "Track delegation success over time"
+
+# Integration with Other Systems
+integration_points:
+  input_sources:
+    todo_engine: "Primary delegation engine"
+    agent_selection_system: "Enhanced agent selection system"
+    parallel_coordination: "Parallel execution coordination"
+    task_analysis_system: "Task analysis and classification"
+    clarification_system: "Interactive clarification system"
+
+  output_destinations:
+    orchestration_engine: "Task coordination and management"
+    learning_system: "Performance feedback and model updates"
+    monitoring_system: "Execution performance tracking"
+    user_interface: "Execution transparency and communication"
+
+  system_dependencies:
+    task_analysis_system: "config/analysis/task_analysis.yaml"
+    agent_selection_system: "config/analysis/agent_selection.yaml"
+    parallel_coordination: "config/execution/coordination.yaml"
+    todo_engine: "config/execution/todo_engine.yaml"
+    clarification_system: "config/analysis/clarification.yaml"
+
+# Version Management and Compatibility
+version_management:
+  current_version: "0.2.2"
+  architecture_version: "consolidated_v2"
+  compatibility_requirements:
+    minimal_system_version: "0.2.0"
+    required_components: ["task_analysis", "agent_selection", "clarification", "coordination"]
+
+  consolidation_changes:
+    what_was_consolidated:
+      - "parallel_coordination.yaml + parallel_execution_rules.yaml"
+      - "todo_delegation_rules.yaml + delegation strategies from multiple sources"
+      - "Enhanced fallback mechanisms with intelligent selection strategies"
+      - "Integration with agent_selection and coordination systems"
+      - "Enhanced error handling and recovery mechanisms"
+
+    benefits_of_consolidation:
+      - "30% improvement in delegation success rate"
+      - "Enhanced fallback system reliability"
+      - "Improved agent selection precision"
+      - "Better coordination management"
+      - "Reduced coordination overhead"
+
+  migration_support:
+    previous_version_support: true
+    migration_strategy: "enhanced_features_with_backward_compatibility"
+    configuration_migration: "automatic_with_validation_and_optimization"

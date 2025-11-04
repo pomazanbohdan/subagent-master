@@ -1,568 +1,433 @@
-# Task Analysis System
+# Task Analysis System (Optimized v1.0.0)
 # Task classification, complexity assessment, and execution strategy determination
 
-metadata:
+component:
   name: "task_analysis"
-  version: "0.3.1"
+  version: "1.0.0"
   description: "Task analysis system with complexity assessment, domain classification, and execution strategy determination"
-  tags: ["task-analysis", "complexity-assessment", "classification", "execution-planning", "domain-detection"]
+  category: "analysis"
+  priority: 1  # Critical for task orchestration
+  status: "stable"
 
-# Task Analysis Philosophy
-analysis_philosophy: |
-  1. Multi-dimensional Assessment: Analyze tasks from complexity, domain, resource, and risk perspectives
-  2. Evidence-based Scoring: Use quantifiable metrics for objective assessment
-  3. Adaptive Classification: Learn from historical patterns for improved accuracy
-  4. Strategic Planning: Generate actionable execution strategies based on analysis
-  5. Resource Optimization: Match task requirements with available capabilities
+triggers:
+  primary:
+    keywords: ["task", "analyze", "complexity", "classification", "execution", "strategy"]
+    patterns: [".*analyze.*task.*", ".*task.*complexity.*", ".*execution.*strategy.*"]
+    score: 1.0
+  secondary:
+    keywords: ["planning", "assessment", "coordination", "delegation"]
+    patterns: [".*plan.*task.*", ".*assess.*complexity.*", ".*coordinate.*execution.*"]
+    score: 0.7
+  contextual:
+    conditions:
+      - "task_received_for_processing"
+      - "complexity_assessment_needed"
+      - "execution_planning_required"
+    score: 0.5
 
-# Enhanced Complexity Analysis Framework
-complexity_analysis_framework:
-  scale_definition:
-    levels:
-      1: # Trivial
-        name: "Trivial"
-        description: "Simple, clear tasks requiring minimal resources"
-        estimated_effort: "0.5-2 hours"
-        characteristics:
-          - "Single clear requirement"
-          - "No dependencies or external systems"
-          - "Standard, well-documented operations"
-          - "Clear success criteria"
-        delegation_indicators: "auto_delegation_high_priority"
+implementation:
+  operations:
+    - name: "complexity_scoring"
+      method: "multi_factor_analysis"
+      priority: 1
+      config:
+        scoring_factors:
+          component_count:
+            weight: 0.25
+            scoring:
+              single: 0.2
+              few_2_3: 0.4
+              moderate_4_5: 0.6
+              many_6plus: 1.0
+          dependencies:
+            weight: 0.20
+            scoring:
+              external: 0.5
+              internal: 0.2
+              circular: 1.0
+              unknown: 0.8
+          uncertainty:
+            weight: 0.20
+            scoring:
+              clear: 0.0
+              minor_ambiguity: 0.3
+              moderate: 0.6
+              high: 1.0
+              critical: 1.5
+          integration:
+            weight: 0.15
+            scoring:
+              none: 0.0
+              single_system: 0.3
+              multi_system: 0.8
+              cross_functional: 1.2
+              enterprise: 1.5
+          resources:
+            weight: 0.10
+            scoring:
+              minimal: 0.0
+              standard: 0.2
+              specialized: 0.5
+              critical: 0.8
+              limited: 1.0
+          historical_patterns:
+            weight: 0.10
+            scoring:
+              successful_similar: -0.2
+              failed_similar: 0.3
+              no_patterns: 0.0
+              confident_patterns: -0.1
+        calculation:
+          base_score: 1.0
+          normalization: "clamp_to_1_5_range"
+          confidence_calculation: "1.0 - (uncertainty * 0.3) - (missing_info * 0.4)"
+      output:
+        complexity_score: "float (1.0-5.0)"
+        confidence_level: "float (0.0-1.0)"
+        factor_breakdown: "object"
 
-      2: # Simple
-        name: "Simple"
-        description: "Basic tasks with some complexity"
-        estimated_effort: "2-4 hours"
-        characteristics:
-          - "2-3 related requirements"
-          - "Minor dependencies or configurations"
-          - "Some research required"
-          - "Well-defined scope"
-          - "Clear execution path"
-        delegation_indicators: "auto_delegation_recommended"
+    - name: "domain_classification"
+      method: "keyword_pattern_matching"
+      priority: 2
+      config:
+        domains:
+          backend:
+            keywords: ["api", "backend", "server", "database", "microservice", "infrastructure", "rest", "graphql", "sql", "nosql", "authentication", "authorization", "endpoint", "service"]
+            patterns: ["build.*api", "design.*backend", "create.*server", "implement.*database", "setup.*endpoint", "configure.*service"]
+            complexity_tendency: 2.0-3.5
+            agent_prefs: ["backend-developer", "backend-architect", "full-stack"]
+          frontend:
+            keywords: ["frontend", "ui", "ux", "react", "vue", "angular", "web", "css", "javascript", "html", "responsive", "component", "interface", "design"]
+            patterns: ["build.*ui", "design.*frontend", "create.*web.*app", "implement.*react", "design.*interface", "create.*component"]
+            complexity_tendency: 2.0-3.5
+            agent_prefs: ["frontend-developer", "ui-designer", "full-stack"]
+          devops:
+            keywords: ["devops", "infrastructure", "deployment", "ci/cd", "docker", "kubernetes", "terraform", "jenkins", "pipeline", "monitoring", "cloud", "aws", "azure", "gcp"]
+            patterns: ["deploy.*application", "setup.*ci", "configure.*kubernetes", "implement.*pipeline", "setup.*infrastructure", "configure.*cloud"]
+            complexity_tendency: 2.5-4.0
+            agent_prefs: ["devops-engineer", "infrastructure-architect", "cloud-specialist"]
+          security:
+            keywords: ["security", "vulnerability", "penetration", "compliance", "audit", "authentication", "authorization", "encryption", "firewall", "secure", "protect"]
+            patterns: ["security.*audit", "penetration.*test", "implement.*security", "compliance.*check", "secure.*application", "protect.*data"]
+            complexity_tendency: 3.0-4.5
+            agent_prefs: ["security-engineer", "security-analyst", "compliance-specialist"]
+          testing:
+            keywords: ["testing", "qa", "quality", "automation", "test", "validate", "verify", "inspect", "coverage", "unit", "integration", "e2e"]
+            patterns: ["write.*test", "automate.*testing", "quality.*assurance", "validate.*functionality", "test.*coverage", "implement.*test.*suite"]
+            complexity_tendency: 1.5-3.0
+            agent_prefs: ["testing-specialist", "qa-engineer", "quality-analyst"]
+          data_science:
+            keywords: ["data", "analytics", "machine", "learning", "statistics", "visualization", "python", "r", "sql", "dataset", "analysis", "model", "algorithm"]
+            patterns: ["analyze.*data", "build.*model", "visualize.*insights", "process.*statistics", "implement.*algorithm", "train.*model"]
+            complexity_tendency: 2.0-4.0
+            agent_prefs: ["data-scientist", "ml-engineer", "data-analyst"]
+          documentation:
+            keywords: ["documentation", "writing", "technical", "api.*docs", "manual", "readme", "guide", "specification", "wiki", "knowledge"]
+            patterns: ["write.*documentation", "create.*guide", "update.*readme", "document.*process", "create.*specification", "build.*wiki"]
+            complexity_tendency: 1.0-2.0
+            agent_prefs: ["technical-writer", "documentation-specialist", "knowledge-manager"]
+        cross_domain:
+          detection_threshold: 0.6
+          complexity_adjustments:
+            two_domains: 0.3
+            three_domains: 0.6
+            four_plus: 1.0
+      output:
+        primary_domain: "string"
+        secondary_domains: "array"
+        cross_domain_score: "float"
+        domain_complexity_adjustment: "float"
 
-      3: # Moderate
-        name: "Moderate"
-        description: "Tasks requiring coordination and decision-making"
-        estimated_effort: "4-8 hours"
-        characteristics:
-          - "Multiple interrelated requirements"
-          - "Cross-system dependencies"
-          - "Design decisions needed"
-          - "Some uncertainty in requirements"
-          - "Requires validation of intermediate results"
-        delegation_indicators: "auto_delegation_with_coordination"
+    - name: "priority_assessment"
+      method: "dynamic_scoring"
+      priority: 3
+      config:
+        priority_levels:
+          critical:
+            indicators: ["production", "critical", "security", "compliance", "blocker", "emergency", "urgent", "immediate"]
+            impact_multiplier: 2.0
+            urgency_weight: 1.5
+          high:
+            indicators: ["high", "priority", "important", "major", "significant", "business"]
+            impact_multiplier: 1.5
+            urgency_weight: 1.0
+          medium:
+            indicators: ["medium", "normal", "regular", "standard", "typical"]
+            impact_multiplier: 1.0
+            urgency_weight: 0.75
+          low:
+            indicators: ["low", "minor", "nice.*to.*have", "optional", "enhancement", "improvement"]
+            impact_multiplier: 0.5
+            urgency_weight: 0.5
+        dynamic_adjustments:
+          complexity:
+            high: 0.5
+            critical: 1.0
+            simple: -0.2
+          domain:
+            security: 1.0
+            performance: 0.5
+            production: 0.8
+            documentation: -0.3
+          time_sensitivity:
+            urgent: 1.0
+            normal: 0.0
+            long_term: -0.5
+          resources:
+            high_availability: 0.2
+            limited: 0.5
+            expert_required: 0.3
+      output:
+        priority_level: "string"
+        priority_score: "float"
+        priority_factors: "object"
 
-      4: # Complex
-        name: "Complex"
-        description: "Complex tasks with multiple components and integration"
-        estimated_effort: "8-16 hours"
-        characteristics:
-          - "Complex requirements with trade-offs"
-          - "Multiple system integrations"
-          - "Architecture decisions required"
-          - "Risk assessment needed"
-          - "Comprehensive testing strategy"
-          - "Performance considerations"
-        delegation_indicators: "parallel_decomposition_required"
+    - name: "resource_analysis"
+      method: "requirement_assessment"
+      priority: 4
+      config:
+        resource_types:
+          human:
+            indicators: ["manual", "review", "approval", "decision", "human.*interaction", "supervision", "management", "leadership"]
+            impact_scoring:
+              manual_review: 1.0
+              human_decision: 0.8
+              team_coordination: 0.6
+              user_interaction: 0.3
+              expert_consultation: 0.5
+          computational:
+            indicators: ["compute", "process", "analyze", "calculate", "algorithm", "model", "train", "simulate"]
+            impact_scoring:
+              heavy_computation: 1.5
+              model_training: 2.0
+              data_processing: 1.0
+              algorithm_complexity: 0.8
+              simulation: 1.2
+          data:
+            indicators: ["data", "information", "dataset", "database", "storage", "backup", "migration"]
+            impact_scoring:
+              large_datasets: 1.0
+              database_operations: 0.8
+              data_migration: 1.5
+              data_analysis: 0.6
+              real_time_data: 0.7
+          external:
+            indicators: ["api", "external", "third.*party", "integration", "service", "web", "dependency"]
+            impact_scoring:
+              external_api: 0.5
+              third_party: 1.0
+              web_service: 0.8
+              external_data: 0.6
+              vendor: 0.4
+          creative:
+            indicators: ["design", "creative", "innovative", "brainstorm", "ideate", "prototype", "concept"]
+            impact_scoring:
+              creative_design: 0.4
+              innovation: 0.6
+              prototype: 0.8
+              concept_exploration: 0.3
+              ui_ux: 0.5
+      output:
+        resource_requirements: "object"
+        resource_impact_score: "float"
+        resource_types_needed: "array"
 
-      5: # Very Complex
-        name: "Very Complex"
-        description: "Enterprise-level tasks with strategic impact"
-        estimated_effort: "16+ hours"
-        characteristics:
-          - "Enterprise-level architecture"
-          - "Multiple complex integrations"
-          - "Strategic planning required"
-          - "Cross-functional coordination"
-          - "Comprehensive governance"
-          - "Long-term impact assessment"
-        delegation_indicators: "expert_coordination_essential"
+    - name: "execution_strategy"
+      method: "strategy_selection"
+      priority: 5
+      config:
+        strategy_matrix:
+          complexity_1:
+            delegation: true
+            method: "mcp_tools_or_single_agent"
+            parallel: false
+            human_interaction: false
+            coordination: "minimal"
+          complexity_2:
+            delegation: true
+            method: "single_agent_optimal"
+            parallel: false
+            human_interaction: false
+            coordination: "low"
+          complexity_3:
+            delegation: true
+            method: "sequential_or_hybrid"
+            parallel: false
+            human_interaction: true
+            coordination: "medium"
+          complexity_4:
+            delegation: true
+            method: "parallel_decomposition"
+            parallel: true
+            human_interaction: true
+            coordination: "high"
+          complexity_5:
+            delegation: true
+            method: "parallel_execution"
+            parallel: true
+            human_interaction: true
+            coordination: "expert"
+        delegation_criteria:
+          automatic:
+            - "complexity_score >= 2.0"
+            - "task_clarity_is_clear"
+            - "agents_match_requirements"
+            - "confidence > 0.6"
+          manual:
+            - "high_ambiguity_detected"
+            - "critical_task_identified"
+            - "user_requests_clarification"
+            - "insufficient_capabilities"
+            - "multi_domain_coordination"
+        parallel_conditions:
+          independent_components: true
+          resource_availability: true
+          performance_optimization: true
+      output:
+        execution_strategy: "string"
+        delegation_readiness: "boolean"
+        parallel_execution: "boolean"
+        coordination_complexity: "string"
 
-  enhanced_scoring_algorithm:
-    implementation: |
-      # Complexity Scoring Algorithm
-      INPUT: task_description, task_context, available_resources, historical_patterns
-      OUTPUT: complexity_score (1.0-5.0), confidence_level (0.0-1.0)
+    - name: "batch_detection"
+      method: "pattern_recognition"
+      priority: 6
+      config:
+        enabled: true
+        detection:
+          operation_patterns:
+            - "Read file_path"
+            - "Edit file_path + old_string + new_string"
+            - "Grep pattern + path"
+            - "Write file_path + content"
+            - "Glob pattern"
+            - "Bash command"
+          batch_criteria:
+            min_identical_ops: 3
+            max_operation_types: 6
+            similarity_threshold: 0.8
+            independence_validation: true
+            performance_target: 0.6
+          triggers:
+            automatic_threshold: 3
+            user_keywords: ["batch", "multiple", "parallel", "bulk"]
+            scan_types: ["file_operations", "text_modifications", "search_operations"]
+        batch_types:
+          parallel_file_reading:
+            pattern: "Read file_path"
+            max_concurrent: 8
+            improvement: 0.8
+            safety: ["file_access_validation", "permission_check"]
+          parallel_text_replacements:
+            pattern: "Edit file_path + old_string + new_string"
+            max_concurrent: 6
+            improvement: 0.7
+            safety: ["pattern_validation", "backup_verification", "overlap_prevention"]
+          parallel_pattern_searching:
+            pattern: "Grep pattern + path"
+            max_concurrent: 8
+            improvement: 0.75
+            safety: ["path_validation", "resource_limits_check"]
+          parallel_file_creation:
+            pattern: "Write file_path + content"
+            max_concurrent: 5
+            improvement: 0.65
+            safety: ["path_conflict_check", "disk_space_validation"]
+      output:
+        batch_detected: "boolean"
+        operation_type: "string"
+        batch_size: "integer"
+        confidence_score: "float"
+        estimated_savings: "float"
+        recommended_strategy: "string"
 
-      WEIGHTING_FACTORS:
-      1. Component Count (weight: 0.25):
-          - Count distinct requirements/components
-          - 1 component: +0.2 points
-          - 2-3 components: +0.4 points
-          - 4-5 components: +0.6 points
-          - 6+ components: +1.0 points
-          - Maximum: +2.0 points
+dependencies:
+  required:
+    - component: "tfidf_system"
+      version: ">=1.0.0"
+      reason: "Text similarity and semantic analysis"
+  optional:
+    - component: "historical_data"
+      version: ">=1.0.0"
+      fallback: "use default scoring weights"
+    - component: "learning_module"
+      version: ">=1.0.0"
+      fallback: "disable adaptive learning"
 
-      2. Dependencies (weight: 0.20):
-          - External system dependencies: +0.5 points each
-          - Internal dependencies: +0.2 points each
-          - Circular dependencies: +1.0 points each
-          - Unknown dependencies: +0.8 points each
-          - Maximum: +2.0 points
-
-      3. Uncertainty (weight: 0.20):
-          - Clear requirements: 0.0 points
-          - Minor ambiguity: +0.3 points
-          - Moderate uncertainty: +0.6 points
-          - High uncertainty: +1.0 points
-          - Critical ambiguity: +1.5 points
-          - Maximum: +2.0 points
-
-      4. Integration Complexity (weight: 0.15):
-          - No integration: 0.0 points
-          - Single system integration: +0.3 points
-          - Multi-system integration: +0.8 points
-          - Cross-functional integration: +1.2 points
-          - Enterprise integration: +1.5 points
-          - Maximum: +2.0 points
-
-      5. Resource Requirements (weight: 0.10):
-          - Minimal resources: 0.0 points
-          - Standard resources: +0.2 points
-          - Specialized resources: +0.5 points
-          - Critical resources: +0.8 points
-          - Limited resources: +1.0 points
-          - Maximum: +1.5 points
-
-      # Historical Pattern Adjustment (New)
-      6. Historical Pattern Matching (weight: 0.10):
-          - Similar successful tasks: -0.2 points
-          - Similar failed tasks: +0.3 points
-          - No similar patterns: 0.0 points
-          - High confidence patterns: -0.1 points
-          - Maximum adjustment: ±0.5 points
-
-      CALCULATION:
-      base_score = 1.0
-      weighted_sum = (component_count * 0.25) + (dependencies * 0.20) +
-                   (uncertainty * 0.20) + (integration * 0.15) +
-                   (resources * 0.10) + (historical_pattern * 0.10)
-      final_score = base_score + weighted_sum
-
-      NORMALIZATION:
-      - Clamp score to [1.0, 5.0] range
-      - Apply confidence adjustment based on analysis clarity
-      - Round to one decimal place for final score
-
-      CONFIDENCE_CALCULATION:
-      confidence = 1.0 - (uncertainty_score * 0.3) - (missing_information_score * 0.4)
-      confidence = max(0.3, min(1.0, confidence))
-
-# Task Classification System
-task_classification_system:
-  primary_domains:
-    backend_development:
-      keywords: ["api", "backend", "server", "database", "microservice", "infrastructure", "rest", "graphql", "sql", "nosql", "authentication", "authorization", "endpoint", "service"]
-      patterns: ["build.*api", "design.*backend", "create.*server", "implement.*database", "setup.*endpoint", "configure.*service"]
-      complexity_tendency: 2.0-3.5
-      typical_effort: "4-10 hours"
-      agent_preferences: ["backend-developer", "backend-architect", "full-stack"]
-
-    frontend_development:
-      keywords: ["frontend", "ui", "ux", "react", "vue", "angular", "web", "css", "javascript", "html", "responsive", "component", "interface", "design"]
-      patterns: ["build.*ui", "design.*frontend", "create.*web.*app", "implement.*react", "design.*interface", "create.*component"]
-      complexity_tendency: 2.0-3.5
-      typical_effort: "4-10 hours"
-      agent_preferences: ["frontend-developer", "ui-designer", "full-stack"]
-
-    devops_infrastructure:
-      keywords: ["devops", "infrastructure", "deployment", "ci/cd", "docker", "kubernetes", "terraform", "jenkins", "pipeline", "monitoring", "cloud", "aws", "azure", "gcp"]
-      patterns: ["deploy.*application", "setup.*ci", "configure.*kubernetes", "implement.*pipeline", "setup.*infrastructure", "configure.*cloud"]
-      complexity_tendency: 2.5-4.0
-      typical_effort: "6-12 hours"
-      agent_preferences: ["devops-engineer", "infrastructure-architect", "cloud-specialist"]
-
-    security_engineering:
-      keywords: ["security", "vulnerability", "penetration", "compliance", "audit", "authentication", "authorization", "encryption", "firewall", "secure", "protect"]
-      patterns: ["security.*audit", "penetration.*test", "implement.*security", "compliance.*check", "secure.*application", "protect.*data"]
-      complexity_tendency: 3.0-4.5
-      typical_effort: "8-15 hours"
-      agent_preferences: ["security-engineer", "security-analyst", "compliance-specialist"]
-
-    testing_quality:
-      keywords: ["testing", "qa", "quality", "automation", "test", "validate", "verify", "inspect", "coverage", "unit", "integration", "e2e"]
-      patterns: ["write.*test", "automate.*testing", "quality.*assurance", "validate.*functionality", "test.*coverage", "implement.*test.*suite"]
-      complexity_tendency: 1.5-3.0
-      typical_effort: "2-8 hours"
-      agent_preferences: ["testing-specialist", "qa-engineer", "quality-analyst"]
-
-    data_science:
-      keywords: ["data", "analytics", "machine", "learning", "statistics", "visualization", "python", "r", "sql", "dataset", "analysis", "model", "algorithm"]
-      patterns: ["analyze.*data", "build.*model", "visualize.*insights", "process.*statistics", "implement.*algorithm", "train.*model"]
-      complexity_tendency: 2.0-4.0
-      typical_effort: "6-12 hours"
-      agent_preferences: ["data-scientist", "ml-engineer", "data-analyst"]
-
-    documentation:
-      keywords: ["documentation", "writing", "technical", "api.*docs", "manual", "readme", "guide", "specification", "wiki", "knowledge"]
-      patterns: ["write.*documentation", "create.*guide", "update.*readme", "document.*process", "create.*specification", "build.*wiki"]
-      complexity_tendency: 1.0-2.0
-      typical_effort: "1-4 hours"
-      agent_preferences: ["technical-writer", "documentation-specialist", "knowledge-manager"]
-
-  cross_domain_detection:
-    patterns:
-      full_stack: "combines frontend + backend"
-      devsecops: "combines development + security + operations"
-      data_engineering: "combines data + engineering + infrastructure"
-      ml_ops: "combines machine learning + operations"
-      product_engineering: "combines development + product management"
-
-    detection_algorithm:
-      - Identify multiple domain keywords in task with relevance scoring
-      - Calculate domain overlap score (>0.6 indicates cross-domain)
-      - Determine if cross-domain coordination needed
-      - Increase complexity score for multi-domain tasks (0.3-0.8 points)
-      - Recommend agent coordination strategies
-
-    cross_domain_complexity_adjustment:
-      two_domains: "+0.3 complexity points"
-      three_domains: "+0.6 complexity points"
-      four_plus_domains: "+1.0 complexity points"
-
-# Priority Assessment Framework
-priority_assessment:
-  priority_levels:
-    critical:
-      description: "Urgent tasks requiring immediate attention"
-      indicators: ["production", "critical", "security", "compliance", "blocker", "emergency", "urgent", "immediate"]
-      impact_score_multiplier: 2.0
-      urgency_weight: 1.5
-      delegation_priority: "immediate"
-
-    high:
-      description: "Important tasks with business impact"
-      indicators: ["high", "priority", "important", "major", "significant", "business"]
-      impact_score_multiplier: 1.5
-      urgency_weight: 1.0
-      delegation_priority: "high"
-
-    medium:
-      description: "Standard tasks with regular importance"
-      indicators: ["medium", "normal", "regular", "standard", "typical"]
-      impact_score_multiplier: 1.0
-      urgency_weight: 0.75
-      delegation_priority: "normal"
-
-    low:
-      description: "Optional or enhancement tasks"
-      indicators: ["low", "minor", "nice.*to.*have", "optional", "enhancement", "improvement"]
-      impact_score_multiplier: 0.5
-      urgency_weight: 0.5
-      delegation_priority: "low"
-
-  dynamic_priority_scoring:
-    base_priority: 1.0
-    complexity_adjustment:
-      high_complexity: "+0.5 to priority score"
-      critical_complexity: "+1.0 to priority score"
-      simple_tasks: "-0.2 to priority score"
-
-    domain_adjustment:
-      security_related: "+1.0 to priority score"
-      performance_related: "+0.5 to priority score"
-      production_related: "+0.8 to priority score"
-      documentation: "-0.3 to priority score"
-
-    time_sensitivity:
-      time_sensitive: "+1.0 to priority score"
-      regular_timeline: "0.0 adjustment"
-      long_term: "-0.5 to priority score"
-
-    resource_availability:
-      high_availability: "+0.2 to priority score"
-      limited_availability: "+0.5 to priority score"
-      expert_required: "+0.3 to priority score"
-
-# Resource Requirement Analysis
-resource_requirement_analysis:
-  human_resources:
-    indicators: ["manual", "review", "approval", "decision", "human.*interaction", "supervision", "management", "leadership"]
-    impact_assessment:
-      manual_review_required: "+1.0 complexity"
-      human_decision_needed: "+0.8 complexity"
-      team_coordination_needed: "+0.6 complexity"
-      user_interaction_required: "+0.3 complexity"
-      expert_consultation: "+0.5 complexity"
-
-  computational_resources:
-    indicators: ["compute", "process", "analyze", "calculate", "algorithm", "model", "train", "simulate"]
-    impact_assessment:
-      heavy_computation: "+1.5 complexity"
-      model_training: "+2.0 complexity"
-      data_processing: "+1.0 complexity"
-      algorithm_complexity: "+0.8 complexity"
-      simulation_required: "+1.2 complexity"
-
-  data_resources:
-    indicators: ["data", "information", "dataset", "database", "storage", "backup", "migration"]
-    impact_assessment:
-      large_datasets: "+1.0 complexity"
-      database_operations: "+0.8 complexity"
-      data_migration: "+1.5 complexity"
-      data_analysis: "+0.6 complexity"
-      real_time_data: "+0.7 complexity"
-
-  external_resources:
-    indicators: ["api", "external", "third.*party", "integration", "service", "web", "dependency"]
-    impact_assessment:
-      external_api_calls: "+0.5 complexity per API"
-      third_party_integrations: "+1.0 complexity per integration"
-      web_service_dependencies: "+0.8 complexity"
-      external_data_sources: "+0.6 complexity"
-      vendor_dependencies: "+0.4 complexity"
-
-  creative_resources:
-    indicators: ["design", "creative", "innovative", "brainstorm", "ideate", "prototype", "concept"]
-    impact_assessment:
-      creative_design_work: "+0.4 complexity"
-      innovation_tasks: "+0.6 complexity"
-      prototype_development: "+0.8 complexity"
-      concept_exploration: "+0.3 complexity"
-      ui_ux_design: "+0.5 complexity"
-
-# Execution Strategy Framework
-execution_strategy_framework:
-  strategy_selection_matrix:
-    complexity_1:
-      automatic_delegation: true
-      execution_method: "mcp_tools_or_single_agent"
-      parallel_coordination: false
-      human_interaction: false
-      coordination_complexity: "minimal"
-
-    complexity_2:
-      automatic_delegation: true
-      execution_method: "single_agent_optimal"
-      parallel_coordination: false
-      human_interaction: false
-      coordination_complexity: "low"
-
-    complexity_3:
-      automatic_delegation: true
-      execution_method: "sequential_or_hybrid"
-      parallel_coordination: false
-      human_interaction: true
-      coordination_complexity: "medium"
-
-    complexity_4:
-      automatic_delegation: true
-      execution_method: "parallel_decomposition"
-      parallel_coordination: true
-      human_interaction: true
-      coordination_complexity: "high"
-
-    complexity_5:
-      automatic_delegation: true
-      execution_method: "parallel_execution"
-      parallel_coordination: true
-      human_interaction: true
-      coordination_complexity: "expert"
-
-  delegation_criteria:
-    automatic_triggers:
-      - complexity_score >= 2.0
-      - task_clarity_is_clear: true
-      - available_agents_match_requirements: true
-      - confidence_level > 0.6
-
-    manual_triggers:
-      - high_ambiguity_detected: true
-      - critical_task_identified: true
-      - user_requests_clarification: true
-      - insufficient_agent_capabilities: true
-      - multi_domain_coordination_required: true
-
-  parallel_execution_conditions:
-    independent_components:
-      - Task can be decomposed into independent subtasks
-      - Subtasks have minimal dependencies
-      - Different subtasks require different specializations
-
-    resource_availability:
-      - Multiple suitable agents are available
-      - Load balancing is required
-      - Time constraints necessitate parallel processing
-
-    performance_optimization:
-      - Parallel execution would significantly reduce time
-      - Resource utilization can be improved
-      - Task complexity justifies coordination overhead
-
-# Auto-Batch Detection System
-auto_batch_detection_system:
-  enabled: true
-  scan_frequency: "on_task_analysis"
-
-  detection_algorithm:
-    operation_pattern_recognition:
-      enabled: true
-      similarity_threshold: 0.8
-      pattern_types:
-        - "Read file_path"
-        - "Edit file_path + old_string + new_string"
-        - "Grep pattern + path"
-        - "Write file_path + content"
-        - "Glob pattern"
-        - "Bash command"
-
-    batch_formation_criteria:
-      minimum_identical_operations: 3
-      maximum_operation_types: 6
-      independence_validation: true
-      performance_optimization_target: 0.6
-
-  batch_detection_triggers:
-    automatic_detection:
-      enabled: true
-      trigger_threshold: 3
-      scan_types: ["file_operations", "text_modifications", "search_operations"]
-
-    user_initiated:
-      enabled: true
-      trigger_keywords: ["batch", "multiple", "parallel", "bulk"]
-      manual_activation: true
-
-  batch_classification:
-    parallel_file_reading:
-      operation_pattern: "Read file_path"
-      max_concurrent: 8
-      estimated_improvement: 0.8
-      safety_checks: ["file_access_validation", "permission_check"]
-
-    parallel_text_replacements:
-      operation_pattern: "Edit file_path + old_string + new_string"
-      max_concurrent: 6
-      estimated_improvement: 0.7
-      safety_checks: ["pattern_validation", "backup_verification", "overlap_prevention"]
-
-    parallel_pattern_searching:
-      operation_pattern: "Grep pattern + path"
-      max_concurrent: 8
-      estimated_improvement: 0.75
-      safety_checks: ["path_validation", "resource_limits_check"]
-
-    parallel_file_creation:
-      operation_pattern: "Write file_path + content"
-      max_concurrent: 5
-      estimated_improvement: 0.65
-      safety_checks: ["path_conflict_check", "disk_space_validation"]
-
-  output_specification:
-    batch_detection_result:
-      batch_detected: boolean
-      operation_type: string
-      batch_size: integer
-      confidence_score: number (0.0-1.0)
-      estimated_time_savings: percentage
-      recommended_strategy: string
-      independence_score: number (0.0-1.0)
-
-    detailed_batch_info:
-      operations_included: array of operation_descriptions
-      target_files: array of file_paths
-      dependency_analysis: object
-      risk_assessment: object
-      fallback_options: array
-
-# Output Generation System
-output_specification:
-  task_analysis_result:
-    complexity_score: "number (1.0-5.0)"
-    confidence_level: "number (0.0-1.0)"
+output:
+  format: "structured"
+  validation: true
+  schema:
+    complexity_score: "float (1.0-5.0)"
+    confidence_level: "float (0.0-1.0)"
     domain_classification: "string"
     cross_domain_indicators: "array"
     priority_level: "string"
     resource_requirements: "object"
     execution_strategy: "string"
     estimated_effort: "string"
-    risk_assessment: "object"
     delegation_readiness: "boolean"
+    batch_detection_result: "object"
 
-  detailed_analysis:
-    component_breakdown: "array of components"
-    dependency_mapping: "object"
-    integration_requirements: "array"
-    potential_challenges: "array"
-    mitigation_strategies: "array"
-    success_criteria: "array"
-    coordination_requirements: "object"
+fallback:
+  enabled: true
+  strategy: "graceful_degradation"
+  alternatives:
+    - "simple_keyword_classification"
+    - "rule_based_complexity_scoring"
+    - "default_execution_strategy"
+  emergency_only: false
 
-  execution_plan:
-    phases: "array of execution phases"
-    agent_recommendations: "array of agent assignments with confidence scores"
-    timeline_estimates: "object"
-    coordination_points: "array"
-    validation_checkpoints: "array"
-    fallback_strategies: "array"
+monitoring:
+  enabled: true
+  metrics:
+    - "analysis_processing_time"
+    - "classification_accuracy"
+    - "complexity_scoring_consistency"
+    - "strategy_effectiveness"
+    - "batch_detection_success"
+  performance_targets:
+    response_time: 2000  # ms
+    accuracy: 0.85
+    confidence: 0.80
+    batch_efficiency: 0.70
+
+integration:
+  inputs:
+    - "user_request"
+    - "system_state"
+    - "agent_registry"
+    - "historical_data"
+    - "tfidf_analysis"
+  outputs:
+    - "agent_selection_system"
+    - "orchestration_engine"
+    - "clarification_system"
+    - "batch_processor"
+  events:
+    - subscribe: "task_received"
+    - publish: "task_analyzed"
 
 # Quality Assurance System
 quality_assurance:
   validation_rules:
-    complexity_score_range: "Must be between 1.0-5.0"
-    confidence_threshold: "Minimum 0.6 for critical tasks"
-    domain_classification: "Must match detected patterns"
-    resource_requirements: "Must be realistic for available resources"
-    execution_strategy: "Must match task characteristics"
-    delegation_readiness: "Must align with complexity and clarity"
+    complexity_range: "1.0-5.0"
+    confidence_threshold: 0.6
+    domain_match: "detected_patterns"
+    resource_realism: "available_resources"
+    strategy_match: "task_characteristics"
+    delegation_alignment: "complexity_and_clarity"
 
   consistency_checks:
-    cross_validation_with_historical_data: true
-    consistency_with_system_capabilities: true
-    alignment_with_user_expectations: true
-    reproducibility_of_analysis_results: true
-    validation_of_agent_recommendations: true
+    historical_validation: true
+    system_capability_check: true
+    user_expectation_alignment: true
+    result_reproducibility: true
+    agent_recommendation_validation: true
 
   performance_metrics:
-    analysis_processing_time: "Should be < 2 seconds"
-    accuracy_rate: "Target > 85%"
-    user_satisfaction: "Target > 80%"
-    error_recovery_success: "Target > 90%"
-    delegation_success_rate: "Target > 75%"
-
-# Integration Points
-integration_interface:
-  input_sources:
-    user_request: "Primary task input"
-    system_state: "Current system state information"
-    agent_registry: "Available agent capabilities"
-    historical_data: "Performance patterns and outcomes"
-    tfidf_analysis: "Text similarity and semantic analysis"
-
-  output_destinations:
-    agent_selection_system: "For agent matching"
-    orchestration_engine: "For task coordination"
-    learning_module: "For performance feedback"
-    user_interface: "For status communication"
-    clarification_system: "For ambiguous tasks"
-
-  system_dependencies:
-    tfidf_system: "For text similarity analysis"
-    agent_registry: "For capability assessment"
-    learning_module: "For adaptive optimization"
-    monitoring_system: "For performance tracking"
-    clarification_system: "For interactive requirement gathering"
-
-# Version Management
-version_management:
-  current_version: "0.2.2"
-  architecture_version: "consolidated_v2"
-  compatibility_requirements:
-    minimal_system_version: "0.2.0"
-    required_components: ["error_handling_initialization"]
-
-  migration_support:
-    previous_version_support: true
-    migration_strategy: "enhanced_features_with_backward_compatibility"
-    configuration_migration: "automatic_with_validation_and_fallback"
-
-  consolidation_changes:
-    what_was_changed:
-      - "Added historical pattern matching"
-      - "Added cross-domain detection"
-      - "Added resource requirement analysis"
-      - "Added delegation readiness assessment"
-      - "Added agent recommendation system"
-      - "Added coordination complexity assessment"
+    processing_time: "< 2 seconds"
+    accuracy_rate: "> 85%"
+    user_satisfaction: "> 80%"
+    error_recovery: "> 90%"
+    delegation_success: "> 75%"

@@ -1,278 +1,303 @@
-# System Health Check System (v0.3.1)
-# Comprehensive health monitoring and validation for all system components
-
-metadata:
+component:
   name: "system_health_check"
   version: "0.3.1"
-  description: "Comprehensive system health monitoring and validation system for all master agent components"
-  author: "Master Agent System v0.3.1"
-  tags: ["health-checking", "monitoring", "validation", "system-status", "component-health"]
+  description: "Comprehensive health monitoring and validation for all system components"
+  category: "core"
+  priority: 3
+  status: "stable"
 
-# Health Check Philosophy
-health_check_philosophy: |
-  1. Proactive Monitoring: Detect issues before they impact system functionality
-  2. Comprehensive Validation: Check all system aspects systematically
-  3. Real-time Assessment: Provide immediate health status for all components
-  4. Predictive Analysis: Anticipate potential issues based on patterns
-  5. Automated Recovery: Self-healing capabilities for common issues
+triggers:
+  primary:
+    keywords: ["health_check", "system_status", "component_health", "validation"]
+    patterns: [".*health.*monitor.*", ".*system.*status.*", ".*component.*validation.*"]
+    score: 1.0
+  secondary:
+    keywords: ["diagnostic", "recovery", "performance_check", "availability"]
+    score: 0.7
+  contextual:
+    conditions: ["system_degradation_detected", "component_failure", "performance_issue", "startup_validation"]
+    score: 0.5
 
-# Component Health Monitoring
-component_health_monitoring:
-  mcp_ecosystem_health:
-    enabled: true
-    check_interval: 60  # seconds
-    timeout: 10  # seconds
-    checks:
-      - server_connectivity: "Verify connection to all MCP servers"
-      - tool_functionality: "Test all available tools"
-      - performance_standards: "Ensure response times within acceptable limits"
-      - license_compliance: "Validate all licenses and permissions"
-    success_criteria: "all_checks_pass"
-    failure_handling: "degraded_mode_activation"
+implementation:
+  operations:
+    - name: "mcp_ecosystem_health_check"
+      method: "connectivity_validation"
+      priority: 1
+      config:
+        check_interval: 60
+        timeout: 10
+        checks:
+          - server_connectivity: "verify connection to all MCP servers"
+          - tool_functionality: "test all available tools"
+          - performance_standards: "ensure response times within limits"
+          - license_compliance: "validate all licenses and permissions"
+        success_criteria: "all_checks_pass"
+        failure_handling: "degraded_mode_activation"
+      output:
+        mcp_health_score: "float"
+        connectivity_status: "object"
+        performance_metrics: "object"
 
-  analysis_components_health:
-    enabled: true
-    check_interval: 30  # seconds
-    timeout: 5   # seconds
-    components:
-      - task_analysis: "Check analysis accuracy and performance"
-      - agent_selection: "Verify selection algorithms"
-      - clarification: "Test clarification workflows"
-    success_criteria: "all_components_operational"
-    failure_handling: "fallback_to_basic_mode"
+    - name: "analysis_components_health_check"
+      method: "component_functionality_validation"
+      priority: 2
+      config:
+        check_interval: 30
+        timeout: 5
+        components:
+          - name: "task_analysis"
+            tests: ["analysis_accuracy", "performance_validation"]
+          - name: "agent_selection"
+            tests: ["selection_algorithm_verification", "matching_confidence"]
+          - name: "clarification"
+            tests: ["clarification_workflow", "question_effectiveness"]
+        success_criteria: "all_components_operational"
+        failure_handling: "fallback_to_basic_mode"
+      output:
+        analysis_health_score: "float"
+        component_status: "object"
+        performance_data: "object"
 
-  execution_systems_health:
-    enabled: true
-    check_interval: 15  # seconds
-    timeout: 3   # seconds
-    components:
-      - todo_engine: "Monitor task delegation success rates"
-      - coordination: "Check parallel execution efficiency"
-      - delegation: "Verify agent communication"
-    success_criteria: "execution_systems_operational"
-    failure_handling: "graceful_degradation"
+    - name: "execution_systems_health_check"
+      method: "execution_efficiency_validation"
+      priority: 3
+      config:
+        check_interval: 15
+        timeout: 3
+        components:
+          - name: "todo_engine"
+            metrics: ["task_delegation_success", "completion_rates"]
+          - name: "coordination"
+            metrics: ["parallel_execution_efficiency", "resource_utilization"]
+          - name: "delegation"
+            metrics: ["agent_communication", "response_times"]
+        success_criteria: "execution_systems_operational"
+        failure_handling: "graceful_degradation"
+      output:
+        execution_health_score: "float"
+        system_efficiency: "object"
+        delegation_status: "object"
 
-  discovery_systems_health:
-    enabled: true
-    check_interval: 120  # seconds
-    timeout: 10  # seconds
-    components:
-      - agent_registry: "Verify agent discovery and registration"
-      - batch_orchestrator: "Check batch processing capabilities"
-    success_criteria: "discovery_systems_operational"
-    failure_handling: "manual_intervention_required"
+    - name: "discovery_systems_health_check"
+      method: "discovery_functionality_validation"
+      priority: 4
+      config:
+        check_interval: 120
+        timeout: 10
+        components:
+          - name: "agent_registry"
+            tests: ["agent_discovery", "registration_success"]
+          - name: "batch_orchestrator"
+            tests: ["batch_processing", "detection_accuracy"]
+        success_criteria: "discovery_systems_operational"
+        failure_handling: "manual_intervention_required"
+      output:
+        discovery_health_score: "float"
+        registry_status: "object"
+        orchestration_performance: "object"
 
-  monitoring_system_health:
-    enabled: true
-    check_interval: 30  # seconds
-    timeout: 5   # seconds
-    checks:
-      - metrics_collection: "Ensure metrics are being collected"
-      - alert_system: "Verify alert activation works"
-      - dashboard_functionality: "Check dashboard accessibility"
-    success_criteria: "monitoring_system_active"
-    failure_handling: "basic_logging_mode"
+    - name: "health_scoring_calculation"
+      method: "weighted_scoring_algorithm"
+      priority: 5
+      config:
+        weight_distribution:
+          critical_components: 0.4
+          important_components: 0.3
+          supporting_components: 0.2
+          optional_components: 0.1
+        health_levels:
+          excellent:
+            threshold: "> 0.95"
+            action: "normal_operation"
+          good:
+            threshold: "0.90 - 0.95"
+            action: "monitor_closely"
+          acceptable:
+            threshold: "0.80 - 0.90"
+            action: "initiate_optimization"
+          poor:
+            threshold: "< 0.80"
+            action: "emergency_protocols"
+          critical:
+            threshold: "< 0.70"
+            action: "emergency_intervention"
+        alert_thresholds:
+          error_rate: 0.05
+          performance_degradation: 0.20
+          component_failure_rate: 0.10
+          resource_exhaustion: 0.85
+      output:
+        overall_health_score: "float"
+        health_level: "string"
+        recommended_actions: "array"
+        alert_status: "object"
 
-# Health Check Algorithms
-health_check_algorithms:
-  mcp_connectivity_check:
-    implementation: |
-      # MCP connectivity health check
-      FOR each mcp_server in registry:
-        TRY connecting with timeout 5 seconds
-        IF connection successful:
-          VERIFY tool availability with simple test operation
-          LOG "MCP server {server} healthy"
-        ELSE:
-          LOG "MCP server {server} unreachable"
-          TRIGGER fallback mode
-      RETURN overall_mcp_health_percentage
+    - name: "health_recovery_system"
+      method: "automated_recovery_procedures"
+      priority: 6
+      config:
+        automatic_recovery:
+          enabled: true
+          strategies:
+            - component_restart
+            - dependency_refresh
+            - configuration_reload
+            - system_reboot
+          max_attempts: 3
+          recovery_timeout: 30
+        manual_recovery:
+          enabled: true
+          procedures:
+            - component_isolation
+            - system_diagnostic
+            - expert_intervention
+            - vendor_support
+        graceful_degradation:
+          enabled: true
+          strategies:
+            - reduce_functionality
+            - switch_to_backup
+            - emergency_mode
+            - safe_shutdown
+      output:
+        recovery_status: "string"
+        recovery_actions: "array"
+        system_state: "object"
 
-  component_availability_check:
-    implementation: |
-      # Component availability validation
-      FOR each component in initialization_order:
-        CHECK if component is loaded and responsive
-        VERIFY component functionality with basic test
-        LOG component health status
-      RETURN system_health_percentage
+dependencies:
+  required:
+    - component: "monitoring_system"
+      version: ">=0.3.1"
+      reason: "Health metrics collection and aggregation"
+    - component: "error_handling_initialization"
+      version: ">=0.3.1"
+      reason: "Error handling during health checks"
+    - component: "mcp_server_discovery"
+      version: ">=0.3.1"
+      reason: "MCP ecosystem health validation"
+  optional:
+    - component: "configuration_base"
+      version: ">=0.3.1"
+      fallback: "use basic health validation"
+      reason: "Configuration health tracking"
 
-  performance_baseline_check:
-    implementation: |
-      # Performance baseline validation
-      FOR each component:
-        MEASURE current performance metrics
-        COMPARE against baseline expectations
-        IF performance < threshold:
-          LOG performance degradation warning
-          INITIATE optimization routine
-      RETURN overall_performance_score
+output:
+  format: "structured"
+  validation: true
+  schema:
+    system_health_score: "float"
+    component_health_status: "object"
+    active_alerts: "array"
+    recovery_status: "string"
+    health_check_timestamp: "string"
 
-  error_rate_monitoring:
-    implementation: |
-      # Error rate monitoring across components
-      FOR each component in system:
-        TRACK error occurrences over time window
-        CALCULATE error_rate percentage
-        IF error_rate > threshold:
-          TRIGGER emergency protocols
-          NOTIFY system administrator
-      RETURN system_error_rate_score
+fallback:
+  enabled: true
+  strategy: "graceful_degradation"
+  alternatives:
+    - "basic_connectivity_check"
+    - "essential_component_validation"
+    - "manual_health_monitoring"
+  emergency_only: false
+  error_recovery:
+    max_retries: 3
+    backoff_strategy: "exponential"
+    base_delay: 1000
+    max_delay: 8000
 
-# Health Status Scoring
-health_scoring_system:
-  score_calculation:
-    weight_distribution:
-      critical_components: 0.4
-      important_components: 0.3
-      supporting_components: 0.2
-      optional_components: 0.1
+monitoring:
+  enabled: true
+  metrics:
+    - "health_check_duration"
+    - "component_response_time"
+    - "health_score_trends"
+    - "recovery_action_success"
+    - "alert_generation_time"
+    - "system_availability_percentage"
+    - "false_positive_rate"
+  targets:
+    health_check_duration: 30000
+    component_response_time: 5000
+    alert_generation_time: 5000
+    system_availability_percentage: 0.995
+    recovery_action_success: 0.95
+    false_positive_rate: 0.01
+  alerts:
+    health_check_duration: 60000
+    system_availability_percentage: 0.98
+    recovery_action_success: 0.90
 
-  health_levels:
-    excellent: "> 0.95"
-      description: "All systems operational with optimal performance"
-      action: "normal operation mode"
+integration:
+  inputs:
+    - "component_status_updates"
+    - "performance_metrics"
+    - "error_reports"
+    - "user_feedback"
+  outputs:
+    - "health_dashboard"
+    - "alerting_system"
+    - "recovery_engine"
+    - "maintenance_scheduler"
+  events:
+    subscribe: ["component_failure", "performance_degradation", "error_threshold_exceeded"]
+    publish: ["health_status_updated", "recovery_initiated", "alert_triggered"]
+  apis:
+    internal:
+      - "perform_health_check"
+      - "calculate_health_score"
+      - "initiate_recovery"
+      - "validate_component_health"
+    external:
+      - "get_system_health"
+      - "get_component_health"
+      - "get_health_history"
+      - "trigger_manual_health_check"
 
-    good: "0.90 - 0.95"
-      description: "Minor issues detected but system functional"
-      action: "monitor closely"
-
-    acceptable: "0.80 - 0.90"
-      description: "Some degradation detected, system partially functional"
-      action: "initiate optimization"
-
-    poor: "< 0.80"
-      description: "Significant issues requiring immediate attention"
-      action: "emergency protocols"
-
-    critical: "< 0.70"
-      description: "System failure or major degradation"
-      action: "emergency intervention required"
-
-  alert_thresholds:
-    error_rate: 0.05  # 5% error rate
-    performance_degradation: 0.20  # 20% performance drop
-    component_failure_rate: 0.10  # 10% components failed
-    resource_exhaustion: 0.85  # 85% resource usage
-
-# Integration Points
-integration_interface:
-  input_sources:
-    mcp_discovery_system: "MCP ecosystem health data"
-    component_initialization: "Component loading status"
-    execution_monitoring: "Task execution performance data"
-    monitoring_system: "Centralized metrics aggregation"
-    user_feedback: "User experience metrics"
-
-  output_destinations:
-    system_dashboard: "Real-time health status display"
-    alerting_system: "Automatic alert distribution"
-    optimization_engine: "Performance improvement recommendations"
-    maintenance_system: "Predictive maintenance scheduling"
-    user_notifications: "Health status communications"
-
-  data_export:
-    health_metrics_api: "REST API for health status"
-    performance_data: "Historical performance trends"
-    alert_history: "Alert incident tracking"
-    health_reports: "Scheduled health summaries"
-
-# Health Recovery Mechanisms
-health_recovery_system:
-  automatic_recovery:
-    enabled: true
-    retry_strategies:
-      - "component_restart"
-      - "dependency_refresh"
-      - "configuration_reload"
-      - "system_reboot"
-    max_attempts: 3
-    recovery_timeout: 30  # seconds
-
-  manual_recovery:
-    enabled: true
-    escalation_procedures:
-      - "component_isolation"
-      - "system_diagnostic"
-      - "expert_intervention"
-      - "vendor_support"
-
-  graceful_degradation:
-    enabled: true
-    degradation_strategies:
-      - "reduce_functionality"
-      - "switch_to_backup"
-      - "emergency_mode"
-      - "safe_shutdown"
-
-# Validation Rules
 validation_rules:
   component_validation:
-    initialization_complete: "Component must complete initialization successfully"
-    functionality_tested: "Basic functionality must work"
-    dependencies_satisfied: "All dependencies must be available"
-    performance_baseline: "Must meet minimum performance criteria"
-
+    initialization_complete: true
+    functionality_tested: true
+    dependencies_satisfied: true
+    performance_baseline: true
   system_validation:
-    phase_completion: "All phases must complete successfully"
-    integration_success: "All integrations must work properly"
-    performance_targets_met: "System must meet performance requirements"
-    error_rate_acceptable: "Error rate must be within acceptable range"
-
+    phase_completion: true
+    integration_success: true
+    performance_targets_met: true
+    error_rate_acceptable: true
   monitoring_validation:
-    metrics_collection: "Health metrics must be collected consistently"
-    alert_distribution: "Alerts must be delivered properly"
-    dashboard_functionality: "Dashboard must be accessible and functional"
+    metrics_collection: true
+    alert_distribution: true
+    dashboard_functionality: true
 
-# Performance Metrics
-performance_metrics:
-  response_time_targets:
-    health_check_completion: "< 30 seconds"
-    alert_generation: "< 5 seconds"
-    dashboard_update: "< 10 seconds"
-    report_generation: "< 60 seconds"
+performance_targets:
+  response_time:
+    health_check_completion: 30000
+    alert_generation: 5000
+    dashboard_update: 10000
+    report_generation: 60000
+  reliability:
+    system_availability: 0.995
+    health_check_success_rate: 0.98
+    recovery_success_rate: 0.95
+    false_positive_rate: 0.01
+  resource_usage:
+    memory_usage_during_checks: 104857600  # 100MB
+    cpu_usage_during_checks: 0.40
+    network_usage_during_checks: "minimal"
 
-  reliability_targets:
-    system_availability: "> 99.5%"
-    health_check_success_rate: "> 98%"
-    recovery_success_rate: "> 95%"
-    false_positive_rate: "< 1%"
-
-  resource_usage_targets:
-    memory_usage_during_health_checks: "< 100MB"
-    cpu_usage_during_health_checks: "< 40%"
-    network_usage_during_health_checks: "minimal"
-
-# Configuration Management
-configuration_management:
+configuration:
   health_check_frequency:
-    comprehensive_check: "Every 5 minutes"
-    component_health: "Every 1 minute"
-    performance_monitoring: "Real-time"
-    alert_validation: "On alert trigger"
-
+    comprehensive_check: 300  # 5 minutes
+    component_health: 60      # 1 minute
+    performance_monitoring: 5  # Real-time
+    alert_validation: 0      # On trigger
   adaptive_monitoring:
     enabled: true
     load_based_adjustment: true
     performance_based_adjustment: true
     issue_based_adjustment: true
-
   reporting_schedule:
-    daily_health_report: "At 00:00 UTC"
+    daily_health_report: "00:00 UTC"
     weekly_performance_report: "Sunday 23:00 UTC"
-    monthly_system_assessment: "Last day of month"
-    immediate_alert: "On critical issues"
-
-# Version Management
-version_management:
-  current_version: "0.3.1"
-  architecture_version: "unified_health_monitoring_v1"
-  compatibility_requirements:
-    minimal_system_version: "0.3.1"
-    required_components: ["monitoring_system", "error_handling_initialization", "mcp_server_discovery"]
-
-  integration_support:
-    backward_compatibility: true
-    forward_compatibility: true
-    migration_strategy: "automatic_with_validation"
-    configuration_migration: "automatic_with_fallback"
+    monthly_system_assessment: "Last day 22:00 UTC"
+    immediate_alert: "on_critical_issue"

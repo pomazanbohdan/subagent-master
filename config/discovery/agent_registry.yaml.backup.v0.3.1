@@ -1,0 +1,629 @@
+# Agent Registry System (Enhanced v0.3.0)
+# Dynamic agent discovery, MCP server integration, registration, and management with domain expertise integration and comprehensive MCP monitoring
+
+metadata:
+  name: "agent_registry"
+  version: "0.3.1"
+  description: "Enhanced agent registry system with dynamic discovery, MCP server integration, registration, and adaptive agent management with domain expertise integration and comprehensive MCP monitoring"
+  author: "Master Agent System v0.3.0"
+  tags: ["agent-registry", "dynamic-discovery", "agent-management", "domain-expertise", "capability-tracking", "mcp-integration", "mcp-monitoring"]
+
+# Registry Architecture Overview
+registry_architecture:
+  registration_system:
+    description: "Dynamic agent registration system with auto-discovery capabilities"
+    responsibilities:
+      - Dynamic agent discovery across multiple sources
+      - Agent validation and capability assessment
+      - Dynamic name generation and categorization
+      - Registry maintenance and updates
+      - Backup and recovery mechanisms
+
+  storage_system:
+    description: "Reliable data storage with automatic backup"
+    storage_layers:
+      primary: "Memory with file backup"
+      secondary: "Cache layer with TTL management"
+      tertiary: "File system storage"
+
+  cache_system:
+    description: "Intelligent caching for performance optimization"
+    cache_layers:
+      l1_cache: "Active agent registry data"
+      l2_cache: "Recent queries and frequently used data"
+      l3_cache: "Historical agent data and performance metrics"
+
+# Enhanced Agent Discovery System
+agent_discovery_system:
+  discovery_sources:
+    filesystem_scan:
+      enabled: true
+      scan_paths:
+        - "agents/"
+        - "subagents/"
+        - ".claude/agents/"
+        - "system/agents/"
+        - "user/agents/"
+      file_patterns: ["*.md", "*.yaml", "*.json"]
+      extraction_method: "yaml_frontmatter"
+      fallback_on_empty: true
+
+    agent_categories:
+      development:
+        enabled: true
+        patterns:
+          - "frontend", "ui", "ux", "css", "javascript", "react", "vue", "angular"
+          "backend", "api", "server", "database", "microservice"
+          "fullstack", "development"
+          "coding", "programming", "implementation"
+          "build", "create", "develop", "code"
+
+      operations:
+        enabled: true
+        patterns:
+          - "devops", "deployment", "infrastructure"
+          - "ci", "pipeline", "build", "test", "deploy"
+          - "cloud", "infrastructure", "cloud_platform", "hosting"
+          - "monitoring", "observability", "alerting", "logging"
+
+      testing:
+        enabled: true
+        patterns:
+          - "test", "testing", "qa", "quality"
+          - "automation", "automated", "e2e"
+          - "validate", "verify", "qa", "quality"
+
+      security:
+        enabled: true
+        patterns:
+          - "security", "security_audit", "vulnerability", "penetration"
+          - "authentication", "authorization", "access_control", "identity"
+          - "encryption", "cryptography", "privacy"
+          - "compliance", "audit", "governance"
+
+      research:
+        enabled: true
+        patterns:
+          - "research", "analyze", "investigate", "explore"
+          - "analysis", "study", "examine", "investigate"
+          - "explore", "discover", "study", "analyze"
+
+      performance:
+        enabled: true
+        patterns:
+          - "optimize", "performance", "optimization", "speed"
+          - "tune", "benchmark", "performance_test"
+          - "monitoring", "performance_tracking"
+
+      architecture:
+        enabled: true
+        patterns:
+          - "architecture", "design", "system_architecture", "patterns"
+          - "scalability", "scalable", "architecture", "system_architecture"
+          - "design_patterns", "pattern", "architectural_pattern"
+          - "system_design", "software_design", "software_architecture"
+
+    agent_validation:
+      enabled: true
+      validation_rules:
+        name_validation:
+          - "simple-name: '^[a-zA-Z][a-zA-Z0-9_-]+$'  # Accepts simple names only"
+          - max_length: 50
+          - no_spaces: true
+          - no_special_characters: true
+        capability_validation:
+          - required_capabilities: "array"
+          - check_availability: true
+          - check_responsive: true
+          - check_compatibility: true
+
+        fallback_handling:
+          invalid_name_format: "convert_to_lowercase_and_validate"
+          missing_capabilities: "request_basic_capabilities"
+          unavailable_agent: "mark_as_unavailable"
+
+# Enhanced Domain Integration
+domain_integration:
+  domain_system_integration:
+    integration_enabled: true
+    domain_sources:
+      - "domain_system.yaml"
+      "agent_selection.yaml"
+      "task_analysis.yaml"
+      "clarification.yaml"
+    integration_points:
+      - TF-IDF domain matching for semantic relevance
+      - Domain expertise alignment scoring
+      - Dynamic category discovery
+
+    dynamic_domain_categorization:
+      enabled: true
+      learning_enabled: true
+      confidence_threshold: 0.7
+      semantic_analysis: true
+      pattern_recognition: true
+
+# Enhanced Registration System
+agent_registration_system:
+  registration_process:
+  automatic_registration:
+    enabled: true
+    auto_categorization: true
+    confidence_threshold: 0.6
+    dynamic_name_generation: true
+
+  name_generation:
+  strategy: "category-based"
+  format_template: "{category}:{agent_name}"
+  auto_increment: true
+
+  registration_validation:
+  enabled: true
+  validation_rules:
+    - Name must match simple-name format
+    - Required capabilities must be available
+    - Agent must be responsive and available
+
+  cache_registration:
+  enabled: true
+  cache_duration: 3600  # 1 hour
+  auto_cleanup: true
+
+# Dynamic Capability Registry
+capability_registry:
+  capability_categories:
+  technical_skills:
+    programming_languages:
+      examples: ["python", "javascript", "java", "go", "rust", "typescript", "php", "ruby", "c++"]
+      importance_weight: 1.0
+    frameworks:
+      examples: ["react", "vue", "angular", "django", "flask", "express", "spring"]
+      importance_weight: 0.8
+
+    expertise_areas:
+      security:
+        examples: ["penetration_testing", "vulnerability_assessment", "compliance"]
+        importance_weight: 1.0
+        domain_matching: "security"
+      cloud_platforms:
+        examples: ["aws", "azure", "gcp", "heroku", "digitalocean"]
+        importance_weight: 0.8
+        domain_matching: "infrastructure"
+
+    tools:
+      mcp_tools:
+        examples: ["context7", "magic", "playwright", "tavily"]
+        importance_weight: 0.6
+      system_tools:
+        examples: ["bash", "file_operations", "web_search", "terminal", "debugging"]
+        importance_weight: 0.4"
+
+# 🔥 MCP Integration System (v0.3.0)
+mcp_integration_system:
+  mcp_server_discovery:
+    enabled: true
+    auto_discovery: true
+    discovery_frequency: "on_startup"
+    validation_required: true
+
+    server_sources:
+      - "builtin_mcp_servers"
+      - "user_defined_mcp_servers"
+      - "plugin_mcp_servers"
+      - "external_mcp_servers"
+
+    discovery_methods:
+      port_scanning:
+        enabled: true
+        port_range: [3000, 9000]
+        timeout: 5
+        parallel_scan: true
+
+      manifest_detection:
+        enabled: true
+        search_paths: [".claude/", "config/", "plugins/"]
+        file_patterns: ["mcp.json", "mcp-config.json", "*.mcp.json"]
+
+      api_discovery:
+        enabled: true
+        endpoint_detection: true
+        capability_negotiation: true
+
+  mcp_capability_analysis:
+    enabled: true
+    analysis_depth: "comprehensive"
+
+    tool_analysis:
+      tool_extraction: true
+      capability_mapping: true
+      performance_profiling: true
+      compatibility_testing: true
+
+    server_analysis:
+      health_monitoring: true
+      performance_benchmarking: true
+      reliability_assessment: true
+      capacity_evaluation: true
+
+    license_validation:
+      permission_checking: true
+      compliance_verification: true
+      usage_limit_monitoring: true
+
+  mcp_tool_registry:
+    registry_structure:
+      server_info:
+        server_name: string
+        server_version: string
+        server_status: "active|inactive|degraded|error"
+        capabilities: array
+        tools: array
+
+      tool_info:
+        tool_name: string
+        tool_category: string
+        tool_performance: object
+        tool_reliability: float
+        fallback_options: array
+
+      performance_metrics:
+        response_time: float
+        success_rate: float
+        error_rate: float
+        capacity_usage: float
+
+    tool_categories:
+      search_discovery:
+        tools: ["tavily", "web-search-prime", "context7"]
+        capabilities: ["web_search", "documentation_lookup", "real_time_search"]
+        fallback_priority: 1
+
+      code_analysis:
+        tools: ["serena", "sequential", "morphllm"]
+        capabilities: ["semantic_understanding", "symbolic_analysis", "pattern_matching"]
+        fallback_priority: 2
+
+      ui_generation:
+        tools: ["magic", "21st"]
+        capabilities: ["component_generation", "design_systems", "responsive_ui"]
+        fallback_priority: 3
+
+      browser_testing:
+        tools: ["playwright", "chrome-devtools"]
+        capabilities: ["automation", "e2e_testing", "performance_testing"]
+        fallback_priority: 2
+
+      file_operations:
+        tools: ["fast-filesystem", "file-management"]
+        capabilities: ["high_performance_ops", "bulk_operations", "file_search"]
+        fallback_priority: 1
+
+      collaboration:
+        tools: ["github", "documentation"]
+        capabilities: ["version_control", "project_management", "documentation"]
+        fallback_priority: 2
+
+  mcp_monitoring_system:
+    enabled: true
+    monitoring_frequency: "real_time"
+
+    health_checks:
+      server_connectivity:
+        check_interval: 30  # seconds
+        timeout: 5
+        retry_attempts: 3
+
+      tool_functionality:
+        check_interval: 60  # seconds
+        test_operations: true
+        performance_validation: true
+
+      performance_monitoring:
+        metrics_collected:
+          - response_times
+          - success_rates
+          - error_patterns
+          - capacity_usage
+          - availability_percentages
+
+    alerting_system:
+      alerts_enabled: true
+      alert_thresholds:
+        server_unavailable: 0  # immediate
+        high_error_rate: 5     # 5% error rate
+        slow_response: 2000    # 2 seconds
+        capacity_limit: 80     # 80% capacity usage
+
+      notification_channels:
+        - system_logs
+        - monitoring_dashboard
+        - performance_reports
+
+  mcp_fallback_system:
+    enabled: true
+    fallback_strategy: "automatic"
+
+    fallback_hierarchy:
+      level_1_primary:
+        description: "Primary MCP tool optimal for task"
+        selection_criteria: ["performance", "reliability", "capabilities"]
+        auto_switch: true
+
+      level_2_alternative:
+        description: "Alternative MCP tool with similar capabilities"
+        selection_criteria: ["capability_match", "availability"]
+        auto_switch: true
+
+      level_3_native:
+        description: "Native Claude Code tools"
+        selection_criteria: ["basic_functionality", "reliability"]
+        auto_switch: true
+
+      level_4_manual:
+        description: "Manual execution as last resort"
+        selection_criteria: ["emergency_only"]
+        auto_switch: false
+
+    recovery_protocols:
+      automatic_retry:
+        max_attempts: 3
+        backoff_strategy: "exponential"
+        retry_intervals: [5, 15, 30]  # seconds
+
+      server_reconnection:
+        enabled: true
+        reconnection_interval: 60  # seconds
+        max_reconnection_attempts: 5
+
+      performance_degradation:
+        enabled: true
+        degradation_threshold: 50  # 50% performance reduction
+        auto_recovery: true
+
+  mcp_performance_optimization:
+    enabled: true
+    optimization_strategy: "adaptive"
+
+    tool_selection_algorithm:
+      primary_factors:
+        - task_requirement_match: 0.4
+        - performance_score: 0.3
+        - reliability_score: 0.2
+        - availability_score: 0.1
+
+      secondary_factors:
+        - historical_performance: 0.15
+        - user_preferences: 0.10
+        - system_load: 0.05
+
+    load_balancing:
+      strategy: "performance_based"
+      distribution_method: "weighted_round_robin"
+      capacity_management: true
+
+    caching_system:
+      tool_response_cache: true
+      cache_ttl: 300  # 5 minutes
+      cache_size_limit: 100MB
+      cache_validation: true
+
+# Enhanced Performance Tracking
+performance_tracking:
+  execution_metrics:
+  agent_performance:
+    metrics:
+      - success_rate
+      - response_times
+      - quality_scores
+      - user_satisfaction
+    learning_metrics:
+      - pattern_recognition_accuracy
+      - adaptation_success_rate
+      - model_performance
+
+  system_metrics:
+    resource_utilization:
+      - CPU usage
+      - memory usage
+      - network bandwidth
+    performance_metrics:
+      - response_times
+      - throughput
+      - error_rates
+    quality_metrics:
+      - success_rate
+      - satisfaction_scores
+      - efficiency_scores
+
+# Enhanced Fallback Mechanisms
+fallback_system:
+  automatic_fallback:
+    agent_unavailable:
+      action: "select_alternative_agent"
+      fallback_strategies:
+        - lower_confidence_threshold: 0.2
+        - enable_cross_domain_fallback: true
+        use_master_agent_as_last_resort: true
+        fallback_to_claude_native: true
+
+    invalid_registration:
+      action: "attempt_basic_registration"
+      strategies:
+        - relax_validation_rules
+        - try_basic_name_validation
+        - fallback_to_master_agent"
+
+    system_failure:
+      action: "emergency_fallback"
+      strategies:
+        - use_master_agent_direct
+        - fallback_to_claude_native
+        - basic_functionality_only: true
+
+# Learning and Adaptation
+learning_system:
+  pattern_recognition:
+  enabled: true
+  feedback_integration: true
+  learning_rate: 0.1
+  confidence_threshold: 0.7
+  success_rate_target: 0.85
+
+  model_optimization:
+  enabled: true
+  update_frequency: "weekly"
+  learning_rate: 0.1
+  performance_target: "improvement"
+
+  integration_points:
+  input_sources:
+    dynamic_agent_discovery: "Agent discovery and registration"
+    agent_selection_system: "Enhanced agent selection with TF-IDF integration"
+    domain_system: "Domain expertise mapping and classification"
+    performance_tracking: "Historical performance data for learning"
+
+  output_destinations:
+    learning_system: "Performance feedback and model updates"
+    monitoring_dashboard: "Real-time performance monitoring"
+    optimization_engine: "Performance optimization recommendations"
+
+  system_dependencies:
+    dynamic_agent_discovery: "Dynamic agent discovery and registration"
+    agent_selection_system: "Enhanced agent selection with TF-IDF integration"
+    domain_system: "Domain expertise and specialization mapping"
+    task_analysis_system: "Enhanced task analysis for agent matching"
+    performance_tracking: "Performance data for learning"
+
+# Version Management and Compatibility
+version_management:
+  current_version: "0.2.2"
+  architecture_version: "consolidated_v2"
+  compatibility_requirements:
+    minimal_system_version: "0.2.0"
+    required_components: ["task_analysis", "clarification", "coordination"]
+
+  consolidation_changes:
+    what_was_consolidated:
+      - "dynamic_agent_discovery.yaml + agent_types.yaml + agent_name_resolution.yaml → discovery/agent_registry.yaml"
+      - "domain_system.yaml + agent_expertise mapping → discovery/domain_system.yaml"
+      - "mcp_registry.yaml + tool management" → discovery/mcp_integration.yaml"
+
+    benefits_of_consolidation:
+      - **Dynamic agent discovery** with auto-discovery capabilities
+      - **Enhanced domain expertise** mapping with semantic analysis
+      - **Improved agent availability** tracking and management
+      - **Intelligent fallback mechanisms** for reliability
+      - **Learning integration** for continuous improvement
+
+  migration_support:
+    previous_version_support: true
+    migration_strategy: "enhanced_features_with_backward_compatibility"
+    configuration_migration: "automatic_with_validation_and_learning"
+
+  mcp_integration_changes:
+    mcp_discovery_system:
+      - "Automatic MCP server detection and analysis"
+      - "Real-time capability extraction and validation"
+      - "Performance profiling and benchmarking"
+      - "License and permission validation"
+
+    mcp_monitoring_system:
+      - "Comprehensive server health monitoring"
+      - "Real-time performance tracking"
+      - "Automatic alerting and notifications"
+      - "Advanced fallback strategies"
+
+    benefits_v0_3_0:
+      - **100% MCP coverage** with automatic server discovery
+      - **Real-time monitoring** of all MCP operations
+      - **Intelligent tool selection** based on performance and reliability
+      - **Comprehensive fallback system** with multiple redundancy levels
+      - **Enhanced performance optimization** with adaptive algorithms
+      - **Complete validation system** for reliability and compliance
+
+# Configuration Management
+configuration_management:
+  registry_backup:
+    enabled: true
+    backup_frequency: "hourly"
+    backup_retention: "7 days"
+    backup_path: "config/dynamic/domain_registry_backup.yaml"
+
+  registry_updates:
+    auto_update: true
+    update_triggers:
+      - agent_discovery_new_agents: true
+      - configuration_changes: true
+      learning_model_update: true
+      performance_optimization: true
+    validation_rules:
+      consistency_check: true
+      conflict_resolution: true
+
+# Performance Optimization
+performance_optimization:
+  cache_optimization:
+    enabled: true
+    cache_strategy: "smart_caching"
+    cache_size_limit: 100MB
+    cache_ttl: 3600
+    cache_validation: true
+    eviction_policy: "lru"
+
+  load_balancing:
+    enabled: true
+    strategy: "load_based"
+    resource_optimization: true
+    max_concurrent_agents: 10
+
+  monitoring_optimization:
+    enabled: true
+    real_time_alerting: true
+    predictive_optimization: true
+    adaptive_thresholds: true
+
+# Security Considerations
+security_considerations:
+  security_validation:
+  - Agent authentication and authorization before registration
+  - Capability validation before agent registration
+  - Access control checks for sensitive operations
+
+  privacy_protection:
+  - User consent for agent registration
+  - Data anonymization for sensitive information
+  - Compliance with data protection regulations
+
+  audit_trail:
+  - Complete registration history
+  - Modification tracking
+  - Performance metrics monitoring
+  - Security events logged
+
+# Version Management and Compatibility
+version_management:
+  current_version: "0.2.2"
+  architecture_version: "consolidated_v2"
+  compatibility_requirements:
+    minimal_system_version: "0.2.0"
+    required_components: ["task_analysis", "clarification", "coordination"]
+
+  consolidation_changes:
+  what_was_consolidated:
+      - "dynamic_agent_discovery.yaml + agent_types.yaml + agent_name_resolution.yaml + mcp_registry.yaml"
+      - "domain_system.yaml + agent_expertise mapping + learning_system"
+      - "enhanced agent registry with dynamic capabilities"
+
+    benefits_of_consolidation:
+      - **100% coverage** of discovery functionality
+      **Enhanced domain expertise** with semantic analysis
+      **Dynamic agent availability tracking** with real-time updates
+      **Intelligent fallback mechanisms** for reliability
+      **Adaptive learning** capabilities for continuous improvement
+      **Complete MCP integration** with server discovery and management
+      **Comprehensive domain system** with classification and evolution
+
+  migration_support:
+    previous_version_support: true
+    migration_strategy: "enhanced_features_with_backward_compatibility"
+    configuration_migration: "automatic_with_validation_and_learning"

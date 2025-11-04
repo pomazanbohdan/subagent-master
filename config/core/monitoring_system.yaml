@@ -1,291 +1,336 @@
-# Centralized Monitoring System (v0.3.0)
-# Unified orchestration system for comprehensive monitoring, metrics aggregation, and performance analytics
-
-metadata:
+component:
   name: "monitoring_system"
   version: "0.3.1"
-  description: "Centralized monitoring system orchestration for unified metrics collection, performance analytics, and health monitoring across all components"
-  author: "Master Agent System"
-  tags: ["monitoring", "metrics", "performance", "health-checks", "analytics", "alerting"]
+  description: "Centralized monitoring system for unified metrics collection and performance analytics"
+  category: "core"
+  priority: 2
+  status: "stable"
 
-# Monitoring Philosophy
-monitoring_philosophy: |
-  1. Unified Collection: Centralize metrics from all system components
-  2. Real-time Analytics: Provide immediate insights into system performance
-  3. Proactive Alerting: Detect and respond to issues before they impact users
-  4. Performance Optimization: Enable data-driven system improvements
-  5. Health Assurance: Maintain continuous visibility into system health
+triggers:
+  primary:
+    keywords: ["monitor", "metrics", "performance", "health_check"]
+    patterns: [".*system.*monitor.*", ".*performance.*analytics.*", ".*health.*status.*"]
+    score: 1.0
+  secondary:
+    keywords: ["alert", "dashboard", "analytics", "reporting"]
+    score: 0.7
+  contextual:
+    conditions: ["system_performance_issue", "component_health_check", "metrics_collection_required"]
+    score: 0.5
 
-# Unified Monitoring Architecture
-monitoring_architecture:
-  data_sources:
-    component_metrics:
-      - source: "error_handling_initialization"
-        metrics: ["error_rates", "recovery_times", "fallback_activations"]
-        collection_interval: 30
+implementation:
+  operations:
+    - name: "metrics_collection"
+      method: "unified_data_aggregation"
+      priority: 1
+      config:
+        data_sources:
+          components:
+            - name: "error_handling"
+              metrics: ["error_rates", "recovery_times", "fallback_activations"]
+              interval: 30
+            - name: "mcp_discovery"
+              metrics: ["server_availability", "tool_performance", "discovery_latency"]
+              interval: 60
+            - name: "task_analysis"
+              metrics: ["analysis_accuracy", "classification_performance", "tfidf_scores"]
+              interval: 30
+            - name: "agent_selection"
+              metrics: ["selection_accuracy", "matching_confidence", "agent_performance"]
+              interval: 30
+            - name: "clarification"
+              metrics: ["clarification_success_rate", "question_effectiveness", "user_satisfaction"]
+              interval: 60
+            - name: "todo_engine"
+              metrics: ["delegation_success", "task_completion_time", "parallel_efficiency"]
+              interval: 15
+            - name: "coordination"
+              metrics: ["parallel_execution_time", "resource_utilization", "coordination_efficiency"]
+              interval: 15
+            - name: "delegation"
+              metrics: ["task_success_rate", "agent_response_time", "fallback_usage"]
+              interval: 30
+            - name: "agent_registry"
+              metrics: ["agent_availability", "registry_performance", "discovery_success"]
+              interval: 60
+            - name: "batch_orchestrator"
+              metrics: ["batch_detection_accuracy", "parallel_speedup", "orchestration_efficiency"]
+              interval: 30
+        aggregation:
+          real_time_processing: true
+          processing_interval: 10
+          buffer_size: 1000
+          throughput_target: 1000
+      output:
+        aggregated_metrics: "object"
+        collection_status: "string"
+        performance_data: "object"
 
-      - source: "mcp_server_discovery"
-        metrics: ["server_availability", "tool_performance", "discovery_latency"]
-        collection_interval: 60
+    - name: "performance_calculation"
+      method: "weighted_scoring_algorithm"
+      priority: 2
+      config:
+        calculations:
+          system_health:
+            formula: "weighted_average(component_health_scores)"
+            weights:
+              critical_components: 0.4
+              important_components: 0.3
+              supporting_components: 0.2
+              optional_components: 0.1
+          performance_efficiency:
+            formula: "actual_performance / target_performance"
+            targets:
+              initialization_time: 90
+              task_completion_time: 300
+              parallel_efficiency: 0.85
+          reliability_score:
+            formula: "success_rate * (1 - error_rate)"
+            thresholds:
+              excellent: "> 0.95"
+              good: "0.90 - 0.95"
+              acceptable: "0.80 - 0.90"
+              poor: "< 0.80"
+      output:
+        performance_scores: "object"
+        efficiency_metrics: "object"
+        reliability_indicators: "object"
 
-      - source: "task_analysis"
-        metrics: ["analysis_accuracy", "classification_performance", "tfidf_scores"]
-        collection_interval: 30
+    - name: "alert_management"
+      method: "rule_based_alerting"
+      priority: 3
+      config:
+        alert_rules:
+          critical:
+            - name: "system_initialization_failure"
+              condition: "initialization_success_rate < 0.95"
+              action: "immediate_notification"
+              escalation: "system_administrator"
+            - name: "mcp_server_unavailable"
+              condition: "mcp_availability < 0.90"
+              action: "fallback_activation"
+              escalation: "infrastructure_team"
+            - name: "component_failure_cascade"
+              condition: "simultaneous_component_failures > 2"
+              action: "emergency_recovery"
+              escalation: "system_administrator"
+          warning:
+            - name: "performance_degradation"
+              condition: "performance_efficiency < 0.80"
+              action: "performance_optimization"
+              escalation: "performance_team"
+            - name: "high_error_rate"
+              condition: "overall_error_rate > 0.05"
+              action: "error_investigation"
+              escalation: "development_team"
+            - name: "resource_pressure"
+              condition: "resource_utilization > 0.85"
+              action: "resource_scaling"
+              escalation: "operations_team"
+          info:
+            - name: "performance_improvement"
+              condition: "performance_efficiency > 0.95"
+              action: "positive_feedback"
+              escalation: "performance_team"
+            - name: "component_health_optimal"
+              condition: "component_health > 0.98"
+              action: "health_acknowledgment"
+              escalation: "monitoring_team"
+      output:
+        active_alerts: "array"
+        alert_history: "array"
+        notification_status: "object"
 
-      - source: "agent_selection"
-        metrics: ["selection_accuracy", "matching_confidence", "agent_performance"]
-        collection_interval: 30
+    - name: "health_monitoring"
+      method: "comprehensive_health_checks"
+      priority: 4
+      config:
+        health_checks:
+          system_health:
+            name: "overall_system_health"
+            frequency: 60
+            timeout: 10
+            checks:
+              - component_availability: "all_critical_components_operational"
+              - performance_metrics: "within_acceptable_ranges"
+              - error_rates: "below_threshold"
+              - resource_usage: "optimal"
+          component_health:
+            name: "individual_component_health"
+            frequency: 30
+            timeout: 5
+            checks:
+              - initialization_status: "completed_successfully"
+              - dependency_satisfaction: "all_dependencies_available"
+              - performance_baseline: "meeting_minimum_requirements"
+              - error_threshold: "within_limits"
+          mcp_health:
+            name: "mcp_ecosystem_health"
+            frequency: 120
+            timeout: 15
+            checks:
+              - server_connectivity: "all_servers_accessible"
+              - tool_functionality: "all_tools_operational"
+              - performance_standards: "meeting_response_time_targets"
+              - license_compliance: "all_validated"
+      output:
+        health_status: "object"
+        check_results: "array"
+        health_scores: "object"
 
-      - source: "clarification"
-        metrics: ["clarification_success_rate", "question_effectiveness", "user_satisfaction"]
-        collection_interval: 60
+dependencies:
+  required:
+    - component: "error_handling_initialization"
+      version: ">=0.3.1"
+      reason: "Error metrics and recovery monitoring"
+    - component: "mcp_server_discovery"
+      version: ">=0.3.1"
+      reason: "MCP health and performance monitoring"
+  optional:
+    - component: "configuration_base"
+      version: ">=0.3.1"
+      fallback: "use basic configuration monitoring"
+      reason: "Configuration change tracking"
 
-      - source: "todo_engine"
-        metrics: ["delegation_success", "task_completion_time", "parallel_efficiency"]
-        collection_interval: 15
+output:
+  format: "structured"
+  validation: true
+  schema:
+    system_health_score: "float"
+    active_alerts: "array"
+    performance_metrics: "object"
+    component_health: "object"
+    monitoring_status: "string"
 
-      - source: "coordination"
-        metrics: ["parallel_execution_time", "resource_utilization", "coordination_efficiency"]
-        collection_interval: 15
+fallback:
+  enabled: true
+  strategy: "graceful_degradation"
+  alternatives:
+    - "basic_health_monitoring"
+    - "essential_metrics_only"
+    - "manual_monitoring_mode"
+  emergency_only: false
+  error_recovery:
+    max_retries: 3
+    backoff_strategy: "exponential"
+    base_delay: 500
+    max_delay: 4000
 
-      - source: "delegation"
-        metrics: ["task_success_rate", "agent_response_time", "fallback_usage"]
-        collection_interval: 30
+monitoring:
+  enabled: true
+  metrics:
+    - "metrics_collection_latency"
+    - "alert_processing_time"
+    - "health_check_duration"
+    - "dashboard_refresh_rate"
+    - "report_generation_time"
+    - "data_aggregation_efficiency"
+    - "alert_response_time"
+  targets:
+    metrics_collection_latency: 1000
+    alert_processing_time: 500
+    health_check_duration: 2000
+    dashboard_refresh_rate: 5
+    report_generation_time: 10000
+    data_aggregation_efficiency: 0.90
+    alert_response_time: 2000
+  alerts:
+    metrics_collection_latency: 2000
+    alert_processing_time: 1000
+    health_check_duration: 5000
+    data_aggregation_efficiency: 0.80
 
-      - source: "agent_registry"
-        metrics: ["agent_availability", "registry_performance", "discovery_success"]
-        collection_interval: 60
+integration:
+  inputs:
+    - "component_metrics"
+    - "system_events"
+    - "error_reports"
+    - "performance_data"
+  outputs:
+    - "monitoring_dashboard"
+    - "alert_system"
+    - "performance_reports"
+    - "health_status_api"
+  events:
+    subscribe: ["component_status_change", "error_occurred", "performance_threshold_exceeded"]
+    publish: ["health_status_updated", "alert_triggered", "performance_report_generated"]
+  apis:
+    internal:
+      - "collect_metrics"
+      - "evaluate_health"
+      - "process_alerts"
+      - "generate_reports"
+    external:
+      - "get_system_health"
+      - "get_active_alerts"
+      - "get_performance_metrics"
+      - "get_component_health"
 
-      - source: "batch_orchestrator"
-        metrics: ["batch_detection_accuracy", "parallel_speedup", "orchestration_efficiency"]
-        collection_interval: 30
+analytics:
+  temporal_analysis:
+    enabled: true
+    time_window: "24h"
+    granularity: "1m"
+    metrics:
+      - "performance_trends"
+      - "error_patterns"
+      - "resource_usage"
+      - "throughput_analysis"
+  component_analysis:
+    enabled: true
+    comparison_metrics:
+      - "performance_ranking"
+      - "reliability_scoring"
+      - "efficiency_rating"
+      - "health_comparison"
+  predictive_analysis:
+    enabled: true
+    forecasting:
+      - "performance_degradation"
+      - "capacity_planning"
+      - "failure_prediction"
+      - "resource_exhaustion"
 
-  aggregation_engine:
-    real_time_processing:
+reporting:
+  real_time_dashboard:
+    enabled: true
+    refresh_interval: 5
+    key_metrics:
+      - "system_health_score"
+      - "active_tasks_count"
+      - "error_rate"
+      - "performance_efficiency"
+      - "mcp_availability"
+  periodic_reports:
+    daily:
       enabled: true
-      processing_interval: 10  # seconds
-      buffer_size: 1000
-      throughput_target: 1000  # metrics per second
-
-    performance_calculation:
-      - metric: "overall_system_health"
-        formula: "weighted_average(component_health_scores)"
-        weights:
-          critical_components: 0.4
-          important_components: 0.3
-          supporting_components: 0.2
-          optional_components: 0.1
-
-      - metric: "performance_efficiency"
-        formula: "actual_performance / target_performance"
-        targets:
-          initialization_time: 90  # seconds
-          task_completion_time: 300  # seconds
-          parallel_efficiency: 0.85  # 85%
-
-      - metric: "reliability_score"
-        formula: "success_rate * (1 - error_rate)"
-        thresholds:
-          excellent: "> 0.95"
-          good: "0.90 - 0.95"
-          acceptable: "0.80 - 0.90"
-          poor: "< 0.80"
-
-# Alert System
-alert_system:
-  alert_rules:
-    critical_alerts:
-      - name: "system_initialization_failure"
-        condition: "initialization_success_rate < 0.95"
-        severity: "critical"
-        action: "immediate_notification"
-        escalation: "system_administrator"
-
-      - name: "mcp_server_unavailable"
-        condition: "mcp_availability < 0.90"
-        severity: "critical"
-        action: "fallback_activation"
-        escalation: "infrastructure_team"
-
-      - name: "component_failure_cascade"
-        condition: "simultaneous_component_failures > 2"
-        severity: "critical"
-        action: "emergency_recovery"
-        escalation: "system_administrator"
-
-    warning_alerts:
-      - name: "performance_degradation"
-        condition: "performance_efficiency < 0.80"
-        severity: "warning"
-        action: "performance_optimization"
-        escalation: "performance_team"
-
-      - name: "high_error_rate"
-        condition: "overall_error_rate > 0.05"
-        severity: "warning"
-        action: "error_investigation"
-        escalation: "development_team"
-
-      - name: "resource_pressure"
-        condition: "resource_utilization > 0.85"
-        severity: "warning"
-        action: "resource_scaling"
-        escalation: "operations_team"
-
-    info_alerts:
-      - name: "performance_improvement"
-        condition: "performance_efficiency > 0.95"
-        severity: "info"
-        action: "positive_feedback"
-        escalation: "performance_team"
-
-      - name: "component_health_optimal"
-        condition: "component_health > 0.98"
-        severity: "info"
-        action: "health_acknowledgment"
-        escalation: "monitoring_team"
-
-# Health Monitoring System
-health_monitoring:
-  health_checks:
-    system_health:
-      name: "overall_system_health"
-      checks:
-        - component_availability: "all_critical_components_operational"
-        - performance_metrics: "within_acceptable_ranges"
-        - error_rates: "below_threshold"
-        - resource_usage: "optimal"
-      frequency: 60  # seconds
-      timeout: 10
-
-    component_health:
-      name: "individual_component_health"
-      checks:
-        - initialization_status: "completed_successfully"
-        - dependency_satisfaction: "all_dependencies_available"
-        - performance_baseline: "meeting_minimum_requirements"
-        - error_threshold: "within_limits"
-      frequency: 30  # seconds
-      timeout: 5
-
-    mcp_health:
-      name: "mcp_ecosystem_health"
-      checks:
-        - server_connectivity: "all_servers_accessible"
-        - tool_functionality: "all_tools_operational"
-        - performance_standards: "meeting_response_time_targets"
-        - license_compliance: "all_validated"
-      frequency: 120  # seconds
-      timeout: 15
-
-# Performance Analytics
-performance_analytics:
-  analytics_dimensions:
-    temporal_analysis:
-      - time_series_trends: "performance_over_time"
-      - seasonal_patterns: "periodic_performance_variations"
-      - anomaly_detection: "statistical_outlier_identification"
-      - predictive_modeling: "performance_forecasting"
-
-    component_analysis:
-      - component_comparison: "relative_performance_ranking"
-      - dependency_impact: "component_dependency_analysis"
-      - bottleneck_identification: "performance_constraint_analysis"
-      - optimization_opportunities: "improvement_potential_assessment"
-
-    system_analysis:
-      - architecture_efficiency: "overall_system_effectiveness"
-      - scalability_metrics: "performance_under_load"
-      - reliability_assessment: "system_stability_analysis"
-      - utilization_optimization: "resource_usage_efficiency"
-
-  reporting_system:
-    real_time_dashboard:
+      schedule: "00:00 UTC"
+      content: ["performance_summary", "error_analysis", "improvement_recommendations"]
+    weekly:
       enabled: true
-      refresh_interval: 5  # seconds
-      key_metrics:
-        - "system_health_score"
-        - "active_tasks_count"
-        - "error_rate"
-        - "performance_efficiency"
-        - "mcp_availability"
+      schedule: "Sunday 23:00 UTC"
+      content: ["trend_analysis", "component_ranking", "health_assessment"]
+    monthly:
+      enabled: true
+      schedule: "Last day 22:00 UTC"
+      content: ["performance_analysis", "architecture_assessment", "optimization_roadmap"]
 
-    periodic_reports:
-      daily_report:
-        enabled: true
-        schedule: "00:00 UTC"
-        content: ["daily_performance_summary", "error_analysis", "improvement_recommendations"]
-
-      weekly_report:
-        enabled: true
-        schedule: "Sunday 23:00 UTC"
-        content: ["weekly_trends", "component_performance_ranking", "system_health_assessment"]
-
-      monthly_report:
-        enabled: true
-        schedule: "Last day of month 22:00 UTC"
-        content: ["monthly_performance_analysis", "architecture_assessment", "optimization_roadmap"]
-
-# Integration Points
-integration_interface:
-  input_sources:
-    all_system_components: "comprehensive_metrics_collection"
-    error_handling_system: "error_and_recovery_metrics"
-    mcp_server_discovery: "mcp_health_and_performance"
-    task_execution_system: "task_performance_metrics"
-    agent_management: "agent_availability_and_performance"
-
-  output_destinations:
-    system_dashboard: "real_time_monitoring_display"
-    alerting_system: "automated_alert_distribution"
-    performance_reports: "scheduled_analytics_reports"
-    optimization_engine: "performance_improvement_recommendations"
-
-  data_export:
-    api_endpoints:
-      - "/api/monitoring/metrics"
-      - "/api/monitoring/health"
-      - "/api/monitoring/alerts"
-      - "/api/monitoring/performance"
-
-    export_formats:
-      - "json" for programmatic access
-      - "csv" for data analysis
-      - "prometheus" for integration with monitoring tools
-
-# Configuration Management
-configuration_management:
+configuration:
   monitoring_levels:
-    basic_monitoring:
-      enabled_metrics: ["essential_health", "critical_errors", "basic_performance"]
-      collection_frequency: 60
-      storage_retention: "7_days"
-
-    standard_monitoring:
-      enabled_metrics: ["all_health", "performance", "resource_usage", "error_analysis"]
-      collection_frequency: 30
-      storage_retention: "30_days"
-
-    comprehensive_monitoring:
-      enabled_metrics: ["all_available_metrics", "detailed_analytics", "predictive_analysis"]
-      collection_frequency: 15
-      storage_retention: "90_days"
-
+    basic:
+      metrics: ["essential_health", "critical_errors", "basic_performance"]
+      frequency: 60
+      retention: "7_days"
+    standard:
+      metrics: ["all_health", "performance", "resource_usage", "error_analysis"]
+      frequency: 30
+      retention: "30_days"
+    comprehensive:
+      metrics: ["all_available_metrics", "detailed_analytics", "predictive_analysis"]
+      frequency: 15
+      retention: "90_days"
   adaptive_monitoring:
     enabled: true
     load_based_adjustment: true
     performance_based_adjustment: true
     user_activity_based_adjustment: true
-
-# Version Management
-version_management:
-  current_version: "0.3.1"
-  architecture_version: "unified_monitoring_v1"
-  compatibility_requirements:
-    minimal_system_version: "0.3.1"
-    required_components: ["error_handling_initialization", "mcp_server_discovery"]
-
-  integration_support:
-    backward_compatibility: true
-    forward_compatibility: true
-    migration_strategy: "automatic_with_validation"
