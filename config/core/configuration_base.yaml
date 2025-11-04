@@ -5,12 +5,11 @@ metadata:
   name: "configuration_base"
   version: "0.3.0"
   description: "Configuration base system with dependency resolution, loading, and resource management"
-  author: "Master Agent System"
   tags: ["configuration", "dependency-resolution", "loading", "topological-sort", "resource-management"]
 
-# Phase-Based Dependency Graph (Optimized v0.3.0 Architecture)
+# Phase-Based Dependency Graph
 dependency_graph:
-  # Optimized Architecture Configuration Files and Their Dependencies
+  # Architecture Configuration Files and Their Dependencies
   configurations:
     # Phase 0: MCP Discovery & Core Setup (Parallel Loading)
     config/core/mcp_server_discovery.yaml:
@@ -19,7 +18,7 @@ dependency_graph:
       priority: "critical"
       load_timeout: 30000
       retry_count: 3
-      description: "MCP Server Discovery and Validation system (Phase 0 prerequisite)"
+      description: "MCP Server Discovery and Validation system"
 
     config/core/error_handling_initialization.yaml:
       phase: 0
@@ -27,7 +26,7 @@ dependency_graph:
       priority: "critical"
       load_timeout: 15000
       retry_count: 3
-      description: "Enhanced error handling and initialization system with MCP integration"
+      description: "Error handling and initialization system with MCP integration"
 
     config/core/monitoring_system.yaml:
       phase: 0
@@ -35,7 +34,7 @@ dependency_graph:
       priority: "high"
       load_timeout: 10000
       retry_count: 3
-      description: "Centralized monitoring system orchestration for unified metrics and performance analytics"
+      description: "Centralized monitoring system orchestration for metrics and performance analytics"
 
     # Phase 1: Analysis & Selection Systems (Parallel Loading)
     config/analysis/task_analysis.yaml:
@@ -44,7 +43,7 @@ dependency_graph:
       priority: "critical"
       load_timeout: 8000
       retry_count: 3
-      description: "Enhanced task analysis with MCP integration"
+      description: "Task analysis with MCP integration"
 
     config/analysis/agent_selection.yaml:
       phase: 1
@@ -52,7 +51,7 @@ dependency_graph:
       priority: "critical"
       load_timeout: 6000
       retry_count: 2
-      description: "Ultimate agent selection with TF-IDF and MCP integration"
+      description: "Agent selection with TF-IDF and MCP integration"
 
     # Phase 2: Clarification & Advanced Processing (Sequential)
     config/analysis/clarification.yaml:
@@ -66,7 +65,7 @@ dependency_graph:
       load_timeout: 8000  # Increased for fallback system
       retry_count: 3      # Increased retry count
       fallback_enabled: true
-      description: "Enhanced clarification with MCP tool awareness and graceful degradation fallback system"
+      description: "Clarification with MCP tool awareness and graceful degradation fallback system"
 
     # Phase 3: Execution & Coordination (Parallel Loading)
     config/execution/todo_engine.yaml:
@@ -79,7 +78,7 @@ dependency_graph:
       priority: "critical"
       load_timeout: 6000
       retry_count: 3
-      description: "Enhanced TODO execution engine with MCP integration"
+      description: "TODO execution engine with MCP integration"
 
     config/execution/delegation.yaml:
       phase: 3
@@ -87,7 +86,7 @@ dependency_graph:
       priority: "high"
       load_timeout: 5000
       retry_count: 2
-      description: "Enhanced delegation with MCP tool integration"
+      description: "Delegation with MCP tool integration"
 
     config/execution/coordination.yaml:
       phase: 3
@@ -95,9 +94,9 @@ dependency_graph:
       priority: "high"
       load_timeout: 5000
       retry_count: 2
-      description: "Enhanced parallel coordination with MCP support"
+      description: "Parallel coordination with MCP support"
 
-    # Phase 4: Discovery & Orchestration (Parallel Loading)
+    # Phase 4: Discovery & Agent Registration (Parallel Loading)
     config/discovery/agent_registry.yaml:
       phase: 4
       dependencies: [
@@ -109,17 +108,18 @@ dependency_graph:
       priority: "high"
       load_timeout: 8000
       retry_count: 3
-      description: "Dynamic agent discovery with comprehensive MCP integration"
+      description: "Dynamic agent discovery with MCP integration"
 
+    # Phase 5: Batch Orchestration (Sequential Loading)
     config/orchestration/batch_orchestrator.yaml:
-      phase: 4
-      dependencies: ["config/execution/coordination.yaml"]
+      phase: 5
+      dependencies: ["config/execution/coordination.yaml", "config/discovery/agent_registry.yaml"]
       priority: "high"
       load_timeout: 6000
       retry_count: 2
-      description: "Unified batch orchestration system for parallel operations"
+      description: "Batch orchestration system for parallel operations"
 
-# Enhanced Loading Strategy Configuration
+# Loading Strategy Configuration
 loading_strategy:
   # Topological Sorting Algorithm
   topological_sort:
@@ -128,23 +128,23 @@ loading_strategy:
     cycle_resolution: "error_with_suggestions"
     validation_enabled: true
 
-  # Enhanced Parallel Loading Configuration
+  # Parallel Loading Configuration
   parallel_loading:
     enabled: true
-    max_concurrent_loaders: 6  # Optimized for new architecture
+    max_concurrent_loaders: 6
     level_based_parallelism: true
     adaptive_resource_management: true
 
-    # Thread Pool Configuration for Consolidated Architecture
+    # Thread Pool Configuration
     thread_pools:
       io_operations:
-        pool_size: 8      # Reduced from 12 due to consolidation
+        pool_size: 8
         queue_size: 100
         thread_name_prefix: "config-loader-io"
         keep_alive_time: 60
 
       cpu_operations:
-        pool_size: 4      # Optimized for new dependency levels
+        pool_size: 4
         queue_size: 50
         thread_name_prefix: "config-loader-cpu"
         keep_alive_time: 30
@@ -158,33 +158,34 @@ loading_strategy:
     # Resource Monitoring and Adaptive Configuration
     resource_monitoring:
       enabled: true
-      memory_threshold_mb: 512  # Reduced due to consolidation efficiency
-      cpu_threshold_percent: 75  # Slightly reduced due to optimization
+      memory_threshold_mb: 512
+      cpu_threshold_percent: 75
       adjustment_factor: 0.8
       adaptive_scaling: true
 
-    # Load configurations by phase (optimized for clean 5-phase architecture)
+    # Load configurations by phase (6-phase architecture)
     phase_loading:
       phase_0: 3   # Parallel - MCP discovery & core setup (mcp_server_discovery, error_handling_initialization, monitoring_system)
       phase_1: 2   # Parallel - analysis & selection systems (task_analysis, agent_selection)
       phase_2: 1   # Sequential - clarification & advanced processing (clarification)
       phase_3: 3   # Parallel - execution & coordination (todo_engine, delegation, coordination)
-      phase_4: 2   # Parallel - discovery & orchestration (agent_registry, batch_orchestrator)
+      phase_4: 1   # Parallel - discovery & agent registration (agent_registry)
+      phase_5: 1   # Sequential - batch orchestration (batch_orchestrator)
 
-  # Enhanced Adaptive Timeout Configuration
+  # Adaptive Timeout Configuration
   adaptive_timeouts:
     enabled: true
     base_timeout_ms: 3000
-    max_timeout_ms: 25000  # Reduced due to consolidation efficiency
-    complexity_multiplier: 1.1  # Reduced due to simplified dependencies
+    max_timeout_ms: 25000
+    complexity_multiplier: 1.1
     resource_adjustment: true
 
-    # Priority-based timeout adjustment (optimized)
+    # Priority-based timeout adjustment
     priority_timeout_factors:
-      critical: 0.8   # 20% faster timeout for critical configs
-      high: 1.0       # Standard timeout
-      medium: 1.2     # 20% longer timeout
-      low: 1.4        # 40% longer timeout
+      critical: 0.8
+      high: 1.0
+      medium: 1.2
+      low: 1.4
 
     # System load-based timeout adjustment
     load_based_adjustment:
@@ -195,7 +196,7 @@ loading_strategy:
         heavy_load: 90     # 75-90% CPU usage, increase timeout by 30%
         extreme_load: 100  # > 90% CPU usage, increase timeout by 60%
 
-  # Dependency Validation (Enhanced)
+  # Dependency Validation
   dependency_validation:
     enabled: true
     strict_validation: true
@@ -204,11 +205,11 @@ loading_strategy:
     validation_timeout: 5000
     cache_validation_results: true
 
-  # Error Handling and Recovery (Consolidated)
+  # Error Handling and Recovery
   error_handling:
     retry_strategy: "exponential_backoff"
     retry_base_delay: 1000
-    retry_max_delay: 8000  # Reduced due to consolidation efficiency
+    retry_max_delay: 8000
     max_retry_attempts: 3
 
     failure_handling:
@@ -315,16 +316,16 @@ topological_sort_algorithm: |
 
   def generate_optimized_loading_plan(phases, config_metadata, max_parallel_loaders):
       """
-      Generate optimal loading plan for clean 5-phase architecture
+      Generate optimal loading plan for clean 6-phase architecture
       """
-      # Group configurations by phase (5 phases max)
+      # Group configurations by phase (6 phases max)
       phase_groups = {}
       for config, phase in phases.items():
           if phase not in phase_groups:
               phase_groups[phase] = []
           phase_groups[phase].append(config)
 
-      # Sort phases (0 to 4)
+      # Sort phases (0 to 5)
       sorted_phases = sorted(phase_groups.keys())
 
       # Generate loading batches (optimized for clean architecture)
@@ -440,7 +441,7 @@ dependency_resolution_engine: |
                   'architecture_version': 'v0.3.0',
                   'total_configurations': len(sorted_configs),
                   'mcp_integration_enabled': True,
-                  'phase_count': 5
+                  'phase_count': 6
               }
 
           except CircularDependencyError as e:
@@ -461,16 +462,16 @@ dependency_resolution_engine: |
               }
 
       def _topological_sort_enhanced(self):
-          """Enhanced topological sort for 5-phase architecture"""
+          """Enhanced topological sort for 6-phase architecture"""
           # Implementation using the v0.3.0 algorithm
           pass
 
       def _generate_optimized_loading_plan(self, phases, config_metadata):
-          """Generate optimized loading plan for clean 5-phase architecture"""
+          """Generate optimized loading plan for clean 6-phase architecture"""
           return self.generate_optimized_loading_plan(phases, config_metadata, 6)
 
       def _validate_enhanced_loading_plan(self, loading_plan):
-          """Validate enhanced loading plan for 5-phase architecture"""
+          """Validate enhanced loading plan for 6-phase architecture"""
           # Enhanced validation for MCP integration
           pass
 
@@ -651,7 +652,7 @@ version_management:
       - "Individual monitoring → Unified monitoring with MCP health tracking"
       - "TF-IDF system integration → Ultimate agent selection with MCP"
       - "Basic MCP integration → Comprehensive MCP discovery and validation"
-      - "4-phase initialization → 5-phase initialization with MCP prerequisite"
+      - "5-phase initialization → 6-phase initialization with batch orchestration separation"
 
     benefits_of_enhancement:
       - "100% MCP coverage with automatic discovery"
@@ -661,3 +662,6 @@ version_management:
       - "Enhanced cache system for MCP server data"
       - "Real-time MCP monitoring and optimization"
       - "Automatic MCP tool selection and fallback"
+      - "Resolved circular dependency between coordination and batch orchestration"
+      - "Clean 6-phase initialization with proper dependency hierarchy"
+      - "Improved system reliability through better component separation"

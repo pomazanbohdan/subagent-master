@@ -159,28 +159,40 @@ Infrastructure: infrastructure, devops, deployment, operations
   - Performance optimization with real-time monitoring
 - Success Criteria: Task execution ready, delegation operational, coordination active
 
-**Phase 4: Discovery & Orchestration**
+**Phase 4: Discovery & Agent Registration**
 
-- Initialize agent discovery and batch orchestration systems
-- Components: `agent_registry`, `batch_orchestrator`
+- Initialize agent discovery and registration systems
+- Components: `agent_registry`
 - Dependencies: Requires Phase 3 completion
 - Features:
   - Dynamic agent discovery with auto-registration
-  - Integrated batch processing capabilities
   - System integration and comprehensive monitoring
   - Performance optimization and load balancing
   - MCP integration with comprehensive tool management
-- Success Criteria: Agent discovery ready, batch orchestration operational, full system integration complete
+- Success Criteria: Agent discovery ready, registration operational, system integration complete
+
+**Phase 5: Batch Orchestration**
+
+- Initialize batch orchestration system
+- Components: `batch_orchestrator`
+- Dependencies: Requires Phase 4 completion + coordination system
+- Features:
+  - Integrated batch processing capabilities
+  - Advanced coordination with execution systems
+  - Performance optimization for parallel operations
+  - MCP integration with batch processing tools
+- Success Criteria: Batch orchestration operational, coordination integrated, full system ready
 
 **Architecture Benefits:**
 
 - Clean phase-based initialization with optimized dependency resolution
-- Simplified configuration structure (Phase 0-4 instead of Level -1,0-4)
+- Simplified configuration structure (Phase 0-5 with proper dependency hierarchy)
 - Enhanced parallel execution within phases
 - Circuit breaker patterns and comprehensive backup systems
 - Topological sorting with phase-based dependency resolution
-- Clear dependency hierarchy with reduced complexity
+- Clear dependency hierarchy with resolved circular dependencies
 - Improved MCP integration and monitoring
+- Separate batch orchestration for better system organization
 
 ### TODO-EXECUTION ENGINE
 
@@ -533,33 +545,33 @@ execution_flow: "todo_planning → parallel_research → knowledge_synthesis"
 expected_time: "10-20 minutes"
 ```
 
-## 📊 Performance Metrics (Consolidated v0.2.2)
+## 📊 Performance Metrics
 
-### Core Performance Indicators (Enhanced with Consolidated Architecture)
+### Core Performance Indicators
 
-- **Task Distribution Accuracy**: >98% correct routing (improved with integrated TF-IDF)
-- **Clarification Success Rate**: >93% ambiguity resolution (enhanced with uncertainty detection)
-- **Agent Selection Accuracy**: >96% optimal agent matching (ultimate selection with vector similarity)
-- **Time Estimation Accuracy**: >85% within ±15% of actual time (improved with ML analysis)
-- **Overall System Success Rate**: >99% task completion (enhanced with backup systems)
-- **🔥 ENHANCED TODO-EXECUTION Success Rate**: >98% automatic task delegation success
-- **Task() Delegation Reliability**: >97% successful remote execution (with circuit breaker protection)
-- **Consolidated System Reliability**: >95% uptime with automatic failover
+- **Task Distribution Accuracy**: >98% correct routing
+- **Clarification Success Rate**: >93% ambiguity resolution
+- **Agent Selection Accuracy**: >96% optimal agent matching
+- **Time Estimation Accuracy**: >85% within ±15% of actual time
+- **Overall System Success Rate**: >99% task completion
+- **TODO-EXECUTION Success Rate**: >98% automatic task delegation success
+- **Task() Delegation Reliability**: >97% successful remote execution
+- **System Reliability**: >95% uptime with automatic failover
 
-### Consolidated Architecture Performance Improvements
+### Architecture Performance
 
-- **Initialization Time**: <75 seconds (60% improvement from 10→4 phases)
-- **Memory Usage**: 256MB (50% reduction from consolidation)
-- **Configuration Loading**: <20 seconds (70% faster with dependency resolution)
-- **Error Recovery**: <5 seconds (circuit breaker patterns)
-- **Parallel Execution Efficiency**: >90% (optimized resource management)
-- **System Adaptation Success**: >95% (enhanced configuration management)
+- **Initialization Time**: <75 seconds
+- **Memory Usage**: 256MB
+- **Configuration Loading**: <20 seconds
+- **Error Recovery**: <5 seconds
+- **Parallel Execution Efficiency**: >90%
+- **System Adaptation Success**: >95%
 
 ### Quality Assurance Mechanisms
 
-- **Real-time Configuration Monitoring**: Track dynamic system health
+- **Real-time Configuration Monitoring**: Track system health
 - **Multi-level Validation Gates**: Quality checks across all system phases
-- **Enhanced Error Handling**: Context-aware error recovery with fallback mechanisms
+- **Error Handling**: Context-aware error recovery with fallback mechanisms
 - **User Feedback Integration**: Continuous improvement through satisfaction tracking
 
 ## 🔧 Integration Points
@@ -567,13 +579,13 @@ expected_time: "10-20 minutes"
 ### Knowledge Base Integration
 
 - **Agent Selection**: Hybrid scoring with TF-IDF and ML models
-- **Text Analysis**: Lightweight TF-IDF with sklearn fallback
+- **Text Analysis**: TF-IDF with sklearn fallback
 - **Task Classification**: Complexity assessment and domain classification
 - **Categorization Engine**: ML-based categorization with semantic analysis
 - **Parallel Coordination**: Execution management with result synthesis
 - **Clarification System**: Interactive clarification with contextual questions
-- **🔥 TODO-EXECUTION Engine**: Automatic TodoWrite-to-Task() delegation system
-  - Implementation in `config/execution/todo_engine.yaml` (consolidated v0.2.2)
+- **TODO-EXECUTION Engine**: Automatic TodoWrite-to-Task() delegation system
+  - Implementation in `config/execution/todo_engine.yaml`
   - Converts analysis results into actionable TodoWrite plans
   - Executes each TODO item through optimized Task() delegation
   - Tracks progress and handles failures intelligently
@@ -610,9 +622,9 @@ The system continuously evolves based on execution feedback and dynamic configur
 
 ---
 
-### **🛡️ MCP Server Validation Gates (v0.3.0)**
+### **🛡️ MCP Server Validation Gates**
 
-**Comprehensive Validation System:**
+**Validation System:**
 
 **1. Server Availability Validation:**
 ```yaml
@@ -670,31 +682,31 @@ performance_gates:
 
 ---
 
-**System Status**: Optimized orchestration v0.3.0 with clean 5-phase initialization system (Phase 0-4) including enhanced MCP integration and comprehensive component orchestration
+**System Status**: Orchestration v0.3.0 with 6-phase initialization system (Phase 0-5) including MCP integration and component orchestration
 
-**Architecture**: Streamlined coordination with phase-based configuration modules, enhanced TF-IDF processing, circuit breaker error handling, and complete MCP integration
+**Architecture**: Coordination with phase-based configuration modules, TF-IDF processing, circuit breaker error handling, and MCP integration
 
-**Performance**: Optimized for intelligent task distribution, semantic agent selection, execution coordination with backup systems, and automatic MCP tool selection
+**Performance**: Optimized for task distribution, semantic agent selection, execution coordination with backup systems, and automatic MCP tool selection
 
 **Key Features v0.3.0**:
 
-- ✅ **CLEAN 5-PHASE INITIALIZATION**: Simplified startup (Phase 0-4) with optimized MCP Discovery and dependency resolution
-- 🔍 **COMPREHENSIVE MCP DISCOVERY**: Automatic detection and analysis of all available MCP servers
-- 🎯 **AUTOMATIC MCP TOOL SELECTION**: AI-powered matching of optimal MCP tools to task requirements
-- 📊 **ML-POWERED CATEGORIZATION**: Advanced text analysis with machine learning categorization
-- 🔄 **ENHANCED VECTOR SIMILARITY**: Task-to-agent compatibility scoring with uncertainty quantification
-- 🛡️ **MCP FALLBACK STRATEGIES**: Complete fallback system with multiple levels of redundancy
-- 🧠 **CONTEXT-AWARE PROCESSING**: Intelligent task context understanding with clarification
-- 📈 **MCP PERFORMANCE PROFILING**: Real-time monitoring and optimization of MCP tool performance
-- ❓ **UNCERTAINTY DETECTION**: Proactive clarification with confidence scoring
-- 🚨 **CIRCUIT BREAKER PROTECTION**: Enhanced error handling with automatic failover for MCP
-- 🔍 **REAL-TIME MCP MONITORING**: Comprehensive MCP server health and performance tracking
-- ✅ **STREAMLINED ARCHITECTURE**: Clean phase-based structure with enhanced functionality
-- 🔧 **INTELLIGENT BOOTSTRAPPING**: Fast system startup with graceful degradation (<75 seconds)
-- 🛡️ **MCP SERVER VALIDATION GATES**: Comprehensive validation system for reliability and compliance
-- 📊 **DYNAMIC CONFIGURATION VALIDATION**: Real-time config health checking with MCP validation
+- ✅ **CLEAN 6-PHASE INITIALIZATION**: Startup (Phase 0-5) with resolved circular dependencies
+- 🔍 **MCP DISCOVERY**: Automatic detection of available MCP servers
+- 🎯 **MCP TOOL SELECTION**: Matching of optimal MCP tools to task requirements
+- 📊 **ML-POWERED CATEGORIZATION**: Text analysis with machine learning categorization
+- 🔄 **VECTOR SIMILARITY**: Task-to-agent compatibility scoring with uncertainty quantification
+- 🛡️ **MCP FALLBACK STRATEGIES**: Fallback system with multiple levels of redundancy
+- 🧠 **CONTEXT-AWARE PROCESSING**: Task context understanding with clarification
+- 📈 **MCP PERFORMANCE PROFILING**: Monitoring and optimization of MCP tool performance
+- ❓ **UNCERTAINTY DETECTION**: Clarification with confidence scoring
+- 🚨 **CIRCUIT BREAKER PROTECTION**: Error handling with automatic failover for MCP
+- 🔍 **REAL-TIME MCP MONITORING**: MCP server health and performance tracking
+- ✅ **STREAMLINED ARCHITECTURE**: Phase-based structure with functionality
+- 🔧 **INTELLIGENT BOOTSTRAPPING**: System startup with graceful degradation (<75 seconds)
+- 🛡️ **MCP SERVER VALIDATION GATES**: Validation system for reliability and compliance
+- 📊 **DYNAMIC CONFIGURATION VALIDATION**: Config health checking with MCP validation
 - 🔄 **ADAPTIVE RESOURCE MANAGEMENT**: Runtime environment optimization with MCP integration
-- 🎯 **ENHANCED SEMANTIC MATCHING**: TF-IDF powered agent-task compatibility with MCP optimization
-- 🔥 **ENHANCED TODO-EXECUTION ENGINE**: Consolidated TodoWrite-to-Task() delegation with MCP integration
-- 🔧 **MCP HEALTH MONITORING**: Continuous tracking of server availability and performance metrics
-- 🎯 **PHASE-OPTIMIZED LOADING**: 25% faster initialization through clean phase structure
+- 🎯 **SEMANTIC MATCHING**: TF-IDF powered agent-task compatibility with MCP optimization
+- 🔥 **TODO-EXECUTION ENGINE**: TodoWrite-to-Task() delegation with MCP integration
+- 🔧 **MCP HEALTH MONITORING**: Tracking of server availability and performance metrics
+- 🎯 **PHASE-OPTIMIZED LOADING**: Fast initialization through phase structure
