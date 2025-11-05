@@ -2234,42 +2234,17 @@ implementation:
     completion_triggers: ["task.tool.compliance.audit"]
 
   event_driven_initialization:
-    # === DEPRECATED GRADUATED BOOTSTRAP SYSTEM ===
-    # REPLACED BY: unified_state_manager.boot_sequence + event_bridge_system
+    # === OPTIONAL BOOTSTRAP (Enhancement - CAN fail gracefully) ===
+    # MIGRATED TO: unified_state_manager.boot_sequence + event_bridge_system
 
-    deprecated_graduated_bootstrap:
-      description: "DEPRECATED - Replaced by unified_state_manager.boot_sequence"
-      status: "deprecated"
-      replacement: "unified_state_manager_integration"
-      redirect_to: "event_bridge_system"
-      preserve_events: true
-      note: "Keep for backward compatibility during transition period"
-      legacy_mode: true
-
-      # Legacy event mapping for backward compatibility
-      legacy_event_mappings:
-        "phase1_critical_system.completed": "event_bridge_system.critical_init_completed"
-        "phase2_parallel_initialization.completed": "event_bridge_system.parallel_init_completed"
-        "phase3_integration_core.completed": "event_bridge_system.integration_init_completed"
-        "system.bootstrap.core.completed": "event_bridge_system.forward_to_unified"
-
-      # Preserved core functionality (minimal)
-      core_bootstrap:
-        description: "Minimal legacy bootstrap for compatibility"
-        status: "deprecated_mode"
-        priority: "low"
-        timeout: 60s
-        failure_action: "redirect_to_unified"
-        fallback_system: "unified_state_manager_integration"
-
-      # === OPTIONAL BOOTSTRAP (Enhancement - CAN fail gracefully) ===
-      optional_bootstrap:
-        description: "Enhancement components that improve user experience"
-        priority: "medium"
-        timeout: 20s
-        retry_attempts: 1
-        failure_action: "graceful_degradation"
-        depends_on: "system.bootstrap.core.completed"
+    optional_bootstrap:
+      description: "Enhancement components that improve user experience"
+      priority: "medium"
+      timeout: 20s
+      retry_attempts: 1
+      failure_action: "graceful_degradation"
+      # UPDATED: depends on unified system instead of deprecated
+      depends_on: ["unified_state_manager_integration.completed", "event_bridge_system.healthy"]
 
         phases:
           # Phase 4: User Experience Enhancement (8-10s)
@@ -2329,34 +2304,35 @@ implementation:
 
         emergency_mode:
           description: "Minimal system operation"
-          dependencies: ["phase1_critical_system.completed"]
-          condition: "core_bootstrap.failed"
+          dependencies: ["event_bridge_system.healthy"]
+          condition: "unified_state_manager_integration.failed AND event_bridge_system.failed"
           triggers: ["system.emergency.functionality.enabled"]
           capabilities: ["error_handling_only"]
           user_notification: "System in emergency mode - limited functionality"
 
-    # === COMPATIBILITY EVENTS (Legacy Support) ===
+    # === COMPATIBILITY EVENTS (Unified Support) ===
     system.bootstrap.started:
       description: "System initialization process started"
       logical_priority: "critical"
-      triggers: ["phase1_critical_system"]
+      triggers: ["event_bridge_system.bootstrap_started"]
 
     system.discovery.started:
       description: "Resource discovery process initiated"
       logical_priority: "critical"
-      triggers: ["phase2_parallel_initialization"]
+      triggers: ["event_bridge_system.discovery_started"]
 
     system.bootstrap.completed:
       description: "Core system fully initialized - READY FOR TASKS"
       logical_priority: "critical"
-      triggers: ["system.bootstrap.core.completed"]
-      completion_message: "System core ready - enhanced features loading in background"
+      triggers: ["unified_state_manager.transition.to.SYSTEM_READY"]
+      completion_message: "System core ready - unified event-driven architecture active"
 
     system.greeting.started:
       description: "Greeting generation process (optional enhancement)"
       logical_priority: "medium"
       components: ["dynamic_greeting_generation"]
-      dependencies: ["system.bootstrap.core.completed"]
+      # UPDATED: depends on unified system
+      dependencies: ["unified_state_manager.transition.to.SYSTEM_READY"]
       timeout: 5s
       fallback: "basic_greeting_template"
       failure_impact: "non_critical"
@@ -4919,58 +4895,9 @@ implementation:
         processing_results: "object"
         execution_time: "float"
 
-    # === DEPRECATED LEGACY SEQUENTIAL OPERATIONS ===
-    # REPLACED BY: unified_task_handler + event_bridge_system
-
-    deprecated_legacy_sequential_operations:
-      description: "DEPRECATED - Replaced by unified_task_handler"
-      status: "deprecated"
-      replacement: "unified_task_handler"
-      redirect_to: "unified_task_handler.shared_operations"
-      preserve_events: true
-      note: "Keep for backward compatibility during transition period"
-      legacy_mode: true
-
-      # Legacy operation mapping for backward compatibility
-      legacy_operation_mappings:
-        "task_semantic_analysis": "unified_task_handler.resource_availability_validation"
-        "unified_tfidf_processing": "unified_task_handler.validation_operations"
-        "task_received_coordinator": "unified_task_handler.event_processing"
-
-    # Legacy task semantic analysis (deprecated mode)
-    - name: "task_semantic_analysis_legacy"
-      description: "DEPRECATED - Use unified_task_handler instead"
-      status: "deprecated_mode"
-      priority: 20  # Low priority
-      method: "unified_tfidf_processing"
-      redirect_to: "unified_task_handler"
-      condition: "unified_task_handler.failed AND event_bridge_system.failed"
-      dependencies:
-        trigger_source: "task_received_coordinator"
-        required_outputs: ["task_accepted", "task_metadata", "coordination_plan"]
-        tfidf_dependency: "unified_tfidf_processor"
-        threshold_standards_dependency: "system_threshold_standards"
-        activation_condition: "task_accepted == true && analysis_sequence_initiated == true && unified_task_handler.unavailable"
-      config:
-        usage_mode: "semantic_analysis"
-        input_source: "task_metadata.task_description"
-        technical_domains: ["backend", "frontend", "devops", "security", "testing", "data", "architecture"]
-        domain_boosting: true
-        similarity_analysis:
-          compare_against: "domain_patterns"
-          return_top_matches: 5
-          similarity_standard: "acceptable_match"
-          confidence_standard: "medium"
-        error_handling:
-          processing_timeout: 15
-          fallback_to_keywords: true
-          log_processing_issues: true
-      output:
-        semantic_vector: "array"
-        domain_indicators: "array"
-        technical_terms: "array"
-        tfidf_processing_status: "object"
-        error_details: "object"
+    # === UNIFIED TASK PROCESSING SYSTEM ===
+    # REPLACES: deprecated_legacy_sequential_operations
+    # ENHANCED BY: event_bridge_system + unified_task_handler
 
     - name: "task_complexity_assessment"
       priority: 12
@@ -4978,7 +4905,7 @@ implementation:
       dependencies:
         trigger_source: "task_received_coordinator"
         required_outputs: ["task_accepted", "coordination_plan"]
-        semantic_analysis_dependency: "task_semantic_analysis"
+        semantic_analysis_dependency: "unified_task_handler.validation_operations"
         activation_condition: "task_accepted == true && analysis_sequence_initiated == true"
       error_handling:
         semantic_analysis_failure:
