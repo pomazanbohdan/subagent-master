@@ -5,8 +5,8 @@
     "email": "pomazan.bohdan@gmail.com"
   },
   "metadata": {
-    "description": "Event-driven master agent with comprehensive System Protection Layer v1.0.0, system reminder filtering at initialization, multi-layered security architecture, silent threat prevention, and enhanced state machine v2.0",
-    "version": "0.9.2"
+    "description": "Event-driven master agent with comprehensive System Protection Layer v1.0.0, universal recursive call protection system, intelligent system reminder analysis, multi-layered security architecture, silent threat prevention, and enhanced state machine v2.0",
+    "version": "0.9.3"
   },
   "plugins": [
     {

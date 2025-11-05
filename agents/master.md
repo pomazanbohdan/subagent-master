@@ -767,92 +767,122 @@ implementation:
           - "persistent_data_saved"
         failure_action: "force_cleanup_with_logging"
 
-    # === SYSTEM REMINDER DETECTOR ===
-    system_reminder_detector:
+    # ============================================
+    # СИСТЕМА ЗАХИСТУ ВІД РЕКУРСИВНИХ ВИКЛИКІВ
+    # ============================================
+
+    recursive_call_protection:
       enabled: true
       priority: "critical"
-      description: "Detects and handles system reminders to prevent self-call loops in self-diagnosis context"
+      description: "Universal protection against recursive agent calls and circular invocation chains"
 
-      detection_patterns:
-        system_reminder_keywords: [
-          "system-reminder",
-          "invoke the agent appropriately",
-          "@agent-master:master",
-          "Please invoke the agent appropriately",
-          "The user has expressed a desire to invoke the agent",
-          "activate the agent appropriately",
-          "agent activation request"
-        ]
+      # Контекст виконання агента
+      execution_context:
+        invocation_stack: []
+        current_agent: null
+        max_stack_depth: 5
 
-        agent_activation_patterns: [
-          "The user has expressed a desire to invoke the agent",
-          "Please invoke the agent appropriately",
-          "activate the agent",
-          "invoke the agent",
-          "agent activation requested"
-        ]
+      # Аналізатор system reminders
+      reminder_analyzer:
+        command_patterns:
+          - pattern: "invoke\\s+(?:the\\s+)?agent\\s+\"?([^\"]+)\"?"
+            type: "direct_command"
+          - pattern: "execute\\s+agent\\s+\"?([^\"]+)\"?"
+            type: "execution_command"
+          - pattern: "run\\s+agent\\s+\"?([^\"]+)\"?"
+            type: "run_command"
+          - pattern: "call\\s+agent\\s+\"?([^\"]+)\"?"
+            type: "call_command"
 
-        self_diagnosis_indicators: [
-          "self-diagnosis",
-          "самодіагностика",
-          "why did you launch yourself",
-          "чому ти запустив сам себе",
-          "debug mode",
-          "режим дебагування",
-          "самовиклик"
-        ]
+        informational_patterns:
+          - "remember"
+          - "note that"
+          - "context:"
+          - "previous"
+          - "earlier"
 
-      context_analysis:
-        check_current_agent: true
-        detect_master_context: true
-        analyze_request_source: true
-        identify_self_diagnosis_intent: true
+      # Правила валідації викликів
+      validation_rules:
+        # Блокування рекурсії: агент не може викликати сам себе
+        self_invocation:
+          enabled: true
+          action: "block"
+          message: "Блокування: агент не може викликати сам себе"
 
-      bypass_conditions:
-        - condition: "self_diagnosis_detected AND current_agent_is_master"
-          action: "ignore_system_reminder"
-          reason: "Self-diagnosis tasks should not trigger delegation"
-          implementation: "continue_with_native_execution"
+        # Блокування циклів: A→B→C→A
+        circular_invocation:
+          enabled: true
+          action: "block"
+          message: "Блокування: циклічний виклик виявлено в ланцюжку"
 
-        - condition: "system_reminder_detected AND already_master_agent"
-          action: "prevent_self_delegation"
-          reason: "Master agent already active, no delegation needed"
-          implementation: "use_direct_execution"
+        # Блокування занадто глибокої вкладеності
+        stack_overflow:
+          enabled: true
+          max_depth: 5
+          action: "block"
+          message: "Блокування: перевищено максимальну глибину викликів"
 
-        - condition: "debug_mode_active AND system_reminder_present"
-          action: "bypass_delegation_guards"
-          reason: "Debug operations require direct execution"
-          implementation: "disable_guard_validation_temporarily"
+        # Фільтрація інформаційних reminders
+        informational_filter:
+          enabled: true
+          action: "ignore"
+          message: "Ігнорування: інформаційний reminder не потребує дії"
+      # Основна логіка обробки reminders
+      reminder_processing_logic:
+        # Крок 1: Класифікація reminder
+        classify_reminder:
+          check_command_patterns: true
+          extract_target_agent: true
+          determine_actionability: true
 
-        # Enhanced with agent activation filter integration
-        - condition: "agent_activation_filter.agent_activation_pattern_detected AND initialization_phase"
-          action: "suppress_automatic_response"
-          reason: "System reminders about agent activation should not trigger automatic responses"
-          implementation: "use_agent_activation_filter"
+        # Крок 2: Валідація можливості виклику
+        validate_invocation:
+          check_self_invocation: true
+          check_circular_reference: true
+          check_stack_depth: true
 
-        - condition: "system_reminder contains 'The user has expressed a desire to invoke the agent'"
-          action: "block_task_delegation_attempt"
-          reason: "Prevent automatic Task() calls on agent activation system reminders"
-          implementation: "direct_activation_only"
+        # Крок 3: Прийняття рішення
+        decision_matrix:
+          # Якщо reminders інформаційний → ігнорувати
+          informational_reminder:
+            action: "ignore"
+            continue_normal_processing: true
 
-      integration_points:
-        - guard_system: "initialization_master_guard"
-        - state_manager: "unified_state_manager"
-        - agent_selection: "agent_selection_algorithm"
-        - delegation_engine: "delegation_engine"
-        - agent_activation_filter: "agent_activation_filter"
-        - initialization_checker: "initialization_context_check"
+          # Якщо reminders командний і валідація пройдена → виконувати
+          valid_command_reminder:
+            action: "invoke_target_agent"
+            update_execution_context: true
 
-      filter_integration:
-        system_reminder_handler:
-          check_agent_activation_filter: true
-          apply_suppression_rules: true
-          validate_initialization_context: true
+          # Якщо reminders командний але валідація не пройдена → блокувати
+          invalid_command_reminder:
+            action: "block_with_reason"
+            log_violation: true
 
-        response_validation:
-          check_blocked_patterns: true
-          validate_allowed_responses: true
-          enforce_suppression_rules: true
+      # Функції керування контекстом
+      context_management:
+        # Встановити поточного агента
+        set_current_agent:
+          add_to_stack: true
+          timestamp_record: true
+          update_current_agent: true
+
+        # Завершити роботу агента
+        exit_agent:
+          pop_from_stack: true
+          update_current_agent: true
+          cleanup_temporary_data: true
+
+        # Отримати поточний стан
+        get_status:
+          current_agent: true
+          stack_depth: true
+          invocation_chain: true
+
+        # Повний скид контексту
+        reset_context:
+          clear_stack: true
+          clear_current_agent: true
+          clear_block_list: true
 
       # Enhanced Agent Activation Filter
       agent_activation_filter:
@@ -8579,10 +8609,13 @@ event_system:
       strategy: "round_robin_within_priority"
       handler_health_monitoring: true
 
-# === AGENT ACTIVATION SYSTEM REMINDER TESTS ===
-    agent_activation_system_reminder_tests:
+# ============================================
+    # ТЕСТИ СИСТЕМИ ЗАХИСТУ ВІД РЕКУРСИВНИХ ВИКЛИКІВ
+    # ============================================
+
+    recursive_call_protection_tests:
       enabled: true
-      description: "Tests for preventing automatic responses to agent activation system reminders"
+      description: "Tests for universal recursive call protection system"
 
       test_scenarios:
         - name: "test_agent_activation_reminder_blocking"
@@ -8757,36 +8790,133 @@ event_system:
           target: "up to 50KB context"
           measurement: "maximum processed context size"
 
-      quality_assurance:
-        regression_tests:
-          - "ensure existing functionality remains unchanged"
-          - "verify no impact on agent selection logic"
-          - "confirm system protection compatibility"
+  # ============================================
+  # ДОДАТКОВІ ТЕСТИ НОВОЇ СИСТЕМИ ЗАХИСТУ
+  # ============================================
 
-        edge_cases:
-          - "empty context handling"
-          - "context with only reminders"
-          - "malformed reminder tags"
-          - "nested reminder patterns"
-          - "unicode content in reminders"
+  recursive_protection_test_suite:
+    # Тест 1: Рекурсивний виклик (має блокуватись)
+    - name: "test_recursive_self_invocation_blocking"
+      input:
+        system_reminder: "The user has expressed a desire to invoke the agent \"master:master\""
+        current_agent: "master:master"
+        invocation_stack: ["master:master"]
+      expected_behavior:
+        action: "block"
+        reason: "recursive_self_invocation"
+        message: "Блокування: агент master:master не може викликати сам себе"
+      test_assertions:
+        - "canInvoke() should return false for self-invocation"
+        - "execution_context should block recursive call"
+        - "appropriate error message should be provided"
 
-        - rule: "direct_activation_only_on_reminders"
-          condition: "agent activation system reminder detected"
-          expected_result: "Only direct activation should be allowed"
+    # Тест 2: Циклічний виклик A→B→A (має блокуватись)
+    - name: "test_circular_invocation_blocking"
+      input:
+        target_agent: "agent-a"
+        invocation_stack: ["agent-a", "agent-b", "agent-c"]
+      expected_behavior:
+        action: "block"
+        reason: "circular_invocation"
+        message: "Блокування: циклічний виклик виявлено в ланцюжку"
+      test_assertions:
+        - "canInvoke() should detect agent-a already in stack"
+        - "circular reference should be prevented"
+        - "stack should maintain integrity"
 
-        - rule: "initialization_context_respected"
-          condition: "initialization_phase == true"
-          expected_result: "Initialization context should prevent delegation"
+    # Тест 3: Перевищення глибини стеку (має блокуватись)
+    - name: "test_stack_overflow_protection"
+      input:
+        target_agent: "new-agent"
+        invocation_stack: ["agent1", "agent2", "agent3", "agent4", "agent5"]
+      expected_behavior:
+        action: "block"
+        reason: "stack_overflow"
+        message: "Блокування: перевищено максимальну глибину викликів (5)"
+      test_assertions:
+        - "stack depth limit should be enforced"
+        - "max_depth parameter should be respected"
+        - "deep nesting should be prevented"
 
-      performance_checks:
-        - check: "response_time"
-          threshold_ms: 100
-          description: "Filter should work quickly"
+    # Тест 4: Валідний виклик іншого агента (має пройти)
+    - name: "test_valid_agent_invocation"
+      input:
+        system_reminder: "The user has expressed a desire to invoke the agent \"code:analyzer\""
+        current_agent: "master:master"
+        invocation_stack: ["master:master"]
+      expected_behavior:
+        action: "invoke"
+        reason: "valid_command"
+        target_agent: "code:analyzer"
+      test_assertions:
+        - "canInvoke() should return true for different agent"
+        - "target agent should be extracted correctly"
+        - "delegation should be allowed"
 
-        - check: "memory_usage"
-          threshold_mb: 10
-          description: "Should not use excessive memory"
+    # Тест 5: Інформаційний reminder (має ігноруватись)
+    - name: "test_informational_reminder_ignoring"
+      input:
+        system_reminder: "Remember that the user prefers detailed responses"
+        current_agent: "master:master"
+      expected_behavior:
+        action: "ignore"
+        reason: "not_actionable"
+        continue_processing: true
+      test_assertions:
+        - "informational patterns should be detected"
+        - "reminder should be ignored without blocking"
+        - "normal processing should continue"
 
-        - check: "accuracy"
-          threshold_percent: 95
-          description: "Should correctly identify and block patterns"
+    # Тест 6: Управління контекстом виконання
+    - name: "test_execution_context_management"
+      input:
+        agent_name: "test-agent"
+        operations: ["set_current", "add_another", "exit_first"]
+      expected_behavior:
+        initial_stack: []
+        after_set_current: ["test-agent"]
+        after_add_another: ["test-agent", "another-agent"]
+        after_exit_first: ["another-agent"]
+      test_assertions:
+        - "setCurrentAgent() should add to stack"
+        - "exitAgent() should remove from stack"
+        - "currentAgent should update correctly"
+
+    # Тест 7: Витягування імені агента
+    - name: "test_agent_name_extraction"
+      input:
+        test_cases:
+          - reminder: "invoke the agent \"code:reviewer\""
+            expected_agent: "code:reviewer"
+          - reminder: "Please execute agent 'data:processor'"
+            expected_agent: "data:processor"
+          - reminder: "run agent security:scanner"
+            expected_agent: "security:scanner"
+      expected_behavior:
+        extraction_success: true
+        support_multiple_patterns: true
+      test_assertions:
+        - "all command patterns should be recognized"
+        - "agent names should be extracted correctly"
+        - "quotes and variations should be handled"
+
+    # Тест 8: Класифікація reminders
+    - name: "test_reminder_classification"
+      input:
+        classification_tests:
+          - text: "Remember that context is important"
+            expected_type: "informational"
+            expected_actionable: false
+          - text: "invoke the agent \"helper\""
+            expected_type: "command"
+            expected_actionable: true
+          - text: "Note: system state changed"
+            expected_type: "informational"
+            expected_actionable: false
+      expected_behavior:
+        classification_accuracy: 100%
+        actionable_detection: true
+      test_assertions:
+        - "command patterns should be detected"
+        - "informational patterns should be recognized"
+        - "actionable flag should be set correctly"
