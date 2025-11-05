@@ -34,7 +34,7 @@ version: "0.8.0"
 
 component:
   name: "master"
-  version: "0.9.2"
+  version: "0.9.3"
   description: "An AI agent that optimizes task execution through intelligent planning, parallelization, and execution in subtasks or delegation to existing agents in the system, which are automatically initialized taking into account their competencies." # Do not change!
   category: "orchestration"
   priority: 1
@@ -45,39 +45,8 @@ component:
     savings_percentage: 50
   latest_update:
     version: "0.9.1"
-    changes: [
-      "PRESERVED: All advanced functionality including task decomposition, parallel execution, agent selection",
-      "PRESERVED: Dynamic task complexity analysis with 5 complexity levels",
-      "PRESERVED: Recursive planner with infinite recursion prevention",
-      "PRESERVED: Dynamic depth based on task complexity",
-      "PRESERVED: Visual TODO formatter with unlimited depth",
-      "PRESERVED: Intelligent task decomposition with multiple breakdown strategies",
-      "PRESERVED: Hierarchy optimizer with performance pattern analysis",
-      "PRESERVED: Advanced parallel coordination with dynamic grouping",
-      "PRESERVED: Hybrid parallel bootstrap system with 60-70% speed improvement",
-      "PRESERVED: Fault-tolerant system states with graceful degradation",
-      "PRESERVED: All 22 circular dependency issues resolved",
-      "PRESERVED: All existing system protection components maintained",
-      "ENHANCED: Streamlined event-driven initialization with zero conflicts",
-      "ENHANCED: Improved bootstrap reliability with proper event sequencing",
-      "ENHANCED: Better fault tolerance with multiple operational modes",
-      "NEW: Comprehensive System Protection Layer v1.0.0",
-      "NEW: System Protection Detector with threat detection and prevention",
-      "NEW: Task Validation Middleware for pre-execution security checks",
-      "NEW: Dynamic ID Verification System with real-time agent validation",
-      "NEW: Silent Blocking Handler for non-intrusive threat prevention",
-      "NEW: Universal Initialization Guard with recursive call prevention",
-      "NEW: Initialization Queue System for automatic task execution after boot",
-      "FIXED: Recursive self-call during system initialization completely prevented",
-      "NEW: Enhanced component-level guards with protection integration",
-      "NEW: Multi-layered security architecture with <10ms response time",
-      "NEW: Graceful degradation and fallback mechanisms for reliability",
-      "NEW: System reminder filtering at initialization to prevent automatic responses",
-      "NEW: Universal context filtering before agent initialization eliminates recursive triggers",
-      "NEW: Comprehensive test suite for system reminder filtering with performance benchmarks",
-      "FIXED: System reminders no longer trigger automatic agent delegation or self-calls"
-    ]
-    timestamp: "2025-01-18"
+    changes: ["Do not change this block"]
+    timestamp: "2025-01-19"
 
 implementation:
   # === SYSTEM PROTECTION LAYER ===
@@ -89,12 +58,56 @@ implementation:
     cache_hit_rate_target: "> 80%"
     failure_handling: "graceful_degradation"
 
-    # === SYSTEM REMINDER FILTER (NEW - Prevents system reminders at initialization) ===
+    # === INSTRUCTION VALIDATOR (CRITICAL - Prevents all system reminders at initialization) ===
+    instruction_validator:
+      description: "Universal instruction validation layer that blocks system reminders during initialization"
+      priority: "critical_above_all"
+      enabled: true
+      apply_at: "before_any_processing"
+
+      # Core validation logic
+      validation_rules:
+        - name: "block_system_reminders"
+          priority: 1
+          condition:
+            source: "system_reminder"
+            execution_phase: "initialization"
+            mode: ["normal", "validation", "planning"]
+          action: "discard_silently"
+          bypass_conditions:
+            - mode: "debugging"
+            - explicit_user_request: true
+
+        - name: "allow_debug_reminders"
+          priority: 2
+          condition:
+            source: "system_reminder"
+            mode: "debugging"
+          action: "process_normally"
+          reason: "Debug mode requires system visibility"
+
+      # Validation execution
+      validation_method: "pre_processing_filter"
+      execution_timing: "immediate_on_reception"
+      fail_fast: true
+
+      # Performance optimization
+      single_execution_per_instruction: true
+      cache_validation_results: true
+      validation_target: "< 1ms"
+
+      # Integration with existing mechanisms
+      debug_mode_compatibility: true
+      validation_mode_compatibility: true
+      system_protection_integration: true
+
+    # === SYSTEM REMINDER FILTER (Enhanced - Works with instruction validator) ===
     system_reminder_filter:
-      description: "Universal system reminder removal during agent initialization to prevent automatic responses"
-      priority: "critical_at_initialization"
+      description: "Secondary system reminder removal after instruction validation"
+      priority: "high"
       enabled: true
       apply_at: "context_initialization_only"
+      depends_on: "instruction_validator"
 
       # Core filtering logic
       filter_function: "filter_system_reminders_from_context"
@@ -111,7 +124,7 @@ implementation:
       # Performance optimization
       single_execution: true
       cache_filtered_context: true
-      execution_timing: "before_agent_initialization"
+      execution_timing: "after_instruction_validation"
 
       # Validation
       validate_filtered_context: true
