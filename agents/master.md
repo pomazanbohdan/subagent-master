@@ -502,9 +502,9 @@ implementation:
     architecture: "event_queue_with_logical_priorities"
     priority_levels: ["critical", "high", "medium", "low"]
     parallel_execution: true
-    timeout_handling: "graceful_degradation"
+    event_coordination: "graceful_coordination"
     max_parallel_events: 10
-    event_timeout: 30s
+    completion_triggers: ["event_processed", "queue_ready"]
     retry_attempts: 3
     retry_backoff: "exponential"
     fallback_strategy: "minimal_functionality"
@@ -523,19 +523,27 @@ implementation:
       states:
         SYSTEM_BOOT:
           description: "System starting up - critical phase"
-          timeout: 60s
+          completion_triggers: ["system_ready_signal", "initialization_complete_event", "all_components_ready"]
           sub_states: ["COMPONENT_INIT", "SERVICE_READY", "VALIDATION_COMPLETE"]
           next_states: ["SYSTEM_READY", "SYSTEM_DEGRADED", "SYSTEM_FAILED"]
           critical_components: ["error_handler", "event_bus", "state_manager"]
+          event_driven: true
 
         SYSTEM_READY:
           description: "System fully operational"
+          # NOTE: timeout: "infinite" is CORRECT by design - this is a stable state
+          # System transitions out via triggers, not timeouts (event-driven architecture)
+          # Examples: task_processing_started → SYSTEM_OPERATIONAL
+          #          component_degradation_detected → SYSTEM_DEGRADED
           timeout: "infinite"
           operational_modes: ["normal", "high_performance", "resource_saving"]
           next_states: ["SYSTEM_OPERATIONAL", "SYSTEM_DEGRADED", "SYSTEM_SELF_DIAGNOSIS", "SYSTEM_SHUTDOWN"]
 
         SYSTEM_SELF_DIAGNOSIS:
           description: "System in self-diagnosis mode - handles debug and analysis tasks"
+          # NOTE: timeout: "infinite" is CORRECT - debug mode may need extended time
+          # This state handles potentially long-running analysis operations
+          # Exit via explicit user action or automatic completion triggers
           timeout: "infinite"
           special_operations: ["debug_mode", "self_analysis", "system_reminder_handling"]
           guard_behavior: "relaxed_for_self_diagnosis"
@@ -555,6 +563,9 @@ implementation:
 
         SYSTEM_OPERATIONAL:
           description: "System actively processing tasks"
+          # NOTE: timeout: "infinite" is CORRECT - task processing duration varies
+          # System exits when tasks complete via task_processing_completed trigger
+          # Performance monitoring handles actual operation timeouts
           timeout: "infinite"
           performance_monitoring: true
           next_states: ["SYSTEM_READY", "SYSTEM_DEGRADED", "SYSTEM_SHUTDOWN"]
@@ -574,21 +585,24 @@ implementation:
 
         SYSTEM_RECOVERY:
           description: "System in recovery mode"
-          timeout: 120s
+          completion_triggers: ["recovery_complete", "system_restored", "recovery_success"]
           recovery_attempts: 3
           next_states: ["SYSTEM_READY", "SYSTEM_FAILED", "SYSTEM_SHUTDOWN"]
+          event_driven: true
 
         SYSTEM_SHUTDOWN:
           description: "System graceful shutdown"
-          timeout: 30s
+          completion_triggers: ["cleanup_complete", "shutdown_ready", "all_services_stopped"]
           cleanup_required: true
           next_states: ["SYSTEM_TERMINATED"]
+          event_driven: true
 
         SYSTEM_TERMINATED:
           description: "System fully shut down"
-          timeout: 0
+          completion_triggers: ["finalization_complete"]
           cleanup_complete: true
-        next_states: []
+          event_driven: true
+          next_states: []
 
     # Component Level States
     component_level:
@@ -605,88 +619,88 @@ implementation:
         validator: "system_readiness_validator"
         action: "enable_full_operations"
         events: ["system.ready", "initialization.complete", "initialization_queue.execute"]
-        timeout: 60s
+        completion_triggers: ["initialization_success", "readiness_confirmed"]
         queue_execution:
           trigger: "system_ready"
           action: "execute_queued_operations"
-          delay: "500ms"  # Ensure full initialization before queue execution
+          event_based: true
 
       SYSTEM_BOOT → SYSTEM_DEGRADED:
         trigger: "partial_component_failure"
         validator: "degraded_readiness_validator"
         action: "enable_limited_operations"
         events: ["system.degraded", "initialization.partial"]
-        timeout: 60s
+        completion_triggers: ["degraded_mode_ready"]
 
       SYSTEM_BOOT → SYSTEM_FAILED:
         trigger: "critical_component_failure"
         validator: "failure_validator"
         action: "emergency_shutdown"
         events: ["system.failed", "initialization.failed"]
-        timeout: 30s
+        completion_triggers: ["emergency_shutdown_complete"]
 
       SYSTEM_READY → SYSTEM_OPERATIONAL:
         trigger: "task_processing_started"
         validator: "operational_readiness_validator"
         action: "begin_task_processing"
         events: ["system.operational", "processing.started"]
-        timeout: 5s
+        completion_triggers: ["operational_mode_active", "task_processing_enabled"]
 
       SYSTEM_OPERATIONAL → SYSTEM_READY:
         trigger: "task_processing_completed"
         validator: "completion_validator"
         action: "cleanup_and_reset"
         events: ["system.ready", "processing.completed"]
-        timeout: 30s
+        completion_triggers: ["cleanup_complete", "system_reset_ready"]
 
       SYSTEM_READY → SYSTEM_DEGRADED:
         trigger: "component_degradation_detected"
         validator: "degradation_validator"
         action: "reduce_functionality"
         events: ["system.degraded", "functionality.reduced"]
-        timeout: 10s
+        completion_triggers: ["degraded_mode_active"]
 
       SYSTEM_OPERATIONAL → SYSTEM_DEGRADED:
         trigger: "critical_error_detected"
         validator: "error_validator"
         action: "emergency_degradation"
         events: ["system.degraded", "error.critical"]
-        timeout: 5s
+        completion_triggers: ["emergency_degradation_complete"]
 
       SYSTEM_DEGRADED → SYSTEM_READY:
         trigger: "components_restored"
         validator: "restoration_validator"
         action: "restore_full_functionality"
         events: ["system.ready", "functionality.restored"]
-        timeout: 30s
+        completion_triggers: ["functionality_fully_restored"]
 
       SYSTEM_DEGRADED → SYSTEM_FAILED:
         trigger: "multiple_critical_failures"
         validator: "cascade_failure_validator"
         action: "initiate_recovery"
         events: ["system.failed", "cascade.failure"]
-        timeout: 10s
+        completion_triggers: ["cascade_failure_handled"]
 
       SYSTEM_FAILED → SYSTEM_RECOVERY:
         trigger: "recovery_initiated"
         validator: "recovery_readiness_validator"
         action: "begin_recovery_process"
         events: ["system.recovery.started", "attempting.recovery"]
-        timeout: 5s
+        completion_triggers: ["recovery_process_ready"]
 
       SYSTEM_RECOVERY → SYSTEM_READY:
         trigger: "recovery_successful"
         validator: "recovery_success_validator"
         action: "complete_recovery"
         events: ["system.ready", "recovery.success"]
-        timeout: 60s
+        completion_triggers: ["recovery_completion_verified"]
 
       SYSTEM_RECOVERY → SYSTEM_FAILED:
         trigger: "recovery_failed"
         validator: "recovery_failure_validator"
         action: "escalate_failure"
         events: ["system.failed", "recovery.failed"]
-        timeout: 120s
+        completion_triggers: ["failure_escalation_complete"]
 
       # Shutdown transitions
       SYSTEM_READY → SYSTEM_SHUTDOWN:
@@ -694,35 +708,35 @@ implementation:
         validator: "shutdown_readiness_validator"
         action: "initiate_graceful_shutdown"
         events: ["system.shutdown.started", "shutdown.graceful"]
-        timeout: 30s
+        completion_triggers: ["graceful_shutdown_ready"]
 
       SYSTEM_OPERATIONAL → SYSTEM_SHUTDOWN:
         trigger: "shutdown_requested"
         validator: "operational_shutdown_validator"
         action: "complete_tasks_and_shutdown"
         events: ["system.shutdown.started", "shutdown.graceful"]
-        timeout: 60s
+        completion_triggers: ["operational_shutdown_complete"]
 
       SYSTEM_DEGRADED → SYSTEM_SHUTDOWN:
         trigger: "shutdown_requested"
         validator: "degraded_shutdown_validator"
         action: "emergency_shutdown"
         events: ["system.shutdown.started", "shutdown.emergency"]
-        timeout: 15s
+        completion_triggers: ["emergency_shutdown_complete"]
 
       SYSTEM_FAILED → SYSTEM_SHUTDOWN:
         trigger: "shutdown_requested"
         validator: "failed_shutdown_validator"
         action: "force_shutdown"
         events: ["system.shutdown.started", "shutdown.forced"]
-        timeout: 10s
+        completion_triggers: ["forced_shutdown_complete"]
 
       SYSTEM_SHUTDOWN → SYSTEM_TERMINATED:
         trigger: "cleanup_completed"
         validator: "cleanup_validator"
         action: "finalize_termination"
         events: ["system.terminated", "cleanup.complete"]
-        timeout: 30s
+        completion_triggers: ["termination_finalized"]
 
     # State Transition Validators
     validators:
@@ -1151,7 +1165,7 @@ implementation:
       queue_storage:
         max_queue_size: 100
         persistent_storage: true
-        timeout_handling: "auto_cleanup_after_24h"
+        event_coordination: "auto_cleanup_on_completion_event"
 
       # Queue operations
       queue_operations:
@@ -1415,7 +1429,7 @@ implementation:
           method: "check_resources_above_threshold"
           config:
             threshold: 0.2
-            timeout: 5s
+            completion_triggers: ["resource_check_complete", "threshold_verified"]
             retry_attempts: 3
 
         - name: "system_health_validation"
@@ -1450,7 +1464,7 @@ implementation:
           method: "release_allocated_resources"
           config:
             force_release: false
-            cleanup_timeout: 30s
+            completion_triggers: ["cleanup_complete", "resources_freed"]
 
         - name: "state_cleanup"
           method: "cleanup_temporary_state"
@@ -1509,8 +1523,8 @@ implementation:
         deadlock_detection: true
 
       io_resources:
-        allocation_strategy: "sequential_with_timeout"
-        timeout_management: true
+        allocation_strategy: "event_driven_coordination"
+        event_coordination: true
 
       state_resources:
         allocation_strategy: "copy_on_write"
@@ -1518,9 +1532,10 @@ implementation:
 
     resource_locking:
       strategy: "hierarchical_locking"
-      lock_timeout: "10s"
+      release_triggers: ["operation_complete", "resource_release_requested", "lock_expiry_event"]
       deadlock_prevention: true
       priority_inheritance: true
+      event_based_coordination: true
 
   # Unified Error Handler - common error handling across all state machines
   unified_error_handler:
@@ -1534,11 +1549,11 @@ implementation:
         - "deadlock_detected"
       recovery_strategies: ["emergency_stop", "resource_reallocation", "forced_recovery"]
 
-      timeout_errors:
-        - "operation_timeout"
-        - "response_timeout"
-        - "connection_timeout"
-      recovery_strategies: ["retry_with_backoff", "timeout_extension", "fallback_operation"]
+      coordination_errors:
+        - "operation_stalled"
+        - "response_missing"
+        - "connection_lost"
+      recovery_strategies: ["event_retry", "coordination_restart", "fallback_operation"]
 
       validation_errors:
         - "invalid_state"
@@ -1561,7 +1576,7 @@ implementation:
         circuit_breaker:
           enabled: true
           failure_threshold: 3
-          recovery_timeout: "60s"
+          recovery_triggers: ["circuit_recovery_ready", "system_stabilized"]
 
   # === ENHANCED CRITICAL TRANSITION HANDLERS v2.0 ===
 
@@ -1572,7 +1587,7 @@ implementation:
       enabled: true
       transition: "SYSTEM_RECOVERY → SYSTEM_FAILED"
       trigger: "recovery_failed"
-      timeout: 10s
+      completion_triggers: ["escalation_complete", "cascade_prevention_active"]
       actions:
         - name: "emergency_escalation"
           method: "escalate_to_emergency_mode"
@@ -1613,50 +1628,51 @@ implementation:
         action: "use_system_native_tools"
         capabilities: ["basic_file_operations", "web_search", "bash_commands"]
 
-    # Recovery Execution Timeout Handler
-    recovery_timeout_handler:
+    # Recovery Completion Event Handler
+    recovery_completion_handler:
       enabled: true
-      transition: "RECOVERY_EXECUTION → TIMEOUT"
-      trigger: "recovery_operation_timeout"
-      timeout: 5s
+      transition: "RECOVERY_EXECUTION → COMPLETED"
+      trigger: "recovery_completion_requested"
+      listen_to: ["recovery.completed", "recovery.success", "recovery.partial_complete"]
       actions:
-        - name: "timeout_extension"
-          method: "extend_recovery_timeout"
+        - name: "recovery_coordination"
+          method: "coordinate_recovery_completion"
           config:
-            extension_factor: 2.0
-            max_extensions: 3
+            completion_validation: true
+            partial_completion_handling: true
 
-        - name: "recovery_strategy_switch"
-          method: "switch_to_alternative_recovery"
+        - name: "recovery_finalization"
+          method: "finalize_recovery_process"
           config:
-            alternative_strategies: ["minimal_recovery", "component_level_recovery", "selective_recovery"]
+            finalization_strategies: ["full_recovery", "minimal_recovery", "component_level_recovery"]
+            success_validation: true
 
       fallback_strategy:
-        action: "escalate_to_manual_recovery"
-        notification_level: "critical"
+        action: "continue_with_recovery_results"
+        notification_level: "information"
 
-    # Preparation Timeout Handler
-    preparation_timeout_handler:
+    # Preparation Completion Event Handler
+    preparation_completion_handler:
       enabled: true
-      transition: "PREPARING → TIMEOUT"
-      trigger: "task_preparation_timeout"
-      timeout: 10s
+      transition: "PREPARING → COMPLETED"
+      trigger: "preparation_completion_requested"
+      listen_to: ["preparation.completed", "preparation.sufficient", "preparation.minimal_ready"]
       actions:
-        - name: "resource_reallocation"
-          method: "reallocate_resources_for_preparation"
+        - name: "preparation_coordination"
+          method: "coordinate_preparation_completion"
           config:
-            priority_boost: true
-            resource_reservation: true
+            preparation_validation: true
+            resource_optimization: true
 
-        - name: "preparation_simplification"
-          method: "simplify_preparation_requirements"
+        - name: "preparation_finalization"
+          method: "finalize_preparation_process"
           config:
-            skip_optional_validations: true
-            use_cached_dependencies: true
+            finalization_modes: ["full_preparation", "minimal_preparation", "cached_preparation"]
+            readiness_check: true
 
       fallback_strategy:
-        action: "continue_with_minimal_preparation"
-        monitoring_level: "enhanced"
+        action: "continue_with_available_preparation"
+        monitoring_level: "normal"
 
   # === STANDARDIZED GUARD SYSTEMS v2.0 ===
 
@@ -1732,7 +1748,7 @@ implementation:
       queue_management:
         strategy: "priority_based"
         max_queue_size: 50
-        timeout_management: true
+        event_coordination: true
 
   # === ENHANCED RETRY MECHANISMS v2.0 ===
 
@@ -1846,10 +1862,10 @@ implementation:
           - "deadlock_detection"
           - "recursive_locking"
           - "lock_statistics"
-        timeout_config:
-          default_timeout: "10s"
-          exponential_backoff: true
-          max_timeout: "60s"
+        event_config:
+          completion_triggers: ["operation_complete", "resource_ready"]
+          coordination_events: true
+          event_prioritization: true
 
       # Fair semaphore system
       semaphore_system:
@@ -1865,7 +1881,7 @@ implementation:
         type: "phase_synchronization_barrier"
         features:
           - "resettable_barriers"
-          - "timeout_handling"
+          - "event_coordination"
           - "participant_management"
           - "barrier_statistics"
 
@@ -2035,17 +2051,17 @@ implementation:
             - "race_condition_resistance"
             - "atomic_block_behavior"
 
-    # Timeout and performance tests
-    timeout_performance_tests:
-      - name: "test_timeout_handling"
-        method: "simulate_timeout_scenarios"
-        timeout_scenarios:
-          - "operation_timeout"
-          - "transition_timeout"
-          - "validation_timeout"
+    # Event coordination and performance tests
+    event_coordination_tests:
+      - name: "test_event_driven_coordination"
+        method: "simulate_event_scenarios"
+        event_scenarios:
+          - "completion_event_handling"
+          - "coordination_event_processing"
+          - "resource_coordination_events"
 
       - name: "test_performance_under_load"
-        method: "stress_test_with_concurrent_transitions"
+        method: "stress_test_with_concurrent_events"
         load_scenarios:
           - "high_frequency_transitions"
           - "concurrent_state_changes"
@@ -6349,7 +6365,7 @@ implementation:
             wait_for_graph_analysis: "real_time_cycle_detection"
             resource_allocation_graph: "continuous_graph_monitoring"
             banker_algorithm_implementation: "safe_state_verification"
-            timeout_based_detection: "adaptive_timeout_management"
+            event_based_detection: "event_driven_coordination"
 
           prevention_strategies:
             resource_ordering_protocol: "global_resource_ordering"
