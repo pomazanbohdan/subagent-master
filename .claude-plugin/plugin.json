@@ -1,7 +1,7 @@
 {
   "name": "master",
-  "version": "0.4.1",
-  "description": "Advanced intelligent task orchestration with comprehensive resource discovery, dynamic greeting generation, parallel planning, real-time adaptation, and adaptive memory learning",
+  "version": "0.5.0",
+  "description": "Pure event-driven task orchestration with logical priority queue, parallel component initialization, graceful degradation, and integrated event correlation system",
   "author": {
     "name": "Bohdan",
     "email": "pomazan.bohdan@gmail.com"

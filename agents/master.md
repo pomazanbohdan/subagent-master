@@ -24,11 +24,11 @@ capabilities: [
 ] # Do not change!
 triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage", "parallel", "team", "multiple-agents", "clarify", "search", "research", "unclear", "help", "details", "requirements", "batch", "multiple-files", "bulk-edit", "mass-update", "parallel-files", "optimize", "schedule", "decompose", "parallelize"] # Do not change!
 tools: ["dynamic_agent_discovery"]  # Do not change!
-version: "0.4.1"
+version: "0.5.2"
 
 component:
   name: "master"
-  version: "0.4.1"
+  version: "0.5.2"
   description: "An AI agent that optimizes task execution through intelligent planning, parallelization, and execution in subtasks or delegation to existing agents in the system, which are automatically initialized taking into account their competencies." # Do not change!
   category: "orchestration"
   priority: 1
@@ -38,23 +38,248 @@ component:
     optimized_tokens: 3300
     savings_percentage: 50
   latest_update:
-    version: "0.4.1"
+    version: "0.5.2"
     changes: [
-      "Enhanced system initialization with comprehensive resource discovery",
-      "Added dynamic greeting generation with MCP server and agent categorization",
-      "Implemented real-time resource scanning and inventory management",
-      "Complete system validation and production readiness assessment",
-      "Enhanced memory integration with full Serena MCP compatibility",
-      "Optimized parallel execution with advanced resource allocation",
-      "Improved deadlock avoidance with formal verification methods",
-      "Comprehensive performance monitoring and adaptive optimization",
-      "Advanced pattern learning and failure prevention mechanisms",
-      "Production-grade error handling and recovery systems",
-      "Enhanced system reliability and scalability improvements"
+      "Implemented dynamic task complexity analysis system with 5 complexity levels",
+      "Added task decomposer with multiple breakdown strategies (functional, temporal, dependency, skill-based)",
+      "Created recursive planner for multi-level task hierarchy with infinite recursion prevention",
+      "Replaced fixed 3-level hierarchy with dynamic depth based on task complexity",
+      "Added level-based analysis with automatic replanning triggers after each level completion",
+      "Enhanced visual TODO formatter with unlimited depth and dynamic formatting rules",
+      "Implemented atomic task detection and similarity grouping for optimal decomposition",
+      "Added hierarchy optimizer with performance pattern analysis and dependency streamlining",
+      "Created comprehensive event system for dynamic planning with recursive analysis capabilities",
+      "Introduced automatic task decomposition based on complexity factors and breakdown triggers",
+      "Enhanced parallel coordination with dynamic group identification based on task similarity"
     ]
     timestamp: "2025-01-05"
 
 implementation:
+  # === EVENT-DRIVEN ARCHITECTURE ===
+  event_queue:
+    enabled: true
+    architecture: "event_queue_with_logical_priorities"
+    priority_levels: ["critical", "high", "medium", "low"]
+    parallel_execution: true
+    timeout_handling: "graceful_degradation"
+    max_parallel_events: 10
+    event_timeout: 30s
+    retry_attempts: 3
+    retry_backoff: "exponential"
+    fallback_strategy: "minimal_functionality"
+
+  # Event-driven configuration
+  event_driven_config:
+    # Critical events (bootstrap and system failures)
+    critical:
+      timeout: 10s
+      retry_attempts: 3
+      parallel: true
+      fallback: "minimal_bootstrap"
+
+    # High priority events (core functionality)
+    high:
+      timeout: 30s
+      retry_attempts: 2
+      parallel: true
+      fallback: "graceful_degradation"
+
+    # Medium priority events (discovery and analysis)
+    medium:
+      timeout: 60s
+      retry_attempts: 1
+      parallel: true
+      fallback: "partial_functionality"
+
+    # Low priority events (optimization and enhancement)
+    low:
+      timeout: 120s
+      retry_attempts: 1
+      parallel: true
+      fallback: "skip_on_failure"
+
+  # Event-driven component mapping (replaces priority-based execution)
+  event_driven_initialization:
+    # Critical Events (Bootstrap)
+    system.bootstrap.started:
+      description: "System initialization process started"
+      logical_priority: "critical"
+      components: ["error_system_initialization", "monitoring_minimal_setup", "basic_system_readiness", "memory_system_initialization"]
+      parallel: true
+      timeout: 10s
+      fallback: "minimal_bootstrap"
+
+    system.discovery.started:
+      description: "Resource discovery process initiated"
+      logical_priority: "critical"
+      components: ["system_resource_inventory"]
+      dependencies: ["system.bootstrap.completed"]
+      timeout: 30s
+      partial_success: "continue_with_discovered"
+
+    system.greeting.started:
+      description: "Greeting generation process initiated"
+      logical_priority: "high"
+      components: ["dynamic_greeting_generation"]
+      dependencies: ["system.discovery.completed"]
+      timeout: 5s
+      fallback: "basic_greeting"
+
+    system.bootstrap.completed:
+      description: "System fully initialized"
+      logical_priority: "critical"
+      components: ["bootstrap_completion_report"]
+      dependencies: ["system.greeting.completed"]
+
+    # High Priority Events (Core functionality)
+    system.integration.started:
+      description: "System integration phase started"
+      logical_priority: "high"
+      components: ["system_integration_phase"]
+      dependencies: ["system.bootstrap.completed"]
+
+    system.readiness.started:
+      description: "System readiness verification started"
+      logical_priority: "high"
+      components: ["system_readiness_phase"]
+      dependencies: ["system.integration.completed"]
+
+    # Medium Priority Events (Discovery & Analysis)
+    system.memory.adaptive.started:
+      description: "Adaptive memory system initialization"
+      logical_priority: "medium"
+      components: ["adaptive_memory_system_phase"]
+      dependencies: ["system.bootstrap.completed"]
+      parallel: true
+
+    system.planning.parallel.started:
+      description: "Parallel todo planning initialization"
+      logical_priority: "medium"
+      components: ["parallel_todo_planning_phase"]
+      dependencies: ["system.bootstrap.completed"]
+      parallel: true
+
+    system.analysis.dynamic.started:
+      description: "Dynamic text analysis initialization"
+      logical_priority: "medium"
+      components: ["dynamic_text_analysis_phase"]
+      dependencies: ["system.bootstrap.completed"]
+      parallel: true
+
+    # Low Priority Events (Optimization & Enhancement)
+    task.received.coordinator.started:
+      description: "Task received coordinator activation"
+      logical_priority: "low"
+      components: ["task_received_coordinator"]
+      dependencies: ["system.readiness.completed"]
+      trigger: "user_interaction"
+
+    # Task Processing Events
+    task.analysis.started:
+      description: "Task analysis phase started"
+      logical_priority: "low"
+      components: ["task_analysis_coordinator"]
+      dependencies: ["task.received.coordinator.completed"]
+      parallel: true
+
+    task.agent.selection.started:
+      description: "Agent selection process started"
+      logical_priority: "low"
+      components: ["agent_selection_algorithm"]
+      dependencies: ["task.analysis.completed"]
+
+    task.delegation.started:
+      description: "Task delegation process started"
+      logical_priority: "low"
+      components: ["delegation_engine"]
+      dependencies: ["task.agent.selection.completed"]
+
+    task.execution.coordinator.started:
+      description: "Task execution coordination started"
+      logical_priority: "low"
+      components: ["task_execution_coordinator"]
+      dependencies: ["task.delegation.completed"]
+
+    # Agent Discovery Events (integrated from existing system)
+    agent.discovery.started:
+      description: "Dynamic agent discovery process started"
+      logical_priority: "medium"
+      components: ["dynamic_agent_discovery_phase"]
+      dependencies: ["system.bootstrap.completed"]
+      parallel: true
+
+    agent.discovery.method.completed:
+      description: "Individual discovery method completed"
+      logical_priority: "medium"
+      components: ["agent_capability_analysis", "progress_tracker"]
+      dependencies: ["agent.discovery.started"]
+
+    agent.registry.updated:
+      description: "Agent registry updated with new discoveries"
+      logical_priority: "high"
+      components: ["agent_competency_matching"]
+      dependencies: ["agent.discovery.method.completed"]
+
+    # Parallel Analysis Events
+    task.semantic.analysis.started:
+      description: "Semantic analysis started"
+      logical_priority: "medium"
+      components: ["semantic_analyzer"]
+      dependencies: ["task.analysis.started"]
+      parallel: true
+
+    task.complexity.analysis.started:
+      description: "Complexity assessment started"
+      logical_priority: "medium"
+      components: ["complexity_assessor"]
+      dependencies: ["task.analysis.started"]
+      parallel: true
+
+    task.domain.analysis.started:
+      description: "Domain classification started"
+      logical_priority: "medium"
+      components: ["domain_classifier"]
+      dependencies: ["task.analysis.started"]
+      parallel: true
+
+    # Adaptive Planning Events (NEW)
+    planning.adaptive.started:
+      description: "Adaptive planning process initiated"
+      logical_priority: "high"
+      components: ["adaptive_planning_engine"]
+      dependencies: ["system.readiness.completed"]
+      parallel: false
+
+    planning.visual.formatting:
+      description: "Visual TODO formatting with hierarchy"
+      logical_priority: "medium"
+      components: ["visual_todo_formatter"]
+      dependencies: ["planning.adaptive.started"]
+      parallel: false
+
+    planning.analysis.results:
+      description: "Analysis of execution results for replanning"
+      logical_priority: "high"
+      components: ["result_analyzer", "replanning_engine"]
+      dependencies: ["any_task.completed"]
+      parallel: false
+      trigger: "automatic"
+
+    planning.replanning.triggered:
+      description: "Automatic replanning triggered by results"
+      logical_priority: "critical"
+      components: ["adaptive_replanner", "plan_adjuster"]
+      dependencies: ["planning.analysis.results"]
+      parallel: false
+      trigger: "conditional"
+
+    planning.parallel.coordination:
+      description: "Coordination of parallel task groups"
+      logical_priority: "medium"
+      components: ["parallel_coordinator", "dependency_manager"]
+      dependencies: ["planning.visual.formatting"]
+      parallel: false
+
   operations:
     # === SYSTEM INITIALIZATION (Priority 0) ===
 
@@ -3904,6 +4129,227 @@ performance_optimization:
     cross_operation_analysis: true
     similarity_threshold: 0.8
 
+# === ADAPTIVE PLANNING COMPONENTS (NEW) ===
+
+adaptive_planning:
+  enabled: true
+  architecture: "event_driven_with_visual_hierarchy"
+
+  # Visual TODO Formatter Component
+  visual_todo_formatter:
+    description: "Creates dynamic visual hierarchy with └── prefixes based on task complexity"
+    capabilities:
+      - dynamic_hierarchy_generation
+      - complexity_based_depth_analysis
+      - recursive_task_breakdown
+      - prefix_formatting
+      - visual_structure_validation
+    rules:
+      level_1: "no_prefix"
+      level_2: "└── prefix"
+      level_3: "  └── prefix"
+      level_4: "    └── prefix"
+      level_5: "      └── prefix"
+      dynamic_depth: true
+    parallel_group_prefix: "[PARALLEL] "
+    max_depth: "unlimited"
+    depth_analysis_criteria:
+      simple_tasks: "max_depth 2"
+      moderate_tasks: "max_depth 3"
+      complex_tasks: "max_depth 4-5"
+      recursive_tasks: "until_atomic_level"
+
+    # Visual formatting examples for reference
+    formatting_examples:
+      level_1_example: "Main task"
+      level_2_example: "└── Subtask 1"
+      level_3_example: "  └── Deep subtask"
+      level_4_example: "    └── Very deep subtask"
+
+    # Integration with TodoWrite system
+    todo_write_integration:
+      prefix_logic: "tree_structure_with_single_tree_symbol"
+      validation_rules:
+        - "exactly_one_tree_symbol_per_level"
+        - "consistent_indentation"
+        - "no_trailing_whitespace"
+      error_handling:
+        - "fix_formatting_automatically"
+        - "validate_before_display"
+
+  # Task Complexity Analyzer Component (NEW)
+  complexity_analyzer:
+    description: "Analyzes task complexity to determine hierarchy depth and decomposition needs"
+    capabilities:
+      - task_complexity_assessment
+      - atomic_task_detection
+      - breakdown_requirement_analysis
+      - similarity_grouping
+    complexity_factors:
+      - task_scope_width: "broad vs focused"
+      - technical_complexity: "simple vs complex"
+      - dependency_count: "few vs many dependencies"
+      - estimation_uncertainty: "well-defined vs ambiguous"
+    complexity_levels:
+      atomic:
+        description: "Single, well-defined action"
+        characteristics: ["clear_input_output", "single_step", "no_subtasks"]
+        max_depth: 1
+      simple:
+        description: "Multiple related steps, clear structure"
+        characteristics: ["2-3_steps", "linear_dependencies", "low_uncertainty"]
+        max_depth: 2
+      moderate:
+        description: "Multiple subtasks with some branching"
+        characteristics: ["4-8_steps", "some_parallelism", "moderate_uncertainty"]
+        max_depth: 3
+      complex:
+        description: "Multiple subtasks with significant branching"
+        characteristics: ["9+ steps", "significant_parallelism", "high_uncertainty"]
+        max_depth: 4-5
+      enterprise:
+        description: "Large-scale, multi-component projects"
+        characteristics: ["multiple_phases", "cross-team_coordination", "strategic_impact"]
+        max_depth: "unlimited"
+    breakdown_triggers:
+      - task_contains_multiple_purposes: true
+      - estimated_time > "2_hours": true
+      - involves_multiple_technologies: true
+      - requires_coordination_with_others: true
+
+  # Task Decomposer Component (NEW)
+  task_decomposer:
+    description: "Decomposes complex tasks into manageable subtasks"
+    capabilities:
+      - hierarchical_breakdown
+      - atomic_task_identification
+      - dependency_mapping
+      - parallel_opportunity_detection
+    decomposition_strategies:
+      functional_breakdown:
+        description: "Break down by functional components"
+        applicable: ["software_development", "system_architecture", "feature_implementation"]
+      temporal_breakdown:
+        description: "Break down by time phases"
+        applicable: ["project_management", "research_tasks", "iterative_processes"]
+      dependency_breakdown:
+        description: "Break down by dependency relationships"
+        applicable: ["infrastructure_setup", "data_pipelines", "integration_tasks"]
+      skill_based_breakdown:
+        description: "Break down by required skills/expertise"
+        applicable: ["multi_disciplinary_tasks", "specialized_work", "consulting_projects"]
+    atomic_task_criteria:
+      single_purpose: true
+      estimable: true
+      completable_by_one_person: true
+      clear_success_criteria: true
+
+  # Recursive Planner Component (NEW)
+  recursive_planner:
+    description: "Recursively analyzes and plans multi-level task hierarchies"
+    capabilities:
+      - recursive_complexity_analysis
+      - multi_level_planning
+      - infinite_recursion_prevention
+      - hierarchy_optimization
+    recursion_controls:
+      max_recursion_depth: 10
+      atomic_task_detection: true
+      circular_dependency_prevention: true
+      memory_efficient_planning: true
+    planning_strategies:
+      top_down:
+        description: "Start with high-level goals, break down progressively"
+        best_for: ["well_defined_goals", "clear_requirements"]
+      bottom_up:
+        description: "Start with atomic tasks, build up to complex goals"
+        best_for: ["exploratory_tasks", "emergent_requirements"]
+      hybrid:
+        description: "Combine top-down and bottom-up approaches"
+        best_for: ["complex_projects", "ambiguous_requirements"]
+
+  # TodoWrite Integration Component (NEW)
+  todo_write_integration:
+    description: "Manages TodoWrite operations with hierarchical task execution and dependency management"
+    capabilities:
+      - hierarchical_task_execution
+      - dependency_tracking
+      - level_completion_monitoring
+      - error_propagation
+    execution_logic:
+      sequential_execution:
+        - parent_task waits for all child_tasks to complete
+        - marks parent as "completed" only when all children are "completed"
+        - propagates errors from children to parents
+      parallel_execution:
+        - tasks at same level can execute in parallel
+        - synchronization points at level boundaries
+        - parent waits for all parallel tasks in level
+      error_handling:
+        - failed_child_blocks_parent_progress
+        - sibling_tasks_continue_if_possible
+        - parent_marked_with_partial_completion
+    validation_rules:
+      - circular_dependency_prevention: true
+      - infinite_recursion_prevention: true
+      - dependency_graph_validation: true
+
+  # Result Analyzer Component
+  result_analyzer:
+    description: "Analyzes execution results for replanning decisions"
+    capabilities:
+      - execution_result_analysis
+      - success_rate_calculation
+      - bottleneck_identification
+      - recommendation_generation
+    analysis_criteria:
+      success_threshold: 0.8
+      failure_triggers: ["high_error_rate", "timeout_occurred", "dependency_block"]
+      replanning_conditions: ["success_rate < 0.7", "critical_failures", "significant_delays"]
+    level_based_analysis:
+      analyze_after_each_level: true
+      aggregate_level_results: true
+      trigger_recursive_planning: "when_success_rate < 0.7 or complexity_increase_detected"
+
+  # Adaptive Replanner Component
+  adaptive_replanner:
+    description: "Automatically adjusts plans based on execution results"
+    capabilities:
+      - automatic_plan_adjustment
+      - priority_rebalancing
+      - dependency_restructuring
+      - parallel_group_optimization
+    strategies:
+      - "conservative_adjustment"
+      - "aggressive_replanning"
+      - "dependency_based_restructure"
+
+  # Parallel Coordinator Component
+  parallel_coordinator:
+    description: "Coordinates parallel task execution with dependency management"
+    capabilities:
+      - parallel_group_identification
+      - dependency_resolution
+      - synchronization_point_management
+      - conflict_detection
+    coordination_rules:
+      max_parallel_groups: 5
+      dependency_validation: true
+      deadlock_prevention: true
+
+  # Dependency Manager Component
+  dependency_manager:
+    description: "Manages task dependencies and execution order"
+    capabilities:
+      - dependency_graph_analysis
+      - execution_order_optimization
+      - circular_dependency_detection
+      - critical_path_identification
+    algorithms:
+      - "topological_sorting"
+      - "critical_path_method"
+      - "dependency_depth_analysis"
+
 # === HYBRID EVENT-DRIVEN ARCHITECTURE ===
 
 event_system:
@@ -3989,6 +4435,103 @@ event_system:
       data_fields: ["greeting_id", "display_content", "ready_content", "generation_metadata", "timestamp"]
       handlers: ["capability_announcement", "user_interface_system"]
       priority: "critical"
+
+  # Adaptive Planning Events (NEW)
+  planning_events:
+    planning.adaptive.initialized:
+      description: "Adaptive planning system initialized with dynamic hierarchy capabilities"
+      data_fields: ["planning_id", "initial_task", "complexity_analysis", "timestamp"]
+      handlers: ["complexity_analyzer", "visual_todo_formatter", "recursive_planner"]
+      priority: "high"
+      activation_condition: "system.readiness.verified"
+
+    planning.task.complexity.analyzed:
+      description: "Task complexity analyzed to determine decomposition needs"
+      data_fields: ["task_id", "complexity_level", "decomposition_needed", "estimated_depth", "atomic_tasks_identified", "timestamp"]
+      handlers: ["complexity_analyzer", "task_decomposer"]
+      priority: "high"
+      activation_condition: "any_task.received"
+
+    planning.visual.hierarchy.created:
+      description: "Dynamic visual TODO hierarchy created based on complexity analysis"
+      data_fields: ["hierarchy_id", "parent_task", "child_tasks", "actual_depth", "complexity_distribution", "timestamp"]
+      handlers: ["visual_todo_formatter", "hierarchy_validator"]
+      priority: "medium"
+      activation_condition: "planning.task.complexity.analyzed"
+
+    planning.task.decomposed:
+      description: "Complex task decomposed into manageable subtasks"
+      data_fields: ["parent_task_id", "decomposed_subtasks", "atomic_tasks", "parallel_groups", "dependencies", "timestamp"]
+      handlers: ["task_decomposer", "parallel_coordinator", "dependency_manager"]
+      priority: "high"
+      activation_condition: ["task.complexity.analyzed", "decomposition_required"]
+
+    planning.recursive.analysis.started:
+      description: "Recursive analysis started for multi-level task hierarchy"
+      data_fields: ["root_task_id", "current_depth", "analysis_progress", "detected_patterns", "timestamp"]
+      handlers: ["recursive_planner", "complexity_analyzer"]
+      priority: "medium"
+      activation_condition: ["planning.task.decomposed", "recursive_planning_needed"]
+
+    planning.parallel.groups.identified:
+      description: "Parallel task groups identified and coordinated"
+      data_fields: ["parallel_groups", "group_tasks", "dependencies", "execution_plan", "timestamp"]
+      handlers: ["parallel_coordinator", "dependency_manager"]
+      priority: "medium"
+      activation_condition: "planning.visual.hierarchy.created"
+
+    planning.level.completed:
+      description: "Task hierarchy level completed, analyzing for further decomposition"
+      data_fields: ["level_id", "completed_tasks", "remaining_tasks", "success_rate", "needs_further_decomposition", "timestamp"]
+      handlers: ["result_analyzer", "complexity_analyzer", "recursive_planner"]
+      priority: "high"
+      activation_condition: "any_level_tasks_completed"
+
+    planning.execution.results.analyzed:
+      description: "Execution results analyzed for replanning decisions"
+      data_fields: ["analysis_id", "execution_results", "success_rate", "bottlenecks", "recommendations", "timestamp"]
+      handlers: ["result_analyzer", "replanning_engine"]
+      priority: "high"
+      activation_condition: "any_task.completed"
+
+    planning.replanning.triggered:
+      description: "Automatic replanning triggered by analysis results"
+      data_fields: ["replan_id", "triggers", "adjustments", "new_priorities", "timestamp"]
+      handlers: ["adaptive_replanner", "plan_adjuster", "visual_todo_formatter"]
+      priority: "critical"
+      activation_condition: ["planning.execution.results.analyzed", "planning.level.completed"]
+
+    planning.hierarchy.optimized:
+      description: "Task hierarchy optimized based on execution patterns and results"
+      data_fields: ["optimization_id", "original_hierarchy", "optimized_hierarchy", "improvements", "timestamp"]
+      handlers: ["hierarchy_optimizer", "visual_todo_formatter", "dependency_manager"]
+      priority: "medium"
+      activation_condition: "planning.replanning.completed"
+
+    planning.parallel.execution.coordinated:
+      description: "Parallel execution coordinated with dependency management"
+      data_fields: ["coordination_id", "parallel_groups", "synchronization_points", "completion_status", "timestamp"]
+      handlers: ["parallel_coordinator", "dependency_manager", "monitoring_system"]
+      priority: "medium"
+      activation_condition: "planning.parallel.groups.identified"
+
+    planning.hierarchy.optimizer:
+      description: "Optimizes task hierarchy based on execution patterns and results"
+      capabilities:
+        - hierarchy_pattern_analysis
+        - performance_optimization
+        - dependency_streamlining
+        - resource_allocation_optimization
+      optimization_strategies:
+        - "flattening_shallow_hierarchies"
+        - "deepening_critical_paths"
+        - "parallelism_maximization"
+        - "dependency_reduction"
+      triggers:
+        - "bottleneck_detected"
+        - "performance_degradation"
+        - "resource_underutilization"
+        - "success_rate_below_threshold"
 
   task_processing_events:
     # Core task lifecycle events
