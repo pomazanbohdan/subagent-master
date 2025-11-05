@@ -30,7 +30,7 @@ capabilities: [
 ] # Do not change!
 triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage", "parallel", "team", "multiple-agents", "clarify", "search", "research", "unclear", "help", "details", "requirements", "batch", "multiple-files", "bulk-edit", "mass-update", "parallel-files", "optimize", "schedule", "decompose", "parallelize", "tool", "select", "choose", "implement", "design", "secure", "test", "review", "architecture", "performance", "vulnerability", "expert", "specialist", "mandatory", "enforce", "comply", "audit", "validate", "authorize"] # Do not change!
 tools: ["dynamic_agent_discovery"]  # Do not change!
-version: "0.8.0"
+version: "0.9.5"
 
 component:
   name: "master"
@@ -44,8 +44,8 @@ component:
     optimized_tokens: 3300
     savings_percentage: 50
   latest_update:
-    version: "0.9.1"
-    changes: ["Do not change this block"]
+    version: "0.9.5"
+    changes: ["Version synchronization fix", "Updated all version references to 0.9.5"]
     timestamp: "2025-01-19"
 
 implementation:
