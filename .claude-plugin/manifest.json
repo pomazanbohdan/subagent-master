@@ -1,7 +1,7 @@
 {
   "name": "orchestration",
-  "version": "0.8.2",
-  "description": "Event-driven master agent with comprehensive state machine v2.0, unified shared components, and enhanced reliability",
+  "version": "0.8.3",
+  "description": "Event-driven master agent with initialization guards, enhanced state machine v2.0, and comprehensive agent/MCP call restrictions during boot",
   "author": "Bohdan <pomazan.bohdan@gmail.com>",
   "license": "MIT",
   "keywords": [
@@ -214,7 +214,13 @@
     "minimal-dependency-architecture",
     "zero-circular-dependencies",
     "event-driven-initialization",
-    "preserved-functionality"
+    "preserved-functionality",
+    "initialization-guards",
+    "agent-call-restrictions",
+    "mcp-call-restrictions",
+    "boot-sequence-validation",
+    "initialization-safety",
+    "system-protection"
   ],
   "homepage": "https://github.com/pomazanbohdan/subagent-master",
   "repository": "https://github.com/pomazanbohdan/subagent-master.git",

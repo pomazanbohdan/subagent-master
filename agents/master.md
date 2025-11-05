@@ -1881,13 +1881,13 @@ implementation:
             - name: "SERVICE_READY"
               description: "Core services are ready"
               timeout: 20s
-              checks: ["mcp_servers_connected", "agent_registry_ready"]
+              checks: ["mcp_servers_connected", "agent_registry_ready", "no_active_agent_calls", "no_pending_mcp_operations"]
               next_stage: "VALIDATION_COMPLETE"
 
             - name: "VALIDATION_COMPLETE"
               description: "System validation complete"
               timeout: 10s
-              checks: ["all_validations_passed"]
+              checks: ["all_validations_passed", "initialization_guards_active", "system_ready_for_operations"]
               next_stage: "SYSTEM_READY"
 
         # Enhanced guards with unified state integration
@@ -1903,9 +1903,48 @@ implementation:
           - name: "component_boot_guard"
             system_level: true
             condition: "boot_sequence.stage != 'VALIDATION_COMPLETE'"
-            blocked_operations: ["task_delegation", "complex_planning"]
-            allowed_operations: ["component_initialization", "status_checking"]
+            blocked_operations: [
+              "task_delegation",
+              "complex_planning",
+              "Task",
+              "Plan",
+              "delegate_to_agent",
+              "create_subagent",
+              "mcp_tool_calls",
+              "subtask_execution"
+            ]
+            allowed_operations: [
+              "component_initialization",
+              "status_checking",
+              "list_available_agents",
+              "list_available_mcp_tools",
+              "system_discovery"
+            ]
             priority: "high"
+
+          - name: "initialization_strict_guard"
+            system_level: true
+            condition: "current_state == 'SYSTEM_BOOT'"
+            blocked_operations: [
+              "Task",
+              "Plan",
+              "delegate_to_agent",
+              "create_subagent",
+              "mcp_tool_calls",
+              "subtask_execution",
+              "agent_communication",
+              "cross_agent_coordination"
+            ]
+            allowed_operations: [
+              "list_available_agents",
+              "list_available_mcp_tools",
+              "component_initialization",
+              "status_checking",
+              "system_discovery",
+              "resource_listing"
+            ]
+            priority: "critical"
+            fallback: "reject_operation"
 
         # Event integration with unified system
         event_integration:
@@ -3610,6 +3649,9 @@ implementation:
             validate_task_format: true
             detect_task_ambiguity: true
             check_system_readiness: true
+            validate_no_active_agents: true
+            check_no_pending_mcp_calls: true
+            verify_initialization_complete: true
           coordination_logic:
             sequential_analysis_flow: true
             parallel_preparation: true

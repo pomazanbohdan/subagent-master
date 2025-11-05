@@ -5,8 +5,8 @@
     "email": "pomazan.bohdan@gmail.com"
   },
   "metadata": {
-    "description": "Event-driven master agent with comprehensive state machine v2.0, unified shared components, and enhanced reliability",
-    "version": "0.8.2"
+    "description": "Event-driven master agent with initialization guards, enhanced state machine v2.0, and comprehensive agent/MCP call restrictions during boot",
+    "version": "0.8.3"
   },
   "plugins": [
     {
@@ -180,6 +180,12 @@
         "zero-circular-dependencies",
         "event-driven-initialization",
         "preserved-functionality",
+        "initialization-guards",
+        "agent-call-restrictions",
+        "mcp-call-restrictions",
+        "boot-sequence-validation",
+        "initialization-safety",
+        "system-protection",
         "advanced-capabilities-retained"
       ],
       "source": "./",
