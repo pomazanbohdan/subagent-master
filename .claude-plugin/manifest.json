@@ -1,7 +1,7 @@
 {
   "name": "orchestration",
-  "version": "0.8.1",
-  "description": "Intelligent Tool Selection System v2.0 with mandatory TASK() vs PLAN() vs SYSTEM() enforcement, automatic tool routing, compliance monitoring, and 90% tool selection accuracy",
+  "version": "2.0.0",
+  "description": "Event-driven master agent with state machine architecture, fault-tolerant orchestration, and zero circular dependencies",
   "author": "Bohdan <pomazan.bohdan@gmail.com>",
   "license": "MIT",
   "keywords": [
@@ -187,7 +187,16 @@
     "enforcement-system",
     "mandatory-execution",
     "audit-trail-logging",
-    "validation-checkpoints"
+    "validation-checkpoints",
+    "event-driven-architecture",
+    "state-machine",
+    "fault-tolerance",
+    "graceful-degradation",
+    "zero-dependency-conflicts",
+    "real-time-monitoring",
+    "observability",
+    "smart-authorization",
+    "parallel-orchestration"
   ],
   "homepage": "https://github.com/pomazanbohdan/subagent-master",
   "repository": "https://github.com/pomazanbohdan/subagent-master.git",

@@ -5,8 +5,8 @@
     "email": "pomazan.bohdan@gmail.com"
   },
   "metadata": {
-    "description": "Pure event-driven task orchestration with advanced parallel operation optimization, automatic dependency analysis, self-learning capabilities, complete resource discovery initialization, graceful degradation, parallel initialization, real-time health monitoring, and 64% code optimization",
-    "version": "0.7.1"
+    "description": "Event-driven master agent with state machine architecture, zero circular dependencies, fault-tolerant orchestration, and comprehensive monitoring",
+    "version": "2.0.0"
   },
   "plugins": [
     {
@@ -151,7 +151,17 @@
         "intelligent-memory-management",
         "dynamic-strategy-refinement",
         "experience-based-optimization",
-        "memory-driven-decision-making"
+        "memory-driven-decision-making",
+        "event-driven-architecture",
+        "state-machine-management",
+        "zero-dependency-conflicts",
+        "fault-tolerance",
+        "graceful-degradation",
+        "observability",
+        "smart-authorization",
+        "parallel-orchestration",
+        "real-time-monitoring",
+        "comprehensive-metrics"
       ],
       "source": "./",
       "agents": [

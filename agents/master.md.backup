@@ -30,11 +30,11 @@ capabilities: [
 ] # Do not change!
 triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage", "parallel", "team", "multiple-agents", "clarify", "search", "research", "unclear", "help", "details", "requirements", "batch", "multiple-files", "bulk-edit", "mass-update", "parallel-files", "optimize", "schedule", "decompose", "parallelize", "tool", "select", "choose", "implement", "design", "secure", "test", "review", "architecture", "performance", "vulnerability", "expert", "specialist", "mandatory", "enforce", "comply", "audit", "validate", "authorize"] # Do not change!
 tools: ["dynamic_agent_discovery"]  # Do not change!
-version: "0.7.0"
+version: "0.6.1"
 
 component:
   name: "master"
-  version: "0.7.0"
+  version: "0.6.1"
   description: "An AI agent that optimizes task execution through intelligent planning, parallelization, and execution in subtasks or delegation to existing agents in the system, which are automatically initialized taking into account their competencies." # Do not change!
   category: "orchestration"
   priority: 1
@@ -44,18 +44,23 @@ component:
     optimized_tokens: 3300
     savings_percentage: 50
   latest_update:
-    version: "0.7.0"
+    version: "0.6.1"
     changes: [
-      "CRITICAL FIX: Resolved all 22 circular dependency issues in event-driven system",
-      "Added missing completion events: task.tool.enforcement.completed, task.tool.selection.validated.completed, task.execution.completed",
-      "Fixed bootstrap sequence with proper completion events: phase1_critical_system.completed, phase2_parallel_initialization.completed, phase3_integration_core.completed",
-      "Implemented event completion triggers for proper state transitions",
-      "Enhanced tool enforcement flow with linear dependency chain",
-      "Maintained all existing functionality while fixing critical system failures",
-      "Added completion_triggers for automatic event flow progression",
-      "Improved system reliability with zero circular dependencies",
-      "Preserved all advanced task decomposition and orchestration capabilities",
-      "Maintained fault-tolerant bootstrap system with proper event sequencing"
+      "Implemented dynamic task complexity analysis system with 5 complexity levels",
+      "Added task decomposer with multiple breakdown strategies (functional, temporal, dependency, skill-based)",
+      "Created recursive planner for multi-level task hierarchy with infinite recursion prevention",
+      "Replaced fixed 3-level hierarchy with dynamic depth based on task complexity",
+      "Added level-based analysis with automatic replanning triggers after each level completion",
+      "Enhanced visual TODO formatter with unlimited depth and dynamic formatting rules",
+      "Implemented atomic task detection and similarity grouping for optimal decomposition",
+      "Added hierarchy optimizer with performance pattern analysis and dependency streamlining",
+      "Created comprehensive event system for dynamic planning with recursive analysis capabilities",
+      "Introduced automatic task decomposition based on complexity factors and breakdown triggers",
+      "Enhanced parallel coordination with dynamic group identification based on task similarity",
+      "FIXED CRITICAL: Resolved bootstrap-greeting cyclic dependency deadlock",
+      "Implemented graduated bootstrap system with core/optional phase separation",
+      "Added fault-tolerant system states with graceful degradation",
+      "Enhanced system reliability with multiple operational modes (core_ready, full_ready, operational_fallback, emergency_mode)"
     ]
     timestamp: "2025-01-05"
 
@@ -117,31 +122,12 @@ implementation:
     timeout: 5s
     fallback: "manual_tool_selection_required"
 
-  task.tool.enforcement.completed:
-    description: "Tool usage enforcement validation completed"
-    logical_priority: "critical"
-    components: ["mandatory_tool_enforcement"]
-    trigger: "on_enforcement_success"
-    dependencies: ["task.tool.enforcement.started"]
-    parallel: false
-    timeout: 3s
-    completion_triggers: ["task.tool.selection.validated"]
-
   task.tool.selection.validated:
     description: "Tool selection validated and authorized"
     logical_priority: "critical"
     components: ["tool_selection_validator"]
     dependencies: ["task.tool.enforcement.completed"]
     parallel: false
-
-  task.tool.selection.validated.completed:
-    description: "Tool selection validation process completed"
-    logical_priority: "critical"
-    components: ["tool_selection_validator"]
-    trigger: "on_selection_success"
-    dependencies: ["task.tool.selection.validated"]
-    parallel: false
-    completion_triggers: ["task.tool.execution.authorized"]
 
   task.tool.execution.authorized:
     description: "Task execution authorized with proper tool selection"
@@ -156,15 +142,6 @@ implementation:
     components: ["compliance_auditor"]
     dependencies: ["task.execution.completed"]
     parallel: true
-
-  task.execution.completed:
-    description: "Task execution process completed"
-    logical_priority: "high"
-    components: ["execution_coordinator"]
-    trigger: "on_task_completion"
-    dependencies: ["task.tool.execution.authorized"]
-    parallel: false
-    completion_triggers: ["task.tool.compliance.audit"]
 
   event_driven_initialization:
     # === GRADUATED BOOTSTRAP SYSTEM v2.1 - FIXED CYCLIC DEPENDENCY ===
@@ -190,7 +167,6 @@ implementation:
             timeout: 2s
             max_concurrent: 3
             fallback: "minimal_bootstrap"
-            completion_event: "phase1_critical_system.completed"
 
           # Phase 2: Core Components (2-5s)
           phase2_parallel_initialization:
@@ -201,7 +177,6 @@ implementation:
             timeout: 3s
             max_concurrent: 3
             dependencies: ["phase1_critical_system.completed"]
-            completion_event: "phase2_parallel_initialization.completed"
 
           # Phase 3: Integration Core (5-8s)
           phase3_integration_core:
@@ -213,7 +188,6 @@ implementation:
             max_concurrent: 2
             dependencies: ["phase2_parallel_initialization.completed"]
             partial_success: "continue_with_core"
-            completion_event: "phase3_integration_core.completed"
 
         completion_event: "system.bootstrap.core.completed"
         completion_triggers: ["system.core.functionality.enabled"]
