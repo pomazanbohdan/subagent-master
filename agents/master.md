@@ -34,7 +34,7 @@ version: "0.8.0"
 
 component:
   name: "master"
-  version: "0.9.0"
+  version: "0.9.1"
   description: "An AI agent that optimizes task execution through intelligent planning, parallelization, and execution in subtasks or delegation to existing agents in the system, which are automatically initialized taking into account their competencies." # Do not change!
   category: "orchestration"
   priority: 1
@@ -44,7 +44,7 @@ component:
     optimized_tokens: 3300
     savings_percentage: 50
   latest_update:
-    version: "0.9.0"
+    version: "0.9.1"
     changes: [
       "PRESERVED: All advanced functionality including task decomposition, parallel execution, agent selection",
       "PRESERVED: Dynamic task complexity analysis with 5 complexity levels",
@@ -57,6 +57,7 @@ component:
       "PRESERVED: Hybrid parallel bootstrap system with 60-70% speed improvement",
       "PRESERVED: Fault-tolerant system states with graceful degradation",
       "PRESERVED: All 22 circular dependency issues resolved",
+      "PRESERVED: All existing system protection components maintained",
       "ENHANCED: Streamlined event-driven initialization with zero conflicts",
       "ENHANCED: Improved bootstrap reliability with proper event sequencing",
       "ENHANCED: Better fault tolerance with multiple operational modes",
@@ -65,6 +66,9 @@ component:
       "NEW: Task Validation Middleware for pre-execution security checks",
       "NEW: Dynamic ID Verification System with real-time agent validation",
       "NEW: Silent Blocking Handler for non-intrusive threat prevention",
+      "NEW: Universal Initialization Guard with recursive call prevention",
+      "NEW: Initialization Queue System for automatic task execution after boot",
+      "FIXED: Recursive self-call during system initialization completely prevented",
       "NEW: Enhanced component-level guards with protection integration",
       "NEW: Multi-layered security architecture with <10ms response time",
       "NEW: Graceful degradation and fallback mechanisms for reliability"
@@ -76,10 +80,53 @@ implementation:
   system_protection:
     enabled: true
     architecture: "layered_protection_system"
-    protection_levels: ["recursion_prevention", "identity_verification", "threat_detection", "silent_blocking"]
+    protection_levels: ["initialization_guard", "recursion_prevention", "identity_verification", "threat_detection", "silent_blocking"]
     response_time_target: "< 10ms"
     cache_hit_rate_target: "> 80%"
     failure_handling: "graceful_degradation"
+
+    # === INITIALIZATION GUARD (NEW - Prevents recursive calls during boot) ===
+    initialization_guard:
+      description: "Universal operation blocker during system initialization to prevent recursive self-calls"
+      priority: "critical_above_all"
+      enabled: true
+
+      # Core blocking logic
+      condition: "unified_state_manager.system_level.current_state != 'SYSTEM_READY'"
+
+      # Universal blocking - ALL operations blocked until system ready
+      blocked_operations: [
+        "Task(",                    # Delegation attempts
+        "@agent-",                  # Agent calls
+        "delegate",                 # Delegation keywords
+        "subagent_type",            # Subagent references
+        "system_protection_guard",  # System protection calls
+        "master:",                  # Master references
+        "self:",                    # Self references
+        "recursive_call"            # Recursive patterns
+      ]
+
+      # Allowed operations during initialization (minimal system functions)
+      allowed_operations: [
+        "system_status_check",
+        "component_initialization",
+        "health_monitoring",
+        "configuration_loading",
+        "registry_discovery"
+      ]
+
+      # User-friendly response
+      response_behavior:
+        action: "friendly_block_with_queue"
+        message: "⏳ Система ініціалізується... Ваше завдання буде автоматично виконано після завантаження."
+        queue_request: true
+        auto_execute_on_ready: true
+        notification_on_ready: true
+
+      # Performance optimization
+      cache_result: true
+      response_time: "< 1ms"
+      fail_fast: true
 
     # System Protection Detector
     system_protection_detector:
@@ -511,8 +558,12 @@ implementation:
         trigger: "all_components_initialized"
         validator: "system_readiness_validator"
         action: "enable_full_operations"
-        events: ["system.ready", "initialization.complete"]
+        events: ["system.ready", "initialization.complete", "initialization_queue.execute"]
         timeout: 60s
+        queue_execution:
+          trigger: "system_ready"
+          action: "execute_queued_operations"
+          delay: "500ms"  # Ensure full initialization before queue execution
 
       SYSTEM_BOOT → SYSTEM_DEGRADED:
         trigger: "partial_component_failure"
@@ -732,10 +783,37 @@ implementation:
     guards:
       global_system_guards:
         - name: "initialization_guard"
-          condition: "system_level.current_state in ['SYSTEM_READY', 'SYSTEM_OPERATIONAL']"
-          blocked_operations: ["task_delegation", "complex_planning", "parallel_execution"]
-          allowed_operations: ["system_status", "health_check", "configuration_read"]
-          priority: "critical"
+          condition: "system_level.current_state != 'SYSTEM_READY'"
+          blocked_operations: [
+            "Task(",                    # Delegation attempts
+            "@agent-",                  # Agent calls
+            "delegate",                 # Delegation keywords
+            "subagent_type",            # Subagent references
+            "system_protection_guard",  # System protection calls
+            "master:",                  # Master references
+            "self:",                    # Self references
+            "recursive_call",           # Recursive patterns
+            "task_delegation",          # Existing delegation
+            "complex_planning",         # Existing planning
+            "parallel_execution"        # Existing parallel operations
+          ]
+          allowed_operations: [
+            "system_status_check",
+            "component_initialization",
+            "health_monitoring",
+            "configuration_loading",
+            "registry_discovery",
+            "system_status",            # Legacy allowed
+            "health_check",             # Legacy allowed
+            "configuration_read"        # Legacy allowed
+          ]
+          priority: "critical_above_all"
+          response_behavior:
+            action: "friendly_block_with_queue"
+            message: "⏳ Система ініціалізується... Ваше завдання буде автоматично виконано після завантаження."
+            queue_request: true
+            auto_execute_on_ready: true
+            notification_on_ready: true
 
         - name: "resource_guard"
           condition: "system_resources_available > 20%"
@@ -812,7 +890,7 @@ implementation:
         - name: "identity_verification_guard"
           component: "dynamic_id_verifier"
           condition: "agent_identity_required"
-          blocked_operations:["unverified_agent_access", "spoofed_identity_execution"]
+          blocked_operations: ["unverified_agent_access", "spoofed_identity_execution"]
           priority: "high"
           verification_process:
             - real_time_registry_lookup: true
@@ -879,6 +957,47 @@ implementation:
           blocked_operations: ["memory_write"]
           fallback: "cache_operation"
           priority: "low"
+
+    # === INITIALIZATION QUEUE SYSTEM (NEW) ===
+    initialization_queue_system:
+      description: "Queue and auto-execute blocked operations when system becomes ready"
+      enabled: true
+      priority: "critical"
+
+      # Queue management
+      queue_storage:
+        max_queue_size: 100
+        persistent_storage: true
+        timeout_handling: "auto_cleanup_after_24h"
+
+      # Queue operations
+      queue_operations:
+        - name: "enqueue_blocked_operation"
+          trigger: "initialization_guard_blocks_operation"
+          data_stored: ["operation_type", "original_request", "timestamp", "user_context"]
+
+        - name: "auto_execute_on_ready"
+          trigger: "system_state_change_to_SYSTEM_READY"
+          execution_order: "fifo_with_priority"
+          batch_size: 10
+          execution_delay: "500ms"  # Small delay to ensure full initialization
+
+      # User notifications
+      notification_system:
+        - event: "operation_queued"
+          message: "📋 Ваше завдання додано в чергу очікування"
+
+        - event: "system_ready_and_executing"
+          message: "✅ Система готова! Виконую ваші завдання з черги..."
+
+        - event: "queue_execution_completed"
+          message: "🎉 Всі завдання з черги успішно виконано!"
+
+      # Fallback handling
+      fallback_mechanisms:
+        - queue_full: "reject_new_requests_with_friendly_message"
+        - execution_failure: "log_error_and_continue_with_next"
+        - timeout_cleanup: "auto_remove_stale_requests"
 
       recovery_mechanisms:
         - name: "automatic_retry"
@@ -1230,19 +1349,19 @@ implementation:
         - "system_failure"
         - "resource_exhaustion"
         - "deadlock_detected"
-        recovery_strategies: ["emergency_stop", "resource_reallocation", "forced_recovery"]
+      recovery_strategies: ["emergency_stop", "resource_reallocation", "forced_recovery"]
 
       timeout_errors:
         - "operation_timeout"
         - "response_timeout"
         - "connection_timeout"
-        recovery_strategies: ["retry_with_backoff", "timeout_extension", "fallback_operation"]
+      recovery_strategies: ["retry_with_backoff", "timeout_extension", "fallback_operation"]
 
       validation_errors:
         - "invalid_state"
         - "resource_unavailable"
         - "dependency_missing"
-        recovery_strategies: ["state_correction", "resource_reallocation", "dependency_resolution"]
+      recovery_strategies: ["state_correction", "resource_reallocation", "dependency_resolution"]
 
     error_recovery:
       universal_strategies:

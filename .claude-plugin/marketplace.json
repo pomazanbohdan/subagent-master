@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Event-driven master agent with comprehensive System Protection Layer v1.0.0, multi-layered security architecture, silent threat prevention, and enhanced state machine v2.0",
-    "version": "0.9.0"
+    "version": "0.9.1"
   },
   "plugins": [
     {
