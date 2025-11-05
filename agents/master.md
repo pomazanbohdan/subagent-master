@@ -909,24 +909,39 @@ implementation:
 
         allowed_responses:
           - direct_activation: true
+            condition: "system_state in ['SYSTEM_READY', 'SYSTEM_OPERATIONAL']"
+            debug_exception: "current_state == 'SYSTEM_SELF_DIAGNOSIS'"
           - manual_user_confirmation: true
+            condition: "system_state in ['SYSTEM_READY', 'SYSTEM_OPERATIONAL']"
+            debug_exception: "current_state == 'SYSTEM_SELF_DIAGNOSIS'"
           - context_aware_response: true
+            condition: "always_allowed"
 
         suppression_rules:
           - rule: "suppress_automatic_task_calls"
             condition: "system_reminder_detected AND agent_activation_pattern_matched"
             action: "block_task_delegation"
             implementation: "use_native_direct_response"
+            enhanced_condition: "system_state not in ['SYSTEM_READY', 'SYSTEM_OPERATIONAL']"
+            debug_exception: "current_state == 'SYSTEM_SELF_DIAGNOSIS'"
 
           - rule: "suppress_agent_selection"
             condition: "agent_activation_reminder AND initialization_phase"
             action: "block_agent_selection"
             implementation: "direct_master_activation"
+            enhanced_condition: "system_state not in ['SYSTEM_READY', 'SYSTEM_OPERATIONAL']"
 
           - rule: "allow_direct_activation"
-            condition: "user_direct_activation_request AND no_system_reminder"
+            condition: "user_direct_activation_request AND no_system_reminder AND system_state in ['SYSTEM_READY', 'SYSTEM_OPERATIONAL']"
             action: "allow_direct_activation"
             implementation: "activate_as_master_agent"
+            debug_exception: "current_state == 'SYSTEM_SELF_DIAGNOSIS'"
+
+          - rule: "suppress_task_calls_during_initialization"
+            condition: "system_state not in ['SYSTEM_READY', 'SYSTEM_OPERATIONAL']"
+            action: "block_task_delegation"
+            implementation: "queue_for_execution_when_ready"
+            debug_exception: "current_state == 'SYSTEM_SELF_DIAGNOSIS'"
 
       logging:
         log_detected_reminders: true
@@ -964,6 +979,17 @@ implementation:
             "health_check",             # Legacy allowed
             "configuration_read"        # Legacy allowed
           ]
+          debug_mode_exceptions:
+            condition: "system_level.current_state == 'SYSTEM_SELF_DIAGNOSIS'"
+            allowed_operations: [
+              "diagnostic_analysis",
+              "self_testing",
+              "system_validation",
+              "debug_mode_operations",
+              "system_reminder_handling",
+              "context_aware_response"
+            ]
+            blocked_during_debug: []  # Allow all operations during debug
           priority: "critical_above_all"
           response_behavior:
             action: "friendly_block_with_queue"
@@ -8652,14 +8678,32 @@ event_system:
             system_reminder: false
             current_agent: "master"
             initialization_phase: false
+            system_state: "SYSTEM_READY"
           expected_behavior:
             action: "allow_direct_activation"
             response_type: "master_agent_activation"
             should_use_task_tool: false
           test_assertions:
-            - "direct user requests should be allowed"
+            - "direct user requests should be allowed when SYSTEM_READY"
             - "no system reminder blocking should occur"
             - "master agent should activate directly"
+
+        - name: "test_direct_user_request_blocked_during_initialization"
+          input:
+            user_request: "@agent-master:master"
+            system_reminder: false
+            current_agent: "master"
+            initialization_phase: true
+            system_state: "SYSTEM_INITIALIZING"
+          expected_behavior:
+            action: "block_task_delegation"
+            response_type: "queued_for_execution"
+            should_use_task_tool: false
+            queue_action: true
+          test_assertions:
+            - "direct user requests should be blocked during initialization"
+            - "request should be queued for execution when ready"
+            - "Task() tool should not be called automatically"
 
         - name: "test_initialization_context_validation"
           input:
@@ -8674,6 +8718,23 @@ event_system:
             - "initialization context should be checked"
             - "system state should be validated"
             - "automatic responses should be suppressed"
+
+        - name: "test_debug_mode_exception_allowed"
+          input:
+            user_request: "@agent-master:master"
+            system_reminder: false
+            current_agent: "master"
+            initialization_phase: true
+            system_state: "SYSTEM_SELF_DIAGNOSIS"
+          expected_behavior:
+            action: "allow_direct_activation"
+            response_type: "debug_mode_activation"
+            should_use_task_tool: false
+            debug_exception_applied: true
+          test_assertions:
+            - "debug mode should allow direct activation even during initialization"
+            - "SYSTEM_SELF_DIAGNOSIS should bypass normal blocking rules"
+            - "diagnostic operations should be permitted"
 
       validation_rules:
         - rule: "no_automatic_task_calls_on_reminders"
