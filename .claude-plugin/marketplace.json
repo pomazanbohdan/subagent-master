@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Event-driven master agent with initialization guards, enhanced state machine v2.0, and comprehensive agent/MCP call restrictions during boot",
-    "version": "0.8.3"
+    "version": "0.8.4"
   },
   "plugins": [
     {

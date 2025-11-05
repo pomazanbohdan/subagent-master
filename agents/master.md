@@ -333,6 +333,16 @@ implementation:
           fallback: "queue_task"
           priority: "medium"
 
+        - name: "initialization_master_guard"
+          condition: "system_initialization_complete != true"
+          blocked_operations: ["select_agent", "delegation", "agent_selection"]
+          allowed_operations: ["native_tools", "system_status", "configuration_read"]
+          fallback: "use_native_execution"
+          priority: "critical"
+          self_call_protection: true
+          log_level: "info"
+          description: "Prevents master agent self-calls during system initialization"
+
       component_level_guards:
         - name: "delegation_guard"
           component: "delegation_engine"
@@ -352,6 +362,14 @@ implementation:
           condition: "recovery_mode != 'ACTIVE'"
           blocked_operations: ["manual_recovery_override"]
           priority: "critical"
+
+        - name: "master_agent_call_guard"
+          component: "agent_selection_algorithm"
+          condition: "selected_agent != 'master' OR system_initialization_complete == true"
+          blocked_operations: ["delegate_to_master", "select_master_agent"]
+          fallback: "select_alternative_agent"
+          priority: "critical"
+          self_call_prevention: true
 
       operation_level_guards:
         - name: "task_creation_guard"
@@ -4253,6 +4271,13 @@ implementation:
         expertise_mapping: true
         uncertainty_quantification: true
         selection_confidence_threshold: 0.8
+        guard_validation:
+          enabled: true
+          check_initialization_master_guard: true
+          check_master_agent_call_guard: true
+          self_call_prevention: true
+          fallback_to_native: true
+          guard_validation_order: ["initialization_master_guard", "master_agent_call_guard"]
       output:
         selected_agent: "string"
         selection_confidence: "float"
@@ -4734,6 +4759,30 @@ implementation:
           primary_competency_match: 0.7
           availability_check: true
           performance_history: true
+
+        # Guard Validation System
+        guard_validation:
+          enabled: true
+          validation_points:
+            - point: "pre_delegation"
+              checks: ["initialization_master_guard", "master_agent_call_guard"]
+              block_if_failed: true
+              fallback_to: "native_tools_only"
+
+            - point: "agent_selection"
+              checks: ["self_call_prevention"]
+              validate_selected_agent: true
+              block_master_selection: true
+
+            - point: "pre_assignment"
+              checks: ["delegation_guard", "master_agent_call_guard"]
+              prevent_recursive_assignment: true
+
+          fallback_behavior:
+            when_guards_block: "use_native_tools"
+            log_blocked_attempts: true
+            notify_user: false
+            retry_after_initialization: true
 
         # Delegation State Machine v2.0
         delegation_state_machine:
@@ -7351,6 +7400,17 @@ event_system:
 
   # System Lifecycle Events (Priority-based execution)
   system_lifecycle_events:
+    system.ready:
+      description: "System has completed initialization and is ready for operations"
+      data_fields: ["system_id", "ready_timestamp", "initialization_duration", "components_ready", "health_score"]
+      handlers: ["initialization_master_guard", "monitoring_system", "capability_announcement"]
+      priority: "critical"
+      activation_condition: "state_transition_to_SYSTEM_READY"
+      actions:
+        - set_system_initialization_complete: true
+        - enable_agent_calling_permissions: true
+        - log_initialization_completion: true
+
     system.resource.inventory.started:
       description: "System resource scanning process initiated"
       data_fields: ["scan_id", "scan_types", "target_components", "timestamp"]

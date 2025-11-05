@@ -1,7 +1,7 @@
 {
   "name": "orchestration",
-  "version": "0.8.3",
-  "description": "Event-driven master agent with initialization guards, enhanced state machine v2.0, and comprehensive agent/MCP call restrictions during boot",
+  "version": "0.8.4",
+  "description": "Event-driven master agent with self-call prevention guards, enhanced state machine v2.0, and comprehensive agent/MCP call restrictions during boot",
   "author": "Bohdan <pomazan.bohdan@gmail.com>",
   "license": "MIT",
   "keywords": [
