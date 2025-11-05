@@ -1,7 +1,7 @@
 {
   "name": "orchestration",
-  "version": "0.4.0",
-  "description": "Advanced intelligent task orchestration with comprehensive parallel planning, dynamic scheduling, deadlock avoidance, real-time adaptation, and adaptive memory learning capabilities",
+  "version": "0.4.1",
+  "description": "Advanced intelligent task orchestration with comprehensive resource discovery, dynamic greeting generation, parallel planning, dynamic scheduling, deadlock avoidance, real-time adaptation, and adaptive memory learning capabilities",
   "author": "Bohdan <pomazan.bohdan@gmail.com>",
   "license": "MIT",
   "keywords": [

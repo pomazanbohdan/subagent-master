@@ -24,11 +24,11 @@ capabilities: [
 ] # Do not change!
 triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage", "parallel", "team", "multiple-agents", "clarify", "search", "research", "unclear", "help", "details", "requirements", "batch", "multiple-files", "bulk-edit", "mass-update", "parallel-files", "optimize", "schedule", "decompose", "parallelize"] # Do not change!
 tools: ["dynamic_agent_discovery"]  # Do not change!
-version: "0.4.0"
+version: "0.4.1"
 
 component:
   name: "master"
-  version: "0.4.0"
+  version: "0.4.1"
   description: "An AI agent that optimizes task execution through intelligent planning, parallelization, and execution in subtasks or delegation to existing agents in the system, which are automatically initialized taking into account their competencies." # Do not change!
   category: "orchestration"
   priority: 1
@@ -38,8 +38,11 @@ component:
     optimized_tokens: 3300
     savings_percentage: 50
   latest_update:
-    version: "0.4.0"
+    version: "0.4.1"
     changes: [
+      "Enhanced system initialization with comprehensive resource discovery",
+      "Added dynamic greeting generation with MCP server and agent categorization",
+      "Implemented real-time resource scanning and inventory management",
       "Complete system validation and production readiness assessment",
       "Enhanced memory integration with full Serena MCP compatibility",
       "Optimized parallel execution with advanced resource allocation",
@@ -78,9 +81,25 @@ implementation:
             required_for_system: true
             description: "Initialize adaptive memory system with Serena MCP integration"
           - priority: 5
+            operation: "system_resource_inventory"
+            required_for_system: false
+            description: "Perform comprehensive MCP server and agent discovery with categorization"
+            implementation:
+              resource_scanning:
+                mcp_discovery_tool: "ListMcpResourcesTool"
+                agent_registry_scan: true
+                categorization_enabled: true
+                parallel_execution: true
+                timeout_seconds: 30
+          - priority: 6
+            operation: "dynamic_greeting_generation"
+            required_for_system: false
+            description: "Generate categorized greeting with available resources"
+            dependencies: ["system_resource_inventory"]
+          - priority: 7
             operation: "bootstrap_completion_report"
             required_for_system: true
-            description: "Display bootstrap completion status"
+            description: "Display bootstrap completion status with resource summary"
         initialization_parameters:
           bootstrap_mode: "independent"
           timeout_seconds: 60
@@ -108,6 +127,16 @@ implementation:
         memory_patterns_loaded: "integer"
         initialization_time: "float"
         bootstrap_operations_summary: "object"
+        # Resource inventory outputs
+        mcp_servers_discovered: "integer"
+        mcp_categories_found: "object"
+        agents_discovered: "integer"
+        agent_categories_found: "object"
+        resource_scan_complete: "boolean"
+        # Greeting generation outputs
+        greeting_generated: "boolean"
+        greeting_content: "object"
+        system_capabilities_summary: "object"
 
     # === SYSTEM DISCOVERY PHASE (Priority 1) ===
 
@@ -652,6 +681,121 @@ implementation:
         readiness_report: "object"
         final_health_score: "float"
         system_waiting_for_task: "boolean"
+
+    # === RESOURCE INVENTORY OPERATIONS (Priority 11-12) ===
+
+    - name: "system_resource_inventory"
+      priority: 11
+      method: "comprehensive_resource_discovery"
+      trigger: "system_initialization_complete"
+      dependencies:
+        required_inputs:
+          - component: "system_initialization"
+            expected_outputs: ["bootstrap_complete"]
+            validation: "bootstrap_complete == true"
+      config:
+        resource_scanning:
+          mcp_discovery:
+            tool: "ListMcpResourcesTool"
+            execution_mode: "parallel"
+            timeout_seconds: 30
+            retry_count: 2
+            categories_to_identify:
+              - "search_and_retrieval"
+              - "code_analysis"
+              - "ui_generation"
+              - "browser_automation"
+              - "documentation"
+              - "web_search"
+              - "symbolic_operations"
+              - "sequential_thinking"
+              - "github_operations"
+              - "memory_management"
+
+          agent_discovery:
+            method: "registry_scan"
+            parallel_execution: true
+            categorization_enabled: true
+            agent_types_to_identify:
+              - "analysis_agents"
+              - "architecture_agents"
+              - "frontend_agents"
+              - "backend_agents"
+              - "quality_engineering"
+              - "performance_optimization"
+              - "security_agents"
+              - "research_agents"
+              - "documentation_agents"
+
+          data_processing:
+            categorization_algorithm: "semantic_classification"
+            count_aggregation: true
+            health_status_check: true
+            capability_extraction: true
+
+        output_format:
+          include_counts: true
+          include_categories: true
+          include_health_status: true
+          include_capabilities: true
+          structure: "hierarchical_categories"
+
+      output:
+        mcp_servers_discovered: "integer"
+        mcp_categories_found: "object"
+        mcp_server_details: "array"
+        agents_discovered: "integer"
+        agent_categories_found: "object"
+        agent_details: "array"
+        resource_scan_complete: "boolean"
+        scanning_metadata: "object"
+
+    - name: "dynamic_greeting_generation"
+      priority: 12
+      method: "real_time_greeting_formation"
+      dependencies:
+        required_inputs:
+          - component: "system_resource_inventory"
+            expected_outputs: ["resource_scan_complete", "mcp_categories_found", "agent_categories_found"]
+            validation: "resource_scan_complete == true"
+      config:
+        greeting_formation:
+          data_sources:
+            mcp_summary: "from_system_resource_inventory"
+            agent_summary: "from_system_resource_inventory"
+            system_status: "from_system_initialization"
+
+          template_engine:
+            base_template: "comprehensive_system_overview"
+            sections:
+              - welcome_message
+              - mcp_servers_summary
+              - agents_summary
+              - system_capabilities
+              - next_steps_guidance
+
+          content_generation:
+            include_counts: true
+            include_categories: true
+            include_health_indicators: true
+            dynamic_content: true
+            contextual_recommendations: true
+
+        error_handling:
+          incomplete_inventory:
+            action: "generate_partial_greeting"
+            log_warning: true
+          resource_scan_failure:
+            action: "use_bootstrap_template"
+            notify_user: "Resource scanning incomplete, using basic greeting"
+
+      output:
+        greeting_generated: "boolean"
+        greeting_content: "object"
+        mcp_summary_section: "object"
+        agent_summary_section: "object"
+        system_capabilities_summary: "object"
+        generation_metadata: "object"
 
     # === CRITICAL BOOTSTRAP OPERATIONS (Priority 4-10) ===
 
@@ -3768,9 +3912,44 @@ event_system:
 
   # System Lifecycle Events (Priority-based execution)
   system_lifecycle_events:
+    system.resource.inventory.started:
+      description: "System resource scanning process initiated"
+      data_fields: ["scan_id", "scan_types", "target_components", "timestamp"]
+      handlers: ["monitoring_system", "performance_tracker"]
+      priority: "high"
+      activation_condition: "system_initialization.complete"
+
+    system.resource.inventory.completed:
+      description: "System resource scanning completed successfully"
+      data_fields: ["scan_id", "mcp_servers_found", "agents_found", "categories_created", "scan_duration", "timestamp"]
+      handlers: ["dynamic_greeting_generation", "resource_registry"]
+      priority: "high"
+      activation_condition: "system_resource_inventory.complete"
+
+    system.generation.started:
+      description: "Dynamic greeting generation process initiated"
+      data_fields: ["greeting_id", "inventory_data", "template_type", "timestamp"]
+      handlers: ["monitoring_system", "performance_tracker"]
+      priority: "medium"
+      activation_condition: "system.resource.inventory.completed"
+
+    system.generation.completed:
+      description: "Dynamic greeting generation completed with resource summary"
+      data_fields: ["greeting_id", "mcp_summary", "agent_summary", "content_generated", "timestamp"]
+      handlers: ["bootstrap_completion_report", "user_interface_system"]
+      priority: "high"
+      activation_condition: "dynamic_greeting_generation.complete"
+
+    system.bootstrap.enhanced:
+      description: "Enhanced bootstrap completion with resource information"
+      data_fields: ["bootstrap_id", "resources_discovered", "greeting_generated", "total_time", "health_score", "timestamp"]
+      handlers: ["capability_announcement", "monitoring_system"]
+      priority: "critical"
+      activation_condition: "bootstrap_completion_report.complete"
+
     system.readiness.verified:
       description: "System readiness check completed successfully"
-      data_fields: ["system_id", "readiness_score", "health_status", "timestamp", "components_ready"]
+      data_fields: ["system_id", "readiness_score", "health_status", "resources_available", "timestamp", "components_ready"]
       handlers: ["greeting_formation_engine", "capability_announcement"]
       priority: "critical"
       activation_condition: "final_readiness_check.complete"

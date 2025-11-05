@@ -5,8 +5,8 @@
     "email": "pomazan.bohdan@gmail.com"
   },
   "metadata": {
-    "description": "Advanced intelligent task orchestration with comprehensive parallel planning, real-time adaptation, and adaptive memory learning",
-    "version": "0.4.0"
+    "description": "Advanced intelligent task orchestration with comprehensive resource discovery, dynamic greeting generation, parallel planning, real-time adaptation, and adaptive memory learning",
+    "version": "0.4.1"
   },
   "plugins": [
     {
