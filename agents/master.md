@@ -142,12 +142,6 @@ implementation:
         automatic: true
         event_publishes: ["system.operational.started"]
 
-      # Operational transitions
-      ready → operational:
-        trigger: "task_processing_started"
-        automatic: true
-        event_publishes: ["system.operational.started"]
-
       operational → ready:
         trigger: "all_tasks_completed"
         timeout: "30s"
@@ -779,11 +773,6 @@ implementation:
       dependencies: ["system_initialization_phase3_integration.completed"]
       config:
         optimization_operations:
-          - operation: "cache_warming"
-            parallel_group: "optimization_tasks"
-            timeout: 10000ms
-            persistent_cache: true
-            warm_essential_only: false
           - operation: "performance_optimization"
             parallel_group: "optimization_tasks"
             timeout: 8000ms
