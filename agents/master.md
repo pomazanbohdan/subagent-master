@@ -2691,9 +2691,10 @@ implementation:
     # === UNIFIED STATE MANAGER INTEGRATION COMPONENT ===
 
     - name: "unified_state_manager_integration"
-      priority: 4.5
+      priority: 0
       method: "integrate_unified_state_management"
       dependencies: ["system_initialization_phase4_optimization.completed"]
+      condition: "always"
       config:
         integration_type: "hierarchical_state_management"
         system_manager: "unified_state_manager"
@@ -2887,11 +2888,12 @@ implementation:
         execution_sequence: "array"
         validation_checkpoints: "array"
 
-    # Legacy compatibility (redirects to new system)
+    # Legacy compatibility (redirects to new system) - DEACTIVATED in favor of unified system
     - name: "system_initialization"
-      priority: 0
+      priority: 10
       method: "legacy_bootstrap_redirect"
       trigger: "on_agent_load"
+      condition: "unified_state_manager_integration.failed"
       config:
         redirect_to_new_system: true
         legacy_compatibility: true
@@ -2907,6 +2909,11 @@ implementation:
           timeout_failure:
             action: "force_bootstrap_completion"
             notify_user: "Bootstrap completed with minimal components"
+          unified_system_failure:
+            action: "activate_legacy_fallback"
+            log_error: true
+            notify_user: "Unified system failed, activating legacy fallback"
+            timeout: 10s
       output:
         bootstrap_complete: "boolean"
         basic_monitoring_active: "boolean"
