@@ -1,7 +1,7 @@
 {
   "name": "orchestration",
-  "version": "0.7.0",
-  "description": "Hybrid Parallel Bootstrap System v2.0 with 60-70% initialization speed improvement, progressive loading, intelligent caching, parallel MCP discovery, optimized agent loading, and advanced performance optimization",
+  "version": "0.8.0",
+  "description": "Intelligent Tool Selection System v2.0 with mandatory TASK() vs PLAN() vs SYSTEM() enforcement, automatic tool routing, compliance monitoring, and 90% tool selection accuracy",
   "author": "Bohdan <pomazan.bohdan@gmail.com>",
   "license": "MIT",
   "keywords": [
@@ -172,7 +172,22 @@
     "parallel-initialization",
     "essential-component-prioritization",
     "graceful-degradation-v2",
-    "resource-efficiency-optimization"
+    "resource-efficiency-optimization",
+    "intelligent-tool-selection",
+    "automatic-tool-routing",
+    "mandatory-tool-enforcement",
+    "compliance-monitoring",
+    "execution-authorization",
+    "tool-decision-matrix",
+    "task-classification",
+    "domain-expertise-matching",
+    "complexity-based-routing",
+    "workflow-optimization",
+    "tool-accuracy-90-percent",
+    "enforcement-system",
+    "mandatory-execution",
+    "audit-trail-logging",
+    "validation-checkpoints"
   ],
   "homepage": "https://github.com/pomazanbohdan/subagent-master",
   "repository": "https://github.com/pomazanbohdan/subagent-master.git",

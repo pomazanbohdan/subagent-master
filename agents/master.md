@@ -20,9 +20,15 @@ capabilities: [
   "performance-monitoring",
   "system-validation",
   "task-execution",
-  "tool-selection"
+  "tool-selection",
+  "mandatory-tool-enforcement",
+  "automatic-tool-selection",
+  "compliance-monitoring",
+  "execution-authorization",
+  "tool-decision-matrix",
+  "intelligent-workflow-routing"
 ] # Do not change!
-triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage", "parallel", "team", "multiple-agents", "clarify", "search", "research", "unclear", "help", "details", "requirements", "batch", "multiple-files", "bulk-edit", "mass-update", "parallel-files", "optimize", "schedule", "decompose", "parallelize"] # Do not change!
+triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage", "parallel", "team", "multiple-agents", "clarify", "search", "research", "unclear", "help", "details", "requirements", "batch", "multiple-files", "bulk-edit", "mass-update", "parallel-files", "optimize", "schedule", "decompose", "parallelize", "tool", "select", "choose", "implement", "design", "secure", "test", "review", "architecture", "performance", "vulnerability", "expert", "specialist", "mandatory", "enforce", "comply", "audit", "validate", "authorize"] # Do not change!
 tools: ["dynamic_agent_discovery"]  # Do not change!
 version: "0.6.0"
 
@@ -99,6 +105,40 @@ implementation:
       fallback: "skip_on_failure"
 
   # Event-driven component mapping (replaces priority-based execution)
+
+  # === MANDATORY TOOL ENFORCEMENT EVENTS v2.0 ===
+
+  task.tool.enforcement.started:
+    description: "Tool usage enforcement validation started"
+    logical_priority: "critical"
+    components: ["mandatory_tool_enforcement"]
+    trigger: "on_any_task_received"
+    dependencies: []
+    parallel: false
+    timeout: 5s
+    fallback: "manual_tool_selection_required"
+
+  task.tool.selection.validated:
+    description: "Tool selection validated and authorized"
+    logical_priority: "critical"
+    components: ["tool_selection_validator"]
+    dependencies: ["task.tool.enforcement.completed"]
+    parallel: false
+
+  task.tool.execution.authorized:
+    description: "Task execution authorized with proper tool selection"
+    logical_priority: "critical"
+    components: ["execution_authorizer"]
+    dependencies: ["task.tool.selection.validated.completed"]
+    parallel: false
+
+  task.tool.compliance.audit:
+    description: "Tool usage compliance audit and reporting"
+    logical_priority: "medium"
+    components: ["compliance_auditor"]
+    dependencies: ["task.execution.completed"]
+    parallel: true
+
   event_driven_initialization:
     # === HYBRID PARALLEL BOOTSTRAP SYSTEM v2.0 ===
 
@@ -288,12 +328,28 @@ implementation:
       dependencies: ["task.analysis.started"]
       parallel: true
 
+    # === INTELLIGENT TOOL SELECTION SYSTEM v2.0 ===
+
+    tool.selection.analysis.started:
+      description: "Automatic tool selection analysis based on task complexity"
+      logical_priority: "critical"
+      components: ["intelligent_tool_selector"]
+      dependencies: ["task.analysis.completed"]
+      parallel: false
+
+    tool.decision.engine:
+      description: "Decision engine for choosing between TASK(), PLAN(), SYSTEM()"
+      logical_priority: "critical"
+      components: ["tool_decision_matrix"]
+      dependencies: ["tool.selection.analysis.completed"]
+      parallel: false
+
     # Adaptive Planning Events (NEW)
     planning.adaptive.started:
       description: "Adaptive planning process initiated"
       logical_priority: "high"
       components: ["adaptive_planning_engine"]
-      dependencies: ["system.readiness.completed"]
+      dependencies: ["tool.decision.engine.completed"]
       parallel: false
 
     planning.visual.formatting:
@@ -327,6 +383,38 @@ implementation:
       parallel: false
 
   operations:
+    # === MANDATORY TOOL ENFORCEMENT SYSTEM v2.0 ===
+
+    - name: "mandatory_tool_enforcement"
+      priority: -1
+      method: "enforce_tool_usage_requirements"
+      trigger: "on_any_task_received"
+      config:
+        enforcement_rules:
+          all_tasks_must_use_tools: true
+          tool_selection_validation: true
+          execution_logging: true
+          compliance_monitoring: true
+        validation_checkpoints:
+          pre_execution_validation: true
+          tool_availability_check: true
+          execution_authorization: true
+          post_execution_audit: true
+        violation_handling:
+          tool_not_used: "block_execution_and_require_tool_selection"
+          wrong_tool_selected: "auto_correct_and_log_violation"
+          tool_unavailable: "escalate_to_alternative_or_manual"
+        audit_requirements:
+          log_all_tool_decisions: true
+          track_selection_confidence: true
+          monitor_execution_success: true
+          generate_compliance_reports: true
+      output:
+        tool_enforcement_status: "boolean"
+        selected_tool_type: "string"
+        execution_authorized: "boolean"
+        compliance_score: "float"
+
     # === SYSTEM INITIALIZATION (Priority 0) ===
 
     # === HYBRID PARALLEL BOOTSTRAP OPERATIONS v2.0 ===
@@ -445,6 +533,90 @@ implementation:
           background_priority: "low"
           interruptible: true
           progress_reporting: true
+
+    # === INTELLIGENT TOOL SELECTION COMPONENTS v2.0 ===
+
+    - name: "intelligent_tool_selector"
+      priority: 5
+      method: "automatic_tool_selection_engine"
+      dependencies: ["task_analysis_coordinator.completed"]
+      config:
+        selection_criteria:
+          task_complexity_threshold: 3
+          domain_specificity_threshold: 0.7
+          expertise_requirement_threshold: 0.8
+          parallel_execution_threshold: 2
+        analysis_parameters:
+          complexity_analysis:
+            atomic_tasks: "system_tools"
+            simple_tasks: "system_tools"
+            moderate_tasks: "plan_analysis"
+            complex_tasks: "task_delegation"
+            enterprise_tasks: "task_delegation"
+          domain_expertise:
+            general_programming: "system_tools"
+            specialized_domains: "task_delegation"
+            architecture_domains: "task_delegation"
+            security_domains: "task_delegation"
+          operation_type:
+            file_operations: "system_tools"
+            analysis_operations: "plan_analysis"
+            design_operations: "task_delegation"
+            implementation_operations: "task_delegation"
+        decision_matrix:
+          system_tools:
+            triggers: ["read", "edit", "grep", "bash", "file", "simple", "quick", "local"]
+            confidence_threshold: 0.9
+            max_execution_time: "30s"
+          plan_analysis:
+            triggers: ["analyze", "research", "plan", "strategy", "architecture", "requirements", "complex"]
+            confidence_threshold: 0.8
+            max_execution_time: "5min"
+          task_delegation:
+            triggers: ["implement", "design", "optimize", "secure", "test", "review", "specialized"]
+            confidence_threshold: 0.7
+            max_execution_time: "15min"
+      output:
+        selected_tool_type: "string"
+        selection_confidence: "float"
+        selection_rationale: "string"
+        alternative_options: "array"
+
+    - name: "tool_decision_matrix"
+      priority: 5.1
+      method: "tool_execution_decision_engine"
+      dependencies: ["intelligent_tool_selector.completed"]
+      config:
+        decision_rules:
+          mandatory_system_tools:
+            - file_read_operations
+            - basic_file_edits
+            - git_operations
+            - simple_bash_commands
+          mandatory_plan_analysis:
+            - architecture_analysis
+            - requirements_gathering
+            - complex_problem_decomposition
+            - risk_assessment
+          mandatory_task_delegation:
+            - security_vulnerability_assessment
+            - performance_optimization
+            - complex_feature_implementation
+            - multi_system_integration
+        execution_enforcement:
+          tool_usage_mandatory: true
+          fallback_allowed: false
+          validation_required: true
+          audit_trail_enabled: true
+        error_handling:
+          tool_unavailable: "escalate_to_next_priority"
+          execution_failure: "retry_with_alternative_tool"
+          validation_failure: "require_manual_intervention"
+      output:
+        execution_plan: "object"
+        tool_assignments: "array"
+        execution_sequence: "array"
+        validation_checkpoints: "array"
 
     # Legacy compatibility (redirects to new system)
     - name: "system_initialization"
