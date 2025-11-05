@@ -34,7 +34,7 @@ version: "0.8.0"
 
 component:
   name: "master"
-  version: "0.8.0"
+  version: "0.8.5"
   description: "An AI agent that optimizes task execution through intelligent planning, parallelization, and execution in subtasks or delegation to existing agents in the system, which are automatically initialized taking into account their competencies." # Do not change!
   category: "orchestration"
   priority: 1
@@ -77,132 +77,496 @@ implementation:
     retry_backoff: "exponential"
     fallback_strategy: "minimal_functionality"
 
-  # === SIMPLE STATE MACHINE FOR INITIALIZATION ===
-  system_state_machine:
+  # === UNIFIED STATE MACHINE ARCHITECTURE v2.0 ===
+  unified_state_manager:
     enabled: true
-    current_state: "initializing"
+    architecture: "hierarchical"
+    persistence: true
+    validation: true
+    monitoring: true
 
-    states:
-      initializing:
-        description: "System starting up, critical components loading"
-        timeout: 60s
-        next_states: ["ready", "degraded", "failed"]
-        critical_components: ["error_handler", "event_bus", "task_analyzer", "agent_selector", "execution_coordinator"]
+    # System Level States
+    system_level:
+      current_state: "SYSTEM_BOOT"
+      states:
+        SYSTEM_BOOT:
+          description: "System starting up - critical phase"
+          timeout: 60s
+          sub_states: ["COMPONENT_INIT", "SERVICE_READY", "VALIDATION_COMPLETE"]
+          next_states: ["SYSTEM_READY", "SYSTEM_DEGRADED", "SYSTEM_FAILED"]
+          critical_components: ["error_handler", "event_bus", "state_manager"]
 
-      ready:
-        description: "System fully operational and ready for tasks"
-        timeout: "infinite"
-        next_states: ["operational", "degraded", "shutdown"]
+        SYSTEM_READY:
+          description: "System fully operational"
+          timeout: "infinite"
+          operational_modes: ["normal", "high_performance", "resource_saving"]
+          next_states: ["SYSTEM_OPERATIONAL", "SYSTEM_DEGRADED", "SYSTEM_SHUTDOWN"]
 
-      operational:
-        description: "System actively processing tasks"
-        timeout: "infinite"
-        next_states: ["ready", "degraded", "shutdown"]
+        SYSTEM_OPERATIONAL:
+          description: "System actively processing tasks"
+          timeout: "infinite"
+          performance_monitoring: true
+          next_states: ["SYSTEM_READY", "SYSTEM_DEGRADED", "SYSTEM_SHUTDOWN"]
 
-      degraded:
-        description: "System running with limited functionality"
-        timeout: "infinite"
-        next_states: ["ready", "operational", "failed"]
+        SYSTEM_DEGRADED:
+          description: "System with limited functionality"
+          timeout: "infinite"
+          recovery_strategies: ["auto_recovery", "manual_intervention", "graceful_degradation"]
+          next_states: ["SYSTEM_READY", "SYSTEM_OPERATIONAL", "SYSTEM_FAILED"]
 
-      failed:
-        description: "System critical failure - recovery needed"
-        timeout: "infinite"
-        next_states: ["degraded", "shutdown"]
+        SYSTEM_FAILED:
+          description: "System critical failure"
+          timeout: "infinite"
+          recovery_required: true
+          escalation_level: "critical"
+          next_states: ["SYSTEM_DEGRADED", "SYSTEM_RECOVERY", "SYSTEM_SHUTDOWN"]
 
-      shutdown:
-        description: "System graceful shutdown"
-        timeout: 30s
-        next_states: ["terminated"]
+        SYSTEM_RECOVERY:
+          description: "System in recovery mode"
+          timeout: 120s
+          recovery_attempts: 3
+          next_states: ["SYSTEM_READY", "SYSTEM_FAILED", "SYSTEM_SHUTDOWN"]
 
-      terminated:
-        description: "System fully shut down"
-        timeout: 0
+        SYSTEM_SHUTDOWN:
+          description: "System graceful shutdown"
+          timeout: 30s
+          cleanup_required: true
+          next_states: ["SYSTEM_TERMINATED"]
+
+        SYSTEM_TERMINATED:
+          description: "System fully shut down"
+          timeout: 0
+          cleanup_complete: true
         next_states: []
 
+    # Component Level States
+    component_level:
+      # Component-specific states will be defined in individual components
+      # Each component can have its own state machine
+      registry_enabled: true
+      validation_required: true
+
+    # Transition Engine
     transitions:
-      # Startup transitions
-      initializing → ready:
-        trigger: "all_critical_components_ready"
+      # System Level Transitions
+      SYSTEM_BOOT → SYSTEM_READY:
+        trigger: "all_components_initialized"
+        validator: "system_readiness_validator"
+        action: "enable_full_operations"
+        events: ["system.ready", "initialization.complete"]
         timeout: 60s
-        event_publishes: ["system.initialization.completed"]
 
-      initializing → degraded:
-        trigger: "some_components_failed"
+      SYSTEM_BOOT → SYSTEM_DEGRADED:
+        trigger: "partial_component_failure"
+        validator: "degraded_readiness_validator"
+        action: "enable_limited_operations"
+        events: ["system.degraded", "initialization.partial"]
         timeout: 60s
-        event_publishes: ["system.initialization.degraded"]
 
-      initializing → failed:
-        trigger: "critical_components_failed"
-        timeout: 60s
-        event_publishes: ["system.initialization.failed"]
+      SYSTEM_BOOT → SYSTEM_FAILED:
+        trigger: "critical_component_failure"
+        validator: "failure_validator"
+        action: "emergency_shutdown"
+        events: ["system.failed", "initialization.failed"]
+        timeout: 30s
 
-      # Ready to Operational transitions
-      ready → operational:
-        trigger: "first_task_received"
-        automatic: true
-        event_publishes: ["system.operational.started"]
+      SYSTEM_READY → SYSTEM_OPERATIONAL:
+        trigger: "task_processing_started"
+        validator: "operational_readiness_validator"
+        action: "begin_task_processing"
+        events: ["system.operational", "processing.started"]
+        timeout: 5s
 
-      operational → ready:
-        trigger: "all_tasks_completed"
-        timeout: "30s"
-        event_publishes: ["system.ready", "system.operational.ended"]
+      SYSTEM_OPERATIONAL → SYSTEM_READY:
+        trigger: "task_processing_completed"
+        validator: "completion_validator"
+        action: "cleanup_and_reset"
+        events: ["system.ready", "processing.completed"]
+        timeout: 30s
 
-      ready → degraded:
-        trigger: "component_degraded"
-        automatic: true
-        event_publishes: ["system.degraded"]
+      SYSTEM_READY → SYSTEM_DEGRADED:
+        trigger: "component_degradation_detected"
+        validator: "degradation_validator"
+        action: "reduce_functionality"
+        events: ["system.degraded", "functionality.reduced"]
+        timeout: 10s
 
-      operational → degraded:
+      SYSTEM_OPERATIONAL → SYSTEM_DEGRADED:
         trigger: "critical_error_detected"
-        automatic: true
-        event_publishes: ["system.error.critical", "system.degraded"]
+        validator: "error_validator"
+        action: "emergency_degradation"
+        events: ["system.degraded", "error.critical"]
+        timeout: 5s
 
-      # Recovery transitions
-      degraded → ready:
+      SYSTEM_DEGRADED → SYSTEM_READY:
         trigger: "components_restored"
-        timeout: "30s"
-        event_publishes: ["system.recovery.success", "system.ready"]
+        validator: "restoration_validator"
+        action: "restore_full_functionality"
+        events: ["system.ready", "functionality.restored"]
+        timeout: 30s
 
-      degraded → failed:
+      SYSTEM_DEGRADED → SYSTEM_FAILED:
         trigger: "multiple_critical_failures"
-        automatic: true
-        event_publishes: ["system.critical.multiple", "system.failed"]
+        validator: "cascade_failure_validator"
+        action: "initiate_recovery"
+        events: ["system.failed", "cascade.failure"]
+        timeout: 10s
 
-      failed → degraded:
+      SYSTEM_FAILED → SYSTEM_RECOVERY:
+        trigger: "recovery_initiated"
+        validator: "recovery_readiness_validator"
+        action: "begin_recovery_process"
+        events: ["system.recovery.started", "attempting.recovery"]
+        timeout: 5s
+
+      SYSTEM_RECOVERY → SYSTEM_READY:
         trigger: "recovery_successful"
-        timeout: "30s"
-        event_publishes: ["system.recovery.attempted", "system.degraded"]
+        validator: "recovery_success_validator"
+        action: "complete_recovery"
+        events: ["system.ready", "recovery.success"]
+        timeout: 60s
+
+      SYSTEM_RECOVERY → SYSTEM_FAILED:
+        trigger: "recovery_failed"
+        validator: "recovery_failure_validator"
+        action: "escalate_failure"
+        events: ["system.failed", "recovery.failed"]
+        timeout: 120s
 
       # Shutdown transitions
-
-      # Shutdown transitions
-      ready → shutdown:
+      SYSTEM_READY → SYSTEM_SHUTDOWN:
         trigger: "shutdown_requested"
-        timeout: "30s"
-        event_publishes: ["system.shutdown.initiated"]
+        validator: "shutdown_readiness_validator"
+        action: "initiate_graceful_shutdown"
+        events: ["system.shutdown.started", "shutdown.graceful"]
+        timeout: 30s
 
-      operational → shutdown:
+      SYSTEM_OPERATIONAL → SYSTEM_SHUTDOWN:
         trigger: "shutdown_requested"
-        timeout: "30s"
-        event_publishes: ["system.graceful_shutdown"]
+        validator: "operational_shutdown_validator"
+        action: "complete_tasks_and_shutdown"
+        events: ["system.shutdown.started", "shutdown.graceful"]
+        timeout: 60s
 
-      degraded → shutdown:
+      SYSTEM_DEGRADED → SYSTEM_SHUTDOWN:
         trigger: "shutdown_requested"
-        timeout: "30s"
-        event_publishes: ["system.emergency.shutdown"]
+        validator: "degraded_shutdown_validator"
+        action: "emergency_shutdown"
+        events: ["system.shutdown.started", "shutdown.emergency"]
+        timeout: 15s
 
-      failed → shutdown:
+      SYSTEM_FAILED → SYSTEM_SHUTDOWN:
         trigger: "shutdown_requested"
-        timeout: "30s"
-        event_publishes: ["system.forced_shutdown"]
+        validator: "failed_shutdown_validator"
+        action: "force_shutdown"
+        events: ["system.shutdown.started", "shutdown.forced"]
+        timeout: 10s
 
-      shutdown → terminated:
+      SYSTEM_SHUTDOWN → SYSTEM_TERMINATED:
         trigger: "cleanup_completed"
-        timeout: "30s"
-        event_publishes: ["system.terminated"]
+        validator: "cleanup_validator"
+        action: "finalize_termination"
+        events: ["system.terminated", "cleanup.complete"]
+        timeout: 30s
+
+    # State Transition Validators
+    validators:
+      system_readiness_validator:
+        description: "Validates system readiness for transition to READY state"
+        checks:
+          - "all_critical_components_operational"
+          - "no_active_errors"
+          - "memory_available_above_threshold"
+          - "mcp_servers_connected"
+        failure_action: "block_transition_with_reason"
+
+      operational_readiness_validator:
+        description: "Validates operational readiness for task processing"
+        checks:
+          - "task_processing_components_ready"
+          - "delegation_engine_available"
+          - "error_handler_active"
+        failure_action: "delay_transition_with_retry"
+
+      degradation_validator:
+        description: "Validates degradation necessity and safety"
+        checks:
+          - "failed_components_identified"
+          - "alternative_strategies_available"
+          - "data_integrity_maintained"
+        failure_action: "escalate_to_failed"
+
+      recovery_readiness_validator:
+        description: "Validates recovery conditions and resources"
+        checks:
+          - "recovery_resources_available"
+          - "error_conditions_resolved"
+          - "rollback_strategy_ready"
+        failure_action: "escalate_failure"
+
+      cleanup_validator:
+        description: "Validates cleanup completion for shutdown"
+        checks:
+          - "all_tasks_completed_or_safely_stopped"
+          - "resources_released"
+          - "persistent_data_saved"
+        failure_action: "force_cleanup_with_logging"
+
+    # Enhanced Guard System
+    guards:
+      global_system_guards:
+        - name: "initialization_guard"
+          condition: "system_level.current_state in ['SYSTEM_READY', 'SYSTEM_OPERATIONAL']"
+          blocked_operations: ["task_delegation", "complex_planning", "parallel_execution"]
+          allowed_operations: ["system_status", "health_check", "configuration_read"]
+          priority: "critical"
+
+        - name: "resource_guard"
+          condition: "system_resources_available > 20%"
+          blocked_operations: ["resource_intensive_operations"]
+          fallback: "queue_for_later_execution"
+          priority: "high"
+
+        - name: "concurrency_guard"
+          condition: "active_tasks < max_concurrent_tasks"
+          blocked_operations: ["new_task_start"]
+          fallback: "queue_task"
+          priority: "medium"
+
+      component_level_guards:
+        - name: "delegation_guard"
+          component: "delegation_engine"
+          condition: "component_state in ['READY', 'PROCESSING']"
+          blocked_operations: ["delegate_to_agent", "create_subagent"]
+          priority: "critical"
+
+        - name: "execution_guard"
+          component: "task_execution_coordinator"
+          condition: "execution_resources_available"
+          blocked_operations: ["start_task_execution"]
+          fallback: "delay_execution"
+          priority: "high"
+
+        - name: "error_recovery_guard"
+          component: "error_recovery_handler"
+          condition: "recovery_mode != 'ACTIVE'"
+          blocked_operations: ["manual_recovery_override"]
+          priority: "critical"
+
+      operation_level_guards:
+        - name: "task_creation_guard"
+          operation: "create_task"
+          condition: "system_ready AND resources_available"
+          blocked_operations: ["task_creation"]
+          priority: "medium"
+
+        - name: "agent_selection_guard"
+          operation: "select_agent"
+          condition: "agent_registry_available AND selection_criteria_met"
+          blocked_operations: ["agent_selection"]
+          fallback: "use_default_agent"
+          priority: "high"
+
+        - name: "memory_operation_guard"
+          operation: "memory_write"
+          condition: "memory_available AND operation_safe"
+          blocked_operations: ["memory_write"]
+          fallback: "cache_operation"
+          priority: "low"
+
+      recovery_mechanisms:
+        - name: "automatic_retry"
+          max_attempts: 3
+          backoff_strategy: "exponential"
+          conditions: ["temporary_failure", "resource_unavailable"]
+
+        - name: "fallback_execution"
+          strategies: ["simplified_execution", "manual_override", "alternative_method"]
+          conditions: ["primary_method_failed", "component_unavailable"]
+
+        - name: "graceful_degradation"
+          levels: ["reduced_functionality", "minimal_operations", "read_only_mode"]
+          conditions: ["resource_constraints", "component_failures"]
+
+  # === PERFORMANCE MONITORING SYSTEM v2.0 ===
+  performance_monitoring_system:
+    enabled: true
+    architecture: "hierarchical"
+    integration_with: "unified_state_manager"
+    persistence: true
+    alerting: true
+
+    # System Level Performance Metrics
+    system_level_metrics:
+      state_transition_performance:
+        track_all_transitions: true
+        slow_transitions_threshold: 5s
+        critical_transitions_only: true
+
+      resource_utilization:
+        cpu_usage_tracking: true
+        memory_usage_tracking: true
+        mcp_server_utilization: true
+        agent_availability_metrics: true
+
+      operation_throughput:
+        tasks_per_minute: true
+        average_execution_time: true
+        success_rate_by_state: true
+        failure_rate_trends: true
+
+    # Component Level Metrics
+    component_level_metrics:
+      delegation_metrics:
+        delegation_success_rate: true
+        agent_selection_time: true
+        competency_check_time: true
+        assignment_efficiency: true
+        monitoring_overhead: true
+
+      execution_metrics:
+        execution_success_rate: true
+        state_transition_frequency: true
+        resource_contention_efficiency: true
+        error_recovery_time: true
+
+      error_recovery_metrics:
+        recovery_success_rate: true
+        average_recovery_time: true
+        pattern_recognition_rate: true
+        escalation_frequency: true
+
+    # Operation Level Metrics
+    operation_level_metrics:
+      task_lifecycle_metrics:
+        queuing_time: true
+        preparation_time: true
+        execution_time: true
+        monitoring_time: true
+        cleanup_time: true
+
+      guard_performance:
+        guard_block_rate: true
+        guard_efficiency: true
+        fallback_success_rate: true
+
+    # Performance Monitoring Integration
+    monitoring_integration:
+      state_change_events: true
+      transition_performance_tracking: true
+      resource_performance_alerts: true
+      bottleneck_detection: true
+      predictive_analytics: true
+
+    # Alert System
+    alert_system:
+      performance_degradation:
+        threshold: 20% performance_degradation
+        triggers: ["slow_transitions", "high_resource_usage", "frequent_failures"]
+        actions: ["investigate", "optimize", "escalate"]
+        notification_channels: ["system_alerts", "performance_dashboards"]
+
+      recovery_performance:
+        threshold: "recovery_time > average + 50%"
+        triggers: ["extended_recovery_attempts", "escalation_frequency"]
+        actions: ["strategy_adjustment", "resource_boosting", "manual_intervention"]
+        notification_channels: ["recovery_alerts", "escalation_reports"]
+
+      system_health_monitoring:
+        threshold: "system_health < 80%"
+        triggers: ["multiple_critical_failures", "cascade_failures", "extended_degraded_state"]
+        actions: ["emergency_response", "system_recovery", "manual_intervention"]
+
+    # Performance Data Collection
+    data_collection:
+      real_time_metrics: true
+      historical_analysis: true
+      trend_analysis: true
+      predictive_modeling: true
+
+      retention_period: "90_days"
+      aggregation_intervals: ["real_time", "hourly", "daily", "weekly", "monthly"]
+
+    # Performance Reporting
+    reporting:
+      automated_reports: true
+      performance_dashboards: true
+      trend_analysis_reports: true
+      capacity_planning_reports: true
+
+  # === STATE PERSISTENCE SYSTEM v2.0 ===
+  state_persistence_system:
+    enabled: true
+    architecture: "hierarchical"
+    integration_with: "unified_state_manager"
+    storage_backend: "serena"
+    backup_enabled: true
+    recovery_enabled: true
+
+    # State Persistence Configuration
+    persistence_config:
+      save_critical_states: true
+      save_transition_history: true
+      save_performance_metrics: true
+      save_recovery_patterns: true
+      save_guard_violations: true
+
+    # State Data Structure
+    state_storage:
+      system_level:
+        current_state: "string"
+        state_history: "array"
+        transition_history: "array"
+        performance_history: "array"
+        error_history: "array"
+
+      component_level:
+        delegation_engine:
+          current_state: "string"
+          state_history: "array"
+          transition_history: "array"
+          performance_metrics: "object"
+
+        task_execution_coordinator:
+          current_state: "string"
+          state_history: "array"
+          transition_history: "array"
+          performance_metrics: "object"
+
+        error_recovery_handler:
+          current_state: "string"
+          state_history: "array"
+          recovery_history: "array"
+          success_patterns: "object"
+
+    # Automatic Recovery
+    auto_recovery:
+      enabled: true
+      recovery_triggers: ["state_persistence_failure", "state_corruption_detected"]
+      recovery_strategies: ["state_rollback", "state_reset", "system_reboot"]
+
+    # Event Integration
+    event_integration:
+      state_persistence_events: ["state_persists", "state_restored", "persistence_failed"]
+      recovery_events: ["recovery_completed", "recovery_failed", "auto_recovery_executed"]
+      monitoring_events: ["state_metrics_updated", "performance_alert_triggered"]
+
+    # Backup and Export
+    backup_system:
+      scheduled_backups: true
+      backup_frequency: "daily"
+      retention_period: "30 days"
+      export_format: "structured_yaml"
+      import_capability: true
+
+      backup_data:
+        system_state: true
+        component_states: true
+        performance_metrics: true
+        transition_history: true
+        error_patterns: true
 
   # === STATE EVENT HANDLERS ===
-  state_event_handlers:
     state_change_observer:
       description: "Monitors state transitions and emits state change events"
       subscribes_to: ["state_machine.transition"]
@@ -786,79 +1150,83 @@ implementation:
           interruptible: true
           progress_reporting: true
 
-    # === INITIALIZATION STATE MACHINE v1.0 ===
+    # === UNIFIED STATE MANAGER INTEGRATION COMPONENT ===
 
-    - name: "initialization_state_machine"
+    - name: "unified_state_manager_integration"
       priority: 4.5
-      method: "manage_initialization_states"
+      method: "integrate_unified_state_management"
       dependencies: ["system_initialization_phase4_optimization.completed"]
       config:
-        states:
-          - "INITIALIZING"    # System is starting up - block all actions
-          - "READY"          # Initialization complete - ready for tasks
-          - "EXECUTING"      # Currently executing tasks
-          - "ERROR"          # Initialization failed
+        integration_type: "hierarchical_state_management"
+        system_manager: "unified_state_manager"
 
-        transitions:
-          - from: "INITIALIZING"
-            to: "READY"
-            trigger: "initialization_complete"
-            action: "enable_all_operations"
-          - from: "INITIALIZING"
-            to: "ERROR"
-            trigger: "initialization_failed"
-            action: "log_error_and_escalate"
-          - from: "READY"
-            to: "EXECUTING"
-            trigger: "task_received"
-            action: "begin_task_execution"
-          - from: "EXECUTING"
-            to: "READY"
-            trigger: "task_completed"
-            action: "cleanup_and_reset"
-          - from: "ERROR"
-            to: "INITIALIZING"
-            trigger: "retry_initialization"
-            action: "attempt_recovery"
+        # Sub-state machine for system boot process
+        boot_sequence:
+          stages:
+            - name: "COMPONENT_INIT"
+              description: "Initialize critical system components"
+              timeout: 30s
+              required_components: ["error_handler", "event_bus", "state_manager"]
+              next_stage: "SERVICE_READY"
 
-        guards:
-          - name: "block_during_initialization"
-            condition: "current_state != 'INITIALIZING'"
-            blocked_actions:
-              - "Task"
-              - "Plan"
-              - "delegate_to_agent"
-              - "create_subagent"
-            allowed_during_init:
-              - "load_configuration"
-              - "initialize_components"
-              - "prepare_variables"
-              - "log_messages"
+            - name: "SERVICE_READY"
+              description: "Core services are ready"
+              timeout: 20s
+              checks: ["mcp_servers_connected", "agent_registry_ready"]
+              next_stage: "VALIDATION_COMPLETE"
 
-        state_persistence:
-          variable_name: "system_initialization_state"
-          default_state: "INITIALIZING"
-          persist_across_sessions: false
+            - name: "VALIDATION_COMPLETE"
+              description: "System validation complete"
+              timeout: 10s
+              checks: ["all_validations_passed"]
+              next_stage: "SYSTEM_READY"
 
-        monitoring:
-          state_change_logging: true
-          transition_validation: true
-          guard_enforcement: true
-          error_recovery_enabled: true
+        # Enhanced guards with unified state integration
+        unified_guards:
+          - name: "system_state_guard"
+            system_level: true
+            condition: "unified_state_manager.system_level.current_state in ['SYSTEM_READY', 'SYSTEM_OPERATIONAL']"
+            blocked_operations: ["Task", "Plan", "delegate_to_agent", "create_subagent"]
+            allowed_operations: ["system_status", "health_check", "configuration_read"]
+            fallback: "delay_until_ready"
+            priority: "critical"
+
+          - name: "component_boot_guard"
+            system_level: true
+            condition: "boot_sequence.stage != 'VALIDATION_COMPLETE'"
+            blocked_operations: ["task_delegation", "complex_planning"]
+            allowed_operations: ["component_initialization", "status_checking"]
+            priority: "high"
+
+        # Event integration with unified system
+        event_integration:
+          subscribe_to: ["unified_state_manager.transition.completed"]
+          publish_on:
+            boot_completed: ["system.boot.complete", "unified_state_manager.transition.to.SYSTEM_READY"]
+            boot_failed: ["system.boot.failed", "unified_state_manager.transition.to.SYSTEM_FAILED"]
+            stage_completed: ["boot.stage.completed"]
+
+        # Performance monitoring for initialization
+        performance_monitoring:
+          track_boot_sequence: true
+          component_initialization_times: true
+          state_transition_performance: true
+          guard_performance: true
 
       output:
-        current_state: "string"
-        previous_state: "string"
+        boot_status: "string"
+        current_stage: "string"
+        system_state: "string"
         operations_allowed: "boolean"
-        transition_history: "array"
-        last_state_change: "timestamp"
+        performance_metrics: "object"
+        transition_log: "array"
 
     # === INTELLIGENT TOOL SELECTION COMPONENTS v2.0 ===
 
     - name: "intelligent_tool_selector"
       priority: 5
       method: "automatic_tool_selection_engine"
-      dependencies: ["task_analysis_coordinator.completed", "initialization_state_machine.ready"]
+      dependencies: ["unified_state_manager.ready"]
       config:
         selection_criteria:
           task_complexity_threshold: 3
@@ -3555,8 +3923,8 @@ implementation:
 
     - name: "delegation_engine"
       priority: 22
-      method: "intelligent_task_assignment"
-      dependencies: ["initialization_state_machine.ready"]
+      method: "intelligent_task_assignment_with_state_management"
+      dependencies: ["unified_state_integration.ready"]
       config:
         selection_algorithm:
           semantic_analysis:
@@ -3616,15 +3984,169 @@ implementation:
           availability_check: true
           performance_history: true
 
+        # Delegation State Machine v2.0
+        delegation_state_machine:
+          enabled: true
+          current_state: "IDLE"
+          persistence: true
+          monitoring: true
+
+          states:
+            IDLE:
+              description: "Ready to receive delegation requests"
+              timeout: "infinite"
+              transitions_to: ["ANALYZING", "BLOCKED"]
+              allowed_operations: ["receive_delegation_request"]
+
+            ANALYZING:
+              description: "Analyzing task requirements and available agents"
+              timeout: 30s
+              transitions_to: ["AGENT_SELECTION", "NO_AGENTS_AVAILABLE", "ERROR"]
+              operations: ["task_complexity_analysis", "agent_availability_check"]
+
+            AGENT_SELECTION:
+              description: "Selecting best agents for the task"
+              timeout: 45s
+              transitions_to: ["COMPETENCY_CHECK", "SELECTION_FAILED"]
+              operations: ["semantic_matching", "competency_scoring", "availability_validation"]
+
+            COMPETENCY_CHECK:
+              description: "Validating agent competencies for the task"
+              timeout: 30s
+              transitions_to: ["AGENT_ASSIGNMENT", "COMPETENCY_FAILED"]
+              operations: ["skill_validation", "experience_check", "technical_validation"]
+
+            AGENT_ASSIGNMENT:
+              description: "Assigning task to selected agents"
+              timeout: 20s
+              transitions_to: ["MONITORING", "ASSIGNMENT_FAILED"]
+              operations: ["task_assignment", "resource_allocation", "coordination_setup"]
+
+            MONITORING:
+              description: "Monitoring delegated task execution"
+              timeout: "task_specific"
+              transitions_to: ["COMPLETED", "FAILED", "TIMEOUT"]
+              operations: ["progress_tracking", "performance_monitoring", "error_detection"]
+
+            COMPLETED:
+              description: "Delegated task completed successfully"
+              timeout: 10s
+              transitions_to: ["IDLE", "CLEANUP"]
+              operations: ["result_collection", "success_logging", "resource_cleanup"]
+
+            FAILED:
+              description: "Delegated task failed"
+              timeout: 20s
+              transitions_to: ["RECOVERY", "CLEANUP"]
+              operations: ["error_analysis", "failure_logging", "escalation_check"]
+
+            RECOVERY:
+              description: "Attempting recovery from delegation failure"
+              timeout: 60s
+              transitions_to: ["AGENT_SELECTION", "IDLE", "ESCALATED"]
+              operations: ["retry_analysis", "alternative_agent_selection", "strategy_adjustment"]
+
+            BLOCKED:
+              description: "Delegation blocked by system constraints"
+              timeout: "block_specific"
+              transitions_to: ["IDLE", "ESCALATED"]
+              operations: ["constraint_analysis", "queue_management", "notification"]
+
+            ESCALATED:
+              description: "Delegation escalated for manual intervention"
+              timeout: "manual_intervention"
+              transitions_to: ["IDLE"]
+              operations: ["escalation_logging", "manual_handoff"]
+
+          # State transitions
+          transitions:
+            IDLE → ANALYZING:
+              trigger: "delegation_request_received"
+              validator: "request_validator"
+              action: "begin_delegation_analysis"
+              events: ["delegation.started", "state.analyzing"]
+
+            ANALYZING → AGENT_SELECTION:
+              trigger: "analysis_complete"
+              validator: "analysis_success_validator"
+              action: "begin_agent_selection"
+              events: ["analysis.complete", "state.agent_selection"]
+
+            AGENT_SELECTION → COMPETENCY_CHECK:
+              trigger: "agents_selected"
+              validator: "selection_success_validator"
+              action: "begin_competency_check"
+              events: ["selection.complete", "state.competency_check"]
+
+            COMPETENCY_CHECK → AGENT_ASSIGNMENT:
+              trigger: "competency_validated"
+              validator: "competency_success_validator"
+              action: "begin_agent_assignment"
+              events: ["competency.validated", "state.agent_assignment"]
+
+            AGENT_ASSIGNMENT → MONITORING:
+              trigger: "assignment_complete"
+              validator: "assignment_success_validator"
+              action: "begin_task_monitoring"
+              events: ["assignment.complete", "state.monitoring"]
+
+            MONITORING → COMPLETED:
+              trigger: "task_completed_successfully"
+              validator: "completion_validator"
+              action: "handle_task_completion"
+              events: ["task.completed", "state.completed"]
+
+            MONITORING → FAILED:
+              trigger: "task_failed"
+              validator: "failure_validator"
+              action: "handle_task_failure"
+              events: ["task.failed", "state.failed"]
+
+            COMPLETED → IDLE:
+              trigger: "cleanup_complete"
+              validator: "cleanup_validator"
+              action: "reset_delegation_state"
+              events: ["delegation.complete", "state.idle"]
+
+          # Enhanced guards
+          state_guards:
+            - name: "system_state_guard"
+              states: ["IDLE", "COMPLETED", "FAILED"]
+              condition: "unified_state_manager.system_level.current_state in ['SYSTEM_READY', 'SYSTEM_OPERATIONAL']"
+              blocked_transitions: ["ANALYZING", "AGENT_SELECTION", "COMPETENCY_CHECK"]
+              priority: "critical"
+
+            - name: "resource_guard"
+              states: ["ANALYZING", "AGENT_SELECTION", "COMPETENCY_CHECK", "AGENT_ASSIGNMENT"]
+              condition: "delegation_resources_available > threshold"
+              blocked_transitions: ["MONITORING"]
+              fallback: "queue_delegation"
+              priority: "high"
+
+            - name: "concurrency_guard"
+              condition: "active_delegations < max_concurrent_delegations"
+              blocked_transitions: ["AGENT_ASSIGNMENT"]
+              fallback: "queue_for_available_slot"
+              priority: "medium"
+
         initialization_guards:
           state_check_enabled: true
-          required_state: "READY"
+          required_state: "SYSTEM_READY"
           blocked_states:
-            - "INITIALIZING"
-            - "ERROR"
+            - "SYSTEM_BOOT"
+            - "SYSTEM_DEGRADED"
+            - "SYSTEM_FAILED"
           action_if_blocked: "delay_until_ready"
           timeout_ms: 30000
           fallback_behavior: "log_warning_and_continue"
+
+        # Performance monitoring for delegation
+        performance_monitoring:
+          track_delegation_lifecycle: true
+          agent_selection_performance: true
+          state_transition_performance: true
+          delegation_success_rate: true
+          resource_utilization: true
 
       output:
         delegation_plan: "object"
@@ -3634,6 +4156,8 @@ implementation:
         confidence_scores: "object"
         fallback_options: "array"
         selection_metrics: "object"
+        delegation_state: "string"
+        performance_metrics: "object"
 
     - name: "coordination_system"
       priority: 23
@@ -4295,15 +4819,271 @@ implementation:
 
     - name: "error_recovery_handler"
       priority: 36
-      method: "event_based_error_recovery"
+      method: "comprehensive_error_recovery_with_state_machine"
       event_subscription:
-        listen_to: ["task.analysis.error", "task.selection.error", "task.processing.timeout", "task.agent.unavailable"]
+        listen_to: ["task.analysis.error", "task.selection.error", "task.processing.timeout", "task.agent.unavailable", "state_machine.transition.failed"]
         correlation_field: "task_id"
         error_handling_priority: "critical"
       dependencies:
-        fallback_system_dependency: "error_system_initialization"
+        unified_state_manager_dependency: "unified_state_manager"
         monitoring_dependency: "monitoring_minimal_setup"
       config:
+
+        # Error Recovery State Machine v2.0
+        error_recovery_state_machine:
+          enabled: true
+          current_state: "STANDBY"
+          persistence: true
+          monitoring: true
+          integration_with: "unified_state_manager"
+
+          states:
+            STANDBY:
+              description: "Ready to handle error recovery requests"
+              timeout: "infinite"
+              transitions_to: ["DETECTING", "ANALYZING", "BLOCKED"]
+              allowed_operations: ["receive_error_event", "status_check"]
+
+            DETECTING:
+              description: "Detecting errors and categorizing severity"
+              timeout: 30s
+              transitions_to: ["ANALYZING", "LOW_PRIORITY_QUEUE", "CRITICAL_QUEUE", "BLOCKED"]
+              operations: ["error_detection", "severity_assessment", "impact_analysis"]
+
+            ANALYZING:
+              description: "Analyzing error patterns and root causes"
+              timeout: 60s
+              transitions_to: ["STRATEGY_SELECTION", "PATTERN_MATCHING", "NO_PATTERN_FOUND", "ANALYSIS_FAILED"]
+              operations: ["pattern_recognition", "root_cause_analysis", "failure_classification"]
+
+            STRATEGY_SELECTION:
+              description: "Selecting appropriate recovery strategy"
+              timeout: 30s
+              transitions_to: ["RECOVERY_EXECUTION", "STRATEGY_FAILED", "MANUAL_INTERVENTION"]
+              operations: ["strategy_evaluation", "resource_availability_check", "success_probability_assessment"]
+
+            PATTERN_MATCHING:
+              description: "Matching error against known recovery patterns"
+              timeout: 45s
+              transitions_to: ["RECOVERY_EXECUTION", "NO_PATTERN_FOUND", "MANUAL_INTERVENTION"]
+              operations: ["pattern_matching", "similar_case_analysis", "historical_success_lookup"]
+
+            NO_PATTERN_FOUND:
+              description: "No recovery pattern found, entering recovery mode"
+              timeout: 90s
+              transitions_to: ["RECOVERY_EXECUTION", "ESCALATED", "MANUAL_INTERVENTION"]
+              operations: ["generic_recovery_analysis", "best_effort_strategy", "escalation_assessment"]
+
+            RECOVERY_EXECUTION:
+              description: "Executing selected recovery strategy"
+              timeout: "strategy_specific"
+              transitions_to: ["MONITORING", "COMPLETED", "FAILED", "TIMEOUT"]
+              operations: ["recovery_execution", "progress_tracking", "resource_coordination"]
+
+            MONITORING:
+              description: "Monitoring recovery execution progress"
+              timeout: "monitoring_interval"
+              transitions_to: ["COMPLETED", "FAILED", "TIMEOUT", "WARNING"]
+              operations: ["recovery_progress_monitoring", "performance_monitoring", "success_probability_update"]
+
+            COMPLETED:
+              description: "Recovery completed successfully"
+              timeout: 30s
+              transitions_to: ["VERIFICATION", "CLEANUP"]
+              operations: ["recovery_validation", "success_logging", "result_collection"]
+
+            FAILED:
+              description: "Recovery execution failed"
+              timeout: 60s
+              transitions_to: ["STRATEGY_REEVALUATION", "ESCALATED", "MANUAL_INTERVENTION"]
+              operations: ["failure_analysis", "strategy_adjustment", "impact_assessment"]
+
+            TIMEOUT:
+              description: "Recovery execution timed out"
+              timeout: 30s
+              transitions_to: ["STRATEGY_REEVALUATION", "ESCALATED", "MANUAL_INTERVENTION"]
+              operations: ["timeout_analysis", "strategy_extension", "escalation_preparation"]
+
+            STRATEGY_REEVALUATION:
+              description: "Re-evaluating recovery strategy"
+              timeout: 45s
+              transitions_to: ["RECOVERY_EXECUTION", "ALTERNATIVE_STRATEGY", "ESCALATED"]
+              operations: ["strategy_reanalysis", "alternative_evaluation", "risk_assessment"]
+
+            ALTERNATIVE_STRATEGY:
+              description: "Executing alternative recovery strategy"
+              timeout: "alternative_strategy_timeout"
+              transitions_to: ["MONITORING", "COMPLETED", "FAILED", "ESCALATED"]
+              operations: ["alternative_execution", "resource_reallocation", "progress_tracking"]
+
+            WARNING:
+              description: "Recovery encountering issues"
+              timeout: "warning_resolution_timeout"
+              transitions_to: ["RECOVERY_EXECUTION", "MONITORING", "FAILED"]
+              operations: ["issue_analysis", "performance_adjustment", "intervention_planning"]
+
+            BLOCKED:
+              description: "Recovery blocked by system constraints"
+              timeout: "block_specific_timeout"
+              transitions_to: ["STANDBY", "ESCALATED"]
+              operations: ["constraint_analysis", "queue_management", "notification"]
+
+            ESCALATED:
+              description: "Recovery escalated for manual intervention"
+              timeout: "manual_intervention_timeout"
+              transitions_to: ["STANDBY"]
+              operations: ["escalation_logging", "manual_handoff", "status_reporting"]
+
+            VERIFICATION:
+              description: "Verifying recovery effectiveness"
+              timeout: "verification_timeout"
+              transitions_to: ["COMPLETED", "FAILED", "READY"]
+              operations: ["recovery_validation", "effectiveness_assessment", "lessons_learned"]
+
+            CLEANUP:
+              description: "Cleaning up after recovery process"
+              timeout: "cleanup_timeout"
+              transitions_to: ["STANDBY"]
+              operations: ["resource_cleanup", "state_reset", "recovery_logging"]
+
+          # State transitions
+          transitions:
+            STANDBY → DETECTING:
+              trigger: "error_event_received"
+              validator: "error_event_validator"
+              action: "begin_error_detection"
+              events: ["error.detected", "state.detecting"]
+
+            DETECTING → ANALYZING:
+              trigger: "error_detected"
+              validator: "detection_success_validator"
+              action: "begin_error_analysis"
+              events: ["error.analyzing", "state.analyzing"]
+
+            ANALYZING → STRATEGY_SELECTION:
+              trigger: "analysis_complete"
+              validator: "analysis_success_validator"
+              action: "select_recovery_strategy"
+              events: ["analysis.complete", "state.strategy_selection"]
+
+            STRATEGY_SELECTION → RECOVERY_EXECUTION:
+              trigger: "strategy_selected"
+              validator: "strategy_success_validator"
+              action: "begin_recovery_execution"
+              events: ["recovery.started", "state.recovering"]
+
+            RECOVERY_EXECUTION → COMPLETED:
+              trigger: "recovery_successful"
+              validator: "recovery_success_validator"
+              action: "handle_recovery_completion"
+              events: ["recovery.completed", "state.completed"]
+
+            COMPLETED → VERIFICATION:
+              trigger: "recovery_completion_complete"
+              validator: "completion_validation_validator"
+              action: "begin_recovery_verification"
+              events: ["recovery.verification.started", "state.verifying"]
+
+            VERIFICATION → CLEANUP:
+              trigger: "verification_successful"
+              validator: "verification_success_validator"
+              action: "begin_recovery_cleanup"
+              events: ["recovery.verification.complete", "state.cleanup"]
+
+            CLEANUP → STANDBY:
+              trigger: "cleanup_complete"
+              validator: "cleanup_success_validator"
+              action: "reset_recovery_state"
+              events: ["recovery.complete", "state.standby"]
+
+          # Enhanced recovery strategies
+          recovery_strategies:
+            semantic_analysis_failure:
+              fallback_to: "keyword_based_analysis"
+              confidence_adjustment: -0.2
+              success_rate_improvement: true
+              recovery_timeout: 60s
+              monitoring_enabled: true
+
+            complexity_assessment_failure:
+              fallback_to: "basic_complexity_scoring"
+              domain_heuristics: true
+              confidence_adjustment: -0.3
+              success_rate_improvement: true
+              recovery_timeout: 90s
+              monitoring_enabled: true
+
+            domain_classification_failure:
+              fallback_to: "keyword_domain_matching"
+              confidence_adjustment: -0.3
+              success_rate_improvement: true
+              recovery_timeout: 45s
+              monitoring_enabled: true
+
+            agent_selection_failure:
+              fallback_agents: ["general_developer", "system_analyst", "quality_assurance"]
+              user_notification: true
+              confidence_adjustment: -0.2
+              recovery_timeout: 30s
+              monitoring_enabled: true
+
+            timeout_handling:
+              partial_analysis_proceed: true
+              missing_analysis_estimation: "domain_based_defaults"
+              extension_allowed: false
+              partial_results_utilization: true
+              recovery_timeout: 120s
+              monitoring_enabled: true
+
+            critical_error_handling:
+              immediate_escalation: true
+              priority_level: "critical"
+              manual_intervention_required: true
+              recovery_timeout: 30s
+              monitoring_enabled: true
+
+            system_failure_recovery:
+              system_state_transition: true
+              fallback_strategies: ["minimal_functionality", "read_only_mode", "emergency_shutdown"]
+              recovery_timeout: 300s
+              monitoring_enabled: true
+
+        # Enhanced guards
+        recovery_guards:
+          - name: "system_state_guard"
+            states: ["STANDBY", "COMPLETED", "CLEANUP"]
+            condition: "unified_state_manager.system_level.current_state not in ['SYSTEM_FAILED', 'SYSTEM_TERMINATED']"
+            blocked_transitions: ["RECOVERY_EXECUTION", "MONITORING"]
+            priority: "critical"
+
+          - name: "resource_guard"
+            states: ["ANALYZING", "STRATEGY_SELECTION", "RECOVERY_EXECUTION", "MONITORING"]
+            condition: "recovery_resources_available > threshold"
+            blocked_transitions: ["MONITORING"]
+            fallback: "pause_recovery"
+            priority: "high"
+
+          - name: "error_severity_guard"
+            states: ["ANALYZING", "STRATEGY_SELECTION", "RECOVERY_EXECUTION"]
+            condition: "error_severity <= recovery_capability_threshold"
+            blocked_transitions: ["RECOVERY_EXECUTION"]
+            fallback: "escalate_error"
+            priority: "high"
+
+          - name: "concurrency_guard"
+            condition: "active_recoveries < max_concurrent_recoveries"
+            blocked_transitions: ["RECOVERY_EXECUTION"]
+            fallback: "queue_recovery"
+            priority: "medium"
+
+        # Performance monitoring for recovery
+        performance_monitoring:
+          track_recovery_lifecycle: true
+          state_transition_performance: true
+          recovery_success_rate: true
+          error_pattern_recognition: true
+          recovery_time_optimization: true
+          failure_prevention_metrics: true
         recovery_strategies:
           semantic_analysis_failure:
             fallback_to: "keyword_based_analysis"
@@ -5332,23 +6112,218 @@ adaptive_planning:
       - dependency_tracking
       - level_completion_monitoring
       - error_propagation
-    execution_logic:
-      sequential_execution:
-        - parent_task waits for all child_tasks to complete
-        - marks parent as "completed" only when all children are "completed"
-        - propagates errors from children to parents
-      parallel_execution:
-        - tasks at same level can execute in parallel
-        - synchronization points at level boundaries
-        - parent waits for all parallel tasks in level
-      error_handling:
-        - failed_child_blocks_parent_progress
-        - sibling_tasks_continue_if_possible
-        - parent_marked_with_partial_completion
-    validation_rules:
-      - circular_dependency_prevention: true
-      - infinite_recursion_prevention: true
-      - dependency_graph_validation: true
+      - state_machine_integration
+
+    # Task Execution State Machine v2.0
+    task_execution_state_machine:
+      enabled: true
+      current_state: "READY"
+      persistence: true
+      monitoring: true
+      integration_with: "unified_state_manager"
+
+      states:
+        READY:
+          description: "Ready to receive task execution requests"
+          timeout: "infinite"
+          transitions_to: ["QUEUED", "PREPARING", "BLOCKED"]
+          allowed_operations: ["receive_task", "status_check"]
+
+        QUEUED:
+          description: "Task queued for execution"
+          timeout: "queue_timeout"
+          transitions_to: ["PREPARING", "CANCELLED", "TIMEOUT"]
+          operations: ["queue_position_update", "priority_adjustment"]
+
+        PREPARING:
+          description: "Preparing task for execution"
+          timeout: "preparation_timeout"
+          transitions_to: ["EXECUTING", "PREPARATION_FAILED", "CANCELLED"]
+          operations: ["resource_allocation", "dependency_check", "validation"]
+
+        EXECUTING:
+          description: "Task currently executing"
+          timeout: "execution_timeout"
+          transitions_to: ["MONITORING", "COMPLETED", "FAILED", "INTERRUPTED"]
+          operations: ["task_execution", "progress_tracking", "resource_monitoring"]
+
+        MONITORING:
+          description: "Monitoring task execution progress"
+          timeout: "monitoring_interval"
+          transitions_to: ["COMPLETED", "FAILED", "WARNING", "TIMEOUT"]
+          operations: ["performance_tracking", "health_checks", "progress_validation"]
+
+        COMPLETED:
+          description: "Task execution completed successfully"
+          timeout: "completion_timeout"
+          transitions_to: ["CLEANUP", "READY"]
+          operations: ["result_collection", "success_logging", "resource_release"]
+
+        FAILED:
+          description: "Task execution failed"
+          timeout: "failure_analysis_timeout"
+          transitions_to: ["RECOVERY", "CLEANUP", "ESCALATED"]
+          operations: ["error_analysis", "failure_logging", "impact_assessment"]
+
+        RECOVERY:
+          description: "Attempting recovery from task failure"
+          timeout: "recovery_timeout"
+          transitions_to: ["PREPARING", "CANCELLED", "ESCALATED"]
+          operations: ["retry_analysis", "strategy_adjustment", "resource_reallocation"]
+
+        WARNING:
+          description: "Task execution encountering issues"
+          timeout: "warning_resolution_timeout"
+          transitions_to: ["EXECUTING", "MONITORING", "FAILED"]
+          operations: ["issue_analysis", "performance_adjustment", "intervention_planning"]
+
+        INTERRUPTED:
+          description: "Task execution was interrupted"
+          timeout: "interruption_handling_timeout"
+          transitions_to: ["RECOVERY", "CANCELLED", "CLEANUP"]
+          operations: ["interruption_analysis", "state_preservation", "resume_planning"]
+
+        CANCELLED:
+          description: "Task execution was cancelled"
+          timeout: "cancellation_timeout"
+          transitions_to: ["CLEANUP"]
+          operations: ["cancellation_logging", "resource_cleanup", "impact_assessment"]
+
+        CLEANUP:
+          description: "Cleaning up after task execution"
+          timeout: "cleanup_timeout"
+          transitions_to: ["READY"]
+          operations: ["resource_cleanup", "state_reset", "result_processing"]
+
+        TIMEOUT:
+          description: "Task execution timed out"
+          timeout: "timeout_handling_timeout"
+          transitions_to: ["RECOVERY", "CANCELLED", "ESCALATED"]
+          operations: ["timeout_analysis", "extension_evaluation", "escalation_check"]
+
+        ESCALATED:
+          description: "Task escalated for manual intervention"
+          timeout: "manual_intervention_timeout"
+          transitions_to: ["READY"]
+          operations: ["escalation_logging", "manual_handoff", "status_reporting"]
+
+      # State transitions
+      transitions:
+        READY → QUEUED:
+          trigger: "task_received"
+          validator: "task_acceptance_validator"
+          action: "queue_task_for_execution"
+          events: ["task.queued", "state.queued"]
+
+        QUEUED → PREPARING:
+          trigger: "resource_allocation_ready"
+          validator: "queue_position_validator"
+          action: "begin_task_preparation"
+          events: ["task.preparing", "state.preparing"]
+
+        PREPARING → EXECUTING:
+          trigger: "preparation_complete"
+          validator: "preparation_success_validator"
+          action: "begin_task_execution"
+          events: ["task.executing", "state.executing"]
+
+        EXECUTING → MONITORING:
+          trigger: "execution_started"
+          validator: "execution_start_validator"
+          action: "begin_execution_monitoring"
+          events: ["task.monitoring", "state.monitoring"]
+
+        MONITORING → COMPLETED:
+          trigger: "task_completed_successfully"
+          validator: "completion_validator"
+          action: "handle_task_completion"
+          events: ["task.completed", "state.completed"]
+
+        MONITORING → FAILED:
+          trigger: "task_failed"
+          validator: "failure_validator"
+          action: "handle_task_failure"
+          events: ["task.failed", "state.failed"]
+
+        COMPLETED → CLEANUP:
+          trigger: "completion_processing_started"
+          validator: "completion_cleanup_validator"
+          action: "begin_completion_cleanup"
+          events: ["task.cleanup.started", "state.cleanup"]
+
+        CLEANUP → READY:
+          trigger: "cleanup_complete"
+          validator: "cleanup_success_validator"
+          action: "reset_execution_state"
+          events: ["task.cleanup.complete", "state.ready"]
+
+      # Enhanced guards
+      state_guards:
+        - name: "system_state_guard"
+          states: ["READY", "COMPLETED", "CLEANUP"]
+          condition: "unified_state_manager.system_level.current_state in ['SYSTEM_READY', 'SYSTEM_OPERATIONAL']"
+          blocked_transitions: ["EXECUTING", "MONITORING"]
+          priority: "critical"
+
+        - name: "resource_guard"
+          states: ["PREPARING", "EXECUTING", "MONITORING"]
+          condition: "execution_resources_available > threshold"
+          blocked_transitions: ["MONITORING"]
+          fallback: "pause_execution"
+          priority: "high"
+
+        - name: "dependency_guard"
+          condition: "task_dependencies_satisfied"
+          blocked_transitions: ["EXECUTING"]
+          fallback: "wait_for_dependencies"
+          priority: "high"
+
+        - name: "concurrency_guard"
+          condition: "active_executions < max_concurrent_executions"
+          blocked_transitions: ["EXECUTING"]
+          fallback: "queue_execution"
+          priority: "medium"
+
+      execution_logic:
+        sequential_execution:
+          - parent_task waits for all child_tasks to complete
+          - marks parent as "completed" only when all children are "completed"
+          - propagates errors from children to parents
+          - state synchronization between parent and child states
+
+        parallel_execution:
+          - tasks at same level can execute in parallel
+          - synchronization points at state transition boundaries
+          - parent waits for all parallel tasks to reach compatible states
+          - resource allocation across parallel tasks
+
+        error_handling:
+          - failed_child_blocks_parent_progress in certain states
+          - sibling_tasks_continue_if_possible
+          - parent_marked_with_partial_completion when appropriate
+          - state-based error propagation rules
+
+        state_synchronization:
+          - parent-child state coordination
+          - hierarchical state consistency
+          - state transition propagation
+          - recovery state coordination
+
+      validation_rules:
+        - circular_dependency_prevention: true
+        - infinite_recursion_prevention: true
+        - dependency_graph_validation: true
+        - state_transition_validation: true
+        - resource_availability_validation: true
+
+      # Performance monitoring for task execution
+      performance_monitoring:
+        track_execution_lifecycle: true
+        state_transition_performance: true
+        resource_utilization_tracking: true
+        execution_success_rate: true
+        bottleneck_identification: true
+        dependency_resolution_time: true
 
   # Result Analyzer Component
   result_analyzer:
