@@ -5,8 +5,8 @@
     "email": "pomazan.bohdan@gmail.com"
   },
   "metadata": {
-    "description": "Event-driven master agent with preserved advanced functionality, minimal state machine, and zero circular dependencies",
-    "version": "0.8.1"
+    "description": "Event-driven master agent with comprehensive state machine v2.0, unified shared components, and enhanced reliability",
+    "version": "0.8.2"
   },
   "plugins": [
     {
@@ -154,6 +154,19 @@
         "memory-driven-decision-making",
         "event-driven-architecture",
         "state-machine-management",
+        "state-machine-v2",
+        "unified-components",
+        "shared-state-machine",
+        "critical-transition-handlers",
+        "standardized-guards",
+        "enhanced-retry-mechanisms",
+        "concurrent-scenario-handling",
+        "race-condition-fixes",
+        "atomic-operations",
+        "validator-testing-framework",
+        "deadlock-detection-fixes",
+        "state-persistence-fixes",
+        "resource-allocation-fixes",
         "zero-dependency-conflicts",
         "fault-tolerance",
         "graceful-degradation",

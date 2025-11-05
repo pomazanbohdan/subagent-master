@@ -594,6 +594,715 @@ implementation:
       publishes: ["system.recovery.initiated", "system.alert.critical"]
       timeout: "1s"
 
+  # === SHARED STATE MACHINE COMPONENTS v2.0 ===
+
+  # Unified Task Handler - eliminates duplication between state machines
+  unified_task_handler:
+    enabled: true
+    architecture: "component_based"
+    shared_operations:
+      # Common operations across all state machines
+      validation_operations:
+        - name: "resource_availability_validation"
+          method: "check_resources_above_threshold"
+          config:
+            threshold: 0.2
+            timeout: 5s
+            retry_attempts: 3
+
+        - name: "system_health_validation"
+          method: "check_system_health"
+          config:
+            min_health: 0.8
+            critical_components: ["state_manager", "event_bus", "error_handler"]
+
+        - name: "dependency_validation"
+          method: "validate_dependencies_available"
+          config:
+            required_components: "dynamic_based_on_context"
+
+      monitoring_operations:
+        - name: "performance_tracking"
+          method: "track_operation_metrics"
+          metrics:
+            - "execution_time"
+            - "resource_usage"
+            - "success_rate"
+            - "error_count"
+
+        - name: "state_transition_monitoring"
+          method: "monitor_state_changes"
+          tracking:
+            transition_times: true
+            transition_success_rate: true
+            failure_patterns: true
+
+      cleanup_operations:
+        - name: "resource_cleanup"
+          method: "release_allocated_resources"
+          config:
+            force_release: false
+            cleanup_timeout: 30s
+
+        - name: "state_cleanup"
+          method: "cleanup_temporary_state"
+          config:
+            preserve_history: true
+            cleanup_level: "temporal_only"
+
+  # Common Transition Engine - unified logic for all state transitions
+  common_transition_engine:
+    enabled: true
+    architecture: "event_driven"
+    validation_framework:
+      # Universal validators for all transitions
+      pre_transition_validators:
+        - name: "source_state_validator"
+          method: "validate_current_state_allowed"
+          config:
+            check_state_existence: true
+            check_transition_permissions: true
+
+        - name: "target_state_validator"
+          method: "validate_target_state_reachable"
+          config:
+            check_dependencies: true
+            check_resource_requirements: true
+
+        - name: "system_constraints_validator"
+          method: "validate_system_constraints"
+          constraints:
+            resource_availability: "> 20%"
+            system_health: "> 80%"
+            no_critical_errors: true
+
+      post_transition_validators:
+        - name: "transition_success_validator"
+          method: "validate_transition_completed_successfully"
+          config:
+            check_state_consistency: true
+            check_resource_cleanup: true
+
+        - name: "system_impact_validator"
+          method: "validate_system_impact_acceptable"
+          config:
+            max_performance_impact: "10%"
+            max_resource_usage: "80%"
+
+  # Shared Resource Manager - eliminates resource conflicts
+  shared_resource_manager:
+    enabled: true
+    architecture: "hierarchical"
+    resource_pools:
+      # Centralized resource management
+      computation_resources:
+        allocation_strategy: "fair_sharing_with_priority"
+        preemption_enabled: true
+        deadlock_detection: true
+
+      io_resources:
+        allocation_strategy: "sequential_with_timeout"
+        timeout_management: true
+
+      state_resources:
+        allocation_strategy: "copy_on_write"
+        conflict_resolution: "timestamp_priority"
+
+    resource_locking:
+      strategy: "hierarchical_locking"
+      lock_timeout: "10s"
+      deadlock_prevention: true
+      priority_inheritance: true
+
+  # Unified Error Handler - common error handling across all state machines
+  unified_error_handler:
+    enabled: true
+    architecture: "layered"
+    error_classification:
+      # Standardized error categories
+      critical_errors:
+        - "system_failure"
+        - "resource_exhaustion"
+        - "deadlock_detected"
+        recovery_strategies: ["emergency_stop", "resource_reallocation", "forced_recovery"]
+
+      timeout_errors:
+        - "operation_timeout"
+        - "response_timeout"
+        - "connection_timeout"
+        recovery_strategies: ["retry_with_backoff", "timeout_extension", "fallback_operation"]
+
+      validation_errors:
+        - "invalid_state"
+        - "resource_unavailable"
+        - "dependency_missing"
+        recovery_strategies: ["state_correction", "resource_reallocation", "dependency_resolution"]
+
+    error_recovery:
+      universal_strategies:
+        exponential_backoff:
+          base_delay: "1s"
+          max_delay: "30s"
+          multiplier: 2.0
+          max_attempts: 3
+
+        graceful_degradation:
+          enabled: true
+          degradation_levels: ["minimal", "basic", "full"]
+
+        circuit_breaker:
+          enabled: true
+          failure_threshold: 3
+          recovery_timeout: "60s"
+
+  # === ENHANCED CRITICAL TRANSITION HANDLERS v2.0 ===
+
+  # Critical transition handlers that were missing
+  critical_transition_handlers:
+    # System Recovery Failure Handler
+    system_recovery_failure_handler:
+      enabled: true
+      transition: "SYSTEM_RECOVERY → SYSTEM_FAILED"
+      trigger: "recovery_failed"
+      timeout: 10s
+      actions:
+        - name: "emergency_escalation"
+          method: "escalate_to_emergency_mode"
+          config:
+            preserve_state: true
+            notify_administration: true
+
+        - name: "cascade_prevention"
+          method: "prevent_cascade_failures"
+          config:
+            isolate_failed_components: true
+            activate_emergency_protocols: true
+
+      fallback_strategy:
+        action: "system_reset_with_state_preservation"
+        recovery_timeout: 300s
+
+    # Agent Selection Failure Handler
+    agent_selection_failure_handler:
+      enabled: true
+      transition: "AGENT_SELECTION → NO_AGENTS_AVAILABLE"
+      trigger: "no_suitable_agents_found"
+      timeout: 15s
+      actions:
+        - name: "fallback_agent_search"
+          method: "search_alternative_agent_categories"
+          config:
+            expand_search_criteria: true
+            lower_competency_threshold: 0.3
+
+        - name: "manual_intervention_request"
+          method: "request_manual_agent_selection"
+          config:
+            timeout: 60s
+            escalation_level: "high"
+
+      fallback_strategy:
+        action: "use_system_native_tools"
+        capabilities: ["basic_file_operations", "web_search", "bash_commands"]
+
+    # Recovery Execution Timeout Handler
+    recovery_timeout_handler:
+      enabled: true
+      transition: "RECOVERY_EXECUTION → TIMEOUT"
+      trigger: "recovery_operation_timeout"
+      timeout: 5s
+      actions:
+        - name: "timeout_extension"
+          method: "extend_recovery_timeout"
+          config:
+            extension_factor: 2.0
+            max_extensions: 3
+
+        - name: "recovery_strategy_switch"
+          method: "switch_to_alternative_recovery"
+          config:
+            alternative_strategies: ["minimal_recovery", "component_level_recovery", "selective_recovery"]
+
+      fallback_strategy:
+        action: "escalate_to_manual_recovery"
+        notification_level: "critical"
+
+    # Preparation Timeout Handler
+    preparation_timeout_handler:
+      enabled: true
+      transition: "PREPARING → TIMEOUT"
+      trigger: "task_preparation_timeout"
+      timeout: 10s
+      actions:
+        - name: "resource_reallocation"
+          method: "reallocate_resources_for_preparation"
+          config:
+            priority_boost: true
+            resource_reservation: true
+
+        - name: "preparation_simplification"
+          method: "simplify_preparation_requirements"
+          config:
+            skip_optional_validations: true
+            use_cached_dependencies: true
+
+      fallback_strategy:
+        action: "continue_with_minimal_preparation"
+        monitoring_level: "enhanced"
+
+  # === STANDARDIZED GUARD SYSTEMS v2.0 ===
+
+  # Unified guard framework to eliminate inconsistencies
+  standardized_guards:
+    # System State Guard - universal across all state machines
+    system_state_guard:
+      enabled: true
+      states: ["READY", "OPERATIONAL", "COMPLETED"]
+      universal_conditions:
+        - condition: "system_health > 0.8"
+          validator: "system_health_monitor"
+          criticality: "critical"
+
+        - condition: "error_rate < 0.05"
+          validator: "error_rate_monitor"
+          criticality: "high"
+
+        - condition: "resources_available > 0.2"
+          validator: "resource_availability_monitor"
+          criticality: "high"
+
+      blocked_transitions: ["ANALYZING", "AGENT_SELECTION", "EXECUTING"]
+      priority: "critical"
+
+      actions:
+        on_block:
+          primary: "wait_with_timeout"
+          timeout: 30s
+          fallback: "escalate_to_recovery"
+
+        on_fail:
+          primary: "emergency_stop"
+          secondary: "preserve_system_state"
+
+    # Resource Guard - unified resource management
+    resource_guard:
+      enabled: true
+      universal_threshold: 0.2
+      adaptive_scaling: true
+      priority_preemption: true
+
+      resource_conditions:
+        - condition: "cpu_available > 0.3"
+          monitor: "cpu_usage_monitor"
+
+        - condition: "memory_available > 0.25"
+          monitor: "memory_usage_monitor"
+
+        - condition: "io_bandwidth_available > 0.2"
+          monitor: "io_performance_monitor"
+
+      blocked_transitions: ["EXECUTING", "MONITORING", "RECOVERY_EXECUTION"]
+      fallback: "pause_operation_and_wait"
+      priority: "high"
+
+    # Concurrency Guard - standardized across all state machines
+    concurrency_guard:
+      enabled: true
+      max_concurrent_operations: 5
+      adaptive_limit: true
+      queue_management: true
+
+      concurrency_conditions:
+        - condition: "active_operations < max_concurrent"
+          monitor: "operation_counter"
+          dynamic_adjustment: true
+
+      blocked_transitions: ["AGENT_ASSIGNMENT", "TASK_EXECUTION"]
+      fallback: "queue_for_available_slot"
+      priority: "medium"
+
+      queue_management:
+        strategy: "priority_based"
+        max_queue_size: 50
+        timeout_management: true
+
+  # === ENHANCED RETRY MECHANISMS v2.0 ===
+
+  # Comprehensive retry framework for all state machines
+  enhanced_retry_mechanisms:
+    # Universal retry configuration
+    universal_retry_config:
+      enabled: true
+      default_strategy: "exponential_backoff"
+
+      exponential_backoff:
+        base_delay: "1s"
+        max_delay: "30s"
+        multiplier: 2.0
+        jitter: true
+        max_attempts: 3
+
+      linear_backoff:
+        base_delay: "2s"
+        increment: "2s"
+        max_delay: "60s"
+        max_attempts: 5
+
+      fixed_delay:
+        delay: "5s"
+        max_attempts: 10
+
+    # State-specific retry strategies
+    state_specific_retries:
+      # Analyzing state retry
+      analyzing_state:
+        enabled: true
+        strategies: ["exponential_backoff", "resource_reallocation"]
+        custom_actions:
+          on_retry:
+            - "adjust_analysis_parameters"
+            - "reduce_analysis_scope"
+            - "use_cached_data"
+          on_failure:
+            - "fallback_to_basic_analysis"
+            - "request_human_intervention"
+
+      # Competency check retry
+      competency_check_state:
+        enabled: true
+        strategies: ["exponential_backoff", "alternative_criteria"]
+        custom_actions:
+          on_retry:
+            - "lower_competency_threshold"
+            - "expand_search_criteria"
+            - "use_alternative_agents"
+          on_failure:
+            - "proceed_with_best_available"
+            - "require_manual_approval"
+
+      # Strategy selection retry
+      strategy_selection_state:
+        enabled: true
+        strategies: ["exponential_backoff", "default_strategy_fallback"]
+        custom_actions:
+          on_retry:
+            - "expand_strategy_options"
+            - "use_heuristic_selection"
+            - "simplify_selection_criteria"
+          on_failure:
+            - "use_default_safe_strategy"
+            - "escalate_to_manual_selection"
+
+      # Monitoring state retry
+      monitoring_state:
+        enabled: true
+        strategies: ["linear_backoff", "enhanced_monitoring"]
+        custom_actions:
+          on_retry:
+            - "increase_monitoring_frequency"
+            - "expand_monitoring_scope"
+            - "adjust_thresholds"
+          on_failure:
+            - "continue_with_essential_monitoring"
+            - "activate_alert_system"
+
+  # === CONCURRENT SCENARIO HANDLING v2.0 ===
+
+  # Comprehensive concurrent operation management
+  concurrent_scenario_handling:
+    # Atomic Operations Framework
+    atomic_operations:
+      enabled: true
+      implementation: "compare_and_swap"
+
+      state_operations:
+        - name: "atomic_state_transition"
+          method: "atomic_compare_and_swap_state"
+          validation: "pre_and_post_state_validation"
+
+        - name: "atomic_counter_update"
+          method: "fetch_and_increment"
+          overflow_protection: true
+
+        - name: "atomic_flag_operations"
+          method: "memory_barrier_protected_flags"
+          ordering: "sequential_consistency"
+
+    # Synchronization Primitives
+    synchronization_primitives:
+      # Enhanced mutex system
+      mutex_system:
+        type: "timeout_mutexes"
+        features:
+          - "priority_inheritance"
+          - "deadlock_detection"
+          - "recursive_locking"
+          - "lock_statistics"
+        timeout_config:
+          default_timeout: "10s"
+          exponential_backoff: true
+          max_timeout: "60s"
+
+      # Fair semaphore system
+      semaphore_system:
+        type: "fair_scheduling_semaphore"
+        features:
+          - "fifo_ordering"
+          - "priority_boosting"
+          - "semaphore_statistics"
+          - "dynamic_adjustment"
+
+      # Phase barriers for synchronization
+      barrier_system:
+        type: "phase_synchronization_barrier"
+        features:
+          - "resettable_barriers"
+          - "timeout_handling"
+          - "participant_management"
+          - "barrier_statistics"
+
+    # Concurrent State Management
+    concurrent_state_management:
+      # Snapshot isolation for reads
+      read_isolation:
+        enabled: true
+        method: "mvcc_snapshot_isolation"
+        config:
+          max_snapshot_age: "30s"
+          snapshot_cleanup: "periodic"
+
+      # Write-ahead logging for writes
+      write_serialization:
+        enabled: true
+        method: "write_ahead_logging"
+        config:
+          log_buffer_size: "1MB"
+          fsync_policy: "group_commit"
+          checkpoint_frequency: "every_1000_writes"
+
+      # Lock-free data structures
+      lockfree_structures:
+        enabled: true
+        structures:
+          - name: "lockfree_queue"
+            implementation: "michael_scott_queue"
+
+          - name: "lockfree_stack"
+            implementation: "treiber_stack"
+
+          - name: "lockfree_hashtable"
+            implementation: "hopscotch_hashing"
+
+  # === RACE CONDITION FIXES v2.0 ===
+
+  # Comprehensive race condition elimination
+  race_condition_fixes:
+    # Deadlock detection fixes
+    deadlock_detection_fixes:
+      # Real-time wait-for graph monitoring
+      wait_for_graph_monitoring:
+        enabled: true
+        algorithm: "tarjan_strongly_connected_components"
+        monitoring_frequency: "continuous"
+        action_on_detection: "immediate_resolution"
+
+      # Priority inheritance protocol fixes
+      priority_inheritance_fixes:
+        enabled: true
+        implementation: "priority_ceiling_protocol"
+        features:
+          - "transitive_priority_boost"
+          - "priority_decay_prevention"
+          - "priority_inheritance_tracking"
+
+      # Timeout-based deadlock prevention
+      timeout_deadlock_prevention:
+        enabled: true
+        strategy: "hierarchical_resource_ordering"
+        config:
+          global_resource_order: true
+          timeout_escalation: "exponential_backoff"
+          victim_selection: "minimum_progress_loss"
+
+    # State persistence race condition fixes
+    state_persistence_fixes:
+      # Atomic state snapshots
+      atomic_state_snapshots:
+        enabled: true
+        method: "copy_on_write_snapshots"
+        config:
+          snapshot_frequency: "on_every_change"
+          compression: "lz4"
+          verification: "checksum_validation"
+
+      # Consistent state replication
+      consistent_replication:
+        enabled: true
+        method: "quorum_based_replication"
+        config:
+          replication_factor: 3
+          consistency_level: "linearizable"
+          leader_election: "raft_based"
+
+      # Concurrent state access control
+      concurrent_access_control:
+        enabled: true
+        method: "read_write_locks"
+        config:
+          writer_priority: true
+          reader_prefetch: true
+          lock_upgrade: "allowed_with_validation"
+
+    # Resource allocation race condition fixes
+    resource_allocation_fixes:
+      # Atomic resource allocation
+      atomic_resource_allocation:
+        enabled: true
+        method: "atomic_compare_and_swap_allocation"
+        config:
+          allocation_units: "fine_grained"
+          deallocation_immediate: true
+          fragmentation_prevention: true
+
+      # Fair resource scheduling
+      fair_resource_scheduling:
+        enabled: true
+        method: "weighted_fair_queuing"
+        config:
+          priority_weights: "configurable"
+          aging_factor: true
+          quantum_adjustment: "dynamic"
+
+      # Resource pool management
+      resource_pool_management:
+        enabled: true
+        method: "concurrent_pool_with_seggregation"
+        config:
+          pool_segregation: "by_resource_type"
+          load_balancing: "work_stealing"
+          pool_migration: "automatic"
+
+  # === UNIT TESTING FRAMEWORK FOR VALIDATORS v2.0 ===
+
+  # Comprehensive testing framework for state transition validators
+  validator_testing_framework:
+    # Test configuration
+    test_configuration:
+      enabled: true
+      auto_generate_tests: true
+      test_frequency: "on_every_change"
+      coverage_target: 0.95
+
+    # Transition validation tests
+    transition_validation_tests:
+      # Valid transition tests
+      valid_transition_tests:
+        - name: "test_all_valid_system_transitions"
+          method: "enumerate_and_test_all_valid_transitions"
+          validation_points:
+            - "pre_conditions_satisfied"
+            - "post_conditions_met"
+            - "side_effects_correct"
+            - "performance_within_limits"
+
+        - name: "test_state_machine_integration"
+          method: "cross_machine_transition_validation"
+          validation_points:
+            - "inter_machine_consistency"
+            - "resource_allocation_correct"
+            - "no_state_leakage"
+
+      # Invalid transition blocking tests
+      invalid_transition_tests:
+        - name: "test_invalid_transition_blocking"
+          method: "attempt_all_invalid_transitions"
+          validation_points:
+            - "transitions_properly_blocked"
+            - "appropriate_errors_raised"
+            - "system_state_unchanged"
+
+        - name: "test_concurrent_invalid_transitions"
+          method: "concurrent_invalid_transition_attempts"
+          validation_points:
+            - "race_condition_resistance"
+            - "atomic_block_behavior"
+
+    # Timeout and performance tests
+    timeout_performance_tests:
+      - name: "test_timeout_handling"
+        method: "simulate_timeout_scenarios"
+        timeout_scenarios:
+          - "operation_timeout"
+          - "transition_timeout"
+          - "validation_timeout"
+
+      - name: "test_performance_under_load"
+        method: "stress_test_with_concurrent_transitions"
+        load_scenarios:
+          - "high_frequency_transitions"
+          - "concurrent_state_changes"
+          - "resource_contention"
+
+    # Integration and scenario tests
+    integration_scenario_tests:
+      - name: "test_system_bootstrap_scenarios"
+        method: "simulate_bootstrap_with_failures"
+        scenarios:
+          - "partial_component_failure"
+          - "resource_shortage"
+          - "network_partition"
+
+      - name: "test_recovery_scenarios"
+        method: "simulate_failure_and_recovery"
+        scenarios:
+          - "cascade_failure"
+          - "partial_recovery"
+          - "complete_system_recovery"
+
+      - name: "test_concurrent_access_scenarios"
+        method: "simulate_concurrent_state_access"
+        scenarios:
+          - "simultaneous_read_write"
+          - "concurrent_transitions"
+          - "resource_competition"
+
+    # Test utilities and helpers
+    test_utilities:
+      # Mock system for testing
+      mock_system:
+        enabled: true
+        capabilities:
+          - "controlled_failure_injection"
+          - "timing_control"
+          - "resource_simulation"
+          - "state_manipulation"
+
+      # Test data generators
+      test_data_generators:
+        enabled: true
+        generators:
+          - name: "state_transition_generator"
+            method: "generate_valid_and_invalid_transitions"
+
+          - name: "load_scenario_generator"
+            method: "generate_stress_test_scenarios"
+
+          - name: "failure_scenario_generator"
+            method: "generate_realistic_failure_scenarios"
+
+      # Test result validation
+      test_result_validation:
+        enabled: true
+        validators:
+          - name: "state_consistency_validator"
+            method: "validate_state_machine_consistency"
+
+          - name: "performance_validator"
+            method: "validate_performance_requirements"
+
+          - name: "resource_usage_validator"
+            method: "validate_resource_usage_bounds"
+
   # Event-driven configuration
   event_driven_config:
     # Critical events (bootstrap and system failures)

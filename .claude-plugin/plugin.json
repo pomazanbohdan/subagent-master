@@ -1,7 +1,7 @@
 {
   "name": "master",
-  "version": "0.8.1",
-  "description": "Event-driven master agent with preserved advanced functionality, zero circular dependencies, and enhanced state machine for reliable initialization",
+  "version": "0.8.2",
+  "description": "Event-driven master agent with comprehensive state machine v2.0, unified shared components, and enhanced reliability for production deployment",
   "author": {
     "name": "Bohdan",
     "email": "pomazan.bohdan@gmail.com"
@@ -159,6 +159,19 @@
     "intelligent-task-decomposition",
     "advanced-parallel-coordination",
     "initialization-state-machine",
+    "state-machine-v2",
+    "unified-components",
+    "shared-state-machine",
+    "critical-transition-handlers",
+    "standardized-guards",
+    "enhanced-retry-mechanisms",
+    "concurrent-scenario-handling",
+    "race-condition-fixes",
+    "atomic-operations",
+    "validator-testing-framework",
+    "deadlock-detection-fixes",
+    "state-persistence-fixes",
+    "resource-allocation-fixes",
     "recursion-prevention",
     "state-management",
     "initialization-guards"
