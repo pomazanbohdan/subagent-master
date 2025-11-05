@@ -786,12 +786,79 @@ implementation:
           interruptible: true
           progress_reporting: true
 
+    # === INITIALIZATION STATE MACHINE v1.0 ===
+
+    - name: "initialization_state_machine"
+      priority: 4.5
+      method: "manage_initialization_states"
+      dependencies: ["system_initialization_phase4_optimization.completed"]
+      config:
+        states:
+          - "INITIALIZING"    # System is starting up - block all actions
+          - "READY"          # Initialization complete - ready for tasks
+          - "EXECUTING"      # Currently executing tasks
+          - "ERROR"          # Initialization failed
+
+        transitions:
+          - from: "INITIALIZING"
+            to: "READY"
+            trigger: "initialization_complete"
+            action: "enable_all_operations"
+          - from: "INITIALIZING"
+            to: "ERROR"
+            trigger: "initialization_failed"
+            action: "log_error_and_escalate"
+          - from: "READY"
+            to: "EXECUTING"
+            trigger: "task_received"
+            action: "begin_task_execution"
+          - from: "EXECUTING"
+            to: "READY"
+            trigger: "task_completed"
+            action: "cleanup_and_reset"
+          - from: "ERROR"
+            to: "INITIALIZING"
+            trigger: "retry_initialization"
+            action: "attempt_recovery"
+
+        guards:
+          - name: "block_during_initialization"
+            condition: "current_state != 'INITIALIZING'"
+            blocked_actions:
+              - "Task"
+              - "Plan"
+              - "delegate_to_agent"
+              - "create_subagent"
+            allowed_during_init:
+              - "load_configuration"
+              - "initialize_components"
+              - "prepare_variables"
+              - "log_messages"
+
+        state_persistence:
+          variable_name: "system_initialization_state"
+          default_state: "INITIALIZING"
+          persist_across_sessions: false
+
+        monitoring:
+          state_change_logging: true
+          transition_validation: true
+          guard_enforcement: true
+          error_recovery_enabled: true
+
+      output:
+        current_state: "string"
+        previous_state: "string"
+        operations_allowed: "boolean"
+        transition_history: "array"
+        last_state_change: "timestamp"
+
     # === INTELLIGENT TOOL SELECTION COMPONENTS v2.0 ===
 
     - name: "intelligent_tool_selector"
       priority: 5
       method: "automatic_tool_selection_engine"
-      dependencies: ["task_analysis_coordinator.completed"]
+      dependencies: ["task_analysis_coordinator.completed", "initialization_state_machine.ready"]
       config:
         selection_criteria:
           task_complexity_threshold: 3
@@ -828,6 +895,11 @@ implementation:
             triggers: ["implement", "design", "optimize", "secure", "test", "review", "specialized"]
             confidence_threshold: 0.7
             max_execution_time: "15min"
+            initialization_guard:
+              check_state: true
+              required_state: "READY"
+              blocked_states: ["INITIALIZING", "ERROR"]
+              fallback_action: "use_system_tools_instead"
       output:
         selected_tool_type: "string"
         selection_confidence: "float"
@@ -878,7 +950,7 @@ implementation:
       config:
         redirect_to_new_system: true
         legacy_compatibility: true
-          minimum_components_only: true
+        minimum_components_only: true
         error_handling:
           bootstrap_failure:
             action: "activate_emergency_bootstrap"
@@ -946,6 +1018,11 @@ implementation:
               tool: "Task"
               parallel_execution: true
               timeout: 25
+              initialization_guard:
+                check_state: true
+                allowed_states: ["READY", "EXECUTING"]
+                blocked_action: "delay_execution"
+                fallback: "log_and_continue"
               methods:
                 - discover_subagent_types
                 - query_agent_capabilities
@@ -973,6 +1050,11 @@ implementation:
                     action: "enumerate_all_agent_types"
                     parallel: true
                     timeout: 25
+                    initialization_guard:
+                      check_state: true
+                      allowed_states: ["READY", "EXECUTING"]
+                      blocked_action: "delay_execution"
+                      fallback: "log_and_continue"
 
                   - phase: "persona_instruction_scan"
                     priority: 3
@@ -3474,6 +3556,7 @@ implementation:
     - name: "delegation_engine"
       priority: 22
       method: "intelligent_task_assignment"
+      dependencies: ["initialization_state_machine.ready"]
       config:
         selection_algorithm:
           semantic_analysis:
@@ -3532,6 +3615,17 @@ implementation:
           primary_competency_match: 0.7
           availability_check: true
           performance_history: true
+
+        initialization_guards:
+          state_check_enabled: true
+          required_state: "READY"
+          blocked_states:
+            - "INITIALIZING"
+            - "ERROR"
+          action_if_blocked: "delay_until_ready"
+          timeout_ms: 30000
+          fallback_behavior: "log_warning_and_continue"
+
       output:
         delegation_plan: "object"
         selected_agents: "array"
@@ -4194,8 +4288,8 @@ implementation:
           failure_patterns: true
       output:
         health_status: "object"
-          performance_metrics: "object"
-          active_alerts: "array"
+        performance_metrics: "object"
+        active_alerts: "array"
 
     # === ENHANCED ERROR HANDLING & RECOVERY SYSTEM (Priority 36) ===
 
