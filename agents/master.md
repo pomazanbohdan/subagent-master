@@ -100,7 +100,26 @@ implementation:
           description: "System fully operational"
           timeout: "infinite"
           operational_modes: ["normal", "high_performance", "resource_saving"]
-          next_states: ["SYSTEM_OPERATIONAL", "SYSTEM_DEGRADED", "SYSTEM_SHUTDOWN"]
+          next_states: ["SYSTEM_OPERATIONAL", "SYSTEM_DEGRADED", "SYSTEM_SELF_DIAGNOSIS", "SYSTEM_SHUTDOWN"]
+
+        SYSTEM_SELF_DIAGNOSIS:
+          description: "System in self-diagnosis mode - handles debug and analysis tasks"
+          timeout: "infinite"
+          special_operations: ["debug_mode", "self_analysis", "system_reminder_handling"]
+          guard_behavior: "relaxed_for_self_diagnosis"
+          delegation_mode: "disabled"
+          allowed_operations: ["native_tools", "system_analysis", "debug_operations", "log_analysis"]
+          blocked_operations: ["delegate_to_master", "agent_selection", "complex_delegation"]
+          system_reminder_bypass: true
+          self_call_protection: "enhanced_for_debug"
+          next_states: ["SYSTEM_READY", "SYSTEM_OPERATIONAL"]
+          transition_triggers:
+            - trigger: "self_diagnosis_request"
+              from_states: ["SYSTEM_READY", "SYSTEM_OPERATIONAL"]
+            - trigger: "debug_mode_activated"
+              from_states: ["SYSTEM_READY", "SYSTEM_OPERATIONAL"]
+            - trigger: "system_reminder_loop_detected"
+              from_states: ["SYSTEM_READY", "SYSTEM_OPERATIONAL"]
 
         SYSTEM_OPERATIONAL:
           description: "System actively processing tasks"
@@ -312,6 +331,64 @@ implementation:
           - "persistent_data_saved"
         failure_action: "force_cleanup_with_logging"
 
+    # === SYSTEM REMINDER DETECTOR ===
+    system_reminder_detector:
+      enabled: true
+      priority: "critical"
+      description: "Detects and handles system reminders to prevent self-call loops in self-diagnosis context"
+
+      detection_patterns:
+        system_reminder_keywords: [
+          "system-reminder",
+          "invoke the agent appropriately",
+          "@agent-master:master",
+          "Please invoke the agent appropriately"
+        ]
+
+        self_diagnosis_indicators: [
+          "self-diagnosis",
+          "самодіагностика",
+          "why did you launch yourself",
+          "чому ти запустив сам себе",
+          "debug mode",
+          "режим дебагування",
+          "самовиклик"
+        ]
+
+      context_analysis:
+        check_current_agent: true
+        detect_master_context: true
+        analyze_request_source: true
+        identify_self_diagnosis_intent: true
+
+      bypass_conditions:
+        - condition: "self_diagnosis_detected AND current_agent_is_master"
+          action: "ignore_system_reminder"
+          reason: "Self-diagnosis tasks should not trigger delegation"
+          implementation: "continue_with_native_execution"
+
+        - condition: "system_reminder_detected AND already_master_agent"
+          action: "prevent_self_delegation"
+          reason: "Master agent already active, no delegation needed"
+          implementation: "use_direct_execution"
+
+        - condition: "debug_mode_active AND system_reminder_present"
+          action: "bypass_delegation_guards"
+          reason: "Debug operations require direct execution"
+          implementation: "disable_guard_validation_temporarily"
+
+      integration_points:
+        - guard_system: "initialization_master_guard"
+        - state_manager: "unified_state_manager"
+        - agent_selection: "agent_selection_algorithm"
+        - delegation_engine: "delegation_engine"
+
+      logging:
+        log_detected_reminders: true
+        log_bypass_actions: true
+        log_self_diagnosis_context: true
+        log_level: "info"
+
     # Enhanced Guard System
     guards:
       global_system_guards:
@@ -342,6 +419,35 @@ implementation:
           self_call_protection: true
           log_level: "info"
           description: "Prevents master agent self-calls during system initialization"
+
+          # Enhanced with system reminder detection
+          system_reminder_integration:
+            enabled: true
+            check_system_reminder_detector: true
+            bypass_for_self_diagnosis: true
+
+            # Override conditions for self-diagnosis context
+            self_diagnosis_override:
+              - condition: "system_reminder_detector.self_diagnosis_detected == true"
+                action: "allow_native_execution"
+                blocked_operations: []  # Clear blocked operations
+                allowed_operations: ["all_native_tools", "system_analysis", "debug_operations"]
+                reason: "Self-diagnosis requires direct execution without delegation barriers"
+
+              - condition: "system_reminder_detector.system_reminder_detected == true"
+                action: "prevent_self_delegation"
+                additional_blocked_operations: ["delegate_to_master", "self_agent_selection"]
+                reason: "System reminders should not trigger master self-calls"
+
+            # Context validation
+            context_checks:
+              - check: "current_agent_context"
+                expected: "master"
+                on_mismatch: "log_warning_and_continue"
+
+              - check: "request_intent"
+                look_for: "self_diagnosis_patterns"
+                on_match: "enable_debug_mode"
 
       component_level_guards:
         - name: "delegation_guard"
@@ -4278,6 +4384,38 @@ implementation:
           self_call_prevention: true
           fallback_to_native: true
           guard_validation_order: ["initialization_master_guard", "master_agent_call_guard"]
+
+          # Enhanced with system reminder detection
+          system_reminder_integration:
+            enabled: true
+            check_system_reminder_detector: true
+            validate_self_diagnosis_context: true
+
+          validation_rules:
+            - rule: "system_reminder_bypass_for_self_diagnosis"
+              condition: "system_reminder_detector.self_diagnosis_detected == true"
+              action: "skip_agent_selection"
+              reason: "Self-diagnosis does not require agent delegation"
+              implementation: "continue_with_native_execution"
+
+            - rule: "prevent_master_self_call_via_reminder"
+              condition: "system_reminder_detector.system_reminder_detected == true AND current_agent == 'master'"
+              action: "block_self_delegation"
+              reason: "System reminders should not cause master self-calls"
+              implementation: "use_native_tools_only"
+
+            - rule: "debug_mode_exception"
+              condition: "unified_state_manager.system_level.current_state == 'SYSTEM_SELF_DIAGNOSIS'"
+              action: "relax_guard_validation"
+              exceptions: ["self_diagnosis_operations", "debug_analysis", "system_analysis"]
+              reason: "Debug mode requires enhanced flexibility"
+              implementation: "allow_native_tools_with_logging"
+
+          context_awareness:
+            detect_master_context: true
+            analyze_request_intent: true
+            identify_debug_scenarios: true
+            monitor_system_reminder_patterns: true
       output:
         selected_agent: "string"
         selection_confidence: "float"
@@ -4768,21 +4906,55 @@ implementation:
               checks: ["initialization_master_guard", "master_agent_call_guard"]
               block_if_failed: true
               fallback_to: "native_tools_only"
+              system_reminder_integration:
+                check_system_reminder_detector: true
+                bypass_for_self_diagnosis: true
 
             - point: "agent_selection"
               checks: ["self_call_prevention"]
               validate_selected_agent: true
               block_master_selection: true
+              enhanced_checks:
+                - check: "system_reminder_context"
+                  condition: "system_reminder_detector.system_reminder_detected"
+                  action: "prevent_master_self_selection"
+                - check: "self_diagnosis_context"
+                  condition: "system_reminder_detector.self_diagnosis_detected"
+                  action: "skip_agent_selection_entirely"
 
             - point: "pre_assignment"
               checks: ["delegation_guard", "master_agent_call_guard"]
               prevent_recursive_assignment: true
+              context_aware_validation:
+                - context: "self_diagnosis_mode"
+                  action: "disable_delegation_assignment"
+                - context: "system_reminder_present"
+                  action: "prevent_master_assignment"
+
+            - point: "system_reminder_validation"
+              checks: ["system_reminder_detector"]
+              validate_reminder_context: true
+              special_handling:
+                - scenario: "self_diagnosis_with_reminder"
+                  action: "ignore_reminder_proceed_native"
+                - scenario: "master_context_with_reminder"
+                  action: "block_delegation_continue_native"
 
           fallback_behavior:
             when_guards_block: "use_native_tools"
             log_blocked_attempts: true
             notify_user: false
             retry_after_initialization: true
+            system_reminder_aware: true
+
+          # Enhanced self-diagnosis handling
+          self_diagnosis_exceptions:
+            enabled: true
+            detection_method: "system_reminder_detector"
+            allowed_operations: ["native_tools", "debug_operations", "system_analysis"]
+            blocked_operations: ["agent_delegation", "master_selection", "complex_coordination"]
+            fallback_strategy: "direct_native_execution"
+            logging_level: "debug"
 
         # Delegation State Machine v2.0
         delegation_state_machine:
