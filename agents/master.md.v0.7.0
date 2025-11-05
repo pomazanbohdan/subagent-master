@@ -30,11 +30,11 @@ capabilities: [
 ] # Do not change!
 triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage", "parallel", "team", "multiple-agents", "clarify", "search", "research", "unclear", "help", "details", "requirements", "batch", "multiple-files", "bulk-edit", "mass-update", "parallel-files", "optimize", "schedule", "decompose", "parallelize", "tool", "select", "choose", "implement", "design", "secure", "test", "review", "architecture", "performance", "vulnerability", "expert", "specialist", "mandatory", "enforce", "comply", "audit", "validate", "authorize"] # Do not change!
 tools: ["dynamic_agent_discovery"]  # Do not change!
-version: "0.8.0"
+version: "0.7.0"
 
 component:
   name: "master"
-  version: "0.8.0"
+  version: "0.7.0"
   description: "An AI agent that optimizes task execution through intelligent planning, parallelization, and execution in subtasks or delegation to existing agents in the system, which are automatically initialized taking into account their competencies." # Do not change!
   category: "orchestration"
   priority: 1
@@ -44,22 +44,18 @@ component:
     optimized_tokens: 3300
     savings_percentage: 50
   latest_update:
-    version: "0.8.0"
+    version: "0.7.0"
     changes: [
-      "PRESERVED: All advanced functionality including task decomposition, parallel execution, agent selection",
-      "PRESERVED: Dynamic task complexity analysis with 5 complexity levels",
-      "PRESERVED: Recursive planner with infinite recursion prevention",
-      "PRESERVED: Dynamic depth based on task complexity",
-      "PRESERVED: Visual TODO formatter with unlimited depth",
-      "PRESERVED: Intelligent task decomposition with multiple breakdown strategies",
-      "PRESERVED: Hierarchy optimizer with performance pattern analysis",
-      "PRESERVED: Advanced parallel coordination with dynamic grouping",
-      "PRESERVED: Hybrid parallel bootstrap system with 60-70% speed improvement",
-      "PRESERVED: Fault-tolerant system states with graceful degradation",
-      "PRESERVED: All 22 circular dependency issues resolved",
-      "ENHANCED: Streamlined event-driven initialization with zero conflicts",
-      "ENHANCED: Improved bootstrap reliability with proper event sequencing",
-      "ENHANCED: Better fault tolerance with multiple operational modes"
+      "CRITICAL FIX: Resolved all 22 circular dependency issues in event-driven system",
+      "Added missing completion events: task.tool.enforcement.completed, task.tool.selection.validated.completed, task.execution.completed",
+      "Fixed bootstrap sequence with proper completion events: phase1_critical_system.completed, phase2_parallel_initialization.completed, phase3_integration_core.completed",
+      "Implemented event completion triggers for proper state transitions",
+      "Enhanced tool enforcement flow with linear dependency chain",
+      "Maintained all existing functionality while fixing critical system failures",
+      "Added completion_triggers for automatic event flow progression",
+      "Improved system reliability with zero circular dependencies",
+      "Preserved all advanced task decomposition and orchestration capabilities",
+      "Maintained fault-tolerant bootstrap system with proper event sequencing"
     ]
     timestamp: "2025-01-05"
 
@@ -76,142 +72,6 @@ implementation:
     retry_attempts: 3
     retry_backoff: "exponential"
     fallback_strategy: "minimal_functionality"
-
-  # === SIMPLE STATE MACHINE FOR INITIALIZATION ===
-  system_state_machine:
-    enabled: true
-    current_state: "initializing"
-
-    states:
-      initializing:
-        description: "System starting up, critical components loading"
-        timeout: 60s
-        next_states: ["ready", "degraded", "failed"]
-        critical_components: ["error_handler", "event_bus", "core_orchestrator"]
-
-      ready:
-        description: "System fully operational and ready for tasks"
-        timeout: "infinite"
-        next_states: ["operational", "degraded", "shutdown"]
-
-      operational:
-        description: "System actively processing tasks"
-        timeout: "infinite"
-        next_states: ["ready", "degraded", "shutdown"]
-
-      degraded:
-        description: "System running with limited functionality"
-        timeout: "infinite"
-        next_states: ["ready", "operational", "failed"]
-
-      failed:
-        description: "System critical failure - recovery needed"
-        timeout: "infinite"
-        next_states: ["degraded", "shutdown"]
-
-      shutdown:
-        description: "System graceful shutdown"
-        timeout: 30s
-        next_states: ["terminated"]
-
-      terminated:
-        description: "System fully shut down"
-        timeout: 0
-        next_states: []
-
-    transitions:
-      # Startup transitions
-      initializing → ready:
-        trigger: "all_critical_components_ready"
-        timeout: 60s
-
-      initializing → degraded:
-        trigger: "some_components_failed"
-        timeout: 60s
-
-      initializing → failed:
-        trigger: "critical_components_failed"
-        timeout: 60s
-
-      # Operational transitions
-      ready → operational:
-        trigger: "first_task_received"
-        automatic: true
-
-      operational → ready:
-        trigger: "no_active_tasks"
-        timeout: "300s"
-
-      ready → degraded:
-        trigger: "component_degraded"
-        automatic: true
-
-      operational → degraded:
-        trigger: "critical_error_detected"
-        automatic: true
-
-      # Recovery transitions
-      degraded → ready:
-        trigger: "components_restored"
-        timeout: "30s"
-
-      degraded → failed:
-        trigger: "multiple_critical_failures"
-        automatic: true
-
-      failed → degraded:
-        trigger: "recovery_successful"
-        timeout: "30s"
-
-      # Shutdown transitions
-      ready → shutdown:
-        trigger: "shutdown_requested"
-        timeout: 30s
-
-      operational → shutdown:
-        trigger: "shutdown_requested"
-        timeout: 30s
-
-      degraded → shutdown:
-        trigger: "shutdown_requested"
-        timeout: 30s
-
-      failed → shutdown:
-        trigger: "shutdown_requested"
-        timeout: 30s
-
-      shutdown → terminated:
-        trigger: "cleanup_completed"
-        timeout: 30s
-
-  # === STATE EVENT HANDLERS ===
-  state_event_handlers:
-    state_change_observer:
-      description: "Monitors state transitions and emits state change events"
-      subscribes_to: ["state_machine.transition"]
-      publishes: ["system.state.changed", "system.initialized", "system.ready", "system.degraded", "system.failed", "system.shutdown"]
-      timeout: "5s"
-
-    system_ready_observer:
-      description: "Monitors system readiness and enables task processing"
-      subscribes_to: ["system.state.changed"]
-      condition: "new_state == 'ready'"
-      publishes: ["system.task_processing.enabled"]
-      timeout: "2s"
-
-    system_degraded_observer:
-      description: "Monitors degraded state and adjusts functionality"
-      subscribes_to: ["system.state.changed"]
-      condition: "new_state == 'degraded'"
-      publishes: ["system.functionality.reduced", "system.emergency_mode.enabled"]
-      timeout: "2s"
-
-    system_failure_observer:
-      description: "Monitors failed state and initiates recovery"
-      subscribes_to: ["system.state.changed"]
-      condition: "new_state == 'failed'"
-      publishes: ["system.recovery.initiated", "system.alert.critical"]
-      timeout: "1s"
 
   # Event-driven configuration
   event_driven_config:

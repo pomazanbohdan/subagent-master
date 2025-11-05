@@ -1,7 +1,7 @@
 {
   "name": "orchestration",
-  "version": "2.0.0",
-  "description": "Event-driven master agent with state machine architecture, fault-tolerant orchestration, and zero circular dependencies",
+  "version": "0.8.0",
+  "description": "Event-driven master agent with preserved advanced functionality, minimal state machine, and zero circular dependencies",
   "author": "Bohdan <pomazan.bohdan@gmail.com>",
   "license": "MIT",
   "keywords": [
@@ -196,7 +196,12 @@
     "real-time-monitoring",
     "observability",
     "smart-authorization",
-    "parallel-orchestration"
+    "parallel-orchestration",
+    "state-machine-management",
+    "minimal-dependency-architecture",
+    "zero-circular-dependencies",
+    "event-driven-initialization",
+    "preserved-functionality"
   ],
   "homepage": "https://github.com/pomazanbohdan/subagent-master",
   "repository": "https://github.com/pomazanbohdan/subagent-master.git",

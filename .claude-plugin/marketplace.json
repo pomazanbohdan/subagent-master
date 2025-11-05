@@ -5,8 +5,8 @@
     "email": "pomazan.bohdan@gmail.com"
   },
   "metadata": {
-    "description": "Event-driven master agent with state machine architecture, zero circular dependencies, fault-tolerant orchestration, and comprehensive monitoring",
-    "version": "2.0.0"
+    "description": "Event-driven master agent with preserved advanced functionality, minimal state machine, and zero circular dependencies",
+    "version": "0.8.0"
   },
   "plugins": [
     {
@@ -161,7 +161,13 @@
         "smart-authorization",
         "parallel-orchestration",
         "real-time-monitoring",
-        "comprehensive-metrics"
+        "comprehensive-metrics",
+        "state-machine-management",
+        "minimal-dependency-architecture",
+        "zero-circular-dependencies",
+        "event-driven-initialization",
+        "preserved-functionality",
+        "advanced-capabilities-retained"
       ],
       "source": "./",
       "agents": [
