@@ -87,7 +87,7 @@ implementation:
         description: "System starting up, critical components loading"
         timeout: 60s
         next_states: ["ready", "degraded", "failed"]
-        critical_components: ["error_handler", "event_bus", "core_orchestrator"]
+        critical_components: ["error_handler", "event_bus", "task_analyzer", "agent_selector", "execution_coordinator"]
 
       ready:
         description: "System fully operational and ready for tasks"
@@ -124,65 +124,88 @@ implementation:
       initializing → ready:
         trigger: "all_critical_components_ready"
         timeout: 60s
+        event_publishes: ["system.initialization.completed"]
 
       initializing → degraded:
         trigger: "some_components_failed"
         timeout: 60s
+        event_publishes: ["system.initialization.degraded"]
 
       initializing → failed:
         trigger: "critical_components_failed"
         timeout: 60s
+        event_publishes: ["system.initialization.failed"]
 
-      # Operational transitions
+      # Ready to Operational transitions
       ready → operational:
         trigger: "first_task_received"
         automatic: true
+        event_publishes: ["system.operational.started"]
+
+      # Operational transitions
+      ready → operational:
+        trigger: "task_processing_started"
+        automatic: true
+        event_publishes: ["system.operational.started"]
 
       operational → ready:
-        trigger: "no_active_tasks"
-        timeout: "300s"
+        trigger: "all_tasks_completed"
+        timeout: "30s"
+        event_publishes: ["system.ready", "system.operational.ended"]
 
       ready → degraded:
         trigger: "component_degraded"
         automatic: true
+        event_publishes: ["system.degraded"]
 
       operational → degraded:
         trigger: "critical_error_detected"
         automatic: true
+        event_publishes: ["system.error.critical", "system.degraded"]
 
       # Recovery transitions
       degraded → ready:
         trigger: "components_restored"
         timeout: "30s"
+        event_publishes: ["system.recovery.success", "system.ready"]
 
       degraded → failed:
         trigger: "multiple_critical_failures"
         automatic: true
+        event_publishes: ["system.critical.multiple", "system.failed"]
 
       failed → degraded:
         trigger: "recovery_successful"
         timeout: "30s"
+        event_publishes: ["system.recovery.attempted", "system.degraded"]
+
+      # Shutdown transitions
 
       # Shutdown transitions
       ready → shutdown:
         trigger: "shutdown_requested"
-        timeout: 30s
+        timeout: "30s"
+        event_publishes: ["system.shutdown.initiated"]
 
       operational → shutdown:
         trigger: "shutdown_requested"
-        timeout: 30s
+        timeout: "30s"
+        event_publishes: ["system.graceful_shutdown"]
 
       degraded → shutdown:
         trigger: "shutdown_requested"
-        timeout: 30s
+        timeout: "30s"
+        event_publishes: ["system.emergency.shutdown"]
 
       failed → shutdown:
         trigger: "shutdown_requested"
-        timeout: 30s
+        timeout: "30s"
+        event_publishes: ["system.forced_shutdown"]
 
       shutdown → terminated:
         trigger: "cleanup_completed"
-        timeout: 30s
+        timeout: "30s"
+        event_publishes: ["system.terminated"]
 
   # === STATE EVENT HANDLERS ===
   state_event_handlers:
