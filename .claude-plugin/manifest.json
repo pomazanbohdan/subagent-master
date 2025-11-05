@@ -1,7 +1,7 @@
 {
   "name": "orchestration",
-  "version": "0.5.0",
-  "description": "Pure event-driven intelligent task orchestration with graceful degradation, parallel component initialization, real-time health monitoring, and 64% code optimization",
+  "version": "0.6.0",
+  "description": "Pure event-driven intelligent task orchestration with advanced parallel operation optimization, automatic dependency analysis, self-learning capabilities, complete resource discovery initialization, graceful degradation, parallel component initialization, real-time health monitoring, and 64% code optimization",
   "author": "Bohdan <pomazan.bohdan@gmail.com>",
   "license": "MIT",
   "keywords": [
@@ -153,7 +153,13 @@
     "intelligent-memory-management",
     "dynamic-strategy-refinement",
     "experience-based-optimization",
-    "memory-driven-decision-making"
+    "memory-driven-decision-making",
+    "parallel-operation-optimization",
+    "automatic-dependency-analysis",
+    "self-learning-system",
+    "parallel-pattern-recognition",
+    "intelligent-task-decomposition",
+    "advanced-parallel-coordination"
   ],
   "homepage": "https://github.com/pomazanbohdan/subagent-master",
   "repository": "https://github.com/pomazanbohdan/subagent-master.git",

@@ -24,11 +24,11 @@ capabilities: [
 ] # Do not change!
 triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage", "parallel", "team", "multiple-agents", "clarify", "search", "research", "unclear", "help", "details", "requirements", "batch", "multiple-files", "bulk-edit", "mass-update", "parallel-files", "optimize", "schedule", "decompose", "parallelize"] # Do not change!
 tools: ["dynamic_agent_discovery"]  # Do not change!
-version: "0.5.2"
+version: "0.6.0"
 
 component:
   name: "master"
-  version: "0.5.2"
+  version: "0.6.0"
   description: "An AI agent that optimizes task execution through intelligent planning, parallelization, and execution in subtasks or delegation to existing agents in the system, which are automatically initialized taking into account their competencies." # Do not change!
   category: "orchestration"
   priority: 1
@@ -38,7 +38,7 @@ component:
     optimized_tokens: 3300
     savings_percentage: 50
   latest_update:
-    version: "0.5.2"
+    version: "0.6.0"
     changes: [
       "Implemented dynamic task complexity analysis system with 5 complexity levels",
       "Added task decomposer with multiple breakdown strategies (functional, temporal, dependency, skill-based)",
@@ -307,18 +307,23 @@ implementation:
             description: "Initialize adaptive memory system with Serena MCP integration"
           - priority: 5
             operation: "system_resource_inventory"
-            required_for_system: false
+            required_for_system: true
             description: "Perform comprehensive MCP server and agent discovery with categorization"
             implementation:
               resource_scanning:
                 mcp_discovery_tool: "ListMcpResourcesTool"
+                mcp_discovery_execution:
+                  action: "list_all_mcp_resources"
+                  timeout: 30
+                  parallel: true
+                  error_handling: "continue_with_discovered"
                 agent_registry_scan: true
                 categorization_enabled: true
                 parallel_execution: true
                 timeout_seconds: 30
           - priority: 6
             operation: "dynamic_greeting_generation"
-            required_for_system: false
+            required_for_system: true
             description: "Generate categorized greeting with available resources"
             dependencies: ["system_resource_inventory"]
           - priority: 7
@@ -355,13 +360,17 @@ implementation:
         # Resource inventory outputs
         mcp_servers_discovered: "integer"
         mcp_categories_found: "object"
+        mcp_tools_count: "integer"
         agents_discovered: "integer"
         agent_categories_found: "object"
         resource_scan_complete: "boolean"
+        system_health_score: "float"
         # Greeting generation outputs
         greeting_generated: "boolean"
         greeting_content: "object"
         system_capabilities_summary: "object"
+        # Event generation trigger
+        system_initialization_complete: "boolean"
 
     # === SYSTEM DISCOVERY PHASE (Priority 1) ===
 
@@ -402,28 +411,54 @@ implementation:
             operation: "dynamic_agent_discovery"
             description: "Dynamic discovery of all available agents with real tool calls"
             implementation:
-              discovery_methods:
-                - name: "task_tool_api_discovery"
-                  tool: "Task"
-                  method: "enumerate_subagent_types"
-                  parallel: true
-                - name: "persona_instruction_scan"
-                  tool: "Read"
-                  method: "scan_persona_instructions"
-                  paths: ["/home/user/.claude/"]
-                  patterns: ["*.md"]
-                - name: "filesystem_agent_search"
-                  tool: "Glob"
-                  method: "find_agent_files"
-                  patterns: ["agents/**/*", "*/agents/*"]
-                - name: "mcp_server_agent_enumeration"
-                  tool: "ListMcpResourcesTool"
-                  method: "extract_mcp_capabilities"
-                  parallel: true
-                - name: "configuration_based_discovery"
-                  tool: "Read"
-                  method: "parse_config_files"
-                  patterns: ["*.yaml", "*.json"]
+              unified_agent_discovery_coordinator:
+                primary_method: "parallel_agent_discovery"
+                execution_strategy: "orchestrated_parallel_scan"
+                timeout: 60
+                retry_logic: "exponential_backoff"
+
+                discovery_pipeline:
+                  - phase: "mcp_server_enumeration"
+                    priority: 1
+                    tools: ["ListMcpResourcesTool"]
+                    action: "list_all_mcp_resources"
+                    parallel: true
+                    timeout: 30
+
+                  - phase: "task_tool_agent_discovery"
+                    priority: 2
+                    tools: ["Task"]
+                    action: "enumerate_all_agent_types"
+                    parallel: true
+                    timeout: 25
+
+                  - phase: "persona_instruction_scan"
+                    priority: 3
+                    tools: ["Read"]
+                    action: "scan_global_claude_instructions"
+                    paths: ["/home/user/.claude/"]
+                    patterns: ["*.md"]
+                    timeout: 20
+
+                  - phase: "filesystem_agent_search"
+                    priority: 4
+                    tools: ["Glob"]
+                    action: "discover_agent_files"
+                    patterns: ["agents/**/*", "*/agents/*", "*agent*.md"]
+                    timeout: 15
+
+                  - phase: "configuration_based_discovery"
+                    priority: 5
+                    tools: ["Read"]
+                    action: "parse_agent_configurations"
+                    patterns: ["*.yaml", "*.json", "*.toml"]
+                    timeout: 15
+
+                result_aggregation:
+                  method: "intelligent_deduplication"
+                  confidence_scoring: true
+                  categorization_enabled: true
+                  health_check_integration: true
         discovery_parameters:
           scan_timeout: 120
           retry_on_failure: true
@@ -861,11 +896,23 @@ implementation:
             description: "Generate categorized system greeting with dynamic agent and MCP server lists"
             implementation:
               data_sources:
-                agent_categories: "from_dynamic_analysis_results"
-                mcp_categories: "from_dynamic_analysis_results"
-                agent_count: "from_discovered_agents"
-                mcp_count: "from_mcp_servers_discovered"
-              format_template: "Категорій агентів: {agent_categories}\\nКількість Агентів: {agent_count}\\nКатегорій MCP серверов: {mcp_categories}\\nКількість MCP серверів: {mcp_count}"
+                agent_categories: "from_system_initialization"
+                mcp_categories: "from_system_initialization"
+                agent_count: "from_system_initialization"
+                mcp_count: "from_system_initialization"
+                system_health: "from_system_initialization"
+                mcp_tools_count: "from_system_initialization"
+              format_template: |
+                🔄 **Master Agent v0.5.2** - Система оркестрації активна
+
+                📊 **Доступні ресурси:**
+                🔧 **MCP Сервери:** {mcp_count} ({mcp_tools_count} інструментів)
+                📝 **Категорії MCP:** {mcp_categories}
+                👥 **Спеціалізовані агенти:** {agent_count}
+                🏷️ **Категорії агентів:** {agent_categories}
+                💚 **Стан системи:** {system_health}
+
+                🎯 **Готовий до координації складних завдань через паралельне виконання**
               validation:
                 ensure_data_availability: true
                 format_validation: true
@@ -907,80 +954,14 @@ implementation:
         final_health_score: "float"
         system_waiting_for_task: "boolean"
 
-    # === RESOURCE INVENTORY OPERATIONS (Priority 11-12) ===
-
-    - name: "system_resource_inventory"
-      priority: 11
-      method: "comprehensive_resource_discovery"
-      trigger: "system_initialization_complete"
-      dependencies:
-        required_inputs:
-          - component: "system_initialization"
-            expected_outputs: ["bootstrap_complete"]
-            validation: "bootstrap_complete == true"
-      config:
-        resource_scanning:
-          mcp_discovery:
-            tool: "ListMcpResourcesTool"
-            execution_mode: "parallel"
-            timeout_seconds: 30
-            retry_count: 2
-            categories_to_identify:
-              - "search_and_retrieval"
-              - "code_analysis"
-              - "ui_generation"
-              - "browser_automation"
-              - "documentation"
-              - "web_search"
-              - "symbolic_operations"
-              - "sequential_thinking"
-              - "github_operations"
-              - "memory_management"
-
-          agent_discovery:
-            method: "registry_scan"
-            parallel_execution: true
-            categorization_enabled: true
-            agent_types_to_identify:
-              - "analysis_agents"
-              - "architecture_agents"
-              - "frontend_agents"
-              - "backend_agents"
-              - "quality_engineering"
-              - "performance_optimization"
-              - "security_agents"
-              - "research_agents"
-              - "documentation_agents"
-
-          data_processing:
-            categorization_algorithm: "semantic_classification"
-            count_aggregation: true
-            health_status_check: true
-            capability_extraction: true
-
-        output_format:
-          include_counts: true
-          include_categories: true
-          include_health_status: true
-          include_capabilities: true
-          structure: "hierarchical_categories"
-
-      output:
-        mcp_servers_discovered: "integer"
-        mcp_categories_found: "object"
-        mcp_server_details: "array"
-        agents_discovered: "integer"
-        agent_categories_found: "object"
-        agent_details: "array"
-        resource_scan_complete: "boolean"
-        scanning_metadata: "object"
+    # === DUPLICATE REMOVED: system_resource_inventory moved to system_initialization ===
 
     - name: "dynamic_greeting_generation"
       priority: 12
       method: "real_time_greeting_formation"
       dependencies:
         required_inputs:
-          - component: "system_resource_inventory"
+          - component: "system_initialization"
             expected_outputs: ["resource_scan_complete", "mcp_categories_found", "agent_categories_found"]
             validation: "resource_scan_complete == true"
       config:
@@ -3099,6 +3080,113 @@ implementation:
         performance_metrics: "object"
         error_reports: "array"
 
+    # === PARALLEL OPERATION OPTIMIZER (Priority 25.1) ===
+
+    - name: "parallel_operation_optimizer"
+      priority: 25.1
+      method: "intelligent_parallel_decomposition"
+      trigger: "on_task_analysis_start"
+      dependencies:
+        system_readiness: "system_initialization_complete"
+        task_analysis_available: true
+      config:
+        parallel_detection_engine:
+          operation_classifier:
+            file_operations:
+              criteria: ["different file paths", "independent file targets"]
+              default_parallel: true
+              parallel_strategy: "concurrent_file_operations"
+            configuration_updates:
+              criteria: ["different config files", "independent settings"]
+              default_parallel: true
+              parallel_strategy: "concurrent_config_updates"
+            version_updates:
+              criteria: ["multiple files", "same version change"]
+              default_parallel: true
+              parallel_strategy: "parallel_version_bump"
+            git_operations:
+              criteria: ["add, commit, push sequence"]
+              default_parallel: false
+              parallel_strategy: "sequential_git_workflow"
+            mcp_operations:
+              criteria: ["different MCP servers", "independent calls"]
+              default_parallel: true
+              parallel_strategy: "parallel_mcp_calls"
+
+        parallel_rules_engine:
+          rule_1_file_independence:
+            condition: "operations.target_files are different"
+            action: "enable_parallel_execution"
+            confidence: 0.95
+          rule_2_config_independence:
+            condition: "operations.config_files are different"
+            action: "enable_parallel_execution"
+            confidence: 0.90
+          rule_3_version_pattern:
+            condition: "operations contain version bump pattern"
+            action: "enable_parallel_file_updates"
+            confidence: 0.98
+          rule_4_git_sequential:
+            condition: "operations are git add/commit/push"
+            action: "enforce_sequential_execution"
+            confidence: 1.0
+          rule_5_mcp_parallel:
+            condition: "operations target different MCP servers"
+            action: "enable_parallel_mcp_calls"
+            confidence: 0.92
+
+        pattern_recognition_templates:
+          version_update_pattern:
+            description: "Multiple file version updates"
+            detection: "multiple files with version changes"
+            parallel_strategy: "update_all_files_simultaneously"
+            example: "Update versions in manifest.json, plugin.json, agents.md"
+          configuration_sync_pattern:
+            description: "Synchronize configuration across files"
+            detection: "same config value in multiple files"
+            parallel_strategy: "update_all_config_files"
+            example: "Update API endpoint in multiple config files"
+          file_operation_batch:
+            description: "Multiple file read/write operations"
+            detection: "different file targets"
+            parallel_strategy: "concurrent_file_operations"
+            example: "Read multiple config files simultaneously"
+
+        dependency_analysis:
+          independence_detection:
+            check_file_paths: true
+            check_resource_conflicts: true
+            check_data_dependencies: true
+          conflict_resolution:
+            strategy: "parallel_when_possible"
+            fallback_to_sequential: true
+          validation_rules:
+            no_shared_resources: true
+            no_circular_dependencies: true
+            no_race_conditions: true
+
+        automatic_decomposition:
+          enabled: true
+          decomposition_strategy: "operation_type_based"
+          parallel_grouping:
+            method: "independence_clustering"
+            max_parallel_operations: 10
+            timeout_per_operation: 30
+          todo_integration:
+            auto_create_parallel_items: true
+            group_parallel_operations: true
+            mark_dependencies: true
+
+      output:
+        parallel_operations_detected: "boolean"
+        parallel_strategy: "string"
+        operation_groups: "array"
+        dependencies_identified: "array"
+        optimization_gains: "object"
+        execution_plan: "object"
+        parallel_ready_operations: "array"
+        sequential_operations: "array"
+
     - name: "dynamic_scheduling_system"
       priority: 26
       method: "real_time_adaptive_scheduling"
@@ -4129,6 +4217,108 @@ performance_optimization:
     cross_operation_analysis: true
     similarity_threshold: 0.8
 
+# === SYSTEM PARALLELITY RULES (NEW) ===
+
+system_parallelity_rules:
+  enabled: true
+  enforcement: "automatic_with_fallback"
+
+  # Core Parallelity Principles
+  fundamental_rules:
+    rule_1_file_independence:
+      principle: "Different files = parallel execution"
+      description: "Operations targeting different file paths can run concurrently"
+      confidence: 0.95
+      examples:
+        - "Update versions in manifest.json, plugin.json, agents.md"
+        - "Read configuration from multiple files simultaneously"
+        - "Apply different edits to independent files"
+
+    rule_2_config_independence:
+      principle: "Independent configurations = parallel updates"
+      description: "Configuration updates to different settings can be parallel"
+      confidence: 0.90
+      examples:
+        - "Update API endpoints in different config files"
+        - "Modify independent service configurations"
+        - "Update separate environment variables"
+
+    rule_3_version_patterns:
+      principle: "Version updates = always parallel"
+      description: "Multiple files needing same version change must be parallel"
+      confidence: 0.98
+      examples:
+        - "Bump version from 0.5.0 to 0.5.1 across all manifests"
+        - "Update dependency versions across multiple files"
+        - "Apply version synchronization"
+
+    rule_4_git_sequential:
+      principle: "Git workflow = strictly sequential"
+      description: "Git operations must follow add → commit → push sequence"
+      confidence: 1.0
+      examples:
+        - "git add . → git commit → git push"
+        - "Stage changes before committing"
+        - "Push after successful commit"
+
+    rule_5_mcp_parallel:
+      principle: "Different MCP servers = parallel calls"
+      description: "Operations targeting different MCP servers are inherently parallel"
+      confidence: 0.92
+      examples:
+        - "Parallel calls to Context7, Magic, Playwright"
+        - "Concurrent MCP server operations"
+        - "Independent tool invocations"
+
+  # Advanced Parallelity Patterns
+  advanced_patterns:
+    configuration_sync_pattern:
+      detection: "same configuration value across multiple files"
+      strategy: "parallel_file_updates"
+      optimization: "simultaneous synchronization"
+      confidence: 0.88
+
+    batch_file_operations:
+      detection: "multiple file read/write operations"
+      strategy: "concurrent_file_operations"
+      optimization: "resource_efficient_file_handling"
+      confidence: 0.85
+
+    dependency_aware_parallelism:
+      detection: "operations with analyzable dependencies"
+      strategy: "dependency_based_grouping"
+      optimization: "maximize_parallel_while_preserving_order"
+      confidence: 0.82
+
+  # Implementation Rules
+  implementation_guidelines:
+    automatic_decomposition:
+      enabled: true
+      trigger: "task_analysis_start"
+      decomposition_method: "operation_type_based"
+
+    todo_integration:
+      auto_create_parallel_items: true
+      group_related_operations: true
+      mark_dependencies_explicitly: true
+
+    validation_requirements:
+      check_file_conflicts: true
+      verify_resource_availability: true
+      validate_operation_independence: true
+
+    fallback_mechanisms:
+      sequential_fallback: true
+      partial_parallel_execution: true
+      error_isolation: true
+
+  # Learning and Adaptation
+  adaptation_rules:
+    learn_from_patterns: true
+    update_confidence_scores: true
+    adapt_to_system_behavior: true
+    record_successful_strategies: true
+
 # === ADAPTIVE PLANNING COMPONENTS (NEW) ===
 
 adaptive_planning:
@@ -4176,6 +4366,58 @@ adaptive_planning:
       error_handling:
         - "fix_formatting_automatically"
         - "validate_before_display"
+
+      # Enhanced Parallel Operation Support (NEW)
+      parallel_operation_support:
+        automatic_decomposition:
+          enabled: true
+          trigger: "operation_analysis_start"
+          detection_patterns:
+            - "multiple file operations"
+            - "independent configuration updates"
+            - "version synchronization tasks"
+            - "parallel MCP calls"
+
+        # LEVEL 1 DEPENDENCY ANALYSIS (CRITICAL FIX)
+        level_1_dependency_analysis:
+          automatic_dependency_detection: true
+          parallel_group_marking: true
+          dependency_classification:
+            independent_operations: "PARALLEL_EXECUTION"
+            dependent_operations: "SEQUENTIAL_EXECUTION"
+            mixed_dependencies: "HYBRID_EXECUTION"
+
+        parallel_todo_creation:
+          auto_group_parallel_items: true
+          create_dependency_chains: true
+          mark_parallel_groups: true
+          parallel_group_format: "[PARALLEL GROUP {group_id}]"
+          level_1_marking: "⚡ [PARALLEL]"  # For independent operations
+          sequential_marking: "📋 [SEQUENTIAL]"  # For dependent operations
+
+        dependency_analysis:
+          detect_file_conflicts: true
+          identify_operation_dependencies: true
+          validate_parallel_safety: true
+          generate_execution_order: true
+
+        # SELF-AWARENESS: Apply parallel rules to own todo creation
+        self_awareness_mode: true
+        automatic_parallel_decomposition: true
+        conflict_prevention: true
+
+        optimization_features:
+          maximize_parallel_execution: true
+          minimize_sequential_bottlenecks: true
+          resource_conflict_prevention: true
+          error_isolation_planning: true
+
+      # CRITICAL SELF-APPLICATION RULES
+      self_application_rules:
+        rule_1_parallel_detection: "ALWAYS analyze todo items for parallel execution"
+        rule_2_dependency_marking: "ALWAYS mark dependencies explicitly"
+        rule_3_group_optimization: "ALWAYS optimize execution groups"
+        rule_4_conflict_prevention: "ALWAYS prevent resource conflicts"
 
   # Task Complexity Analyzer Component (NEW)
   complexity_analyzer:
@@ -4349,6 +4591,217 @@ adaptive_planning:
       - "topological_sorting"
       - "critical_path_method"
       - "dependency_depth_analysis"
+
+# === PARALLEL PATTERN RECOGNITION TEMPLATES (NEW) ===
+
+parallel_pattern_recognition:
+  enabled: true
+  automatic_detection: true
+  learning_enabled: true
+
+  pattern_templates:
+    version_update_pattern:
+      name: "Version Synchronization Pattern"
+      detection_criteria:
+        - "multiple files contain version strings"
+        - "same target version number across files"
+        - "simultaneous version bump required"
+      parallel_strategy: "parallel_version_updates"
+      optimization_potential: 0.95
+      confidence_threshold: 0.90
+      execution_template:
+        group_type: "parallel_file_operations"
+        max_parallel_files: 10
+        timeout_per_file: 5
+        error_handling: "continue_with_successful"
+      examples:
+        - "Update v0.5.0 to v0.5.1 in manifest.json, plugin.json, agents.md"
+        - "Synchronize dependency versions across multiple config files"
+        - "Apply version bump to all documentation files"
+
+    configuration_sync_pattern:
+      name: "Configuration Synchronization Pattern"
+      detection_criteria:
+        - "same configuration parameter in multiple files"
+        - "different file paths for same setting"
+        - "simultaneous configuration update needed"
+      parallel_strategy: "parallel_config_updates"
+      optimization_potential: 0.88
+      confidence_threshold: 0.85
+      execution_template:
+        group_type: "parallel_config_operations"
+        validation_required: true
+        rollback_on_failure: true
+      examples:
+        - "Update API endpoint in service configs"
+        - "Change database connection parameters"
+        - "Modify logging levels across applications"
+
+    file_batch_operation_pattern:
+      name: "File Batch Operation Pattern"
+      detection_criteria:
+        - "multiple file read/write operations"
+        - "independent file targets"
+        - "no shared resources between operations"
+      parallel_strategy: "concurrent_file_operations"
+      optimization_potential: 0.82
+      confidence_threshold: 0.80
+      execution_template:
+        group_type: "concurrent_file_access"
+        resource_monitoring: true
+        conflict_detection: true
+      examples:
+        - "Read multiple configuration files"
+        - "Apply different edits to separate files"
+        - "Generate multiple documentation files"
+
+    mcp_parallel_call_pattern:
+      name: "MCP Server Parallel Pattern"
+      detection_criteria:
+        - "operations targeting different MCP servers"
+        - "independent tool invocations"
+        - "no MCP server resource conflicts"
+      parallel_strategy: "parallel_mcp_calls"
+      optimization_potential: 0.92
+      confidence_threshold: 0.88
+      execution_template:
+        group_type: "parallel_mcp_operations"
+        server_availability_check: true
+        timeout_per_server: 30
+      examples:
+        - "Parallel calls to Context7, Magic, Playwright"
+        - "Concurrent MCP server discovery"
+        - "Simultaneous tool invocations across servers"
+
+    git_workflow_pattern:
+      name: "Git Sequential Workflow Pattern"
+      detection_criteria:
+        - "git add, commit, push sequence"
+        - "sequential dependency requirements"
+        - "state transition dependencies"
+      parallel_strategy: "sequential_git_workflow"
+      optimization_potential: 0.0
+      confidence_threshold: 1.0
+      execution_template:
+        group_type: "sequential_operations"
+        mandatory_order: ["add", "commit", "push"]
+        validation_after_each_step: true
+      examples:
+        - "git add . → git commit → git push"
+        - "Stage changes before committing"
+        - "Push only after successful commit"
+
+  pattern_matching_engine:
+    detection_algorithms:
+      - "regex_based_pattern_matching"
+      - "semantic_analysis"
+      - "dependency_graph_analysis"
+      - "resource_conflict_detection"
+
+    confidence_calculation:
+      base_confidence: 0.70
+      pattern_match_boost: 0.20
+      historical_success_boost: 0.10
+      minimum_confidence_threshold: 0.80
+
+    learning_mechanism:
+      successful_pattern_recording: true
+      failure_pattern_analysis: true
+      confidence_adjustment: true
+      pattern_evolution: true
+
+  # === PARALLEL OPERATION SELF-LEARNING (NEW) ===
+
+  parallel_operation_learning:
+    enabled: true
+    integration_point: "adaptive_memory_system"
+    learning_mode: "continuous_adaptation"
+
+    success_pattern_learning:
+      successful_parallel_operations:
+        recording_enabled: true
+        memory_key_prefix: "parallel_success_"
+        analysis_depth: "comprehensive"
+        retention_policy: "success_based"
+
+      learning_indicators:
+        - "time_reduction_achieved > 30%"
+        - "parallel_efficiency_score > 0.8"
+        - "resource_utilization_optimized"
+        - "no_conflicts_detected"
+
+      pattern_classification:
+        operation_types: ["file_operations", "config_updates", "version_updates", "mcp_calls"]
+        parallel_strategies: ["concurrent", "batch", "pipeline"]
+        optimization_techniques: ["resource_sharing", "load_balancing", "dependency_resolution"]
+
+      adaptation_rules:
+        successful_strategy_reinforcement: 0.1
+        new_pattern_discovery_bonus: 0.15
+        cross_domain_pattern_transfer: 0.05
+        confidence_decay_rate: 0.02
+
+    failure_pattern_learning:
+      failed_parallel_operations:
+        recording_enabled: true
+        memory_key_prefix: "parallel_failure_"
+        root_cause_analysis: "deep"
+        prevention_strategy_generation: true
+
+      failure_classification:
+        conflict_types: ["file_conflicts", "resource_conflicts", "dependency_conflicts"]
+        error_categories: ["timeout_failures", "resource_exhaustion", "deadlock_situations"]
+        prevention_strategies: ["sequential_fallback", "resource_allocation", "dependency_restructuring"]
+
+      learning_from_failures:
+        failure_pattern_analysis: true
+        prevention_strategy_testing: true
+        confidence_adjustment: true
+        strategy_modification: true
+
+    parallel_pattern_recognition:
+      pattern_discovery:
+        new_pattern_detection: true
+        pattern_validation: true
+        pattern_generalization: true
+        cross_task_pattern_application: true
+
+      pattern_memory_structure:
+        pattern_signature: "operation_characteristics"
+        success_metrics: "performance_improvement_data"
+        confidence_scores: "historical_accuracy"
+        context_metadata: "execution_environment_details"
+
+      pattern_matching:
+        similarity_threshold: 0.85
+        context_aware_matching: true
+        confidence_weighted_selection: true
+        fallback_to_sequential: true
+
+    adaptive_optimization:
+      real_time_adjustment:
+        enabled: true
+        adjustment_triggers: ["performance_degradation", "new_patterns_discovered"]
+        adjustment_frequency: "per_task_completion"
+        rollback_capability: true
+
+      strategy_evolution:
+        strategy_mutation_rate: 0.05
+        crossover_opportunities: true
+        survival_of_the_fittest: true
+        diversity_maintenance: true
+
+    cross_session_learning:
+      session_persistence: true
+      pattern_accumulation: true
+      long_term_trend_analysis: true
+      system_improvement_tracking: true
+
+    learning_metrics:
+      pattern_discovery_rate: 0.15
+      success_pattern_accuracy: 0.90
+      failure_prevention_effectiveness: 0.85
+      overall_system_improvement: 0.10
 
 # === HYBRID EVENT-DRIVEN ARCHITECTURE ===
 

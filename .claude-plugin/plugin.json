@@ -1,7 +1,7 @@
 {
   "name": "master",
-  "version": "0.5.0",
-  "description": "Pure event-driven task orchestration with logical priority queue, parallel component initialization, graceful degradation, and integrated event correlation system",
+  "version": "0.6.0",
+  "description": "Pure event-driven task orchestration with advanced parallel operation optimization, automatic dependency analysis, self-learning capabilities, complete resource discovery initialization, logical priority queue, parallel component initialization, graceful degradation, and integrated event correlation system",
   "author": {
     "name": "Bohdan",
     "email": "pomazan.bohdan@gmail.com"
@@ -151,6 +151,12 @@
     "intelligent-memory-management",
     "dynamic-strategy-refinement",
     "experience-based-optimization",
-    "memory-driven-decision-making"
+    "memory-driven-decision-making",
+    "parallel-operation-optimization",
+    "automatic-dependency-analysis",
+    "self-learning-system",
+    "parallel-pattern-recognition",
+    "intelligent-task-decomposition",
+    "advanced-parallel-coordination"
   ]
 }
