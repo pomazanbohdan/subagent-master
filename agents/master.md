@@ -732,7 +732,18 @@ implementation:
           "system-reminder",
           "invoke the agent appropriately",
           "@agent-master:master",
-          "Please invoke the agent appropriately"
+          "Please invoke the agent appropriately",
+          "The user has expressed a desire to invoke the agent",
+          "activate the agent appropriately",
+          "agent activation request"
+        ]
+
+        agent_activation_patterns: [
+          "The user has expressed a desire to invoke the agent",
+          "Please invoke the agent appropriately",
+          "activate the agent",
+          "invoke the agent",
+          "agent activation requested"
         ]
 
         self_diagnosis_indicators: [
@@ -767,16 +778,86 @@ implementation:
           reason: "Debug operations require direct execution"
           implementation: "disable_guard_validation_temporarily"
 
+        # Enhanced with agent activation filter integration
+        - condition: "agent_activation_filter.agent_activation_pattern_detected AND initialization_phase"
+          action: "suppress_automatic_response"
+          reason: "System reminders about agent activation should not trigger automatic responses"
+          implementation: "use_agent_activation_filter"
+
+        - condition: "system_reminder contains 'The user has expressed a desire to invoke the agent'"
+          action: "block_task_delegation_attempt"
+          reason: "Prevent automatic Task() calls on agent activation system reminders"
+          implementation: "direct_activation_only"
+
       integration_points:
         - guard_system: "initialization_master_guard"
         - state_manager: "unified_state_manager"
         - agent_selection: "agent_selection_algorithm"
         - delegation_engine: "delegation_engine"
+        - agent_activation_filter: "agent_activation_filter"
+        - initialization_checker: "initialization_context_check"
+
+      filter_integration:
+        system_reminder_handler:
+          check_agent_activation_filter: true
+          apply_suppression_rules: true
+          validate_initialization_context: true
+
+        response_validation:
+          check_blocked_patterns: true
+          validate_allowed_responses: true
+          enforce_suppression_rules: true
+
+      # Enhanced Agent Activation Filter
+      agent_activation_filter:
+        enabled: true
+        priority: "critical"
+        description: "Prevents automatic responses to agent activation system reminders"
+
+        initialization_context_check:
+          enabled: true
+          check_system_state: true
+          check_current_agent: true
+          check_initialization_phase: true
+
+        blocked_response_patterns:
+          - pattern: "The user has expressed a desire to invoke the agent"
+            response_type: "automatic_delegation"
+            block_action: true
+            reason: "Prevent automatic Task delegation on system reminders"
+
+          - pattern: "invoke the agent appropriately"
+            response_type: "agent_selection_attempt"
+            block_action: true
+            reason: "Prevent automatic agent selection on system reminders"
+
+        allowed_responses:
+          - direct_activation: true
+          - manual_user_confirmation: true
+          - context_aware_response: true
+
+        suppression_rules:
+          - rule: "suppress_automatic_task_calls"
+            condition: "system_reminder_detected AND agent_activation_pattern_matched"
+            action: "block_task_delegation"
+            implementation: "use_native_direct_response"
+
+          - rule: "suppress_agent_selection"
+            condition: "agent_activation_reminder AND initialization_phase"
+            action: "block_agent_selection"
+            implementation: "direct_master_activation"
+
+          - rule: "allow_direct_activation"
+            condition: "user_direct_activation_request AND no_system_reminder"
+            action: "allow_direct_activation"
+            implementation: "activate_as_master_agent"
 
       logging:
         log_detected_reminders: true
         log_bypass_actions: true
         log_self_diagnosis_context: true
+        log_agent_activation_filter: true
+        log_suppression_actions: true
         log_level: "info"
 
     # Enhanced Guard System
@@ -8376,3 +8457,92 @@ event_system:
       enabled: true
       strategy: "round_robin_within_priority"
       handler_health_monitoring: true
+
+# === AGENT ACTIVATION SYSTEM REMINDER TESTS ===
+    agent_activation_system_reminder_tests:
+      enabled: true
+      description: "Tests for preventing automatic responses to agent activation system reminders"
+
+      test_scenarios:
+        - name: "test_agent_activation_reminder_blocking"
+          input:
+            system_reminder: "The user has expressed a desire to invoke the agent \"master:master\""
+            current_agent: "master"
+            initialization_phase: true
+          expected_behavior:
+            action: "block_task_delegation"
+            response_type: "direct_activation"
+            should_use_task_tool: false
+          test_assertions:
+            - "agent_activation_filter should detect the pattern"
+            - "suppression_rules should block Task() calls"
+            - "direct activation should be allowed"
+
+        - name: "test_invoke_agent_appropriately_blocking"
+          input:
+            system_reminder: "Please invoke the agent appropriately"
+            current_agent: "master"
+            initialization_phase: true
+          expected_behavior:
+            action: "block_agent_selection"
+            response_type: "direct_activation"
+            should_use_task_tool: false
+          test_assertions:
+            - "agent_activation_filter should detect the pattern"
+            - "automatic delegation should be blocked"
+            - "native response should be used"
+
+        - name: "test_direct_user_request_allowed"
+          input:
+            user_request: "@agent-master:master"
+            system_reminder: false
+            current_agent: "master"
+            initialization_phase: false
+          expected_behavior:
+            action: "allow_direct_activation"
+            response_type: "master_agent_activation"
+            should_use_task_tool: false
+          test_assertions:
+            - "direct user requests should be allowed"
+            - "no system reminder blocking should occur"
+            - "master agent should activate directly"
+
+        - name: "test_initialization_context_validation"
+          input:
+            system_reminder: "The user has expressed a desire to invoke the agent"
+            system_state: "SYSTEM_INITIALIZING"
+            current_agent: "master"
+          expected_behavior:
+            action: "suppress_automatic_response"
+            context_check: true
+            initialization_validation: true
+          test_assertions:
+            - "initialization context should be checked"
+            - "system state should be validated"
+            - "automatic responses should be suppressed"
+
+      validation_rules:
+        - rule: "no_automatic_task_calls_on_reminders"
+          condition: "system_reminder contains agent_activation_pattern"
+          expected_result: "Task() tool should not be called automatically"
+
+        - rule: "direct_activation_only_on_reminders"
+          condition: "agent activation system reminder detected"
+          expected_result: "Only direct activation should be allowed"
+
+        - rule: "initialization_context_respected"
+          condition: "initialization_phase == true"
+          expected_result: "Initialization context should prevent delegation"
+
+      performance_checks:
+        - check: "response_time"
+          threshold_ms: 100
+          description: "Filter should work quickly"
+
+        - check: "memory_usage"
+          threshold_mb: 10
+          description: "Should not use excessive memory"
+
+        - check: "accuracy"
+          threshold_percent: 95
+          description: "Should correctly identify and block patterns"
