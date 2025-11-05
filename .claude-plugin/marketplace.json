@@ -5,8 +5,8 @@
     "email": "pomazan.bohdan@gmail.com"
   },
   "metadata": {
-    "description": "Event-driven master agent with initialization guards, enhanced state machine v2.0, and comprehensive agent/MCP call restrictions during boot",
-    "version": "0.8.4"
+    "description": "Event-driven master agent with comprehensive System Protection Layer v1.0.0, multi-layered security architecture, silent threat prevention, and enhanced state machine v2.0",
+    "version": "0.9.0"
   },
   "plugins": [
     {
