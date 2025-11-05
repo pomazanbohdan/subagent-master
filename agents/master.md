@@ -34,7 +34,7 @@ version: "0.8.0"
 
 component:
   name: "master"
-  version: "0.9.3"
+  version: "0.9.5"
   description: "An AI agent that optimizes task execution through intelligent planning, parallelization, and execution in subtasks or delegation to existing agents in the system, which are automatically initialized taking into account their competencies." # Do not change!
   category: "orchestration"
   priority: 1
@@ -5782,6 +5782,66 @@ implementation:
               timeout: "block_specific"
               transitions_to: ["IDLE", "ESCALATED"]
               operations: ["constraint_analysis", "queue_management", "notification"]
+
+            NO_AGENTS_AVAILABLE:
+              description: "No suitable agents found for the task"
+              timeout: 30s
+              transitions_to: ["ESCALATED", "IDLE"]
+              operations: ["alternative_agent_search", "task_simplification", "escalation_preparation"]
+
+            SELECTION_FAILED:
+              description: "Agent selection process failed"
+              timeout: 20s
+              transitions_to: ["RETRY_SELECTION", "ESCALATED"]
+              operations: ["failure_analysis", "criteria_adjustment", "retry_preparation"]
+
+            COMPETENCY_FAILED:
+              description: "Selected agents lack required competencies"
+              timeout: 25s
+              transitions_to: ["ALTERNATIVE_AGENTS", "TASK_ADJUSTMENT", "ESCALATED"]
+              operations: ["competency_gap_analysis", "alternative_search", "task_modification"]
+
+            ASSIGNMENT_FAILED:
+              description: "Failed to assign task to selected agents"
+              timeout: 15s
+              transitions_to: ["RETRY_ASSIGNMENT", "ESCALATED"]
+              operations: ["assignment_failure_analysis", "resource_reallocation", "retry_execution"]
+
+            RETRY_SELECTION:
+              description: "Retrying agent selection with adjusted criteria"
+              timeout: 30s
+              transitions_to: ["AGENT_SELECTION", "SELECTION_FAILED", "ESCALATED"]
+              operations: ["criteria_relaxation", "expanded_search", "fallback_strategy"]
+
+            RETRY_ASSIGNMENT:
+              description: "Retrying task assignment with alternative approach"
+              timeout: 20s
+              transitions_to: ["AGENT_ASSIGNMENT", "ASSIGNMENT_FAILED", "ESCALATED"]
+              operations: ["alternative_assignment_method", "resource_rescheduling", "priority_adjustment"]
+
+            ALTERNATIVE_AGENTS:
+              description: "Searching for alternative agents with different competencies"
+              timeout: 45s
+              transitions_to: ["COMPETENCY_CHECK", "NO_AGENTS_AVAILABLE", "ESCALATED"]
+              operations: ["alternative_competency_search", "agent_expansion", "requirement_relaxation"]
+
+            TASK_ADJUSTMENT:
+              description: "Adjusting task requirements to match available competencies"
+              timeout: 30s
+              transitions_to: ["ANALYZING", "ESCALATED"]
+              operations: ["requirement_analysis", "scope_adjustment", "user_approval_request"]
+
+            ERROR:
+              description: "Critical error occurred during delegation process"
+              timeout: 15s
+              transitions_to: ["RECOVERY", "ESCALATED"]
+              operations: ["error_logging", "impact_assessment", "recovery_initiation"]
+
+            WARNING:
+              description: "Non-critical issue detected during task monitoring"
+              timeout: 20s
+              transitions_to: ["MONITORING", "RECOVERY", "ESCALATED"]
+              operations: ["warning_analysis", "mitigation_attempt", "escalation_preparation"]
 
             ESCALATED:
               description: "Delegation escalated for manual intervention"
