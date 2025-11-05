@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Pure event-driven task orchestration with advanced parallel operation optimization, automatic dependency analysis, self-learning capabilities, complete resource discovery initialization, graceful degradation, parallel initialization, real-time health monitoring, and 64% code optimization",
-    "version": "0.6.0"
+    "version": "0.7.0"
   },
   "plugins": [
     {

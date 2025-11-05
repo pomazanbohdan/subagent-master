@@ -100,36 +100,82 @@ implementation:
 
   # Event-driven component mapping (replaces priority-based execution)
   event_driven_initialization:
-    # Critical Events (Bootstrap)
+    # === HYBRID PARALLEL BOOTSTRAP SYSTEM v2.0 ===
+
+    # Phase 1: Critical Bootstrap (0-2s) - Parallel Execution
+    system.bootstrap.phase1.critical:
+      description: "Critical system components parallel initialization"
+      logical_priority: "critical"
+      components: ["error_system_initialization", "monitoring_minimal_setup", "basic_system_readiness"]
+      parallel: true
+      timeout: 2s
+      max_concurrent: 3
+      fallback: "minimal_bootstrap"
+
+    system.bootstrap.phase1.parallel:
+      description: "Parallel initialization of independent core components"
+      logical_priority: "critical"
+      components: ["memory_system_initialization", "essential_mcp_discovery", "essential_agents_preload"]
+      parallel: true
+      timeout: 3s
+      max_concurrent: 3
+      dependencies: ["system.bootstrap.phase1.critical.completed"]
+
+    # Phase 2: Enhanced Discovery (2-5s) - Parallel Discovery Methods
+    system.bootstrap.phase2.discovery:
+      description: "Enhanced parallel discovery of all resources"
+      logical_priority: "high"
+      components: ["full_mcp_enumeration", "all_agent_discovery_methods", "capability_analysis"]
+      parallel: true
+      timeout: 5s
+      max_concurrent: 4
+      dependencies: ["system.bootstrap.phase1.parallel.completed"]
+      partial_success: "continue_with_discovered"
+
+    # Phase 3: Integration & Readiness (5-6s)
+    system.bootstrap.phase3.integration:
+      description: "System integration and readiness verification"
+      logical_priority: "high"
+      components: ["system_integration_phase", "system_readiness_phase"]
+      parallel: true
+      timeout: 3s
+      max_concurrent: 2
+      dependencies: ["system.bootstrap.phase2.discovery.completed"]
+
+    # Phase 4: Background Optimization (6s+) - Progressive Loading
+    system.bootstrap.phase4.optimization:
+      description: "Background optimization and caching"
+      logical_priority: "medium"
+      components: ["cache_warming", "performance_optimization", "advanced_capability_analysis"]
+      parallel: true
+      timeout: 30s
+      max_concurrent: 3
+      dependencies: ["system.bootstrap.phase3.integration.completed"]
+      background: true
+
+    # Legacy Events (for compatibility)
     system.bootstrap.started:
       description: "System initialization process started"
       logical_priority: "critical"
-      components: ["error_system_initialization", "monitoring_minimal_setup", "basic_system_readiness", "memory_system_initialization"]
-      parallel: true
-      timeout: 10s
-      fallback: "minimal_bootstrap"
+      triggers: ["system.bootstrap.phase1.critical"]
 
     system.discovery.started:
       description: "Resource discovery process initiated"
       logical_priority: "critical"
-      components: ["system_resource_inventory"]
-      dependencies: ["system.bootstrap.completed"]
-      timeout: 30s
-      partial_success: "continue_with_discovered"
+      triggers: ["system.bootstrap.phase2.discovery"]
 
     system.greeting.started:
       description: "Greeting generation process initiated"
       logical_priority: "high"
       components: ["dynamic_greeting_generation"]
-      dependencies: ["system.discovery.completed"]
-      timeout: 5s
+      dependencies: ["system.bootstrap.phase3.integration.completed"]
+      timeout: 2s
       fallback: "basic_greeting"
 
     system.bootstrap.completed:
       description: "System fully initialized"
       logical_priority: "critical"
-      components: ["bootstrap_completion_report"]
-      dependencies: ["system.greeting.completed"]
+      triggers: ["system.greeting.started.completed"]
 
     # High Priority Events (Core functionality)
     system.integration.started:
@@ -283,59 +329,131 @@ implementation:
   operations:
     # === SYSTEM INITIALIZATION (Priority 0) ===
 
-    - name: "system_initialization"
+    # === HYBRID PARALLEL BOOTSTRAP OPERATIONS v2.0 ===
+
+    - name: "system_initialization_phase1_critical"
       priority: 0
-      method: "independent_bootstrap_sequence"
+      method: "parallel_critical_bootstrap"
       trigger: "on_agent_load"
       config:
         bootstrap_operations:
-          - priority: 1
-            operation: "error_system_initialization"
+          - operation: "error_system_initialization"
+            parallel_group: "critical_components"
+            timeout: 500ms
             required_for_system: true
-            description: "Setup fallback framework and error handling"
-          - priority: 2
-            operation: "monitoring_minimal_setup"
+          - operation: "monitoring_minimal_setup"
+            parallel_group: "critical_components"
+            timeout: 500ms
             required_for_system: true
-            description: "Initialize basic metrics collection framework"
-          - priority: 3
-            operation: "basic_system_readiness"
+          - operation: "basic_system_readiness"
+            parallel_group: "critical_components"
+            timeout: 800ms
             required_for_system: true
-            description: "Verify minimum system functionality"
-          - priority: 4
-            operation: "memory_system_initialization"
-            required_for_system: true
-            description: "Initialize adaptive memory system with Serena MCP integration"
-          - priority: 5
-            operation: "system_resource_inventory"
-            required_for_system: true
-            description: "Perform comprehensive MCP server and agent discovery with categorization"
-            implementation:
-              resource_scanning:
-                mcp_discovery_tool: "ListMcpResourcesTool"
-                mcp_discovery_execution:
-                  action: "list_all_mcp_resources"
-                  timeout: 30
-                  parallel: true
-                  error_handling: "continue_with_discovered"
-                agent_registry_scan: true
-                categorization_enabled: true
-                parallel_execution: true
-                timeout_seconds: 30
-          - priority: 6
-            operation: "dynamic_greeting_generation"
-            required_for_system: true
-            description: "Generate categorized greeting with available resources"
-            dependencies: ["system_resource_inventory"]
-          - priority: 7
-            operation: "bootstrap_completion_report"
-            required_for_system: true
-            description: "Display bootstrap completion status with resource summary"
-        initialization_parameters:
-          bootstrap_mode: "independent"
-          timeout_seconds: 60
-          retry_on_failure: true
-          max_retries: 2
-          fallback_to_safe_mode: true
+        parallel_config:
+          max_concurrent: 3
+          failure_strategy: "continue_with_available"
+          timeout_strategy: "force_complete_critical"
+
+    - name: "system_initialization_phase1_parallel"
+      priority: 1
+      method: "parallel_core_bootstrap"
+      dependencies: ["system_initialization_phase1_critical.completed"]
+      config:
+        bootstrap_operations:
+          - operation: "memory_system_initialization"
+            parallel_group: "core_components"
+            timeout: 1500ms
+            lazy_load: false
+          - operation: "essential_mcp_discovery"
+            parallel_group: "core_components"
+            timeout: 2000ms
+            cache_results: true
+          - operation: "essential_agents_preload"
+            parallel_group: "core_components"
+            timeout: 1200ms
+            preload_critical_agents: true
+        parallel_config:
+          max_concurrent: 3
+          progress_tracking: true
+          early_success_threshold: 2
+
+    - name: "system_initialization_phase2_discovery"
+      priority: 2
+      method: "enhanced_parallel_discovery"
+      dependencies: ["system_initialization_phase1_parallel.completed"]
+      config:
+        discovery_operations:
+          - operation: "full_mcp_enumeration"
+            parallel_group: "discovery_methods"
+            timeout: 3000ms
+            concurrent_server_limit: 5
+            batch_size: 3
+            progressive_loading: true
+          - operation: "all_agent_discovery_methods"
+            parallel_group: "discovery_methods"
+            timeout: 4000ms
+            concurrent_method_limit: 4
+            include_background_methods: true
+          - operation: "capability_analysis"
+            parallel_group: "discovery_methods"
+            timeout: 2500ms
+            analyze_essential_first: true
+            cache_capabilities: true
+        parallel_config:
+          max_concurrent: 4
+          partial_success_tolerance: 0.7
+          fallback_to_cached: true
+
+    - name: "system_initialization_phase3_integration"
+      priority: 3
+      method: "parallel_integration_readiness"
+      dependencies: ["system_initialization_phase2_discovery.completed"]
+      config:
+        integration_operations:
+          - operation: "system_integration_phase"
+            parallel_group: "integration_tasks"
+            timeout: 2000ms
+            validate_all_components: true
+          - operation: "system_readiness_phase"
+            parallel_group: "integration_tasks"
+            timeout: 1500ms
+            health_check_level: "comprehensive"
+        parallel_config:
+          max_concurrent: 2
+          blocking_success: true
+
+    - name: "system_initialization_phase4_optimization"
+      priority: 4
+      method: "background_optimization"
+      dependencies: ["system_initialization_phase3_integration.completed"]
+      config:
+        optimization_operations:
+          - operation: "cache_warming"
+            parallel_group: "optimization_tasks"
+            timeout: 10000ms
+            persistent_cache: true
+            warm_essential_only: false
+          - operation: "performance_optimization"
+            parallel_group: "optimization_tasks"
+            timeout: 8000ms
+            profile_system_usage: true
+          - operation: "advanced_capability_analysis"
+            parallel_group: "optimization_tasks"
+            timeout: 15000ms
+            full_analysis_depth: true
+        optimization_config:
+          background_priority: "low"
+          interruptible: true
+          progress_reporting: true
+
+    # Legacy compatibility (redirects to new system)
+    - name: "system_initialization"
+      priority: 0
+      method: "legacy_bootstrap_redirect"
+      trigger: "on_agent_load"
+      config:
+        redirect_to_new_system: true
+        legacy_compatibility: true
           minimum_components_only: true
         error_handling:
           bootstrap_failure:
@@ -1039,13 +1157,191 @@ implementation:
         monitoring_active: "boolean"
         metrics_collection: "array"
 
-    # MOVED: mcp_server_discovery → system_discovery_phase (priority 1)
+    # === OPTIMIZED MCP DISCOVERY COMPONENTS v2.0 ===
 
-    # MOVED: agent_registry_construction → system_discovery_phase (priority 1)
+    - name: "essential_mcp_discovery"
+      priority: 1.5
+      method: "rapid_essential_mcp_discovery"
+      config:
+        discovery_strategy:
+          timeout: 2000ms
+          concurrent_servers: 5
+          essential_servers_only: true
+          cache_discovery: true
+          progressive_loading: true
+        server_prioritization:
+          - "context7"     # Documentation lookup
+          - "serena"       # Memory & symbols
+          - "tavily"       # Web search
+          - "playwright"   # Browser automation
+          - "chrome-devtools" # Performance analysis
+        batch_operations:
+          batch_size: 3
+          parallel_requests: true
+          timeout_per_batch: 800ms
+        caching:
+          persistent_cache: true
+          cache_ttl: 3600  # 1 hour
+          cache_validation: true
+      output:
+        essential_mcp_servers: "array"
+        mcp_capabilities_essential: "object"
+        discovery_time_essential: "float"
+        cache_hit_ratio: "float"
 
-    # MOVED: system_validation → system_integration_phase (priority 2)
+    - name: "full_mcp_enumeration"
+      priority: 2.5
+      method: "comprehensive_parallel_mcp_discovery"
+      dependencies: ["essential_mcp_discovery.completed"]
+      config:
+        discovery_strategy:
+          timeout: 5000ms
+          concurrent_servers: 8
+          all_servers: true
+          deep_capability_analysis: true
+          background_completion: true
+        batch_optimization:
+          dynamic_batch_sizing: true
+          adaptive_timeouts: true
+          server_health_checking: true
+        progressive_analysis:
+          phase1_basic_discovery: 2000ms
+          phase2_capability_analysis: 2000ms
+          phase3_advanced_features: 1000ms
+        error_handling:
+          partial_success_tolerance: 0.8
+          failed_server_retry: 2
+          graceful_degradation: true
+      output:
+        all_mcp_servers: "array"
+        comprehensive_capabilities: "object"
+        server_health_status: "object"
+        enumeration_performance: "object"
 
-    # MOVED: system_readiness_report_display → system_readiness_phase (priority 3)
+    # === OPTIMIZED AGENT DISCOVERY COMPONENTS v2.0 ===
+
+    - name: "essential_agents_preload"
+      priority: 1.6
+      method: "critical_agent_preloading"
+      config:
+        preloading_strategy:
+          timeout: 1500ms
+          critical_agents_only: true
+          parallel_agent_loading: true
+          cache_agent_metadata: true
+        critical_agent_categories:
+          - "backend-architect"
+          - "frontend-architect"
+          - "security-engineer"
+          - "performance-engineer"
+          - "quality-engineer"
+        lazy_loading_config:
+          load_on_demand: false
+          background_loading: true
+          metadata_caching: true
+      output:
+        critical_agents_loaded: "array"
+        agent_metadata_cached: "object"
+        preload_performance: "object"
+
+    - name: "all_agent_discovery_methods"
+      priority: 2.6
+      method: "parallel_comprehensive_agent_discovery"
+      dependencies: ["essential_agents_preload.completed"]
+      config:
+        discovery_methods:
+          task_tool_discovery:
+            timeout: 2000ms
+            parallel_enumeration: true
+          persona_instruction_discovery:
+            timeout: 1500ms
+            file_system_scan: true
+            parallel_file_access: true
+          filesystem_agent_search:
+            timeout: 2500ms
+            directory_crawling: true
+            pattern_matching: true
+          mcp_server_agent_enumeration:
+            timeout: 3000ms
+            server_based_discovery: true
+            parallel_server_queries: true
+        parallel_execution:
+          max_concurrent_methods: 4
+          method_independence: true
+          cross_method_validation: true
+        caching_strategy:
+          agent_registry_cache: true
+          discovery_results_cache: true
+          capability_cache: true
+      output:
+        comprehensive_agent_registry: "object"
+        agent_capabilities_matrix: "object"
+        discovery_performance_metrics: "object"
+
+    # === CACHE & PERFORMANCE OPTIMIZATION COMPONENTS v2.0 ===
+
+    - name: "cache_warming"
+      priority: 4.1
+      method: "intelligent_cache_warming"
+      dependencies: ["system_initialization_phase3_integration.completed"]
+      config:
+        warming_strategy:
+          essential_first: true
+          progressive_warming: true
+          background_priority: "low"
+        cache_types:
+          mcp_capabilities:
+            warm_priority: "high"
+            persistent_storage: true
+          agent_metadata:
+            warm_priority: "high"
+            memory_cache: true
+          discovery_results:
+            warm_priority: "medium"
+            disk_cache: true
+          performance_patterns:
+            warm_priority: "low"
+            adaptive_learning: true
+        warming_performance:
+          max_memory_usage: "100MB"
+          warming_timeout: 10000ms
+          interruptible: true
+      output:
+        cache_warming_status: "object"
+        cache_performance_metrics: "object"
+        memory_usage_optimization: "object"
+
+    - name: "performance_optimization"
+      priority: 4.2
+      method: "adaptive_performance_optimization"
+      dependencies: ["cache_warming.completed"]
+      config:
+        optimization_targets:
+          initialization_speed:
+            target_improvement: "60%"
+            measurement_baseline: "previous_sessions"
+          resource_efficiency:
+            memory_optimization: true
+            cpu_usage_optimization: true
+          response_time:
+            target_response_time: "2s essential, 5s full"
+        optimization_methods:
+          pattern_analysis: true
+          performance_profiling: true
+          adaptive_timeout_tuning: true
+          resource_allocation_optimization: true
+        monitoring:
+          real_time_metrics: true
+          performance_trend_analysis: true
+          optimization_effectiveness_tracking: true
+      output:
+        optimization_results: "object"
+        performance_improvements: "object"
+        resource_efficiency_metrics: "object"
+
+    # Legacy compatibility redirections
+    # MOVED: mcp_server_discovery → essential_mcp_discovery + full_mcp_enumeration
+    # MOVED: agent_registry_construction → essential_agents_preload + all_agent_discovery_methods
 
     # === GREETING FORMATION ENGINE (Priority 3.1) ===
 
