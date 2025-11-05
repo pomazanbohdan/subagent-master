@@ -1,6 +1,6 @@
 {
   "name": "orchestration",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Event-driven master agent with preserved advanced functionality, minimal state machine, and zero circular dependencies",
   "author": "Bohdan <pomazan.bohdan@gmail.com>",
   "license": "MIT",

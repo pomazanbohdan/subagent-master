@@ -1,6 +1,6 @@
 {
   "name": "master",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Event-driven master agent with preserved advanced functionality, zero circular dependencies, and enhanced state machine for reliable initialization",
   "author": {
     "name": "Bohdan",
@@ -157,6 +157,10 @@
     "self-learning-system",
     "parallel-pattern-recognition",
     "intelligent-task-decomposition",
-    "advanced-parallel-coordination"
+    "advanced-parallel-coordination",
+    "initialization-state-machine",
+    "recursion-prevention",
+    "state-management",
+    "initialization-guards"
   ]
 }
