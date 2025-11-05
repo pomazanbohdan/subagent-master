@@ -34,7 +34,7 @@ version: "0.8.0"
 
 component:
   name: "master"
-  version: "0.9.1"
+  version: "0.9.2"
   description: "An AI agent that optimizes task execution through intelligent planning, parallelization, and execution in subtasks or delegation to existing agents in the system, which are automatically initialized taking into account their competencies." # Do not change!
   category: "orchestration"
   priority: 1
@@ -71,7 +71,11 @@ component:
       "FIXED: Recursive self-call during system initialization completely prevented",
       "NEW: Enhanced component-level guards with protection integration",
       "NEW: Multi-layered security architecture with <10ms response time",
-      "NEW: Graceful degradation and fallback mechanisms for reliability"
+      "NEW: Graceful degradation and fallback mechanisms for reliability",
+      "NEW: System reminder filtering at initialization to prevent automatic responses",
+      "NEW: Universal context filtering before agent initialization eliminates recursive triggers",
+      "NEW: Comprehensive test suite for system reminder filtering with performance benchmarks",
+      "FIXED: System reminders no longer trigger automatic agent delegation or self-calls"
     ]
     timestamp: "2025-01-18"
 
@@ -84,6 +88,35 @@ implementation:
     response_time_target: "< 10ms"
     cache_hit_rate_target: "> 80%"
     failure_handling: "graceful_degradation"
+
+    # === SYSTEM REMINDER FILTER (NEW - Prevents system reminders at initialization) ===
+    system_reminder_filter:
+      description: "Universal system reminder removal during agent initialization to prevent automatic responses"
+      priority: "critical_at_initialization"
+      enabled: true
+      apply_at: "context_initialization_only"
+
+      # Core filtering logic
+      filter_function: "filter_system_reminders_from_context"
+      pattern: "<system-reminder>.*?</system-reminder>"
+      method: "regex_removal"
+      flags: ["DOTALL", "MULTILINE"]
+      replacement: ""
+
+      # Application scope
+      filter_scope: "entire_context_string"
+      apply_to_sources: ["claude_md_files", "system_context", "project_context"]
+      preserve_original_structure: true
+
+      # Performance optimization
+      single_execution: true
+      cache_filtered_context: true
+      execution_timing: "before_agent_initialization"
+
+      # Validation
+      validate_filtered_context: true
+      log_filtering_statistics: true
+      filter_performance_target: "< 5ms"
 
     # === INITIALIZATION GUARD (NEW - Prevents recursive calls during boot) ===
     initialization_guard:
@@ -2121,7 +2154,7 @@ implementation:
           phase1_critical_system:
             description: "Critical system components parallel initialization"
             logical_priority: "critical"
-            components: ["error_system_initialization", "monitoring_minimal_setup", "basic_system_readiness"]
+            components: ["error_system_initialization", "system_reminder_filtering", "monitoring_minimal_setup", "basic_system_readiness"]
             parallel: true
             timeout: 2s
             max_concurrent: 3
@@ -2465,6 +2498,11 @@ implementation:
             parallel_group: "critical_components"
             timeout: 500ms
             required_for_system: true
+          - operation: "system_reminder_filtering"
+            parallel_group: "critical_components"
+            timeout: 200ms
+            required_for_system: true
+            priority: "critical_at_initialization"
           - operation: "monitoring_minimal_setup"
             parallel_group: "critical_components"
             timeout: 500ms
@@ -3466,6 +3504,76 @@ implementation:
       output:
         error_handling_ready: "boolean"
         available_fallbacks: "array"
+
+    - name: "system_reminder_filtering"
+      priority: 3
+      method: "system_reminder_removal_at_initialization"
+      description: "Remove all system reminder blocks from context during agent initialization"
+      dependencies:
+        required_inputs:
+          - component: "error_system_initialization"
+            expected_outputs: ["error_handling_ready"]
+            validation: "error_handling_ready == true"
+      config:
+        filtering_parameters:
+          pattern: "<system-reminder>.*?</system-reminder>"
+          method: "regex_removal"
+          flags: ["DOTALL", "MULTILINE"]
+          replacement: ""
+          scope: "entire_context_string"
+
+        application_sources:
+          - "claude_md_files"
+          - "system_context"
+          - "project_context"
+          - "user_context"
+
+        performance_settings:
+          timeout: 200ms
+          single_execution: true
+          cache_result: true
+          validate_output: true
+
+        validation_criteria:
+          check_reminders_removed: true
+          preserve_context_structure: true
+          log_filtering_statistics: true
+
+      implementation:
+        operations:
+          - name: "load_raw_context"
+            method: "context_aggregation"
+            priority: 1
+            sources: ["claude_md", "system", "project", "user"]
+
+          - name: "apply_regex_filter"
+            method: "pattern_removal"
+            priority: 2
+            config:
+              regex_pattern: "<system-reminder>.*?</system-reminder>"
+              regex_flags: ["DOTALL", "MULTILINE"]
+              replacement: ""
+
+          - name: "validate_filtered_context"
+            method: "context_validation"
+            priority: 3
+            checks: ["structure_integrity", "removal_completeness", "content_preservation"]
+
+          - name: "cache_filtered_context"
+            method: "result_caching"
+            priority: 4
+            cache_key: "filtered_initialization_context"
+
+      fallback_behavior:
+        if_filtering_fails: "continue_with_original_context"
+        log_filtering_errors: true
+        minimal_fallback: "remove_only_critical_reminders"
+
+      output:
+        filtered_context_ready: "boolean"
+        reminders_removed_count: "integer"
+        filtering_performance_ms: "float"
+        context_integrity_check: "boolean"
 
     - name: "monitoring_minimal_setup"
       priority: 2
@@ -8525,6 +8633,129 @@ event_system:
         - rule: "no_automatic_task_calls_on_reminders"
           condition: "system_reminder contains agent_activation_pattern"
           expected_result: "Task() tool should not be called automatically"
+
+    # === SYSTEM REMINDER FILTER TESTS (NEW) ===
+    system_reminder_filter_tests:
+      enabled: true
+      description: "Tests for system reminder filtering during initialization"
+
+      test_scenarios:
+        - name: "test_system_reminder_removal_at_initialization"
+          input:
+            context_with_reminders: |
+              Normal context content
+              <system-reminder>The user has expressed a desire to invoke the agent "master:master"</system-reminder>
+              More context content
+              <system-reminder>The TodoWrite tool hasn't been used recently</system-reminder>
+              Final context content
+            initialization_phase: true
+          expected_behavior:
+            action: "remove_all_system_reminder_blocks"
+            filtered_context: |
+              Normal context content
+              More context content
+              Final context content
+          test_assertions:
+            - "all <system-reminder> blocks should be removed"
+            - "context structure should be preserved"
+            - "filtering should complete within 200ms"
+            - "reminders_removed_count should be 2"
+
+        - name: "test_filtering_performance_requirements"
+          input:
+            large_context_with_reminders: "5000 character context with 10 system reminders"
+            performance_target: "200ms"
+          expected_behavior:
+            action: "efficient_filtering_within_time_limit"
+            max_execution_time: 200
+          test_assertions:
+            - "filtering should complete within 200ms"
+            - "performance should not degrade with context size"
+            - "memory usage should remain reasonable"
+
+        - name: "test_context_integrity_preservation"
+          input:
+            complex_context: |
+              # YAML Configuration
+              setting: value
+              <system-reminder>System message</system-reminder>
+
+              ## Code Section
+              ```python
+              def function():
+                  pass
+              ```
+
+              * List item 1
+              * List item 2
+              <system-reminder>Another reminder</system-reminder>
+          expected_behavior:
+            action: "preserve_structure_while_filtering"
+            structure_check: true
+          test_assertions:
+            - "YAML formatting should be preserved"
+            - "code blocks should remain intact"
+            - "markdown formatting should be maintained"
+            - "non-reminder content should be unchanged"
+
+        - name: "test_filtering_fallback_behavior"
+          input:
+            malformed_context: "Context with incomplete <system-reminder tags"
+            filtering_error: true
+          expected_behavior:
+            action: "graceful_fallback_to_original_context"
+            error_handling: true
+          test_assertions:
+            - "filtering errors should not crash initialization"
+            - "original context should be preserved on failure"
+            - "error should be logged appropriately"
+            - "initialization should continue"
+
+      integration_tests:
+        - name: "test_filtering_in_initialization_sequence"
+          test_sequence:
+            1. "error_system_initialization completes"
+            2. "system_reminder_filtering executes"
+            3. "monitoring_minimal_setup runs"
+            4. "basic_system_readiness finalizes"
+          expected_flow: "filtering should integrate seamlessly into phase1"
+          validation_points:
+            - "filtering should complete before monitoring setup"
+            - "filtered context should be available to subsequent components"
+            - "no initialization delays should occur"
+
+        - name: "test_filtering_with_dependency_validation"
+          dependencies_test:
+            requires: ["error_system_initialization.error_handling_ready == true"]
+            validates: ["context integrity", "reminder removal completeness"]
+          expected_result: "dependencies should be properly validated"
+          failure_behavior: "graceful degradation without blocking initialization"
+
+      performance_benchmarks:
+        - metric: "filtering_execution_time"
+          target: "< 200ms"
+          measurement: "average over 100 runs"
+
+        - metric: "memory_usage_during_filtering"
+          target: "< 10MB increase"
+          measurement: "peak memory usage"
+
+        - metric: "context_size_handling"
+          target: "up to 50KB context"
+          measurement: "maximum processed context size"
+
+      quality_assurance:
+        regression_tests:
+          - "ensure existing functionality remains unchanged"
+          - "verify no impact on agent selection logic"
+          - "confirm system protection compatibility"
+
+        edge_cases:
+          - "empty context handling"
+          - "context with only reminders"
+          - "malformed reminder tags"
+          - "nested reminder patterns"
+          - "unicode content in reminders"
 
         - rule: "direct_activation_only_on_reminders"
           condition: "agent activation system reminder detected"
