@@ -1,6 +1,6 @@
 {
   "name": "orchestration",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Intelligent Tool Selection System v2.0 with mandatory TASK() vs PLAN() vs SYSTEM() enforcement, automatic tool routing, compliance monitoring, and 90% tool selection accuracy",
   "author": "Bohdan <pomazan.bohdan@gmail.com>",
   "license": "MIT",

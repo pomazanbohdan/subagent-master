@@ -30,11 +30,11 @@ capabilities: [
 ] # Do not change!
 triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage", "parallel", "team", "multiple-agents", "clarify", "search", "research", "unclear", "help", "details", "requirements", "batch", "multiple-files", "bulk-edit", "mass-update", "parallel-files", "optimize", "schedule", "decompose", "parallelize", "tool", "select", "choose", "implement", "design", "secure", "test", "review", "architecture", "performance", "vulnerability", "expert", "specialist", "mandatory", "enforce", "comply", "audit", "validate", "authorize"] # Do not change!
 tools: ["dynamic_agent_discovery"]  # Do not change!
-version: "0.6.0"
+version: "0.6.1"
 
 component:
   name: "master"
-  version: "0.6.0"
+  version: "0.6.1"
   description: "An AI agent that optimizes task execution through intelligent planning, parallelization, and execution in subtasks or delegation to existing agents in the system, which are automatically initialized taking into account their competencies." # Do not change!
   category: "orchestration"
   priority: 1
@@ -44,7 +44,7 @@ component:
     optimized_tokens: 3300
     savings_percentage: 50
   latest_update:
-    version: "0.6.0"
+    version: "0.6.1"
     changes: [
       "Implemented dynamic task complexity analysis system with 5 complexity levels",
       "Added task decomposer with multiple breakdown strategies (functional, temporal, dependency, skill-based)",
@@ -56,7 +56,11 @@ component:
       "Added hierarchy optimizer with performance pattern analysis and dependency streamlining",
       "Created comprehensive event system for dynamic planning with recursive analysis capabilities",
       "Introduced automatic task decomposition based on complexity factors and breakdown triggers",
-      "Enhanced parallel coordination with dynamic group identification based on task similarity"
+      "Enhanced parallel coordination with dynamic group identification based on task similarity",
+      "FIXED CRITICAL: Resolved bootstrap-greeting cyclic dependency deadlock",
+      "Implemented graduated bootstrap system with core/optional phase separation",
+      "Added fault-tolerant system states with graceful degradation",
+      "Enhanced system reliability with multiple operational modes (core_ready, full_ready, operational_fallback, emergency_mode)"
     ]
     timestamp: "2025-01-05"
 
@@ -140,82 +144,152 @@ implementation:
     parallel: true
 
   event_driven_initialization:
-    # === HYBRID PARALLEL BOOTSTRAP SYSTEM v2.0 ===
+    # === GRADUATED BOOTSTRAP SYSTEM v2.1 - FIXED CYCLIC DEPENDENCY ===
 
-    # Phase 1: Critical Bootstrap (0-2s) - Parallel Execution
-    system.bootstrap.phase1.critical:
-      description: "Critical system components parallel initialization"
-      logical_priority: "critical"
-      components: ["error_system_initialization", "monitoring_minimal_setup", "basic_system_readiness"]
-      parallel: true
-      timeout: 2s
-      max_concurrent: 3
-      fallback: "minimal_bootstrap"
+    graduated_bootstrap:
+      description: "Multi-phase bootstrap with core/optional separation"
 
-    system.bootstrap.phase1.parallel:
-      description: "Parallel initialization of independent core components"
-      logical_priority: "critical"
-      components: ["memory_system_initialization", "essential_mcp_discovery", "essential_agents_preload"]
-      parallel: true
-      timeout: 3s
-      max_concurrent: 3
-      dependencies: ["system.bootstrap.phase1.critical.completed"]
+      # === CORE BOOTSTRAP (Critical - MUST succeed) ===
+      core_bootstrap:
+        description: "Essential system components that must succeed"
+        priority: "critical"
+        timeout: 30s
+        retry_attempts: 3
+        failure_action: "emergency_fallback"
 
-    # Phase 2: Enhanced Discovery (2-5s) - Parallel Discovery Methods
-    system.bootstrap.phase2.discovery:
-      description: "Enhanced parallel discovery of all resources"
-      logical_priority: "high"
-      components: ["full_mcp_enumeration", "all_agent_discovery_methods", "capability_analysis"]
-      parallel: true
-      timeout: 5s
-      max_concurrent: 4
-      dependencies: ["system.bootstrap.phase1.parallel.completed"]
-      partial_success: "continue_with_discovered"
+        phases:
+          # Phase 1: Critical System Initialization (0-2s)
+          phase1_critical_system:
+            description: "Critical system components parallel initialization"
+            logical_priority: "critical"
+            components: ["error_system_initialization", "monitoring_minimal_setup", "basic_system_readiness"]
+            parallel: true
+            timeout: 2s
+            max_concurrent: 3
+            fallback: "minimal_bootstrap"
 
-    # Phase 3: Integration & Readiness (5-6s)
-    system.bootstrap.phase3.integration:
-      description: "System integration and readiness verification"
-      logical_priority: "high"
-      components: ["system_integration_phase", "system_readiness_phase"]
-      parallel: true
-      timeout: 3s
-      max_concurrent: 2
-      dependencies: ["system.bootstrap.phase2.discovery.completed"]
+          # Phase 2: Core Components (2-5s)
+          phase2_parallel_initialization:
+            description: "Parallel initialization of independent core components"
+            logical_priority: "critical"
+            components: ["memory_system_initialization", "essential_mcp_discovery", "essential_agents_preload"]
+            parallel: true
+            timeout: 3s
+            max_concurrent: 3
+            dependencies: ["phase1_critical_system.completed"]
 
-    # Phase 4: Background Optimization (6s+) - Progressive Loading
-    system.bootstrap.phase4.optimization:
-      description: "Background optimization and caching"
-      logical_priority: "medium"
-      components: ["cache_warming", "performance_optimization", "advanced_capability_analysis"]
-      parallel: true
-      timeout: 30s
-      max_concurrent: 3
-      dependencies: ["system.bootstrap.phase3.integration.completed"]
-      background: true
+          # Phase 3: Integration Core (5-8s)
+          phase3_integration_core:
+            description: "Core system integration and basic readiness"
+            logical_priority: "high"
+            components: ["system_integration_phase", "basic_system_readiness_phase"]
+            parallel: true
+            timeout: 3s
+            max_concurrent: 2
+            dependencies: ["phase2_parallel_initialization.completed"]
+            partial_success: "continue_with_core"
 
-    # Legacy Events (for compatibility)
+        completion_event: "system.bootstrap.core.completed"
+        completion_triggers: ["system.core.functionality.enabled"]
+
+      # === OPTIONAL BOOTSTRAP (Enhancement - CAN fail gracefully) ===
+      optional_bootstrap:
+        description: "Enhancement components that improve user experience"
+        priority: "medium"
+        timeout: 20s
+        retry_attempts: 1
+        failure_action: "graceful_degradation"
+        depends_on: "system.bootstrap.core.completed"
+
+        phases:
+          # Phase 4: User Experience Enhancement (8-10s)
+          phase4_greeting_generation:
+            description: "Dynamic greeting generation and user welcome"
+            logical_priority: "high"
+            components: ["dynamic_greeting_generation"]
+            timeout: 5s
+            fallback: "basic_greeting_template"
+
+          # Phase 5: Performance Optimization (10-15s)
+          phase5_optimization_enhancements:
+            description: "Background optimization and caching"
+            logical_priority: "medium"
+            components: ["cache_warming", "performance_optimization"]
+            parallel: true
+            timeout: 10s
+            max_concurrent: 2
+            background: true
+
+          # Phase 6: Advanced Features (15s+)
+          phase6_monitoring_setup:
+            description: "Advanced monitoring and analytics"
+            logical_priority: "low"
+            components: ["advanced_capability_analysis", "enhanced_monitoring"]
+            parallel: true
+            timeout: 15s
+            max_concurrent: 2
+            background: true
+
+        completion_event: "system.bootstrap.optional.completed"
+        completion_triggers: ["system.enhanced.functionality.enabled"]
+
+      # === SYSTEM STATES MANAGEMENT ===
+      system_states:
+        core_ready:
+          description: "Core system ready for basic operations"
+          dependencies: ["system.bootstrap.core.completed"]
+          triggers: ["system.core.functionality.enabled"]
+          capabilities: ["basic_task_processing", "agent_discovery", "tool_selection"]
+          timeout: 0s
+
+        full_ready:
+          description: "Full system ready with all enhancements"
+          dependencies: ["system.bootstrap.optional.completed"]
+          triggers: ["system.enhanced.functionality.enabled"]
+          capabilities: ["advanced_task_processing", "dynamic_greeting", "performance_optimization"]
+          timeout: 0s
+
+        operational_fallback:
+          description: "System operating with core functionality only"
+          dependencies: ["system.bootstrap.core.completed"]
+          condition: "optional_bootstrap.failed OR optional_bootstrap.timeout"
+          triggers: ["system.limited.functionality.enabled"]
+          capabilities: ["essential_task_processing", "basic_agent_discovery"]
+          user_notification: "System running in enhanced mode (some features limited)"
+
+        emergency_mode:
+          description: "Minimal system operation"
+          dependencies: ["phase1_critical_system.completed"]
+          condition: "core_bootstrap.failed"
+          triggers: ["system.emergency.functionality.enabled"]
+          capabilities: ["error_handling_only"]
+          user_notification: "System in emergency mode - limited functionality"
+
+    # === COMPATIBILITY EVENTS (Legacy Support) ===
     system.bootstrap.started:
       description: "System initialization process started"
       logical_priority: "critical"
-      triggers: ["system.bootstrap.phase1.critical"]
+      triggers: ["phase1_critical_system"]
 
     system.discovery.started:
       description: "Resource discovery process initiated"
       logical_priority: "critical"
-      triggers: ["system.bootstrap.phase2.discovery"]
-
-    system.greeting.started:
-      description: "Greeting generation process initiated"
-      logical_priority: "high"
-      components: ["dynamic_greeting_generation"]
-      dependencies: ["system.bootstrap.phase3.integration.completed"]
-      timeout: 2s
-      fallback: "basic_greeting"
+      triggers: ["phase2_parallel_initialization"]
 
     system.bootstrap.completed:
-      description: "System fully initialized"
+      description: "Core system fully initialized - READY FOR TASKS"
       logical_priority: "critical"
-      triggers: ["system.greeting.started.completed"]
+      triggers: ["system.bootstrap.core.completed"]
+      completion_message: "System core ready - enhanced features loading in background"
+
+    system.greeting.started:
+      description: "Greeting generation process (optional enhancement)"
+      logical_priority: "medium"
+      components: ["dynamic_greeting_generation"]
+      dependencies: ["system.bootstrap.core.completed"]
+      timeout: 5s
+      fallback: "basic_greeting_template"
+      failure_impact: "non_critical"
 
     # High Priority Events (Core functionality)
     system.integration.started:
