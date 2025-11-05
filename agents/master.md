@@ -1443,6 +1443,19 @@ implementation:
           config:
             required_components: "dynamic_based_on_context"
 
+      # Legacy compatibility layer for deprecated operations
+      legacy_compatibility_layer:
+        enabled: true
+        event_subscription: ["event_bridge_system.legacy_events"]
+        operation_mapping:
+          "legacy_task_validation": "resource_availability_validation"
+          "legacy_system_health_check": "system_health_validation"
+          "legacy_dependency_check": "dependency_validation"
+        fallback_handling:
+          redirect_to_modern: true
+          preserve_legacy_events: true
+          log_legacy_usage: true
+
       monitoring_operations:
         - name: "performance_tracking"
           method: "track_operation_metrics"
@@ -2221,56 +2234,33 @@ implementation:
     completion_triggers: ["task.tool.compliance.audit"]
 
   event_driven_initialization:
-    # === GRADUATED BOOTSTRAP SYSTEM v2.1 - FIXED CYCLIC DEPENDENCY ===
+    # === DEPRECATED GRADUATED BOOTSTRAP SYSTEM ===
+    # REPLACED BY: unified_state_manager.boot_sequence + event_bridge_system
 
-    graduated_bootstrap:
-      description: "Multi-phase bootstrap with core/optional separation"
+    deprecated_graduated_bootstrap:
+      description: "DEPRECATED - Replaced by unified_state_manager.boot_sequence"
+      status: "deprecated"
+      replacement: "unified_state_manager_integration"
+      redirect_to: "event_bridge_system"
+      preserve_events: true
+      note: "Keep for backward compatibility during transition period"
+      legacy_mode: true
 
-      # === CORE BOOTSTRAP (Critical - MUST succeed) ===
+      # Legacy event mapping for backward compatibility
+      legacy_event_mappings:
+        "phase1_critical_system.completed": "event_bridge_system.critical_init_completed"
+        "phase2_parallel_initialization.completed": "event_bridge_system.parallel_init_completed"
+        "phase3_integration_core.completed": "event_bridge_system.integration_init_completed"
+        "system.bootstrap.core.completed": "event_bridge_system.forward_to_unified"
+
+      # Preserved core functionality (minimal)
       core_bootstrap:
-        description: "Essential system components that must succeed"
-        priority: "critical"
-        timeout: 30s
-        retry_attempts: 3
-        failure_action: "emergency_fallback"
-
-        phases:
-          # Phase 1: Critical System Initialization (0-2s)
-          phase1_critical_system:
-            description: "Critical system components parallel initialization"
-            logical_priority: "critical"
-            components: ["error_system_initialization", "system_reminder_filtering", "monitoring_minimal_setup", "basic_system_readiness"]
-            parallel: true
-            timeout: 2s
-            max_concurrent: 3
-            fallback: "minimal_bootstrap"
-            completion_event: "phase1_critical_system.completed"
-
-          # Phase 2: Core Components (2-5s)
-          phase2_parallel_initialization:
-            description: "Parallel initialization of independent core components"
-            logical_priority: "critical"
-            components: ["memory_system_initialization", "essential_mcp_discovery", "essential_agents_preload"]
-            parallel: true
-            timeout: 3s
-            max_concurrent: 3
-            dependencies: ["phase1_critical_system.completed"]
-            completion_event: "phase2_parallel_initialization.completed"
-
-          # Phase 3: Integration Core (5-8s)
-          phase3_integration_core:
-            description: "Core system integration and basic readiness"
-            logical_priority: "high"
-            components: ["system_integration_phase", "basic_system_readiness_phase"]
-            parallel: true
-            timeout: 3s
-            max_concurrent: 2
-            dependencies: ["phase2_parallel_initialization.completed"]
-            partial_success: "continue_with_core"
-            completion_event: "phase3_integration_core.completed"
-
-        completion_event: "system.bootstrap.core.completed"
-        completion_triggers: ["system.core.functionality.enabled"]
+        description: "Minimal legacy bootstrap for compatibility"
+        status: "deprecated_mode"
+        priority: "low"
+        timeout: 60s
+        failure_action: "redirect_to_unified"
+        fallback_system: "unified_state_manager_integration"
 
       # === OPTIONAL BOOTSTRAP (Enhancement - CAN fail gracefully) ===
       optional_bootstrap:
@@ -2717,8 +2707,16 @@ implementation:
             - name: "VALIDATION_COMPLETE"
               description: "System validation complete"
               timeout: 10s
-              checks: ["all_validations_passed", "initialization_guards_active", "system_ready_for_operations"]
+              checks: ["all_validations_passed", "initialization_guards_active", "system_ready_for_operations", "event_bridge_system.healthy"]
               next_stage: "SYSTEM_READY"
+
+              # Enhanced boot outputs for legacy compatibility
+              completion_outputs:
+                system_ready_event: "unified_state_manager.system_ready"
+                all_components_operational: true
+                boot_sequence_completed: true
+                event_bridge_forwarded: true
+                legacy_compatibility_active: true
 
         # Enhanced guards with unified state integration
         unified_guards:
@@ -2778,11 +2776,13 @@ implementation:
 
         # Event integration with unified system
         event_integration:
-          subscribe_to: ["unified_state_manager.transition.completed"]
+          subscribe_to: ["unified_state_manager.transition.completed", "event_bridge_system.legacy_events"]
           publish_on:
             boot_completed: ["system.boot.complete", "unified_state_manager.transition.to.SYSTEM_READY"]
             boot_failed: ["system.boot.failed", "unified_state_manager.transition.to.SYSTEM_FAILED"]
             stage_completed: ["boot.stage.completed"]
+            legacy_bridge_forwarded: ["event_bridge_system.events_forwarded"]
+            bridge_health_updated: ["event_bridge_system.health_updated"]
 
         # Performance monitoring for initialization
         performance_monitoring:
@@ -2798,6 +2798,69 @@ implementation:
         operations_allowed: "boolean"
         performance_metrics: "object"
         transition_log: "array"
+
+    # === EVENT BRIDGE SYSTEM - LEGACY TO UNIFIED MIGRATION ===
+
+    - name: "event_bridge_system"
+      priority: -1  # Execute before unified_state_manager
+      method: "event_forwarding_bridge"
+      description: "Bridge between legacy events and unified state manager"
+      config:
+        # Legacy → Unified Event Mapping
+        event_mappings:
+          "system.bootstrap.core.completed":
+            forward_to: "unified_state_manager.transition.to.SYSTEM_READY"
+            preserve_original: true
+
+          "system.ready":
+            forward_to: "unified_state_manager.system_level.current_state == 'SYSTEM_READY'"
+            preserve_original: true
+
+          "task.received":
+            forward_to: "existing_task_processing_chain"
+            preserve_original: true
+
+        # Dependency Chain Preservation
+        dependency_bridges:
+          "optional_bootstrap":
+            original_dependency: "system.bootstrap.core.completed"
+            new_dependency: "unified_state_manager.transition.to.SYSTEM_READY"
+
+          "core_ready_states":
+            original_dependency: "system.bootstrap.core.completed"
+            new_dependency: "unified_state_manager.transition.to.SYSTEM_READY"
+
+          "system_greeting_started":
+            original_dependency: "system.bootstrap.core.completed"
+            new_dependency: "unified_state_manager.transition.to.SYSTEM_READY"
+
+          "agent_discovery_started":
+            original_dependency: "system.bootstrap.completed"
+            new_dependency: "unified_state_manager.transition.to.SYSTEM_READY"
+
+          "system_memory_adaptive_started":
+            original_dependency: "system.bootstrap.completed"
+            new_dependency: "unified_state_manager.transition.to.SYSTEM_READY"
+
+        # Event Forwarding Configuration
+        forwarding_rules:
+          preserve_timestamps: true
+          add_bridge_metadata: true
+          validate_before_forward: true
+          retry_failed_forwards: 3
+
+        # Legacy Event Preservation
+        legacy_preservation:
+          keep_original_events: true
+          log_forwarding_activity: true
+          monitor_bridge_health: true
+
+      output:
+        bridge_status: "string"
+        events_forwarded: "integer"
+        legacy_events_preserved: "integer"
+        bridge_health_score: "float"
+        forwarding_log: "array"
 
     # === INTELLIGENT TOOL SELECTION COMPONENTS v2.0 ===
 
@@ -2888,16 +2951,19 @@ implementation:
         execution_sequence: "array"
         validation_checkpoints: "array"
 
-    # Legacy compatibility (redirects to new system) - DEACTIVATED in favor of unified system
-    - name: "system_initialization"
-      priority: 10
-      method: "legacy_bootstrap_redirect"
+    # Enhanced legacy compatibility with event bridge priority
+    - name: "system_initialization_legacy_fallback"
+      description: "Enhanced fallback with unified system priority and event bridge support"
+      priority: 20  # Lowest priority - after unified and bridge systems
+      method: "enhanced_legacy_bootstrap_redirect"
       trigger: "on_agent_load"
-      condition: "unified_state_manager_integration.failed"
+      condition: "unified_state_manager_integration.failed AND event_bridge_system.failed"
       config:
         redirect_to_new_system: true
+        try_event_bridge_first: true
         legacy_compatibility: true
         minimum_components_only: true
+        fallback_priority: "emergency"
         error_handling:
           bootstrap_failure:
             action: "activate_emergency_bootstrap"
@@ -2914,6 +2980,10 @@ implementation:
             log_error: true
             notify_user: "Unified system failed, activating legacy fallback"
             timeout: 10s
+          event_bridge_failure:
+            action: "try_unified_direct"
+            log_warning: true
+            notify_user: "Event bridge failed, trying unified system directly"
       output:
         bootstrap_complete: "boolean"
         basic_monitoring_active: "boolean"
@@ -4849,17 +4919,38 @@ implementation:
         processing_results: "object"
         execution_time: "float"
 
-    # === LEGACY SEQUENTIAL OPERATIONS (Priority 14-20) ===
+    # === DEPRECATED LEGACY SEQUENTIAL OPERATIONS ===
+    # REPLACED BY: unified_task_handler + event_bridge_system
 
-    - name: "task_semantic_analysis"
-      priority: 11
+    deprecated_legacy_sequential_operations:
+      description: "DEPRECATED - Replaced by unified_task_handler"
+      status: "deprecated"
+      replacement: "unified_task_handler"
+      redirect_to: "unified_task_handler.shared_operations"
+      preserve_events: true
+      note: "Keep for backward compatibility during transition period"
+      legacy_mode: true
+
+      # Legacy operation mapping for backward compatibility
+      legacy_operation_mappings:
+        "task_semantic_analysis": "unified_task_handler.resource_availability_validation"
+        "unified_tfidf_processing": "unified_task_handler.validation_operations"
+        "task_received_coordinator": "unified_task_handler.event_processing"
+
+    # Legacy task semantic analysis (deprecated mode)
+    - name: "task_semantic_analysis_legacy"
+      description: "DEPRECATED - Use unified_task_handler instead"
+      status: "deprecated_mode"
+      priority: 20  # Low priority
       method: "unified_tfidf_processing"
+      redirect_to: "unified_task_handler"
+      condition: "unified_task_handler.failed AND event_bridge_system.failed"
       dependencies:
         trigger_source: "task_received_coordinator"
         required_outputs: ["task_accepted", "task_metadata", "coordination_plan"]
         tfidf_dependency: "unified_tfidf_processor"
         threshold_standards_dependency: "system_threshold_standards"
-        activation_condition: "task_accepted == true && analysis_sequence_initiated == true"
+        activation_condition: "task_accepted == true && analysis_sequence_initiated == true && unified_task_handler.unavailable"
       config:
         usage_mode: "semantic_analysis"
         input_source: "task_metadata.task_description"
