@@ -3847,27 +3847,7 @@ implementation:
         memory_summary: "object"
         initialization_time: "float"
 
-    # === ADAPTIVE MEMORY SYSTEM PHASE (Priority 4 - DUPLICATE REMOVED) ===
-
-# This appears to be a duplicate - keeping first instance with priority 4
-
-# - name: "adaptive_memory_system_phase"
-
-# priority: 2.5  # REMOVED - use first instance with priority 4
-
-# method: "initialize_adaptive_memory"
-
-# dependencies
-
-# required_inputs
-
-# - component: "system_discovery_phase"
-
-# expected_outputs: ["discovery_complete", "mcp_servers_discovered", "discovered_agents"]
-
-# validation: "discovery_complete == true"
-
-# LEGACY DUPLICATE REMOVED - using first instance with priority 4
+    
 
     # === PARALLEL TODO PLANNING PHASE (Priority 2.7) ===
 
