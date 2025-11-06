@@ -28,13 +28,13 @@ capabilities: [
   "tool-decision-matrix",
   "intelligent-workflow-routing"
 ] # Do not change!
-triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage", "parallel", "team", "multiple-agents", "clarify", "search", "research", "unclear", "help", "details", "requirements", "batch", "multiple-files", "bulk-edit", "mass-update", "parallel-files", "optimize", "schedule", "decompose", "parallelize", "tool", "select", "choose", "implement", "design", "secure", "test", "review", "architecture", "performance", "vulnerability", "expert", "specialist", "mandatory", "enforce", "comply", "audit", "validate", "authorize"] # Do not change!
+triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage", "parallel", "team", "multiple-agents", "clarify", "search", "research", "unclear", "help", "details", "requirements", "batch", "multiple-files", "bulk-edit", "mass-update", "parallel-files", "optimize", "schedule", "decompose", "parallelize", "tool", "select", "choose", "implement", "design", "secure", "test", "review", "architecture", "performance", "vulnerability", "expert", "specialist", "mandatory", "enforce", "comply", "audit", "validate", "authorize", "диагностика", "самодіагностики", "валідація", "аналіз поведінки", "режим самодіагностики", "пошук виправлення", "self diagnosis", "diagnostic mode", "debug analysis", "system analysis"] # Do not change!
 tools: ["dynamic_agent_discovery"]  # Do not change!
-version: "0.9.5"
+version: "0.9.6"
 
 component:
   name: "master"
-  version: "0.9.5"
+  version: "0.9.6"
   description: "An AI agent that optimizes task execution through intelligent planning, parallelization, and execution in subtasks or delegation to existing agents in the system, which are automatically initialized taking into account their competencies." # Do not change!
   category: "orchestration"
   priority: 1
@@ -44,9 +44,9 @@ component:
     optimized_tokens: 3300
     savings_percentage: 50
   latest_update:
-    version: "0.9.5"
-    changes: ["Version synchronization fix", "Updated all version references to 0.9.5"]
-    timestamp: "2025-01-19"
+    version: "0.9.6"
+    changes: ["Added diagnostic command processing", "Removed legacy components", "Enhanced event-driven architecture", "Updated triggers for diagnostic support"]
+    timestamp: "2025-01-20"
 
 implementation:
   # === SYSTEM PROTECTION LAYER ===
@@ -3992,36 +3992,64 @@ implementation:
         performance_improvements: "object"
         resource_efficiency_metrics: "object"
 
-    # Legacy compatibility redirections removed - functionality integrated into unified_greeting_engine
- 
-
-    # === GREETING FORMATION ENGINE - DEPRECATED ===
-  # Functionality moved to unified_greeting_engine
-  # This component is kept for backward compatibility but should be removed in future versions
-
-    # - name: "greeting_formation_engine"
-    #   priority: 3.1
-    #   method: "event_driven_greeting_generation"
-    #   event_subscription:
-    #     listen_to: "system.readiness.verified"
-    #     correlation_field: "system_id"
-    #     processing_mode: "sequential"
-    #   dependencies:
-    #     system_readiness_dependency: "final_readiness_check"
-    #     agent_registry_dependency: "agent_registry_enhancement"
-    #     mcp_discovery_dependency: "system_discovery_phase"
-    #     required_outputs: ["system_ready", "enhanced_agent_registry", "mcp_servers_discovered"]
-    #     validation: "system_ready == true && enhanced_agent_registry != null && mcp_servers_discovered != null"
+    # === DIAGNOSTIC COMMAND PROCESSOR ===
+    - name: "diagnostic_command_processor"
+      priority: 20
+      method: "event_driven_diagnostic_detection"
+      event_subscription:
+        listen_to: "task.received"
+        correlation_field: "task_id"
+        processing_mode: "sequential"
+      dependencies:
+        system_readiness_dependency:
+          component: "system_readiness_phase"
+          required_outputs: ["system_ready"]
+          validation: "system_ready == true"
       config:
-        greeting_generation:
-          data_sources:
-            agent_registry: "enhanced_agent_registry"
-            mcp_servers: "mcp_servers_discovered"
-            system_capabilities: "final_readiness_check_results"
-            performance_metrics: "monitoring_minimal_setup_results"
+        diagnostic_detection:
+          primary_patterns:
+            exact_phrases:
+              - "Режим самодіагностики"
+              - "Режим діагностики"
+              - "Режим валідації"
+              - "режим пошуку виправлення"
 
-          agent_categorization:
-            categories:
+            contextual_patterns:
+              contains_keywords:
+                - "самодіагностики"
+                - "діагностику"
+                - "валідації"
+                - "проаналізуй свою поведінку"
+                - "знайди помилку"
+                - "провалідуй твердження"
+                - "Сплануй виправлення"
+
+          event_generation:
+            self_diagnosis_request:
+              trigger_condition: "primary_pattern_matched"
+              event_name: "self_diagnosis_request"
+              source: "diagnostic_processor"
+
+            debug_mode_activated:
+              trigger_condition: "contextual_pattern_matched"
+              event_name: "debug_mode_activated"
+              source: "diagnostic_processor"
+
+      output:
+        diagnostic_detected: "boolean"
+        diagnostic_type: "string"
+        trigger_events_emitted: "array"
+        processing_metadata: "object"
+
+    # === AGENT CATEGORIZATION ===
+    - name: "agent_categorization"
+      priority: 25
+      method: "category_based_agent_classification"
+      dependencies:
+        trigger_source: "task_received_coordinator"
+        required_outputs: ["task_accepted", "coordination_plan"]
+      config:
+        categories:
               development_agents:
                 criteria: ["backend", "frontend", "fullstack", "developer"]
                 priority: 1
@@ -4133,34 +4161,64 @@ implementation:
         template_used: "string"
         event_published: "boolean"
 
-    # === INTEGRATED SYSTEM READINESS DISPLAY - DEPRECATED ===
-    # Functionality moved to unified_greeting_engine
-
-    # - name: "integrated_system_readiness_display"
-    #   priority: 3.2
-    #   method: "greeting_enhanced_system_display"
-    #   dependencies:
-    #     greeting_dependency: "greeting_formation_engine"
-    #     readiness_dependency: "final_readiness_check"
-    #     required_outputs: ["greeting_generated", "greeting_content", "system_ready"]
-    #     validation: "greeting_generated == true && system_ready == true"
+    # === LEGACY FALLBACK SYSTEM ===
+    - name: "system_initialization_legacy_fallback"
+      priority: 1
+      method: "emergency_legacy_initialization"
+      dependencies: []
       config:
-        display_integration:
-          greeting_integration:
-            use_categorized_agents: true
-            use_categorized_mcp_servers: true
-            dynamic_template_selection: true
-            performance_summary_inclusion: true
+        fallback_strategy: "minimal_system_initialization"
+        emergency_mode: true
+      triggers:
+        - event: "unified_initialization.failed"
+          condition: "all_primary_methods_failed"
+        - event: "system_critical_failure"
+          condition: "core_unavailable"
+      actions:
+        - initialize_core_components_only
+        - enable_basic_functionality
+        - notify_user_of_degraded_mode
+      output:
+        fallback_activated: "boolean"
+        minimal_system_ready: "boolean"
+        emergency_mode_status: "string"
 
-          readiness_enhancement:
-            incorporate_system_health: true
-            include_performance_metrics: true
-            availability_status_display: true
-            capability_summary_integration: true
+    # === DIAGNOSTIC EVENT SYSTEM ===
+    - name: "diagnostic_event_system"
+      priority: 22
+      method: "event_driven_diagnostic_orchestration"
+      dependencies:
+        diagnostic_processor_dependency:
+          component: "diagnostic_command_processor"
+          required_outputs: ["diagnostic_detected", "trigger_events_emitted"]
+          validation: "diagnostic_detected == true"
+      config:
+        event_handling:
+          listen_to: "diagnostic_processor.events"
+          event_types:
+            - "self_diagnosis_request"
+            - "debug_mode_activated"
 
-          template_system:
-            base_template: "comprehensive_system_announcement"
-            sections:
+          response_actions:
+            self_diagnosis_request:
+              - publish_state_transition_event: "SYSTEM_SELF_DIAGNOSIS.requested"
+              - notify_user: "Entering diagnostic mode..."
+              - enable_debug_logging: true
+
+            debug_mode_activated:
+              - publish_debug_event: "debug.mode.activated"
+              - enable_verbose_logging: true
+              - activate_analysis_tools: true
+
+        state_transition_support:
+          trigger_system_states: ["SYSTEM_READY", "SYSTEM_WAITING", "SYSTEM_OPERATIONAL"]
+          ensure_safe_transition: true
+          validate_transition_conditions: true
+
+      output:
+        diagnostic_events_processed: "array"
+        state_transitions_triggered: "array"
+        debug_mode_status: "boolean"
               welcome_section:
                 source: "greeting_content.greeting_section"
                 priority: 1
