@@ -1,7 +1,7 @@
 {
   "name": "orchestration",
-  "version": "0.9.8",
-  "description": "Clean unified event-driven master agent v2.0.0, comprehensive System Protection Layer v1.0.0, universal recursive call protection system, intelligent system reminder analysis, multi-layered security architecture, silent threat prevention, and enhanced state machine v2.0",
+  "version": "0.9.9",
+  "description": "Unified event-driven master agent v2.1.0 with comprehensive greeting system and state machine v2.1. Features: unified_greeting_engine, SYSTEM_WAITING state, direct user request handling, legacy cleanup, comprehensive system overview with agent/MCP server lists, and enhanced user interaction workflow.",
   "author": "Bohdan <pomazan.bohdan@gmail.com>",
   "license": "MIT",
   "keywords": [

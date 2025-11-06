@@ -530,14 +530,35 @@ implementation:
           event_driven: true
 
         SYSTEM_READY:
-          description: "System fully operational"
-         
+          description: "System fully operational - ready for user interaction"
+
           # System transitions out via triggers, not timeouts (event-driven architecture)
-          # Examples: task_processing_started → SYSTEM_OPERATIONAL
+          # Examples: greeting_display_completed → SYSTEM_WAITING
+          #          task_processing_started → SYSTEM_OPERATIONAL
           #          component_degradation_detected → SYSTEM_DEGRADED
           timeout: "infinite"
           operational_modes: ["normal", "high_performance", "resource_saving"]
-          next_states: ["SYSTEM_OPERATIONAL", "SYSTEM_DEGRADED", "SYSTEM_SELF_DIAGNOSIS", "SYSTEM_SHUTDOWN"]
+          next_states: ["SYSTEM_WAITING", "SYSTEM_OPERATIONAL", "SYSTEM_DEGRADED", "SYSTEM_SELF_DIAGNOSIS", "SYSTEM_SHUTDOWN"]
+
+        SYSTEM_WAITING:
+          description: "System ready with comprehensive greeting displayed, waiting for user action"
+
+          # System waits for user input after displaying greeting with full system overview
+          timeout: "infinite"
+          operational_modes: ["awaiting_user_input", "ready_for_tasks"]
+          allowed_operations: ["accept_user_input", "maintain_readiness", "system_status_display"]
+          blocked_operations: ["task_delegation", "agent_selection"]
+          next_states: ["SYSTEM_OPERATIONAL", "SYSTEM_SELF_DIAGNOSIS", "SYSTEM_SHUTDOWN"]
+          transition_triggers:
+            - trigger: "user_action_initiated"
+              from_states: ["SYSTEM_WAITING"]
+              to_state: "SYSTEM_OPERATIONAL"
+            - trigger: "self_diagnosis_request"
+              from_states: ["SYSTEM_WAITING"]
+              to_state: "SYSTEM_SELF_DIAGNOSIS"
+            - trigger: "shutdown_requested"
+              from_states: ["SYSTEM_WAITING"]
+              to_state: "SYSTEM_SHUTDOWN"
 
         SYSTEM_SELF_DIAGNOSIS:
           description: "System in self-diagnosis mode - handles debug and analysis tasks"
@@ -638,6 +659,20 @@ implementation:
         action: "emergency_shutdown"
         events: ["system.failed", "initialization.failed"]
         completion_triggers: ["emergency_shutdown_complete"]
+
+      SYSTEM_READY → SYSTEM_WAITING:
+        trigger: "greeting_display_completed"
+        validator: "greeting_success_validator"
+        action: "await_user_action"
+        events: ["system.waiting", "greeting.displayed"]
+        completion_triggers: ["waiting_mode_active", "user_input_ready"]
+
+      SYSTEM_WAITING → SYSTEM_OPERATIONAL:
+        trigger: "user_action_initiated"
+        validator: "user_action_validator"
+        action: "begin_task_processing"
+        events: ["system.operational", "user.action.started"]
+        completion_triggers: ["operational_mode_active", "task_processing_enabled"]
 
       SYSTEM_READY → SYSTEM_OPERATIONAL:
         trigger: "task_processing_started"
@@ -1533,18 +1568,7 @@ implementation:
           config:
             required_components: "dynamic_based_on_context"
 
-      # Legacy compatibility layer for deprecated operations
-      compatibility_layer:
-        enabled: true
-        event_subscription: ["event_bridge_system.compatibility_events"]
-        operation_mapping:
-          "legacy_task_validation": "resource_availability_validation"
-          "legacy_system_health_check": "system_health_validation"
-          "legacy_dependency_check": "dependency_validation"
-        fallback_handling:
-          redirect_to_modern: true
-          preserve_compatibility_events: true
-          log_compatibility_usage: true
+      # Legacy compatibility layer removed - functionality integrated into unified system
 
       monitoring_operations:
         - name: "performance_tracking"
@@ -2865,68 +2889,8 @@ implementation:
         performance_metrics: "object"
         transition_log: "array"
 
-    # === EVENT BRIDGE SYSTEM - LEGACY TO UNIFIED MIGRATION ===
 
-    - name: "event_bridge_system"
-      priority: -1  # Execute before unified_state_manager
-      method: "event_forwarding_bridge"
-      description: "Bridge between legacy events and unified state manager"
-      config:
-        # Legacy → Unified Event Mapping
-        event_mappings:
-          "system.bootstrap.core.completed":
-            forward_to: "unified_state_manager.transition.to.SYSTEM_READY"
-            preserve_original: true
 
-          "system.ready":
-            forward_to: "unified_state_manager.system_level.current_state == 'SYSTEM_READY'"
-            preserve_original: true
-
-          "task.received":
-            forward_to: "existing_task_processing_chain"
-            preserve_original: true
-
-        # Dependency Chain Preservation
-        dependency_bridges:
-          "optional_bootstrap":
-            original_dependency: "system.bootstrap.core.completed"
-            new_dependency: "unified_state_manager.transition.to.SYSTEM_READY"
-
-          "core_ready_states":
-            original_dependency: "system.bootstrap.core.completed"
-            new_dependency: "unified_state_manager.transition.to.SYSTEM_READY"
-
-          "system_greeting_started":
-            original_dependency: "system.bootstrap.core.completed"
-            new_dependency: "unified_state_manager.transition.to.SYSTEM_READY"
-
-          "agent_discovery_started":
-            original_dependency: "system.bootstrap.completed"
-            new_dependency: "unified_state_manager.transition.to.SYSTEM_READY"
-
-          "system_memory_adaptive_started":
-            original_dependency: "system.bootstrap.completed"
-            new_dependency: "unified_state_manager.transition.to.SYSTEM_READY"
-
-        # Event Forwarding Configuration
-        forwarding_rules:
-          preserve_timestamps: true
-          add_bridge_metadata: true
-          validate_before_forward: true
-          retry_failed_forwards: 3
-
-        # Legacy Event Preservation
-        compatibility_preservation:
-          keep_original_events: true
-          log_forwarding_activity: true
-          monitor_bridge_health: true
-
-      output:
-        bridge_status: "string"
-        events_forwarded: "integer"
-        compatibility_events_preserved: "integer"
-        bridge_health_score: "float"
-        forwarding_log: "array"
 
     # === INTELLIGENT TOOL SELECTION COMPONENTS ===
 
@@ -3666,22 +3630,35 @@ implementation:
         final_health_score: "float"
         system_waiting_for_task: "boolean"
 
-    # === DUPLICATE REMOVED: system_resource_inventory moved to system_initialization ===
+    # === UNIFIED GREETING ENGINE ===
 
-    - name: "dynamic_greeting_generation"
+    - name: "unified_greeting_engine"
       priority: 12
-      method: "real_time_greeting_formation"
+      method: "comprehensive_greeting_generation"
       dependencies:
         required_inputs:
           - component: "system_initialization"
             expected_outputs: ["resource_scan_complete", "mcp_categories_found", "agent_categories_found"]
             validation: "resource_scan_complete == true"
+        user_input:
+          - component: "direct_user_request_handler"
+            expected_outputs: ["user_direct_request_received"]
+            validation: "user_direct_request_received == true"
       config:
+        greeting_triggers:
+          - trigger: "system.resource.inventory.completed"
+            action: "auto_generate_greeting"
+          - trigger: "user.direct.request.received"
+            action: "respond_to_direct_request"
+          - trigger: "system_state_to_SYSTEM_READY"
+            action: "display_system_overview"
+
         greeting_formation:
           data_sources:
             mcp_summary: "from_system_resource_inventory"
             agent_summary: "from_system_resource_inventory"
             system_status: "from_system_initialization"
+            request_context: "from_user_direct_request"
 
           template_engine:
             base_template: "comprehensive_system_overview"
@@ -3691,6 +3668,7 @@ implementation:
               - agents_summary
               - system_capabilities
               - next_steps_guidance
+              - waiting_state_notification
 
           content_generation:
             include_counts: true
@@ -3698,14 +3676,23 @@ implementation:
             include_health_indicators: true
             dynamic_content: true
             contextual_recommendations: true
+            response_to_direct_request: true
+
+          state_integration:
+            completion_event: "greeting_display_completed"
+            state_transition: "SYSTEM_READY → SYSTEM_WAITING"
+            user_notification: "System ready and waiting for your input"
 
         error_handling:
           incomplete_inventory:
             action: "generate_partial_greeting"
             log_warning: true
           resource_scan_failure:
-            action: "use_bootstrap_template"
-            notify_user: "Resource scanning incomplete, using basic greeting"
+            action: "use_minimal_template"
+            notify_user: "Resource scanning incomplete, using minimal greeting"
+          template_failure:
+            action: "use_emergency_message"
+            log_error: true
 
       output:
         greeting_generated: "boolean"
@@ -3713,7 +3700,9 @@ implementation:
         mcp_summary_section: "object"
         agent_summary_section: "object"
         system_capabilities_summary: "object"
+        waiting_state_active: "boolean"
         generation_metadata: "object"
+        state_transition_triggered: "boolean"
 
     # === CRITICAL BOOTSTRAP OPERATIONS ===
 
@@ -4003,25 +3992,26 @@ implementation:
         performance_improvements: "object"
         resource_efficiency_metrics: "object"
 
-    # Legacy compatibility redirections
-   
-   
+    # Legacy compatibility redirections removed - functionality integrated into unified_greeting_engine
+ 
 
-    # === GREETING FORMATION ENGINE (Priority 3.1) ===
+    # === GREETING FORMATION ENGINE - DEPRECATED ===
+  # Functionality moved to unified_greeting_engine
+  # This component is kept for backward compatibility but should be removed in future versions
 
-    - name: "greeting_formation_engine"
-      priority: 3.1
-      method: "event_driven_greeting_generation"
-      event_subscription:
-        listen_to: "system.readiness.verified"
-        correlation_field: "system_id"
-        processing_mode: "sequential"
-      dependencies:
-        system_readiness_dependency: "final_readiness_check"
-        agent_registry_dependency: "agent_registry_enhancement"
-        mcp_discovery_dependency: "system_discovery_phase"
-        required_outputs: ["system_ready", "enhanced_agent_registry", "mcp_servers_discovered"]
-        validation: "system_ready == true && enhanced_agent_registry != null && mcp_servers_discovered != null"
+    # - name: "greeting_formation_engine"
+    #   priority: 3.1
+    #   method: "event_driven_greeting_generation"
+    #   event_subscription:
+    #     listen_to: "system.readiness.verified"
+    #     correlation_field: "system_id"
+    #     processing_mode: "sequential"
+    #   dependencies:
+    #     system_readiness_dependency: "final_readiness_check"
+    #     agent_registry_dependency: "agent_registry_enhancement"
+    #     mcp_discovery_dependency: "system_discovery_phase"
+    #     required_outputs: ["system_ready", "enhanced_agent_registry", "mcp_servers_discovered"]
+    #     validation: "system_ready == true && enhanced_agent_registry != null && mcp_servers_discovered != null"
       config:
         greeting_generation:
           data_sources:
@@ -4143,16 +4133,17 @@ implementation:
         template_used: "string"
         event_published: "boolean"
 
-    # === INTEGRATED SYSTEM READINESS DISPLAY (Priority 3.2) ===
+    # === INTEGRATED SYSTEM READINESS DISPLAY - DEPRECATED ===
+    # Functionality moved to unified_greeting_engine
 
-    - name: "integrated_system_readiness_display"
-      priority: 3.2
-      method: "greeting_enhanced_system_display"
-      dependencies:
-        greeting_dependency: "greeting_formation_engine"
-        readiness_dependency: "final_readiness_check"
-        required_outputs: ["greeting_generated", "greeting_content", "system_ready"]
-        validation: "greeting_generated == true && system_ready == true"
+    # - name: "integrated_system_readiness_display"
+    #   priority: 3.2
+    #   method: "greeting_enhanced_system_display"
+    #   dependencies:
+    #     greeting_dependency: "greeting_formation_engine"
+    #     readiness_dependency: "final_readiness_check"
+    #     required_outputs: ["greeting_generated", "greeting_content", "system_ready"]
+    #     validation: "greeting_generated == true && system_ready == true"
       config:
         display_integration:
           greeting_integration:
@@ -8608,8 +8599,23 @@ event_system:
     greeting.display.ready:
       description: "Integrated system display ready for user presentation"
       data_fields: ["greeting_id", "display_content", "ready_content", "generation_metadata", "timestamp"]
-      handlers: ["capability_announcement", "user_interface_system"]
+      handlers: ["capability_announcement", "user_interface_system", "state_transition_handler"]
       priority: "critical"
+
+    # Direct User Request Events
+    user.direct.request.received:
+      description: "Direct user request to master agent received"
+      data_fields: ["request_id", "user_request_content", "request_type", "timestamp", "system_state"]
+      handlers: ["unified_greeting_engine", "monitoring_system"]
+      priority: "high"
+      activation_condition: "user_direct_request_pattern_matched"
+
+    user.action.initiated:
+      description: "User initiated action while system in waiting state"
+      data_fields: ["action_id", "action_type", "action_content", "timestamp", "from_state"]
+      handlers: ["task_processing_system", "state_transition_handler"]
+      priority: "critical"
+      activation_condition: "user_action_detected_in_waiting_state"
 
   # Adaptive Planning Events
   planning_events:
