@@ -42,12 +42,20 @@
   },
   "agent": {
     "master": {
-      "description": "Advanced master agent with MCP integration capabilities",
+      "description": "Advanced orchestration and protection system for AI agents",
+      "mode": "primary",
       "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true,
         "context7": true,
         "gh_grep": true,
         "subagent_master": true,
         "mcp_everything": false
+      },
+      "permission": {
+        "edit": "allow",
+        "bash": "ask"
       },
       "capabilities": [
         "unified-task-orchestration",
@@ -56,7 +64,25 @@
         "mcp-integration",
         "fallback-handling",
         "intelligent-task-planning",
-        "advanced-parallel-execution"
+        "advanced-parallel-execution",
+        "dependency-resolution",
+        "dynamic-scheduling",
+        "deadlock-avoidance",
+        "resource-optimization",
+        "real-time-adaptation",
+        "configuration-management",
+        "agent-discovery",
+        "resource-management",
+        "performance-monitoring",
+        "system-validation",
+        "task-execution",
+        "tool-selection",
+        "mandatory-tool-enforcement",
+        "automatic-tool-selection",
+        "compliance-monitoring",
+        "execution-authorization",
+        "tool-decision-matrix",
+        "intelligent-workflow-routing"
       ]
     }
   }
