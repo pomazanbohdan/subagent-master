@@ -2,3 +2,22 @@
 .doc
 .serena
 CLAUDE.md
+# Security - Never commit credentials
+.env.local
+*.env
+.env.*
+
+# Temporary files with credentials
+/tmp/*credentials*
+/tmp/*auth*
+/tmp/*token*
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.claude/github-auth.json

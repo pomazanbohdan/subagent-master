@@ -1,0 +1,63 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "context7": {
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp",
+      "enabled": true,
+      "timeout": 10000
+    },
+    "gh_grep": {
+      "type": "remote", 
+      "url": "https://mcp.grep.app",
+      "enabled": true,
+      "timeout": 10000
+    },
+    "mcp_everything": {
+      "type": "local",
+      "command": ["npx", "-y", "@modelcontextprotocol/server-everything"],
+      "enabled": true,
+      "timeout": 15000,
+      "environment": {
+        "NODE_ENV": "production"
+      }
+    },
+    "subagent_master": {
+      "type": "local",
+      "command": ["node", "agents/master.js"],
+      "enabled": true,
+      "timeout": 20000,
+      "environment": {
+        "SUBAGENT_MODE": "mcp",
+        "AGENT_NAME": "master",
+        "LOG_LEVEL": "info"
+      }
+    }
+  },
+  "tools": {
+    "context7": true,
+    "gh_grep": true,
+    "mcp_everything": false,
+    "subagent_master": true
+  },
+  "agent": {
+    "master": {
+      "description": "Advanced master agent with MCP integration capabilities",
+      "tools": {
+        "context7": true,
+        "gh_grep": true,
+        "subagent_master": true,
+        "mcp_everything": false
+      },
+      "capabilities": [
+        "unified-task-orchestration",
+        "automatic-delegation", 
+        "agent-selection",
+        "mcp-integration",
+        "fallback-handling",
+        "intelligent-task-planning",
+        "advanced-parallel-execution"
+      ]
+    }
+  }
+}
