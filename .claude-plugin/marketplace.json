@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Advanced master agent v2.1.0 with comprehensive diagnostic capabilities and unified state machine v2.1. Features: self-diagnosis mode with detailed analysis workflow, recursive call protection system with intelligent context awareness, system reminder analysis and filtering, enhanced error recovery mechanisms, intelligent task orchestration, multi-layered security architecture, comprehensive system resource discovery, and advanced debugging workflow with validation mode.",
-    "version": "0.9.7"
+    "version": "0.9.8"
   },
   "plugins": [
     {

@@ -28,7 +28,7 @@ capabilities: [
   "tool-decision-matrix",
   "intelligent-workflow-routing"
 ] # Do not change!
-triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage", "parallel", "team", "multiple-agents", "clarify", "search", "research", "unclear", "help", "details", "requirements", "batch", "multiple-files", "bulk-edit", "mass-update", "parallel-files", "optimize", "schedule", "decompose", "parallelize", "tool", "select", "choose", "implement", "design", "secure", "test", "review", "architecture", "performance", "vulnerability", "expert", "specialist", "mandatory", "enforce", "comply", "audit", "validate", "authorize", "диагностика", "самодіагностики", "валідація", "аналіз поведінки", "режим самодіагностики", "пошук виправлення", "self diagnosis", "diagnostic mode", "debug analysis", "system analysis"] # Do not change!
+triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage", "parallel", "team", "multiple-agents", "clarify", "search", "research", "unclear", "help", "details", "requirements", "batch", "multiple-files", "bulk-edit", "mass-update", "parallel-files", "optimize", "schedule", "decompose", "parallelize", "tool", "select", "choose", "implement", "design", "secure", "test", "review", "architecture", "performance", "vulnerability", "expert", "specialist", "mandatory", "enforce", "comply", "audit", "validate", "authorize", "діагностика", "самодіагностики", "валідація", "аналіз поведінки", "режим самодіагностики", "пошук виправлення", "self diagnosis", "diagnostic mode", "debug analysis", "system analysis"] # Do not change!
 tools: ["dynamic_agent_discovery"]  # Do not change!
 version: "0.9.6"
 
@@ -60,14 +60,11 @@ implementation:
     cache_hit_rate_target: "> 80%"
     failure_handling: "graceful_degradation"
 
-    # === INSTRUCTION VALIDATOR ===
     instruction_validator:
       description: "Universal instruction validation layer that blocks system reminders during initialization"
       priority: "critical_above_all"
       enabled: true
       apply_at: "before_any_processing"
-
-      # Core validation logic
       validation_rules:
         - name: "block_system_reminders"
           priority: 1
@@ -79,7 +76,6 @@ implementation:
           bypass_conditions:
             - mode: "debugging"
             - explicit_user_request: true
-
         - name: "allow_debug_reminders"
           priority: 2
           condition:
@@ -87,62 +83,42 @@ implementation:
             mode: "debugging"
           action: "process_normally"
           reason: "Debug mode requires system visibility"
-
-      # Validation execution
       validation_method: "pre_processing_filter"
       execution_timing: "immediate_on_reception"
       fail_fast: true
-
-      # Performance optimization
       single_execution_per_instruction: true
       cache_validation_results: true
       validation_target: "< 1ms"
-
-      # Integration with existing mechanisms
       debug_mode_compatibility: true
       validation_mode_compatibility: true
       system_protection_integration: true
 
-    # === SYSTEM REMINDER FILTER (Enhanced - Works with instruction validator) ===
     system_reminder_filter:
       description: "Secondary system reminder removal after instruction validation"
       priority: "high"
       enabled: true
       apply_at: "context_initialization_only"
       depends_on: "instruction_validator"
-
-      # Core filtering logic
       filter_function: "filter_system_reminders_from_context"
       pattern: "<system-reminder>.*?</system-reminder>"
       method: "regex_removal"
       flags: ["DOTALL", "MULTILINE"]
       replacement: ""
-
-      # Application scope
       filter_scope: "entire_context_string"
       apply_to_sources: ["claude_md_files", "system_context", "project_context"]
       preserve_original_structure: true
-
-      # Performance optimization
       single_execution: true
       cache_filtered_context: true
       execution_timing: "after_instruction_validation"
-
-      # Validation
       validate_filtered_context: true
       log_filtering_statistics: true
       filter_performance_target: "< 5ms"
 
-    # === INITIALIZATION GUARD ===
     initialization_guard:
       description: "Universal operation blocker during system initialization to prevent recursive self-calls"
       priority: "critical_above_all"
       enabled: true
-
-      # Core blocking logic
       condition: "unified_state_manager.system_level.current_state != 'SYSTEM_READY'"
-
-     
       blocked_operations: [
         "Task(",                    # Delegation attempts
         "@agent-",                  # Agent calls
@@ -153,8 +129,6 @@ implementation:
         "self:",                    # Self references
         "recursive_call"            # Recursive patterns
       ]
-
-      # Allowed operations during initialization (minimal system functions)
       allowed_operations: [
         "system_status_check",
         "component_initialization",
@@ -162,30 +136,23 @@ implementation:
         "configuration_loading",
         "registry_discovery"
       ]
-
-      # User-friendly response
       response_behavior:
         action: "friendly_block_with_queue"
         message: "⏳ Система ініціалізується... Ваше завдання буде автоматично виконано після завантаження."
         queue_request: true
         auto_execute_on_ready: true
         notification_on_ready: true
-
-      # Performance optimization
       cache_result: true
       response_time: "< 1ms"
       fail_fast: true
 
-    # System Protection Detector
     system_protection_detector:
-      component:
-        name: "system_protection_detector"
-        version: "1.0.0"
-        description: "Specialized security threat detection and prevention system"
-        category: "security"
-        priority: 1
-        status: "stable"
-
+      name: "system_protection_detector"
+      version: "1.0.0"
+      description: "Specialized security threat detection and prevention system"
+      category: "security"
+      priority: 1
+      status: "stable"
       triggers:
         primary:
           keywords: ["@agent", "delegate", "Task(", "subagent_type"]
@@ -198,136 +165,100 @@ implementation:
         contextual:
           conditions: ["task_execution_attempt", "agent_identity_verification", "subagent_type_validation"]
           score: 0.9
+      operations:
+        - name: "recursion_detection"
+          method: "self_reference_analysis"
+          priority: 1
+          detection_threshold: 0.95
+          response_action: "silent_block"
+          is_recursive_call: "boolean"
+          blocking_reason: "string"
+          alternative_suggestion: "string"
+        - name: "threat_analysis"
+          method: "rule_based_detection"
+          priority: 2
+          threat_patterns: ["self_reference", "identity_spoofing", "recursive_call"]
+          severity_levels: ["low", "medium", "high", "critical"]
+          threat_level: "string"
+          recommended_action: "string"
+          auto_prevent: "boolean"
+      dependencies:
+        required:
+          - component: "task_validation_middleware"
+            version: ">=1.0.0"
+            reason: "Pre-execution validation layer"
+          - component: "dynamic_id_verifier"
+            version: ">=1.0.0"
+            fallback: "use_static_verification"
+      format: "structured"
+      validation: true
+      protection_status: "string"
+      threat_detected: "boolean"
+      blocking_action: "string"
+      execution_allowed: "boolean"
+      fallback_enabled: true
+      fallback_strategy: "graceful_degradation"
+      fallback_alternatives:
+        - "log_only_mode"
+        - "warning_only_mode"
+        - "pass_through_with_logging"
 
-      implementation:
-        operations:
-          - name: "recursion_detection"
-            method: "self_reference_analysis"
-            priority: 1
-            config:
-              detection_threshold: 0.95
-              response_action: "silent_block"
-            output:
-              is_recursive_call: "boolean"
-              blocking_reason: "string"
-              alternative_suggestion: "string"
-
-          - name: "threat_analysis"
-            method: "rule_based_detection"
-            priority: 2
-            config:
-              threat_patterns: ["self_reference", "identity_spoofing", "recursive_call"]
-              severity_levels: ["low", "medium", "high", "critical"]
-            output:
-              threat_level: "string"
-              recommended_action: "string"
-              auto_prevent: "boolean"
-
-        dependencies:
-          required:
-            - component: "task_validation_middleware"
-              version: ">=1.0.0"
-              reason: "Pre-execution validation layer"
-          optional:
-            - component: "dynamic_id_verifier"
-              version: ">=1.0.0"
-              fallback: "use_static_verification"
-
-        output:
-          format: "structured"
-          validation: true
-          schema:
-            protection_status: "string"
-            threat_detected: "boolean"
-            blocking_action: "string"
-            execution_allowed: "boolean"
-
-        fallback:
-          enabled: true
-          strategy: "graceful_degradation"
-          alternatives:
-            - "log_only_mode"
-            - "warning_only_mode"
-            - "pass_through_with_logging"
-
-    # Task Validation Middleware
     task_validation_middleware:
-      component:
-        name: "task_validation_middleware"
-        version: "1.0.0"
-        description: "Pre-execution validation middleware for Task operations"
-        category: "validation"
-        priority: 2
-        status: "stable"
-
+      name: "task_validation_middleware"
+      version: "1.0.0"
+      description: "Pre-execution validation middleware for Task operations"
+      category: "validation"
+      priority: 2
+      status: "stable"
       triggers:
         primary:
           keywords: ["Task(", "execute", "delegate", "subagent"]
           patterns: [".*Task\\(.*", ".*execute.*", ".*delegate.*"]
           score: 1.0
+      operations:
+        - name: "self_call_prevention"
+          method: "identity_comparison"
+          priority: 1
+          check_subagent_vs_current: true
+          block_recursive_calls: true
+          is_self_reference: "boolean"
+          execution_blocked: "boolean"
+        - name: "agent_existence_validation"
+          method: "registry_lookup"
+          priority: 2
+          verification_timeout: 5
+          fallback_to_direct: true
+          agent_exists: "boolean"
+          verification_status: "string"
+        - name: "context_analysis"
+          method: "command_pattern_matching"
+          priority: 3
+          delegation_patterns: ["@agent-", "Task(", "subagent_type"]
+          activation_patterns: [":mode", "@command"]
+          command_type: "string"
+          recommended_action: "string"
+      dependencies:
+        required:
+          - component: "system_protection_detector"
+            version: ">=1.0.0"
+            reason: "Threat detection integration"
+      format: "structured"
+      validation_result: "boolean"
+      blocking_reason: "string"
+      alternative_approach: "string"
+      fallback_enabled: true
+      fallback_strategy: "allow_with_warning"
+      fallback_alternatives:
+        - "skip_validation_continue"
+        - "log_and_proceed"
 
-      implementation:
-        operations:
-          - name: "self_call_prevention"
-            method: "identity_comparison"
-            priority: 1
-            config:
-              check_subagent_vs_current: true
-              block_recursive_calls: true
-            output:
-              is_self_reference: "boolean"
-              execution_blocked: "boolean"
-
-          - name: "agent_existence_validation"
-            method: "registry_lookup"
-            priority: 2
-            config:
-              verification_timeout: 5
-              fallback_to_direct: true
-            output:
-              agent_exists: "boolean"
-              verification_status: "string"
-
-          - name: "context_analysis"
-            method: "command_pattern_matching"
-            priority: 3
-            config:
-              delegation_patterns: ["@agent-", "Task(", "subagent_type"]
-              activation_patterns: [":mode", "@command"]
-            output:
-              command_type: "string"
-              recommended_action: "string"
-
-        dependencies:
-          required:
-            - component: "system_protection_detector"
-              version: ">=1.0.0"
-              reason: "Threat detection integration"
-
-        output:
-          format: "structured"
-          schema:
-            validation_result: "boolean"
-            blocking_reason: "string"
-            alternative_approach: "string"
-
-        fallback:
-          enabled: true
-          strategy: "allow_with_warning"
-          alternatives:
-            - "skip_validation_continue"
-            - "log_and_proceed"
-
-    # Dynamic ID Verification System
     dynamic_id_verifier:
-      component:
-        name: "dynamic_id_verifier"
-        version: "1.0.0"
-        description: "Real-time agent identity verification and registry management system"
-        category: "verification"
-        priority: 3
-        status: "stable"
-
+      name: "dynamic_id_verifier"
+      version: "1.0.0"
+      description: "Real-time agent identity verification and registry management system"
+      category: "verification"
+      priority: 3
+      status: "stable"
       triggers:
         primary:
           keywords: ["verify", "agent", "identity", "registry", "check"]
@@ -337,94 +268,73 @@ implementation:
           keywords: ["exists", "available", "active", "registered"]
           patterns: [".*agent.*exists.*", ".*is.*available.*"]
           score: 0.7
+      operations:
+        - name: "real_time_verification"
+          method: "dynamic_registry_lookup"
+          priority: 1
+          cache_timeout: 300
+          verification_timeout: 5
+          fallback_sources: ["static_registry", "mcp_servers", "filesystem"]
+          agent_verified: "boolean"
+          verification_source: "string"
+          agent_capabilities: "array"
+        - name: "auto_discovery_integration"
+          method: "seamless_registry_sync"
+          priority: 2
+          sync_frequency: "adaptive"
+          auto_update: true
+          conflict_resolution: "latest_wins"
+          registry_status: "string"
+          sync_timestamp: "number"
+          discovered_agents: "array"
+        - name: "identity_validation"
+          method: "multi_source_cross_check"
+          priority: 3
+          verification_sources: ["mcp_servers", "filesystem_scan", "configuration_files"]
+          trust_levels: ["high", "medium", "low"]
+          require_consensus: false
+          identity_confidence: "float"
+          validation_sources: "array"
+          trust_score: "float"
+      dependencies:
+        required:
+          - component: "task_validation_middleware"
+            version: ">=1.0.0"
+            reason: "Verification request integration"
+        optional:
+          - component: "enhanced_agent_registry"
+            version: ">=2.0.0"
+            fallback: "use_basic_discovery"
+      format: "structured"
+      validation: true
+      verification_result: "boolean"
+      agent_identity: "string"
+      verification_metadata: "object"
+      fallback_used: "boolean"
+      fallback_enabled: true
+      fallback_strategy: "graceful_degradation"
+      fallback_alternatives:
+        - "static_registry_lookup"
+        - "filesystem_scan_verification"
+        - "assume_valid_with_logging"
+      monitoring_enabled: true
+      monitoring_metrics:
+        - "verification_accuracy"
+        - "cache_hit_rate"
+        - "verification_latency"
+        - "fallback_usage_rate"
+      monitoring_targets:
+        response_time: 5
+        accuracy: 0.95
+        cache_efficiency: 0.80
 
-      implementation:
-        operations:
-          - name: "real_time_verification"
-            method: "dynamic_registry_lookup"
-            priority: 1
-            config:
-              cache_timeout: 300
-              verification_timeout: 5
-              fallback_sources: ["static_registry", "mcp_servers", "filesystem"]
-            output:
-              agent_verified: "boolean"
-              verification_source: "string"
-              agent_capabilities: "array"
-
-          - name: "auto_discovery_integration"
-            method: "seamless_registry_sync"
-            priority: 2
-            config:
-              sync_frequency: "adaptive"
-              auto_update: true
-              conflict_resolution: "latest_wins"
-            output:
-              registry_status: "string"
-              sync_timestamp: "number"
-              discovered_agents: "array"
-
-          - name: "identity_validation"
-            method: "multi_source_cross_check"
-            priority: 3
-            config:
-              verification_sources: ["mcp_servers", "filesystem_scan", "configuration_files"]
-              trust_levels: ["high", "medium", "low"]
-              require_consensus: false
-            output:
-              identity_confidence: "float"
-              validation_sources: "array"
-              trust_score: "float"
-
-        dependencies:
-          required:
-            - component: "task_validation_middleware"
-              version: ">=1.0.0"
-              reason: "Verification request integration"
-          optional:
-            - component: "enhanced_agent_registry"
-              version: ">=2.0.0"
-              fallback: "use_basic_discovery"
-
-        output:
-          format: "structured"
-          validation: true
-          schema:
-            verification_result: "boolean"
-            agent_identity: "string"
-            verification_metadata: "object"
-            fallback_used: "boolean"
-
-        fallback:
-          enabled: true
-          strategy: "graceful_degradation"
-          alternatives:
-            - "static_registry_lookup"
-            - "filesystem_scan_verification"
-            - "assume_valid_with_logging"
-
-        monitoring:
-          enabled: true
-          metrics:
-            - "verification_accuracy"
-            - "cache_hit_rate"
-            - "verification_latency"
-            - "fallback_usage_rate"
-          targets:
-            response_time: 5
-            accuracy: 0.95
-            cache_efficiency: 0.80
-
-    # Silent Blocking Handler
     silent_blocking_handler:
-      component:
-        name: "silent_blocking_handler"
-        version: "1.0.0"
-        description: "Non-intrusive threat blocking and alternative suggestion system"
-        category: "error_handling"
-        priority: 4
-        status: "stable"
-
+      name: "silent_blocking_handler"
+      version: "1.0.0"
+      description: "Non-intrusive threat blocking and alternative suggestion system"
+      category: "error_handling"
+      priority: 4
+      status: "stable"
       triggers:
         primary:
           keywords: ["block", "prevent", "stop", "threat", "danger"]
@@ -433,70 +343,52 @@ implementation:
         contextual:
           conditions: ["recursive_call_detected", "identity_spoofing_attempt", "security_threat_detected"]
           score: 0.9
-
-      implementation:
-        operations:
-          - name: "silent_execution_block"
-            method: "graceful_interruption"
-            priority: 1
-            config:
-              block_without_user_notification: true
-              log_security_event: true
-              generate_alternative: true
-            output:
-              execution_blocked: "boolean"
-              blocking_reason: "string"
-              alternative_suggested: "string"
-
-          - name: "alternative_suggestion_engine"
-            method: "contextual_alternative_generation"
-            priority: 2
-            config:
-              analyze_original_intent: true
-              suggest_safe_alternatives: true
-              maintain_workflow_continuity: true
-            output:
-              alternatives_available: "boolean"
-              suggested_actions: "array"
-              confidence_scores: "array"
-
-          - name: "learning_mechanism"
-            method: "pattern_learning_and_storage"
-            priority: 3
-            config:
-              store_blocked_patterns: true
-              learn_from_user_corrections: true
-              update_detection_rules: true
-            output:
-              pattern_learned: "boolean"
-              detection_rules_updated: "boolean"
-              learning_confidence: "float"
-
-        dependencies:
-          required:
-            - component: "system_protection_detector"
-              version: ">=1.0.0"
-              reason: "Threat detection integration"
-
-        output:
-          format: "structured"
-          schema:
-            blocking_status: "string"
-            user_experience_impact: "minimal"
-            learning_outcome: "object"
-
-        fallback:
-          enabled: true
-          strategy: "fail_safe"
-          alternatives:
-            - "log_only_no_block"
-            - "warn_user_continue"
-            - "pass_through_with_monitoring"
-
-        user_experience:
-          disruption_level: "minimal"
-          notification_style: "silent_background"
-          recovery_approach: "automatic_suggestion"
+      operations:
+        - name: "silent_execution_block"
+          method: "graceful_interruption"
+          priority: 1
+          block_without_user_notification: true
+          log_security_event: true
+          generate_alternative: true
+          execution_blocked: "boolean"
+          blocking_reason: "string"
+          alternative_suggested: "string"
+        - name: "alternative_suggestion_engine"
+          method: "contextual_alternative_generation"
+          priority: 2
+          analyze_original_intent: true
+          suggest_safe_alternatives: true
+          maintain_workflow_continuity: true
+          alternatives_available: "boolean"
+          suggested_actions: "array"
+          confidence_scores: "array"
+        - name: "learning_mechanism"
+          method: "pattern_learning_and_storage"
+          priority: 3
+          store_blocked_patterns: true
+          learn_from_user_corrections: true
+          update_detection_rules: true
+          pattern_learned: "boolean"
+          detection_rules_updated: "boolean"
+          learning_confidence: "float"
+      dependencies:
+        required:
+          - component: "system_protection_detector"
+            version: ">=1.0.0"
+            reason: "Threat detection integration"
+      format: "structured"
+      blocking_status: "string"
+      user_experience_impact: "minimal"
+      learning_outcome: "object"
+      fallback_enabled: true
+      fallback_strategy: "fail_safe"
+      fallback_alternatives:
+        - "log_only_no_block"
+        - "warn_user_continue"
+        - "pass_through_with_monitoring"
+      user_experience_disruption_level: "minimal"
+      user_experience_notification_style: "silent_background"
+      user_experience_recovery_approach: "automatic_suggestion"
 
 # === EVENT-DRIVEN ARCHITECTURE ===
 
@@ -520,126 +412,99 @@ implementation:
     persistence: true
     validation: true
     monitoring: true
-
     # System Level States
-    system_level:
-      current_state: "SYSTEM_BOOT"
-      states:
-        SYSTEM_BOOT:
-          description: "System starting up - critical phase"
-          completion_triggers: ["system_ready_signal", "initialization_complete_event", "all_components_ready"]
-          sub_states: ["COMPONENT_INIT", "SERVICE_READY", "VALIDATION_COMPLETE"]
-          next_states: ["SYSTEM_READY", "SYSTEM_DEGRADED", "SYSTEM_FAILED"]
-          critical_components: ["error_handler", "event_bus", "state_manager"]
-          event_driven: true
-
-        SYSTEM_READY:
-          description: "System fully operational - ready for user interaction"
-
-          # System transitions out via triggers, not timeouts (event-driven architecture)
-          # Examples: greeting_display_completed → SYSTEM_WAITING
-          #          task_processing_started → SYSTEM_OPERATIONAL
-          #          component_degradation_detected → SYSTEM_DEGRADED
-          timeout: "infinite"
-          operational_modes: ["normal", "high_performance", "resource_saving"]
-          next_states: ["SYSTEM_WAITING", "SYSTEM_OPERATIONAL", "SYSTEM_DEGRADED", "SYSTEM_SELF_DIAGNOSIS", "SYSTEM_SHUTDOWN"]
-
-        SYSTEM_WAITING:
-          description: "System ready with comprehensive greeting displayed, waiting for user action"
-
-          # System waits for user input after displaying greeting with full system overview
-          timeout: "infinite"
-          operational_modes: ["awaiting_user_input", "ready_for_tasks"]
-          allowed_operations: ["accept_user_input", "maintain_readiness", "system_status_display"]
-          blocked_operations: ["task_delegation", "agent_selection"]
-          next_states: ["SYSTEM_OPERATIONAL", "SYSTEM_SELF_DIAGNOSIS", "SYSTEM_SHUTDOWN"]
-          transition_triggers:
-            - trigger: "user_action_initiated"
-              from_states: ["SYSTEM_WAITING"]
-              to_state: "SYSTEM_OPERATIONAL"
-            - trigger: "self_diagnosis_request"
-              from_states: ["SYSTEM_WAITING"]
-              to_state: "SYSTEM_SELF_DIAGNOSIS"
-            - trigger: "shutdown_requested"
-              from_states: ["SYSTEM_WAITING"]
-              to_state: "SYSTEM_SHUTDOWN"
-
-        SYSTEM_SELF_DIAGNOSIS:
-          description: "System in self-diagnosis mode - handles debug and analysis tasks"
-         
-          # This state handles potentially long-running analysis operations
-          # Exit via explicit user action or automatic completion triggers
-          timeout: "infinite"
-          special_operations: ["debug_mode", "self_analysis", "system_reminder_handling"]
-          guard_behavior: "relaxed_for_self_diagnosis"
-          delegation_mode: "disabled"
-          allowed_operations: ["native_tools", "system_analysis", "debug_operations", "log_analysis"]
-          blocked_operations: ["delegate_to_master", "agent_selection", "complex_delegation"]
-          system_reminder_bypass: true
-          self_call_protection: "enhanced_for_debug"
-          next_states: ["SYSTEM_READY", "SYSTEM_OPERATIONAL"]
-          transition_triggers:
-            - trigger: "self_diagnosis_request"
-              from_states: ["SYSTEM_READY", "SYSTEM_OPERATIONAL"]
-            - trigger: "debug_mode_activated"
-              from_states: ["SYSTEM_READY", "SYSTEM_OPERATIONAL"]
-            - trigger: "system_reminder_loop_detected"
-              from_states: ["SYSTEM_READY", "SYSTEM_OPERATIONAL"]
-
-        SYSTEM_OPERATIONAL:
-          description: "System actively processing tasks"
-         
-          # System exits when tasks complete via task_processing_completed trigger
-          # Performance monitoring handles actual operation timeouts
-          timeout: "infinite"
-          performance_monitoring: true
-          next_states: ["SYSTEM_READY", "SYSTEM_DEGRADED", "SYSTEM_SHUTDOWN"]
-
-        SYSTEM_DEGRADED:
-          description: "System with limited functionality"
-          timeout: "infinite"
-          recovery_strategies: ["auto_recovery", "manual_intervention", "graceful_degradation"]
-          next_states: ["SYSTEM_READY", "SYSTEM_OPERATIONAL", "SYSTEM_FAILED"]
-
-        SYSTEM_FAILED:
-          description: "System critical failure"
-          timeout: "infinite"
-          recovery_required: true
-          escalation_level: "critical"
-          next_states: ["SYSTEM_DEGRADED", "SYSTEM_RECOVERY", "SYSTEM_SHUTDOWN"]
-
-        SYSTEM_RECOVERY:
-          description: "System in recovery mode"
-          completion_triggers: ["recovery_complete", "system_restored", "recovery_success"]
-          recovery_attempts: 3
-          next_states: ["SYSTEM_READY", "SYSTEM_FAILED", "SYSTEM_SHUTDOWN"]
-          event_driven: true
-
-        SYSTEM_SHUTDOWN:
-          description: "System graceful shutdown"
-          completion_triggers: ["cleanup_complete", "shutdown_ready", "all_services_stopped"]
-          cleanup_required: true
-          next_states: ["SYSTEM_TERMINATED"]
-          event_driven: true
-
-        SYSTEM_TERMINATED:
-          description: "System fully shut down"
-          completion_triggers: ["finalization_complete"]
-          cleanup_complete: true
-          event_driven: true
-          next_states: []
+    system_level_current_state: "SYSTEM_BOOT"
+    system_level_states:
+      SYSTEM_BOOT:
+        description: "System starting up - critical phase"
+        completion_triggers: ["system_ready_signal", "initialization_complete_event", "all_components_ready"]
+        sub_states: ["COMPONENT_INIT", "SERVICE_READY", "VALIDATION_COMPLETE"]
+        next_states: ["SYSTEM_READY", "SYSTEM_DEGRADED", "SYSTEM_FAILED"]
+        critical_components: ["error_handler", "event_bus", "state_manager"]
+        event_driven: true
+      SYSTEM_READY:
+        description: "System fully operational - ready for user interaction"
+        timeout: "infinite"  # System transitions out via triggers, not timeouts (event-driven architecture)
+        operational_modes: ["normal", "high_performance", "resource_saving"]
+        next_states: ["SYSTEM_WAITING", "SYSTEM_OPERATIONAL", "SYSTEM_DEGRADED", "SYSTEM_SELF_DIAGNOSIS", "SYSTEM_SHUTDOWN"]
+      SYSTEM_WAITING:
+        description: "System ready with comprehensive greeting displayed, waiting for user action"
+        timeout: "infinite"
+        operational_modes: ["awaiting_user_input", "ready_for_tasks"]
+        allowed_operations: ["accept_user_input", "maintain_readiness", "system_status_display"]
+        blocked_operations: ["task_delegation", "agent_selection"]
+        next_states: ["SYSTEM_OPERATIONAL", "SYSTEM_SELF_DIAGNOSIS", "SYSTEM_SHUTDOWN"]
+        transition_triggers:
+          - trigger: "user_action_initiated"
+            from_states: ["SYSTEM_WAITING"]
+            to_state: "SYSTEM_OPERATIONAL"
+          - trigger: "self_diagnosis_request"
+            from_states: ["SYSTEM_WAITING"]
+            to_state: "SYSTEM_SELF_DIAGNOSIS"
+          - trigger: "shutdown_requested"
+            from_states: ["SYSTEM_WAITING"]
+            to_state: "SYSTEM_SHUTDOWN"
+      SYSTEM_SELF_DIAGNOSIS:
+        description: "System in self-diagnosis mode - handles debug and analysis tasks"
+        timeout: "infinite"  # This state handles potentially long-running analysis operations
+        special_operations: ["debug_mode", "self_analysis", "system_reminder_handling"]
+        guard_behavior: "relaxed_for_self_diagnosis"
+        delegation_mode: "disabled"
+        allowed_operations: ["native_tools", "system_analysis", "debug_operations", "log_analysis"]
+        blocked_operations: ["delegate_to_master", "agent_selection", "complex_delegation"]
+        system_reminder_bypass: true
+        self_call_protection: "enhanced_for_debug"
+        next_states: ["SYSTEM_READY", "SYSTEM_OPERATIONAL"]
+        transition_triggers:
+          - trigger: "self_diagnosis_request"
+            from_states: ["SYSTEM_READY", "SYSTEM_OPERATIONAL"]
+          - trigger: "debug_mode_activated"
+            from_states: ["SYSTEM_READY", "SYSTEM_OPERATIONAL"]
+          - trigger: "system_reminder_loop_detected"
+            from_states: ["SYSTEM_READY", "SYSTEM_OPERATIONAL"]
+      SYSTEM_OPERATIONAL:
+        description: "System actively processing tasks"
+        timeout: "infinite"  # System exits when tasks complete via task_processing_completed trigger
+        performance_monitoring: true
+        next_states: ["SYSTEM_READY", "SYSTEM_DEGRADED", "SYSTEM_SHUTDOWN"]
+      SYSTEM_DEGRADED:
+        description: "System with limited functionality"
+        timeout: "infinite"
+        recovery_strategies: ["auto_recovery", "manual_intervention", "graceful_degradation"]
+        next_states: ["SYSTEM_READY", "SYSTEM_OPERATIONAL", "SYSTEM_FAILED"]
+      SYSTEM_FAILED:
+        description: "System critical failure"
+        timeout: "infinite"
+        recovery_required: true
+        escalation_level: "critical"
+        next_states: ["SYSTEM_DEGRADED", "SYSTEM_RECOVERY", "SYSTEM_SHUTDOWN"]
+      SYSTEM_RECOVERY:
+        description: "System in recovery mode"
+        completion_triggers: ["recovery_complete", "system_restored", "recovery_success"]
+        recovery_attempts: 3
+        next_states: ["SYSTEM_READY", "SYSTEM_FAILED", "SYSTEM_SHUTDOWN"]
+        event_driven: true
+      SYSTEM_SHUTDOWN:
+        description: "System graceful shutdown"
+        completion_triggers: ["cleanup_complete", "shutdown_ready", "all_services_stopped"]
+        cleanup_required: true
+        next_states: ["SYSTEM_TERMINATED"]
+        event_driven: true
+      SYSTEM_TERMINATED:
+        description: "System fully shut down"
+        completion_triggers: ["finalization_complete"]
+        cleanup_complete: true
+        event_driven: true
+        next_states: []
 
     # Component Level States
-    component_level:
-      # Component-specific states will be defined in individual components
-      # Each component can have its own state machine
-      registry_enabled: true
-      validation_required: true
+    component_level_registry_enabled: true
+    component_level_validation_required: true
 
     # Transition Engine
     transitions:
       # System Level Transitions
-      SYSTEM_BOOT → SYSTEM_READY:
+      SYSTEM_BOOT_to_SYSTEM_READY:
         trigger: "all_components_initialized"
         validator: "system_readiness_validator"
         action: "enable_full_operations"
@@ -649,128 +514,110 @@ implementation:
           trigger: "system_ready"
           action: "execute_queued_operations"
           event_based: true
-
-      SYSTEM_BOOT → SYSTEM_DEGRADED:
+      SYSTEM_BOOT_to_SYSTEM_DEGRADED:
         trigger: "partial_component_failure"
         validator: "degraded_readiness_validator"
         action: "enable_limited_operations"
         events: ["system.degraded", "initialization.partial"]
         completion_triggers: ["degraded_mode_ready"]
-
-      SYSTEM_BOOT → SYSTEM_FAILED:
+      SYSTEM_BOOT_to_SYSTEM_FAILED:
         trigger: "critical_component_failure"
         validator: "failure_validator"
         action: "emergency_shutdown"
         events: ["system.failed", "initialization.failed"]
         completion_triggers: ["emergency_shutdown_complete"]
-
-      SYSTEM_READY → SYSTEM_WAITING:
+      SYSTEM_READY_to_SYSTEM_WAITING:
         trigger: "greeting_display_completed"
         validator: "greeting_success_validator"
         action: "await_user_action"
         events: ["system.waiting", "greeting.displayed"]
         completion_triggers: ["waiting_mode_active", "user_input_ready"]
-
-      SYSTEM_WAITING → SYSTEM_OPERATIONAL:
+      SYSTEM_WAITING_to_SYSTEM_OPERATIONAL:
         trigger: "user_action_initiated"
         validator: "user_action_validator"
         action: "begin_task_processing"
         events: ["system.operational", "user.action.started"]
         completion_triggers: ["operational_mode_active", "task_processing_enabled"]
-
-      SYSTEM_READY → SYSTEM_OPERATIONAL:
+      SYSTEM_READY_to_SYSTEM_OPERATIONAL:
         trigger: "task_processing_started"
         validator: "operational_readiness_validator"
         action: "begin_task_processing"
         events: ["system.operational", "processing.started"]
         completion_triggers: ["operational_mode_active", "task_processing_enabled"]
-
-      SYSTEM_OPERATIONAL → SYSTEM_READY:
+      SYSTEM_OPERATIONAL_to_SYSTEM_READY:
         trigger: "task_processing_completed"
         validator: "completion_validator"
         action: "cleanup_and_reset"
         events: ["system.ready", "processing.completed"]
         completion_triggers: ["cleanup_complete", "system_reset_ready"]
-
-      SYSTEM_READY → SYSTEM_DEGRADED:
+      SYSTEM_READY_to_SYSTEM_DEGRADED:
         trigger: "component_degradation_detected"
         validator: "degradation_validator"
         action: "reduce_functionality"
         events: ["system.degraded", "functionality.reduced"]
         completion_triggers: ["degraded_mode_active"]
-
-      SYSTEM_OPERATIONAL → SYSTEM_DEGRADED:
+      SYSTEM_OPERATIONAL_to_SYSTEM_DEGRADED:
         trigger: "critical_error_detected"
         validator: "error_validator"
         action: "emergency_degradation"
         events: ["system.degraded", "error.critical"]
         completion_triggers: ["emergency_degradation_complete"]
-
-      SYSTEM_DEGRADED → SYSTEM_READY:
+      SYSTEM_DEGRADED_to_SYSTEM_READY:
         trigger: "components_restored"
         validator: "restoration_validator"
         action: "restore_full_functionality"
         events: ["system.ready", "functionality.restored"]
         completion_triggers: ["functionality_fully_restored"]
-
-      SYSTEM_DEGRADED → SYSTEM_FAILED:
+      SYSTEM_DEGRADED_to_SYSTEM_FAILED:
         trigger: "multiple_critical_failures"
         validator: "cascade_failure_validator"
         action: "initiate_recovery"
         events: ["system.failed", "cascade.failure"]
         completion_triggers: ["cascade_failure_handled"]
-
-      SYSTEM_FAILED → SYSTEM_RECOVERY:
+      SYSTEM_FAILED_to_SYSTEM_RECOVERY:
         trigger: "recovery_initiated"
         validator: "recovery_readiness_validator"
         action: "begin_recovery_process"
         events: ["system.recovery.started", "attempting.recovery"]
         completion_triggers: ["recovery_process_ready"]
-
-      SYSTEM_RECOVERY → SYSTEM_READY:
+      SYSTEM_RECOVERY_to_SYSTEM_READY:
         trigger: "recovery_successful"
         validator: "recovery_success_validator"
         action: "complete_recovery"
         events: ["system.ready", "recovery.success"]
         completion_triggers: ["recovery_completion_verified"]
-
-      SYSTEM_RECOVERY → SYSTEM_FAILED:
+      SYSTEM_RECOVERY_to_SYSTEM_FAILED:
         trigger: "recovery_failed"
         validator: "recovery_failure_validator"
         action: "escalate_failure"
         events: ["system.failed", "recovery.failed"]
         completion_triggers: ["failure_escalation_complete"]
-
       # Shutdown transitions
-      SYSTEM_READY → SYSTEM_SHUTDOWN:
+      SYSTEM_READY_to_SYSTEM_SHUTDOWN:
         trigger: "shutdown_requested"
         validator: "shutdown_readiness_validator"
         action: "initiate_graceful_shutdown"
         events: ["system.shutdown.started", "shutdown.graceful"]
         completion_triggers: ["graceful_shutdown_ready"]
-
-      SYSTEM_OPERATIONAL → SYSTEM_SHUTDOWN:
+      SYSTEM_OPERATIONAL_to_SYSTEM_SHUTDOWN:
         trigger: "shutdown_requested"
         validator: "operational_shutdown_validator"
         action: "complete_tasks_and_shutdown"
         events: ["system.shutdown.started", "shutdown.graceful"]
         completion_triggers: ["operational_shutdown_complete"]
-
-      SYSTEM_DEGRADED → SYSTEM_SHUTDOWN:
+      SYSTEM_DEGRADED_to_SYSTEM_SHUTDOWN:
         trigger: "shutdown_requested"
         validator: "degraded_shutdown_validator"
         action: "emergency_shutdown"
         events: ["system.shutdown.started", "shutdown.emergency"]
         completion_triggers: ["emergency_shutdown_complete"]
-
-      SYSTEM_FAILED → SYSTEM_SHUTDOWN:
+      SYSTEM_FAILED_to_SYSTEM_SHUTDOWN:
         trigger: "shutdown_requested"
         validator: "failed_shutdown_validator"
         action: "force_shutdown"
         events: ["system.shutdown.started", "shutdown.forced"]
         completion_triggers: ["forced_shutdown_complete"]
-
-      SYSTEM_SHUTDOWN → SYSTEM_TERMINATED:
+      SYSTEM_SHUTDOWN_to_SYSTEM_TERMINATED:
         trigger: "cleanup_completed"
         validator: "cleanup_validator"
         action: "finalize_termination"
@@ -787,7 +634,6 @@ implementation:
           - "memory_available_above_threshold"
           - "mcp_servers_connected"
         failure_action: "block_transition_with_reason"
-
       operational_readiness_validator:
         description: "Validates operational readiness for task processing"
         checks:
@@ -795,7 +641,6 @@ implementation:
           - "delegation_engine_available"
           - "error_handler_active"
         failure_action: "delay_transition_with_retry"
-
       degradation_validator:
         description: "Validates degradation necessity and safety"
         checks:
@@ -803,7 +648,6 @@ implementation:
           - "alternative_strategies_available"
           - "data_integrity_maintained"
         failure_action: "escalate_to_failed"
-
       recovery_readiness_validator:
         description: "Validates recovery conditions and resources"
         checks:
@@ -811,7 +655,6 @@ implementation:
           - "error_conditions_resolved"
           - "rollback_strategy_ready"
         failure_action: "escalate_failure"
-
       cleanup_validator:
         description: "Validates cleanup completion for shutdown"
         checks:
@@ -1229,7 +1072,7 @@ implementation:
               "system_reminder_handling",
               "context_aware_response"
             ]
-            blocked_during_debug: []  # Allow all operations during debug
+          blocked_during_debug: []  # Allow all operations during debug
           priority: "critical_above_all"
           response_behavior:
             action: "friendly_block_with_queue"
@@ -1289,12 +1132,13 @@ implementation:
                 look_for: "self_diagnosis_patterns"
                 on_match: "enable_debug_mode"
 
-            - verify_agent_identity: true
-            - validate_execution_context: true
+              - verify_agent_identity: true
+              - validate_execution_context: true
 
-        max_queue_size: 100
-        persistent_storage: true
-        event_coordination: "auto_cleanup_on_completion_event"
+      # Queue system configuration
+      max_queue_size: 100
+      persistent_storage: true
+      event_coordination: "auto_cleanup_on_completion_event"
 
       # Queue operations
       queue_operations:
@@ -1527,26 +1371,26 @@ implementation:
       publishes: ["system.state.changed", "system.initialized", "system.ready", "system.degraded", "system.failed", "system.shutdown"]
       timeout: "5s"
 
-    system_ready_observer:
-      description: "Monitors system readiness and enables task processing"
-      subscribes_to: ["system.state.changed"]
-      condition: "new_state == 'ready'"
-      publishes: ["system.task_processing.enabled"]
+  # === CONSOLIDATED STATE MANAGEMENT SYSTEM ===
+    unified_state_observer:
+      description: "Unified state monitoring system replacing multiple observers"
+      subscribes_to: ["system.state.changed", "state_machine.transition"]
       timeout: "2s"
-
-    system_degraded_observer:
-      description: "Monitors degraded state and adjusts functionality"
-      subscribes_to: ["system.state.changed"]
-      condition: "new_state == 'degraded'"
-      publishes: ["system.functionality.reduced", "system.emergency_mode.enabled"]
-      timeout: "2s"
-
-    system_failure_observer:
-      description: "Monitors failed state and initiates recovery"
-      subscribes_to: ["system.state.changed"]
-      condition: "new_state == 'failed'"
-      publishes: ["system.recovery.initiated", "system.alert.critical"]
-      timeout: "1s"
+      state_handlers:
+        ready:
+          publishes: ["system.task_processing.enabled"]
+          actions: ["enable_all_services", "reset_error_counters"]
+        degraded:
+          publishes: ["system.functionality.reduced", "system.emergency_mode.enabled"]
+          actions: ["limit_non_critical_operations", "increase_monitoring_frequency"]
+        failed:
+          publishes: ["system.recovery.initiated", "system.alert.critical"]
+          actions: ["initiate_recovery_sequence", "notify_administrators", "disable_new_tasks"]
+        shutdown:
+          publishes: ["system.shutdown.completed"]
+          actions: ["graceful_service_shutdown", "save_state", "cleanup_resources"]
+      transition_validation: true
+      state_history_tracking: 50
 
 # === SHARED STATE MACHINE COMPONENTS ===
 
@@ -2195,81 +2039,81 @@ implementation:
             - "race_condition_resistance"
             - "atomic_block_behavior"
 
-    # Event coordination and performance tests
-    event_coordination_tests:
-      - name: "test_event_driven_coordination"
-        method: "simulate_event_scenarios"
-        event_scenarios:
-          - "completion_event_handling"
-          - "coordination_event_processing"
-          - "resource_coordination_events"
+      # Event coordination and performance tests
+      event_coordination_tests:
+        - name: "test_event_driven_coordination"
+          method: "simulate_event_scenarios"
+          event_scenarios:
+            - "completion_event_handling"
+            - "coordination_event_processing"
+            - "resource_coordination_events"
 
-      - name: "test_performance_under_load"
-        method: "stress_test_with_concurrent_events"
-        load_scenarios:
-          - "high_frequency_transitions"
-          - "concurrent_state_changes"
-          - "resource_contention"
+        - name: "test_performance_under_load"
+          method: "stress_test_with_concurrent_events"
+          load_scenarios:
+            - "high_frequency_transitions"
+            - "concurrent_state_changes"
+            - "resource_contention"
 
-    # Integration and scenario tests
-    integration_scenario_tests:
-      - name: "test_system_bootstrap_scenarios"
-        method: "simulate_bootstrap_with_failures"
-        scenarios:
-          - "partial_component_failure"
-          - "resource_shortage"
-          - "network_partition"
+      # Integration and scenario tests
+      integration_scenario_tests:
+        - name: "test_system_bootstrap_scenarios"
+          method: "simulate_bootstrap_with_failures"
+          scenarios:
+            - "partial_component_failure"
+            - "resource_shortage"
+            - "network_partition"
 
-      - name: "test_recovery_scenarios"
-        method: "simulate_failure_and_recovery"
-        scenarios:
-          - "cascade_failure"
-          - "partial_recovery"
-          - "complete_system_recovery"
+        - name: "test_recovery_scenarios"
+          method: "simulate_failure_and_recovery"
+          scenarios:
+            - "cascade_failure"
+            - "partial_recovery"
+            - "complete_system_recovery"
 
-      - name: "test_concurrent_access_scenarios"
-        method: "simulate_concurrent_state_access"
-        scenarios:
-          - "simultaneous_read_write"
-          - "concurrent_transitions"
-          - "resource_competition"
+        - name: "test_concurrent_access_scenarios"
+          method: "simulate_concurrent_state_access"
+          scenarios:
+            - "simultaneous_read_write"
+            - "concurrent_transitions"
+            - "resource_competition"
 
-    # Test utilities and helpers
-    test_utilities:
-      # Mock system for testing
-      mock_system:
-        enabled: true
-        capabilities:
-          - "controlled_failure_injection"
-          - "timing_control"
-          - "resource_simulation"
-          - "state_manipulation"
+      # Test utilities and helpers
+      test_utilities:
+        # Mock system for testing
+        mock_system:
+          enabled: true
+          capabilities:
+            - "controlled_failure_injection"
+            - "timing_control"
+            - "resource_simulation"
+            - "state_manipulation"
 
-      # Test data generators
-      test_data_generators:
-        enabled: true
-        generators:
-          - name: "state_transition_generator"
-            method: "generate_valid_and_invalid_transitions"
+        # Test data generators
+        test_data_generators:
+          enabled: true
+          generators:
+            - name: "state_transition_generator"
+              method: "generate_valid_and_invalid_transitions"
 
-          - name: "load_scenario_generator"
-            method: "generate_stress_test_scenarios"
+            - name: "load_scenario_generator"
+              method: "generate_stress_test_scenarios"
 
-          - name: "failure_scenario_generator"
-            method: "generate_realistic_failure_scenarios"
+            - name: "failure_scenario_generator"
+              method: "generate_realistic_failure_scenarios"
 
-      # Test result validation
-      test_result_validation:
-        enabled: true
-        validators:
-          - name: "state_consistency_validator"
-            method: "validate_state_machine_consistency"
+        # Test result validation
+        test_result_validation:
+          enabled: true
+          validators:
+            - name: "state_consistency_validator"
+              method: "validate_state_machine_consistency"
 
-          - name: "performance_validator"
-            method: "validate_performance_requirements"
+            - name: "performance_validator"
+              method: "validate_performance_requirements"
 
-          - name: "resource_usage_validator"
-            method: "validate_resource_usage_bounds"
+            - name: "resource_usage_validator"
+              method: "validate_resource_usage_bounds"
 
 # Event-driven configuration
 
@@ -2302,14 +2146,14 @@ implementation:
       parallel: true
       fallback: "skip_on_failure"
 
-# Event-driven component mapping (replaces priority-based execution)
+# Legacy Event System (deprecated - use centralized events above)
 
-# === MANDATORY TOOL ENFORCEMENT EVENTS ===
+# === LEGACY MANDATORY TOOL ENFORCEMENT EVENTS (use task_events.task.tool.enforcement.started instead) ===
 
   task.tool.enforcement.started:
     description: "Tool usage enforcement validation started"
-    logical_priority: "critical"
-    components: ["mandatory_tool_enforcement"]
+    priority: "critical"
+    handlers: ["mandatory_tool_enforcement"]
     trigger: "on_any_task_received"
     dependencies: []
     parallel: false
@@ -2318,8 +2162,8 @@ implementation:
 
   task.tool.enforcement.completed:
     description: "Tool usage enforcement validation completed"
-    logical_priority: "critical"
-    components: ["mandatory_tool_enforcement"]
+    priority: "critical"
+    handlers: ["mandatory_tool_enforcement"]
     trigger: "on_enforcement_success"
     dependencies: ["task.tool.enforcement.started"]
     parallel: false
@@ -2328,15 +2172,15 @@ implementation:
 
   task.tool.selection.validated:
     description: "Tool selection validated and authorized"
-    logical_priority: "critical"
-    components: ["tool_selection_validator"]
+    priority: "critical"
+    handlers: ["tool_selection_validator"]
     dependencies: ["task.tool.enforcement.completed"]
     parallel: false
 
   task.tool.selection.validated.completed:
     description: "Tool selection validation process completed"
-    logical_priority: "critical"
-    components: ["tool_selection_validator"]
+    priority: "critical"
+    handlers: ["tool_selection_validator"]
     trigger: "on_selection_success"
     dependencies: ["task.tool.selection.validated"]
     parallel: false
@@ -2344,22 +2188,22 @@ implementation:
 
   task.tool.execution.authorized:
     description: "Task execution authorized with proper tool selection"
-    logical_priority: "critical"
-    components: ["execution_authorizer"]
+    priority: "critical"
+    handlers: ["execution_authorizer"]
     dependencies: ["task.tool.selection.validated.completed"]
     parallel: false
 
   task.tool.compliance.audit:
     description: "Tool usage compliance audit and reporting"
-    logical_priority: "medium"
-    components: ["compliance_auditor"]
+    priority: "medium"
+    handlers: ["compliance_auditor"]
     dependencies: ["task.execution.completed"]
     parallel: true
 
   task.execution.completed:
     description: "Task execution process completed"
-    logical_priority: "high"
-    components: ["execution_coordinator"]
+    priority: "high"
+    handlers: ["execution_coordinator"]
     trigger: "on_task_completion"
     dependencies: ["task.tool.execution.authorized"]
     parallel: false
@@ -2378,20 +2222,20 @@ implementation:
      
       depends_on: ["unified_state_manager_integration.completed", "event_bridge_system.healthy"]
 
-        phases:
+      phases:
           # Phase 4: User Experience Enhancement (8-10s)
           phase4_greeting_generation:
             description: "Dynamic greeting generation and user welcome"
-            logical_priority: "high"
-            components: ["dynamic_greeting_generation"]
+            priority: "high"
+            handlers: ["dynamic_greeting_generation"]
             timeout: 5s
             fallback: "basic_greeting_template"
 
           # Phase 5: Performance Optimization (10-15s)
           phase5_optimization_enhancements:
             description: "Background optimization and caching"
-            logical_priority: "medium"
-            components: ["cache_warming", "performance_optimization"]
+            priority: "medium"
+            handlers: ["cache_warming", "performance_optimization"]
             parallel: true
             timeout: 10s
             max_concurrent: 2
@@ -2400,15 +2244,15 @@ implementation:
           # Phase 6: Advanced Features (15s+)
           phase6_monitoring_setup:
             description: "Advanced monitoring and analytics"
-            logical_priority: "low"
-            components: ["advanced_capability_analysis", "enhanced_monitoring"]
+            priority: "low"
+            handlers: ["advanced_capability_analysis", "enhanced_monitoring"]
             parallel: true
             timeout: 15s
             max_concurrent: 2
             background: true
 
-        completion_event: "system.bootstrap.optional.completed"
-        completion_triggers: ["system.enhanced.functionality.enabled"]
+      completion_event: "system.bootstrap.optional.completed"
+      completion_triggers: ["system.enhanced.functionality.enabled"]
 
       # === SYSTEM STATES MANAGEMENT ===
       system_states:
@@ -2445,25 +2289,25 @@ implementation:
     # === COMPATIBILITY EVENTS (Unified Support) ===
     system.bootstrap.started:
       description: "System initialization process started"
-      logical_priority: "critical"
+      priority: "critical"
       triggers: ["event_bridge_system.bootstrap_started"]
 
     system.discovery.started:
       description: "Resource discovery process initiated"
-      logical_priority: "critical"
+      priority: "critical"
       triggers: ["event_bridge_system.discovery_started"]
 
     system.bootstrap.completed:
       description: "Core system fully initialized - READY FOR TASKS"
-      logical_priority: "critical"
+      priority: "critical"
       triggers: ["unified_state_manager.transition.to.SYSTEM_READY"]
       completion_message: "System core ready - unified event-driven architecture active"
 
     system.greeting.started:
       description: "Greeting generation process (optional enhancement)"
-      logical_priority: "medium"
-      components: ["dynamic_greeting_generation"]
-     
+      priority: "medium"
+      handlers: ["dynamic_greeting_generation"]
+
       dependencies: ["unified_state_manager.transition.to.SYSTEM_READY"]
       timeout: 5s
       fallback: "basic_greeting_template"
@@ -2472,111 +2316,97 @@ implementation:
     # High Priority Events (Core functionality)
     system.integration.started:
       description: "System integration phase started"
-      logical_priority: "high"
-      components: ["system_integration_phase"]
+      priority: "high"
+      handlers: ["system_integration_phase"]
       dependencies: ["system.bootstrap.completed"]
 
     system.readiness.started:
       description: "System readiness verification started"
-      logical_priority: "high"
-      components: ["system_readiness_phase"]
+      priority: "high"
+      handlers: ["system_readiness_phase"]
       dependencies: ["system.integration.completed"]
 
     # Medium Priority Events (Discovery & Analysis)
     system.memory.adaptive.started:
       description: "Adaptive memory system initialization"
-      logical_priority: "medium"
-      components: ["adaptive_memory_system_phase"]
+      priority: "medium"
+      handlers: ["adaptive_memory_system_phase"]
       dependencies: ["system.bootstrap.completed"]
       parallel: true
 
     system.planning.parallel.started:
       description: "Parallel todo planning initialization"
-      logical_priority: "medium"
-      components: ["parallel_todo_planning_phase"]
+      priority: "medium"
+      handlers: ["parallel_todo_planning_phase"]
       dependencies: ["system.bootstrap.completed"]
       parallel: true
 
     system.analysis.dynamic.started:
       description: "Dynamic text analysis initialization"
-      logical_priority: "medium"
-      components: ["dynamic_text_analysis_phase"]
+      priority: "medium"
+      handlers: ["dynamic_text_analysis_phase"]
       dependencies: ["system.bootstrap.completed"]
       parallel: true
 
     # Low Priority Events (Optimization & Enhancement)
     task.received.coordinator.started:
       description: "Task received coordinator activation"
-      logical_priority: "low"
-      components: ["task_received_coordinator"]
+      priority: "low"
+      handlers: ["task_received_coordinator"]
       dependencies: ["system.readiness.completed"]
       trigger: "user_interaction"
 
-    # Task Processing Events
-    task.analysis.started:
-      description: "Task analysis phase started"
-      logical_priority: "low"
-      components: ["task_analysis_coordinator"]
+    # === CONSOLIDATED TASK LIFECYCLE EVENTS ===
+    task.lifecycle.started:
+      description: "Unified task lifecycle initiation - replaces analysis/selection/delegation/execution started events"
+      priority: "high"
+      handlers: ["task_lifecycle_manager"]
       dependencies: ["task.received.coordinator.completed"]
+      data_fields: ["task_id", "task_type", "priority", "complexity_estimate", "correlation_id"]
+      handlers: ["task_analysis_coordinator", "agent_selection_algorithm", "delegation_engine", "task_execution_coordinator"]
       parallel: true
-
-    task.agent.selection.started:
-      description: "Agent selection process started"
-      logical_priority: "low"
-      components: ["agent_selection_algorithm"]
-      dependencies: ["task.analysis.completed"]
-
-    task.delegation.started:
-      description: "Task delegation process started"
-      logical_priority: "low"
-      components: ["delegation_engine"]
-      dependencies: ["task.agent.selection.completed"]
-
-    task.execution.coordinator.started:
-      description: "Task execution coordination started"
-      logical_priority: "low"
-      components: ["task_execution_coordinator"]
-      dependencies: ["task.delegation.completed"]
+      phases: ["analysis", "agent_selection", "delegation", "execution"]
+      phase_transitions: "automatic"
 
     # Agent Discovery Events (integrated from existing system)
     agent.discovery.started:
       description: "Dynamic agent discovery process started"
-      logical_priority: "medium"
-      components: ["dynamic_agent_discovery_phase"]
+      priority: "medium"
+      handlers: ["dynamic_agent_discovery_phase"]
       dependencies: ["system.bootstrap.completed"]
       parallel: true
 
     agent.discovery.method.completed:
       description: "Individual discovery method completed"
-      logical_priority: "medium"
-      components: ["agent_capability_analysis", "progress_tracker"]
+      priority: "medium"
+      handlers: ["agent_capability_analysis", "progress_tracker"]
       dependencies: ["agent.discovery.started"]
 
     agent.registry.updated:
       description: "Agent registry updated with new discoveries"
-      logical_priority: "high"
-      components: ["agent_competency_matching"]
+      priority: "high"
+      handlers: ["agent_competency_matching"]
       dependencies: ["agent.discovery.method.completed"]
 
     # Parallel Analysis Events
     task.semantic.analysis.started:
       description: "Semantic analysis started"
-      logical_priority: "medium"
-      components: ["semantic_analyzer"]
+      priority: "medium"
+      handlers: ["semantic_analyzer"]
       dependencies: ["task.analysis.started"]
       parallel: true
 
     task.complexity.analysis.started:
       description: "Complexity assessment started"
-      logical_priority: "medium"
-      components: ["complexity_assessor"]
+      priority: "medium"
+      handlers: ["complexity_assessor"]
       dependencies: ["task.analysis.started"]
       parallel: true
 
     task.domain.analysis.started:
       description: "Domain classification started"
-      logical_priority: "medium"
-      components: ["domain_classifier"]
+      priority: "medium"
+      handlers: ["domain_classifier"]
       dependencies: ["task.analysis.started"]
       parallel: true
 
@@ -2584,55 +2414,162 @@ implementation:
 
     tool.selection.analysis.started:
       description: "Automatic tool selection analysis based on task complexity"
-      logical_priority: "critical"
-      components: ["intelligent_tool_selector"]
+      priority: "critical"
+      handlers: ["intelligent_tool_selector"]
       dependencies: ["task.analysis.completed"]
       parallel: false
 
     tool.decision.engine:
       description: "Decision engine for choosing between TASK(), PLAN(), SYSTEM()"
-      logical_priority: "critical"
-      components: ["tool_decision_matrix"]
+      priority: "critical"
+      handlers: ["tool_decision_matrix"]
       dependencies: ["tool.selection.analysis.completed"]
       parallel: false
 
     # Adaptive Planning Events
     planning.adaptive.started:
       description: "Adaptive planning process initiated"
-      logical_priority: "high"
-      components: ["adaptive_planning_engine"]
+      priority: "high"
+      handlers: ["adaptive_planning_engine"]
       dependencies: ["tool.decision.engine.completed"]
       parallel: false
 
     planning.visual.formatting:
       description: "Visual TODO formatting with hierarchy"
-      logical_priority: "medium"
-      components: ["visual_todo_formatter"]
+      priority: "medium"
+      handlers: ["visual_todo_formatter"]
       dependencies: ["planning.adaptive.started"]
       parallel: false
 
     planning.analysis.results:
       description: "Analysis of execution results for replanning"
-      logical_priority: "high"
-      components: ["result_analyzer", "replanning_engine"]
+      priority: "high"
+      handlers: ["result_analyzer", "replanning_engine"]
       dependencies: ["any_task.completed"]
       parallel: false
       trigger: "automatic"
 
     planning.replanning.triggered:
       description: "Automatic replanning triggered by results"
-      logical_priority: "critical"
-      components: ["adaptive_replanner", "plan_adjuster"]
+      priority: "critical"
+      handlers: ["adaptive_replanner", "plan_adjuster"]
       dependencies: ["planning.analysis.results"]
       parallel: false
       trigger: "conditional"
 
     planning.parallel.coordination:
       description: "Coordination of parallel task groups"
-      logical_priority: "medium"
-      components: ["parallel_coordinator", "dependency_manager"]
+      priority: "medium"
+      handlers: ["parallel_coordinator", "dependency_manager"]
       dependencies: ["planning.visual.formatting"]
       parallel: false
+
+  # === CENTRALIZED EVENT SYSTEM ===
+
+  system_events:
+    # System initialization and lifecycle events
+    system.ready:
+      description: "System has completed initialization and is ready for operations"
+      data_fields: ["system_id", "ready_timestamp", "initialization_duration", "components_ready", "health_score"]
+      handlers: ["initialization_master_guard", "monitoring_system", "capability_announcement"]
+      priority: "critical"
+
+    system.bootstrap.started:
+      description: "System initialization process started"
+      priority: "critical"
+      triggers: ["event_bridge_system.bootstrap_started"]
+
+    system.bootstrap.completed:
+      description: "Core system fully initialized - READY FOR TASKS"
+      priority: "critical"
+      triggers: ["unified_state_manager.transition.to.SYSTEM_READY"]
+
+    system.greeting.started:
+      description: "Greeting generation process (optional enhancement)"
+      priority: "medium"
+      handlers: ["dynamic_greeting_generation"]
+      dependencies: ["unified_state_manager.transition.to.SYSTEM_READY"]
+
+    system.integration.started:
+      description: "System integration phase started"
+      priority: "high"
+      handlers: ["system_integration_phase"]
+      dependencies: ["system.bootstrap.completed"]
+
+    system.readiness.started:
+      description: "System readiness verification started"
+      priority: "high"
+      handlers: ["system_readiness_phase"]
+      dependencies: ["system.integration.completed"]
+
+  task_events:
+    # Task lifecycle and management events
+    task.received:
+      description: "New task received from user"
+      data_fields: ["task_id", "description", "metadata", "timestamp", "user_id"]
+      handlers: ["task_analysis_coordinator", "monitoring_system"]
+      priority: "high"
+
+    task.lifecycle.started:
+      description: "Unified task lifecycle initiation"
+      priority: "high"
+      handlers: ["task_lifecycle_manager"]
+      dependencies: ["task.received.coordinator.completed"]
+      data_fields: ["task_id", "task_type", "priority", "complexity_estimate", "correlation_id"]
+      handlers: ["task_analysis_coordinator", "agent_selection_algorithm", "delegation_engine", "task_execution_coordinator"]
+      parallel: true
+
+    task.analysis.started:
+      description: "Individual analysis component started"
+      data_fields: ["task_id", "analysis_type", "start_time", "correlation_id"]
+      handlers: ["monitoring_system", "performance_tracker"]
+      priority: "medium"
+
+    task.agent.selected:
+      description: "Agent selected for task execution"
+      data_fields: ["task_id", "selected_agent", "confidence", "backup_options", "selection_rationale"]
+      handlers: ["clarification_subsystem", "delegation_engine", "monitoring_system"]
+      priority: "critical"
+
+    task.execution.completed:
+      description: "Task execution process completed"
+      priority: "high"
+      handlers: ["execution_coordinator"]
+      trigger: "on_task_completion"
+      dependencies: ["task.tool.execution.authorized"]
+
+    task.tool.enforcement.started:
+      description: "Tool usage enforcement validation started"
+      priority: "critical"
+      handlers: ["mandatory_tool_enforcement"]
+      trigger: "on_any_task_received"
+
+    task.tool.execution.authorized:
+      description: "Task execution authorized with proper tool selection"
+      priority: "critical"
+      handlers: ["execution_authorizer"]
+      dependencies: ["task.tool.selection.validated.completed"]
+
+  agent_events:
+    # Agent discovery and selection events
+    agent.discovery.started:
+      description: "Dynamic agent discovery process started"
+      priority: "medium"
+      handlers: ["dynamic_agent_discovery_phase"]
+      dependencies: ["system.bootstrap.completed"]
+      parallel: true
+
+    agent.discovery.method.completed:
+      description: "Individual discovery method completed"
+      priority: "medium"
+      handlers: ["agent_capability_analysis", "progress_tracker"]
+      dependencies: ["agent.discovery.started"]
+
+    agent.registry.updated:
+      description: "Agent registry updated with new discoveries"
+      priority: "high"
+      handlers: ["agent_competency_matching"]
+      dependencies: ["agent.discovery.method.completed"]
 
   operations:
     # === MANDATORY TOOL ENFORCEMENT SYSTEM ===
@@ -3280,18 +3217,30 @@ implementation:
             description: "Analyze domain coverage and system capabilities"
             implementation:
               domains_covered:
-                - "Frontend Development" (magic, chrome_devtools, playwright)
-                - "Backend Development" (serena, context7)
-                - "Code Analysis & Management" (serena)
-                - "Research & Intelligence" (tavily, context7)
-                - "Testing & Quality Assurance" (playwright, chrome_devtools)
-                - "Documentation & Learning" (context7, sequential)
-                - "System Architecture & Planning" (sequential, serena)
-                - "Performance Analysis" (chrome_devtools)
-                - "UI/UX Design & Development" (magic)
-                - "Web Automation & Testing" (playwright, chrome_devtools)
-                - "Project Management & Memory" (serena)
-                - "Browser Development Tools" (chrome_devtools)
+                - domain: "Frontend Development"
+                  tools: ["magic", "chrome_devtools", "playwright"]
+                - domain: "Backend Development"
+                  tools: ["serena", "context7"]
+                - domain: "Code Analysis & Management"
+                  tools: ["serena"]
+                - domain: "Research & Intelligence"
+                  tools: ["tavily", "context7"]
+                - domain: "Testing & Quality Assurance"
+                  tools: ["playwright", "chrome_devtools"]
+                - domain: "Documentation & Learning"
+                  tools: ["context7", "sequential"]
+                - domain: "System Architecture & Planning"
+                  tools: ["sequential", "serena"]
+                - domain: "Performance Analysis"
+                  tools: ["chrome_devtools"]
+                - domain: "UI/UX Design & Development"
+                  tools: ["magic"]
+                - domain: "Web Automation & Testing"
+                  tools: ["playwright", "chrome_devtools"]
+                - domain: "Project Management & Memory"
+                  tools: ["serena"]
+                - domain: "Browser Development Tools"
+                  tools: ["chrome_devtools"]
 
         summary_generation:
           total_mcp_servers: 7
@@ -3837,7 +3786,9 @@ implementation:
             validation: "error_handling_ready == true"
       config:
         filtering_parameters:
-          pattern: "<system-reminder>.*?</system-reminder>"
+          pattern: "</system-reminder>"
+          method:</system-reminder>"
+          method:</system-reminder>"
           method: "regex_removal"
           flags: ["DOTALL", "MULTILINE"]
           replacement: ""
@@ -4154,26 +4105,26 @@ implementation:
         required_outputs: ["task_accepted", "coordination_plan"]
       config:
         categories:
-              development_agents:
-                criteria: ["backend", "frontend", "fullstack", "developer"]
-                priority: 1
-                description: "Software development and implementation specialists"
-              system_agents:
-                criteria: ["devops", "infrastructure", "system", "architect"]
-                priority: 2
-                description: "System architecture and infrastructure specialists"
-              data_agents:
-                criteria: ["data", "analytics", "ml", "science", "database"]
-                priority: 3
-                description: "Data processing and analytics specialists"
-              quality_agents:
-                criteria: ["testing", "qa", "quality", "validation", "security"]
-                priority: 4
-                description: "Quality assurance and security specialists"
-              support_agents:
-                criteria: ["documentation", "technical", "writer", "support"]
-                priority: 5
-                description: "Documentation and support specialists"
+          development_agents:
+            criteria: ["backend", "frontend", "fullstack", "developer"]
+            priority: 1
+            description: "Software development and implementation specialists"
+          system_agents:
+            criteria: ["devops", "infrastructure", "system", "architect"]
+            priority: 2
+            description: "System architecture and infrastructure specialists"
+          data_agents:
+            criteria: ["data", "analytics", "ml", "science", "database"]
+            priority: 3
+            description: "Data processing and analytics specialists"
+          quality_agents:
+            criteria: ["testing", "qa", "quality", "validation", "security"]
+            priority: 4
+            description: "Quality assurance and security specialists"
+          support_agents:
+            criteria: ["documentation", "technical", "writer", "support"]
+            priority: 5
+            description: "Documentation and support specialists"
 
             agent_matching:
               method: "semantic_capability_matching"
@@ -4323,37 +4274,39 @@ implementation:
         diagnostic_events_processed: "array"
         state_transitions_triggered: "array"
         debug_mode_status: "boolean"
-              welcome_section:
-                source: "greeting_content.greeting_section"
-                priority: 1
-                dynamic_content: true
-              capabilities_summary:
-                source: "greeting_content.categorized_agents"
-                include_counts: true
-                include_health_status: true
-                priority: 2
-              infrastructure_status:
-                source: "greeting_content.categorized_mcp_servers"
-                include_availability: true
-                include_performance: true
-                priority: 3
-              system_performance:
-                source: "readiness_assessment.performance_metrics"
-                include_health_score: true
-                include_efficiency_ratings: true
-                priority: 4
-              next_steps_guidance:
-                source: "greeting_content.next_steps_section"
-                contextual_recommendations: true
-                priority: 5
 
-        output_format:
-          structure: "hierarchical_categories_with_counts"
-          include_performance_indicators: true
-          availability_status_format: "health_based"
-          categorization_method: "semantic_capability_grouping"
+      template_engine:
+        welcome_section:
+          source: "greeting_content.greeting_section"
+          priority: 1
+          dynamic_content: true
+        capabilities_summary:
+          source: "greeting_content.categorized_agents"
+          include_counts: true
+          include_health_status: true
+          priority: 2
+        infrastructure_status:
+          source: "greeting_content.categorized_mcp_servers"
+          include_availability: true
+          include_performance: true
+          priority: 3
+        system_performance:
+          source: "readiness_assessment.performance_metrics"
+          include_health_score: true
+          include_efficiency_ratings: true
+          priority: 4
+        next_steps_guidance:
+          source: "greeting_content.next_steps_section"
+          contextual_recommendations: true
+          priority: 5
 
-        dynamic_content_generation:
+      output_format:
+        structure: "hierarchical_categories_with_counts"
+        include_performance_indicators: true
+        availability_status_format: "health_based"
+        categorization_method: "semantic_capability_grouping"
+
+      dynamic_content_generation:
           agent_list_formatting:
             show_specialization: true
             show_confidence_scores: true
@@ -4372,21 +4325,21 @@ implementation:
             show_health_indicators: true
             trend_analysis: true
 
-        error_handling:
-          greeting_data_missing:
-            action: "use_basic_readiness_template"
-            fallback_content: "standard_system_capabilities"
-            log_warning: true
-          categorization_incomplete:
-            action: "display_available_categories"
-            note_uncategorized_items: true
-            partial_display: true
-          template_generation_failure:
-            action: "use_simple_text_format"
-            preserve_core_information: true
-            log_error: true
+      error_handling:
+        greeting_data_missing:
+          action: "use_basic_readiness_template"
+          fallback_content: "standard_system_capabilities"
+          log_warning: true
+        categorization_incomplete:
+          action: "display_available_categories"
+          note_uncategorized_items: true
+          partial_display: true
+        template_generation_failure:
+          action: "use_simple_text_format"
+          preserve_core_information: true
+          log_error: true
 
-        performance_optimization:
+      performance_optimization:
           result_caching: true
           cache_duration: 600  # 10 minutes
           incremental_refresh: true
@@ -5471,7 +5424,7 @@ implementation:
       priority: 15.5
       method: "event_based_analysis_coordinator"
       event_subscription:
-        listen_to: ["task.semantic.completed", "task.complexity.completed", "task.domain.completed"]
+        listen_to: ["task.analysis.batch.completed"]
         correlation_field: "task_id"
         completion_strategy: "wait_for_all_events"
         timeout_handling: "proceed_with_available_analyses"
@@ -6147,37 +6100,37 @@ implementation:
               action: "begin_agent_selection"
               events: ["analysis.complete", "state.agent_selection"]
 
-            AGENT_SELECTION → COMPETENCY_CHECK:
+            ANALYZING → AGENT_SELECTION:
               trigger: "agents_selected"
               validator: "selection_success_validator"
               action: "begin_competency_check"
               events: ["selection.complete", "state.competency_check"]
 
-            COMPETENCY_CHECK → AGENT_ASSIGNMENT:
+            AGENT_SELECTION → COMPETENCY_CHECK:
               trigger: "competency_validated"
               validator: "competency_success_validator"
               action: "begin_agent_assignment"
               events: ["competency.validated", "state.agent_assignment"]
 
-            AGENT_ASSIGNMENT → MONITORING:
+            COMPETENCY_CHECK → AGENT_ASSIGNMENT:
               trigger: "assignment_complete"
               validator: "assignment_success_validator"
               action: "begin_task_monitoring"
               events: ["assignment.complete", "state.monitoring"]
 
-            MONITORING → COMPLETED:
+            AGENT_ASSIGNMENT → MONITORING:
               trigger: "task_completed_successfully"
               validator: "completion_validator"
               action: "handle_task_completion"
               events: ["task.completed", "state.completed"]
 
-            MONITORING → FAILED:
+            MONITORING → COMPLETED:
               trigger: "task_failed"
               validator: "failure_validator"
               action: "handle_task_failure"
               events: ["task.failed", "state.failed"]
 
-            COMPLETED → IDLE:
+            MONITORING → FAILED:
               trigger: "cleanup_complete"
               validator: "cleanup_validator"
               action: "reset_delegation_state"
@@ -6638,7 +6591,7 @@ implementation:
           prevention_strategies:
             resource_ordering_protocol: "global_resource_ordering"
             priority_inheritance_protocol: "priority_inheritance_with_preemption"
-            deadlock avoidance: "resource_allocation_with_safe_state_check"
+            deadlock_avoidance: "resource_allocation_with_safe_state_check"
             circular_wait_prevention: "hierarchical_resource_allocation"
 
           recovery_mechanisms:
@@ -6896,7 +6849,7 @@ implementation:
       priority: 36
       method: "comprehensive_error_recovery_with_state_machine"
       event_subscription:
-        listen_to: ["task.analysis.error", "task.selection.error", "task.processing.timeout", "task.agent.unavailable", "state_machine.transition.failed"]
+        listen_to: ["task.protection.unified", "task.agent.unavailable", "state_machine.transition.failed"]
         correlation_field: "task_id"
         error_handling_priority: "critical"
       dependencies:
@@ -7223,7 +7176,7 @@ implementation:
       priority: 36.1
       method: "event_based_timeout_resolution"
       event_subscription:
-        listen_to: "task.processing.timeout"
+        listen_to: "task.protection.unified"
         correlation_field: "task_id"
         timeout_handling_priority: "high"
       config:
@@ -7543,7 +7496,7 @@ implementation:
               matching_algorithms:
                 - semantic_similarity: threshold 0.7
                 - structural_similarity: threshold 0.8
-                - context_similarity: threshold 0.6
+                - contextual_similarity: threshold 0.6
               search_scope:
                 success_patterns: true
                 failure_patterns: true
@@ -7972,7 +7925,7 @@ system_parallelity_rules:
     todo_integration:
       auto_create_parallel_items: true
       group_related_operations: true
-      mark_dependencies_explicitly: true
+      mark_dependencies: true
 
     validation_requirements:
       check_file_conflicts: true
@@ -8130,7 +8083,8 @@ adaptive_planning:
         max_depth: "unlimited"
     breakdown_triggers:
       - task_contains_multiple_purposes: true
-      - estimated_time > "2_hours": true
+      - estimated_time > "2": true
+     ": true
       - involves_multiple_technologies: true
       - requires_coordination_with_others: true
 
@@ -8363,998 +8317,4 @@ adaptive_planning:
           priority: "high"
 
         - name: "concurrency_guard"
-          condition: "active_executions < max_concurrent_executions"
-          blocked_transitions: ["EXECUTING"]
-          fallback: "queue_execution"
-          priority: "medium"
-
-      execution_logic:
-        sequential_execution:
-          - parent_task waits for all child_tasks to complete
-          - marks parent as "completed" only when all children are "completed"
-          - propagates errors from children to parents
-          - state synchronization between parent and child states
-
-        parallel_execution:
-          - tasks at same level can execute in parallel
-          - synchronization points at state transition boundaries
-          - parent waits for all parallel tasks to reach compatible states
-          - resource allocation across parallel tasks
-
-        error_handling:
-          - failed_child_blocks_parent_progress in certain states
-          - sibling_tasks_continue_if_possible
-          - parent_marked_with_partial_completion when appropriate
-          - state-based error propagation rules
-
-        state_synchronization:
-          - parent-child state coordination
-          - hierarchical state consistency
-          - state transition propagation
-          - recovery state coordination
-
-      validation_rules:
-        - circular_dependency_prevention: true
-        - infinite_recursion_prevention: true
-        - dependency_graph_validation: true
-        - state_transition_validation: true
-        - resource_availability_validation: true
-
-      # Performance monitoring for task execution
-      performance_monitoring:
-        track_execution_lifecycle: true
-        state_transition_performance: true
-        resource_utilization_tracking: true
-        execution_success_rate: true
-        bottleneck_identification: true
-        dependency_resolution_time: true
-
-# Result Analyzer Component
-
-  result_analyzer:
-    description: "Analyzes execution results for replanning decisions"
-    capabilities:
-      - execution_result_analysis
-      - success_rate_calculation
-      - bottleneck_identification
-      - recommendation_generation
-    analysis_criteria:
-      success_threshold: 0.8
-      failure_triggers: ["high_error_rate", "timeout_occurred", "dependency_block"]
-      replanning_conditions: ["success_rate < 0.7", "critical_failures", "significant_delays"]
-    level_based_analysis:
-      analyze_after_each_level: true
-      aggregate_level_results: true
-      trigger_recursive_planning: "when_success_rate < 0.7 or complexity_increase_detected"
-
-# Adaptive Replanner Component
-
-  adaptive_replanner:
-    description: "Automatically adjusts plans based on execution results"
-    capabilities:
-      - automatic_plan_adjustment
-      - priority_rebalancing
-      - dependency_restructuring
-      - parallel_group_optimization
-    strategies:
-      - "conservative_adjustment"
-      - "aggressive_replanning"
-      - "dependency_based_restructure"
-
-# Parallel Coordinator Component
-
-  parallel_coordinator:
-    description: "Coordinates parallel task execution with dependency management"
-    capabilities:
-      - parallel_group_identification
-      - dependency_resolution
-      - synchronization_point_management
-      - conflict_detection
-    coordination_rules:
-      max_parallel_groups: 5
-      dependency_validation: true
-      deadlock_prevention: true
-
-# Dependency Manager Component
-
-  dependency_manager:
-    description: "Manages task dependencies and execution order"
-    capabilities:
-      - dependency_graph_analysis
-      - execution_order_optimization
-      - circular_dependency_detection
-      - critical_path_identification
-    algorithms:
-      - "topological_sorting"
-      - "critical_path_method"
-      - "dependency_depth_analysis"
-
-# === PARALLEL PATTERN RECOGNITION TEMPLATES ===
-
-parallel_pattern_recognition:
-  enabled: true
-  automatic_detection: true
-  learning_enabled: true
-
-  pattern_templates:
-    version_update_pattern:
-      name: "Version Synchronization Pattern"
-      detection_criteria:
-        - "multiple files contain version strings"
-        - "same target version number across files"
-        - "simultaneous version bump required"
-      parallel_strategy: "parallel_version_updates"
-      optimization_potential: 0.95
-      confidence_threshold: 0.90
-      execution_template:
-        group_type: "parallel_file_operations"
-        max_parallel_files: 10
-        timeout_per_file: 5
-        error_handling: "continue_with_successful"
-      examples:
-        - "Update.0 to.1 in manifest.json, plugin.json, agents.md"
-        - "Synchronize dependency versions across multiple config files"
-        - "Apply version bump to all documentation files"
-
-    configuration_sync_pattern:
-      name: "Configuration Synchronization Pattern"
-      detection_criteria:
-        - "same configuration parameter in multiple files"
-        - "different file paths for same setting"
-        - "simultaneous configuration update needed"
-      parallel_strategy: "parallel_config_updates"
-      optimization_potential: 0.88
-      confidence_threshold: 0.85
-      execution_template:
-        group_type: "parallel_config_operations"
-        validation_required: true
-        rollback_on_failure: true
-      examples:
-        - "Update API endpoint in service configs"
-        - "Change database connection parameters"
-        - "Modify logging levels across applications"
-
-    file_batch_operation_pattern:
-      name: "File Batch Operation Pattern"
-      detection_criteria:
-        - "multiple file read/write operations"
-        - "independent file targets"
-        - "no shared resources between operations"
-      parallel_strategy: "concurrent_file_operations"
-      optimization_potential: 0.82
-      confidence_threshold: 0.80
-      execution_template:
-        group_type: "concurrent_file_access"
-        resource_monitoring: true
-        conflict_detection: true
-      examples:
-        - "Read multiple configuration files"
-        - "Apply different edits to separate files"
-        - "Generate multiple documentation files"
-
-    mcp_parallel_call_pattern:
-      name: "MCP Server Parallel Pattern"
-      detection_criteria:
-        - "operations targeting different MCP servers"
-        - "independent tool invocations"
-        - "no MCP server resource conflicts"
-      parallel_strategy: "parallel_mcp_calls"
-      optimization_potential: 0.92
-      confidence_threshold: 0.88
-      execution_template:
-        group_type: "parallel_mcp_operations"
-        server_availability_check: true
-        timeout_per_server: 30
-      examples:
-        - "Parallel calls to Context7, Magic, Playwright"
-        - "Concurrent MCP server discovery"
-        - "Simultaneous tool invocations across servers"
-
-    git_workflow_pattern:
-      name: "Git Sequential Workflow Pattern"
-      detection_criteria:
-        - "git add, commit, push sequence"
-        - "sequential dependency requirements"
-        - "state transition dependencies"
-      parallel_strategy: "sequential_git_workflow"
-      optimization_potential: 0.0
-      confidence_threshold: 1.0
-      execution_template:
-        group_type: "sequential_operations"
-        mandatory_order: ["add", "commit", "push"]
-        validation_after_each_step: true
-      examples:
-        - "git add . → git commit → git push"
-        - "Stage changes before committing"
-        - "Push only after successful commit"
-
-  pattern_matching_engine:
-    detection_algorithms:
-      - "regex_based_pattern_matching"
-      - "semantic_analysis"
-      - "dependency_graph_analysis"
-      - "resource_conflict_detection"
-
-    confidence_calculation:
-      base_confidence: 0.70
-      pattern_match_boost: 0.20
-      historical_success_boost: 0.10
-      minimum_confidence_threshold: 0.80
-
-    learning_mechanism:
-      successful_pattern_recording: true
-      failure_pattern_analysis: true
-      confidence_adjustment: true
-      pattern_evolution: true
-
-# === PARALLEL OPERATION SELF-LEARNING ===
-
-  parallel_operation_learning:
-    enabled: true
-    integration_point: "adaptive_memory_system"
-    learning_mode: "continuous_adaptation"
-
-    success_pattern_learning:
-      successful_parallel_operations:
-        recording_enabled: true
-        memory_key_prefix: "parallel_success_"
-        analysis_depth: "comprehensive"
-        retention_policy: "success_based"
-
-      learning_indicators:
-        - "time_reduction_achieved > 30%"
-        - "parallel_efficiency_score > 0.8"
-        - "resource_utilization_optimized"
-        - "no_conflicts_detected"
-
-      pattern_classification:
-        operation_types: ["file_operations", "config_updates", "version_updates", "mcp_calls"]
-        parallel_strategies: ["concurrent", "batch", "pipeline"]
-        optimization_techniques: ["resource_sharing", "load_balancing", "dependency_resolution"]
-
-      adaptation_rules:
-        successful_strategy_reinforcement: 0.1
-        new_pattern_discovery_bonus: 0.15
-        cross_domain_pattern_transfer: 0.05
-        confidence_decay_rate: 0.02
-
-    failure_pattern_learning:
-      failed_parallel_operations:
-        recording_enabled: true
-        memory_key_prefix: "parallel_failure_"
-        root_cause_analysis: "deep"
-        prevention_strategy_generation: true
-
-      failure_classification:
-        conflict_types: ["file_conflicts", "resource_conflicts", "dependency_conflicts"]
-        error_categories: ["timeout_failures", "resource_exhaustion", "deadlock_situations"]
-        prevention_strategies: ["sequential_fallback", "resource_allocation", "dependency_restructuring"]
-
-      learning_from_failures:
-        failure_pattern_analysis: true
-        prevention_strategy_testing: true
-        confidence_adjustment: true
-        strategy_modification: true
-
-    parallel_pattern_recognition:
-      pattern_discovery:
-        new_pattern_detection: true
-        pattern_validation: true
-        pattern_generalization: true
-        cross_task_pattern_application: true
-
-      pattern_memory_structure:
-        pattern_signature: "operation_characteristics"
-        success_metrics: "performance_improvement_data"
-        confidence_scores: "historical_accuracy"
-        context_metadata: "execution_environment_details"
-
-      pattern_matching:
-        similarity_threshold: 0.85
-        context_aware_matching: true
-        confidence_weighted_selection: true
-        fallback_to_sequential: true
-
-    adaptive_optimization:
-      real_time_adjustment:
-        enabled: true
-        adjustment_triggers: ["performance_degradation", "new_patterns_discovered"]
-        adjustment_frequency: "per_task_completion"
-        rollback_capability: true
-
-      strategy_evolution:
-        strategy_mutation_rate: 0.05
-        crossover_opportunities: true
-        survival_of_the_fittest: true
-        diversity_maintenance: true
-
-    cross_session_learning:
-      session_persistence: true
-      pattern_accumulation: true
-      long_term_trend_analysis: true
-      system_improvement_tracking: true
-
-    learning_metrics:
-      pattern_discovery_rate: 0.15
-      success_pattern_accuracy: 0.90
-      failure_prevention_effectiveness: 0.85
-      overall_system_improvement: 0.10
-
-# === HYBRID EVENT-DRIVEN ARCHITECTURE ===
-
-event_system:
-  enabled: true
-  hybrid_mode: true  # Priority-based for system phases, event-driven for task processing
-
-# System Lifecycle Events (Priority-based execution)
-
-  system_lifecycle_events:
-    system.ready:
-      description: "System has completed initialization and is ready for operations"
-      data_fields: ["system_id", "ready_timestamp", "initialization_duration", "components_ready", "health_score"]
-      handlers: ["initialization_master_guard", "monitoring_system", "capability_announcement"]
-      priority: "critical"
-      activation_condition: "state_transition_to_SYSTEM_READY"
-      actions:
-        - set_system_initialization_complete: true
-        - enable_agent_calling_permissions: true
-        - log_initialization_completion: true
-
-    system.resource.inventory.started:
-      description: "System resource scanning process initiated"
-      data_fields: ["scan_id", "scan_types", "target_components", "timestamp"]
-      handlers: ["monitoring_system", "performance_tracker"]
-      priority: "high"
-      activation_condition: "system_initialization.complete"
-
-    system.resource.inventory.completed:
-      description: "System resource scanning completed successfully"
-      data_fields: ["scan_id", "mcp_servers_found", "agents_found", "categories_created", "scan_duration", "timestamp"]
-      handlers: ["dynamic_greeting_generation", "resource_registry"]
-      priority: "high"
-      activation_condition: "system_resource_inventory.complete"
-
-    system.generation.started:
-      description: "Dynamic greeting generation process initiated"
-      data_fields: ["greeting_id", "inventory_data", "template_type", "timestamp"]
-      handlers: ["monitoring_system", "performance_tracker"]
-      priority: "medium"
-      activation_condition: "system.resource.inventory.completed"
-
-    system.generation.completed:
-      description: "Dynamic greeting generation completed with resource summary"
-      data_fields: ["greeting_id", "mcp_summary", "agent_summary", "content_generated", "timestamp"]
-      handlers: ["bootstrap_completion_report", "user_interface_system"]
-      priority: "high"
-      activation_condition: "dynamic_greeting_generation.complete"
-
-    system.bootstrap.enhanced:
-      description: "Enhanced bootstrap completion with resource information"
-      data_fields: ["bootstrap_id", "resources_discovered", "greeting_generated", "total_time", "health_score", "timestamp"]
-      handlers: ["capability_announcement", "monitoring_system"]
-      priority: "critical"
-      activation_condition: "bootstrap_completion_report.complete"
-
-    system.readiness.verified:
-      description: "System readiness check completed successfully"
-      data_fields: ["system_id", "readiness_score", "health_status", "resources_available", "timestamp", "components_ready"]
-      handlers: ["greeting_formation_engine", "capability_announcement"]
-      priority: "critical"
-      activation_condition: "final_readiness_check.complete"
-
-    system.discovery.completed:
-      description: "System component discovery phase completed"
-      data_fields: ["discovery_id", "agents_found", "mcp_servers_found", "registry_status", "timestamp"]
-      handlers: ["system_integration_phase", "monitoring_system"]
-      priority: "high"
-
-    system.integration.complete:
-      description: "System integration and validation completed"
-      data_fields: ["integration_id", "integration_results", "validation_status", "timestamp"]
-      handlers: ["system_readiness_phase", "performance_optimizer"]
-      priority: "high"
-
-    greeting.generation.started:
-      description: "Greeting formation process initiated"
-      data_fields: ["greeting_id", "data_sources", "template_type", "timestamp"]
-      handlers: ["monitoring_system", "performance_tracker"]
-      priority: "medium"
-
-    greeting.categorization.completed:
-      description: "Agent and MCP server categorization completed"
-      data_fields: ["greeting_id", "agent_categories", "mcp_categories", "uncategorized_items", "timestamp"]
-      handlers: ["template_engine", "performance_optimizer"]
-      priority: "high"
-
-    greeting.template.generated:
-      description: "Greeting template generated with categorized content"
-      data_fields: ["greeting_id", "template_content", "category_counts", "performance_summary", "timestamp"]
-      handlers: ["integrated_system_readiness_display", "capability_announcement"]
-      priority: "high"
-
-    greeting.display.ready:
-      description: "Integrated system display ready for user presentation"
-      data_fields: ["greeting_id", "display_content", "ready_content", "generation_metadata", "timestamp"]
-      handlers: ["capability_announcement", "user_interface_system", "state_transition_handler"]
-      priority: "critical"
-
-    # Direct User Request Events
-    user.direct.request.received:
-      description: "Direct user request to master agent received"
-      data_fields: ["request_id", "user_request_content", "request_type", "timestamp", "system_state"]
-      handlers: ["unified_greeting_engine", "monitoring_system"]
-      priority: "high"
-      activation_condition: "user_direct_request_pattern_matched"
-
-    user.action.initiated:
-      description: "User initiated action while system in waiting state"
-      data_fields: ["action_id", "action_type", "action_content", "timestamp", "from_state"]
-      handlers: ["task_processing_system", "state_transition_handler"]
-      priority: "critical"
-      activation_condition: "user_action_detected_in_waiting_state"
-
-# Adaptive Planning Events
-
-  planning_events:
-    planning.adaptive.initialized:
-      description: "Adaptive planning system initialized with dynamic hierarchy capabilities"
-      data_fields: ["planning_id", "initial_task", "complexity_analysis", "timestamp"]
-      handlers: ["complexity_analyzer", "visual_todo_formatter", "recursive_planner"]
-      priority: "high"
-      activation_condition: "system.readiness.verified"
-
-    planning.task.complexity.analyzed:
-      description: "Task complexity analyzed to determine decomposition needs"
-      data_fields: ["task_id", "complexity_level", "decomposition_needed", "estimated_depth", "atomic_tasks_identified", "timestamp"]
-      handlers: ["complexity_analyzer", "task_decomposer"]
-      priority: "high"
-      activation_condition: "any_task.received"
-
-    planning.visual.hierarchy.created:
-      description: "Dynamic visual TODO hierarchy created based on complexity analysis"
-      data_fields: ["hierarchy_id", "parent_task", "child_tasks", "actual_depth", "complexity_distribution", "timestamp"]
-      handlers: ["visual_todo_formatter", "hierarchy_validator"]
-      priority: "medium"
-      activation_condition: "planning.task.complexity.analyzed"
-
-    planning.task.decomposed:
-      description: "Complex task decomposed into manageable subtasks"
-      data_fields: ["parent_task_id", "decomposed_subtasks", "atomic_tasks", "parallel_groups", "dependencies", "timestamp"]
-      handlers: ["task_decomposer", "parallel_coordinator", "dependency_manager"]
-      priority: "high"
-      activation_condition: ["task.complexity.analyzed", "decomposition_required"]
-
-    planning.recursive.analysis.started:
-      description: "Recursive analysis started for multi-level task hierarchy"
-      data_fields: ["root_task_id", "current_depth", "analysis_progress", "detected_patterns", "timestamp"]
-      handlers: ["recursive_planner", "complexity_analyzer"]
-      priority: "medium"
-      activation_condition: ["planning.task.decomposed", "recursive_planning_needed"]
-
-    planning.parallel.groups.identified:
-      description: "Parallel task groups identified and coordinated"
-      data_fields: ["parallel_groups", "group_tasks", "dependencies", "execution_plan", "timestamp"]
-      handlers: ["parallel_coordinator", "dependency_manager"]
-      priority: "medium"
-      activation_condition: "planning.visual.hierarchy.created"
-
-    planning.level.completed:
-      description: "Task hierarchy level completed, analyzing for further decomposition"
-      data_fields: ["level_id", "completed_tasks", "remaining_tasks", "success_rate", "needs_further_decomposition", "timestamp"]
-      handlers: ["result_analyzer", "complexity_analyzer", "recursive_planner"]
-      priority: "high"
-      activation_condition: "any_level_tasks_completed"
-
-    planning.execution.results.analyzed:
-      description: "Execution results analyzed for replanning decisions"
-      data_fields: ["analysis_id", "execution_results", "success_rate", "bottlenecks", "recommendations", "timestamp"]
-      handlers: ["result_analyzer", "replanning_engine"]
-      priority: "high"
-      activation_condition: "any_task.completed"
-
-    planning.replanning.triggered:
-      description: "Automatic replanning triggered by analysis results"
-      data_fields: ["replan_id", "triggers", "adjustments", "new_priorities", "timestamp"]
-      handlers: ["adaptive_replanner", "plan_adjuster", "visual_todo_formatter"]
-      priority: "critical"
-      activation_condition: ["planning.execution.results.analyzed", "planning.level.completed"]
-
-    planning.hierarchy.optimized:
-      description: "Task hierarchy optimized based on execution patterns and results"
-      data_fields: ["optimization_id", "original_hierarchy", "optimized_hierarchy", "improvements", "timestamp"]
-      handlers: ["hierarchy_optimizer", "visual_todo_formatter", "dependency_manager"]
-      priority: "medium"
-      activation_condition: "planning.replanning.completed"
-
-    planning.parallel.execution.coordinated:
-      description: "Parallel execution coordinated with dependency management"
-      data_fields: ["coordination_id", "parallel_groups", "synchronization_points", "completion_status", "timestamp"]
-      handlers: ["parallel_coordinator", "dependency_manager", "monitoring_system"]
-      priority: "medium"
-      activation_condition: "planning.parallel.groups.identified"
-
-    planning.hierarchy.optimizer:
-      description: "Optimizes task hierarchy based on execution patterns and results"
-      capabilities:
-        - hierarchy_pattern_analysis
-        - performance_optimization
-        - dependency_streamlining
-        - resource_allocation_optimization
-      optimization_strategies:
-        - "flattening_shallow_hierarchies"
-        - "deepening_critical_paths"
-        - "parallelism_maximization"
-        - "dependency_reduction"
-      triggers:
-        - "bottleneck_detected"
-        - "performance_degradation"
-        - "resource_underutilization"
-        - "success_rate_below_threshold"
-
-  task_processing_events:
-    # Core task lifecycle events
-    task.received:
-      description: "Task received from user, starts parallel analysis"
-      data_fields: ["task_id", "description", "metadata", "timestamp", "user_id"]
-      handlers: ["task_analysis_coordinator", "monitoring_system"]
-      priority: "high"
-
-    # Agent discovery events
-    agent.discovery.started:
-      description: "Dynamic agent discovery process started"
-      data_fields: ["discovery_id", "methods", "timestamp", "scope"]
-      handlers: ["dynamic_agent_discovery_phase", "monitoring_system"]
-      priority: "medium"
-
-    agent.discovery.method.completed:
-      description: "Individual discovery method completed"
-      data_fields: ["discovery_id", "method_name", "agents_found", "confidence", "processing_time"]
-      handlers: ["agent_capability_analysis", "progress_tracker"]
-      priority: "medium"
-
-    agent.registry.updated:
-      description: "Agent registry updated with new discoveries"
-      data_fields: ["registry_version", "agents_added", "agents_removed", "optimizations"]
-      handlers: ["agent_competency_matching", "system_integration_phase"]
-      priority: "high"
-
-    task.analysis.started:
-      description: "Individual analysis component started"
-      data_fields: ["task_id", "analysis_type", "start_time", "correlation_id"]
-      handlers: ["monitoring_system", "performance_tracker"]
-      priority: "medium"
-
-    # Analysis completion events (parallel processing)
-    task.semantic.completed:
-      description: "Semantic analysis completed successfully"
-      data_fields: ["task_id", "semantic_vector", "domain_indicators", "confidence", "processing_time"]
-      handlers: ["analysis_completion_aggregator", "domain_validator"]
-      priority: "high"
-
-    task.complexity.completed:
-      description: "Complexity assessment completed successfully"
-      data_fields: ["task_id", "complexity_score", "factors", "confidence", "processing_time"]
-      handlers: ["analysis_completion_aggregator", "resource_planner"]
-      priority: "high"
-
-    task.domain.completed:
-      description: "Domain classification completed successfully"
-      data_fields: ["task_id", "primary_domain", "confidence", "secondary_domains", "processing_time"]
-      handlers: ["analysis_completion_aggregator", "competency_matcher"]
-      priority: "high"
-
-    # Agent selection events
-    task.agent.selection.ready:
-      description: "All analyses completed, ready for agent selection"
-      data_fields: ["task_id", "analysis_complete", "selection_ready", "aggregated_results"]
-      handlers: ["event_driven_agent_selection"]
-      priority: "critical"
-
-    task.agent.selected:
-      description: "Agent selected for task execution"
-      data_fields: ["task_id", "selected_agent", "confidence", "backup_options", "selection_rationale"]
-      handlers: ["clarification_subsystem", "delegation_engine", "monitoring_system"]
-      priority: "critical"
-
-    task.clarification.completed:
-      description: "Clarification process completed"
-      data_fields: ["task_id", "clarified_requirements", "confidence_level", "ambiguity_resolved"]
-      handlers: ["todo_generation_system", "execution_planner"]
-      priority: "high"
-
-    # Error and recovery events
-    task.analysis.error:
-      description: "Error occurred during analysis"
-      data_fields: ["task_id", "analysis_type", "error_code", "error_message", "timestamp"]
-      handlers: ["error_recovery_handler", "fallback_system"]
-      priority: "critical"
-
-    task.processing.timeout:
-      description: "Task processing exceeded timeout"
-      data_fields: ["task_id", "timeout_type", "elapsed_time", "completed_analyses"]
-      handlers: ["timeout_handler", "partial_analysis_processor"]
-      priority: "critical"
-
-  event_correlation:
-    task_id_based:
-      strategy: "correlation_by_task_id"
-      timeout: 300  # 5 minutes max for all analyses
-      completion_criteria: "semantic_completed && complexity_completed && domain_completed"
-      correlation_field: "task_id"
-
-    parallel_analysis_coordination:
-      strategy: "parallel_then_select"
-      max_parallel_analyses: 3
-      coordination_logic: "wait_for_all_analyses_before_selection"
-      timeout_handling: "proceed_with_available_analyses"
-
-    event_aggregation:
-      data_mapping_strategy: "merge_analysis_results"
-      confidence_calculation: "weighted_average"
-      timeout_recovery: "use_partial_proceed_with_selection"
-
-  event_routing:
-    priority_based_routing:
-      enabled: true
-      critical_events: ["task.agent.selected", "task.processing.timeout", "task.analysis.error"]
-      high_priority_queue: true
-
-    correlation_routing:
-      enabled: true
-      correlation_field: "task_id"
-      routing_strategy: "same_task_id_to_same_handler"
-
-    load_balancing:
-      enabled: true
-      strategy: "round_robin_within_priority"
-      handler_health_monitoring: true
-
-# ============================================
-
-    # ТЕСТИ СИСТЕМИ ЗАХИСТУ ВІД РЕКУРСИВНИХ ВИКЛИКІВ
-    # ============================================
-
-    recursive_call_protection_tests:
-      enabled: true
-      description: "Tests for universal recursive call protection system"
-
-      test_scenarios:
-        - name: "test_agent_activation_reminder_blocking"
-          input:
-            system_reminder: "The user has expressed a desire to invoke the agent \"master:master\""
-            current_agent: "master"
-            initialization_phase: true
-          expected_behavior:
-            action: "block_task_delegation"
-            response_type: "direct_activation"
-            should_use_task_tool: false
-          test_assertions:
-            - "agent_activation_filter should detect the pattern"
-            - "suppression_rules should block Task() calls"
-            - "direct activation should be allowed"
-
-        - name: "test_invoke_agent_appropriately_blocking"
-          input:
-            system_reminder: "Please invoke the agent appropriately"
-            current_agent: "master"
-            initialization_phase: true
-          expected_behavior:
-            action: "block_agent_selection"
-            response_type: "direct_activation"
-            should_use_task_tool: false
-          test_assertions:
-            - "agent_activation_filter should detect the pattern"
-            - "automatic delegation should be blocked"
-            - "native response should be used"
-
-        - name: "test_direct_user_request_allowed"
-          input:
-            user_request: "@agent-master:master"
-            system_reminder: false
-            current_agent: "master"
-            initialization_phase: false
-            system_state: "SYSTEM_READY"
-          expected_behavior:
-            action: "allow_direct_activation"
-            response_type: "master_agent_activation"
-            should_use_task_tool: false
-          test_assertions:
-            - "direct user requests should be allowed when SYSTEM_READY"
-            - "no system reminder blocking should occur"
-            - "master agent should activate directly"
-
-        - name: "test_direct_user_request_blocked_during_initialization"
-          input:
-            user_request: "@agent-master:master"
-            system_reminder: false
-            current_agent: "master"
-            initialization_phase: true
-            system_state: "SYSTEM_INITIALIZING"
-          expected_behavior:
-            action: "block_task_delegation"
-            response_type: "queued_for_execution"
-            should_use_task_tool: false
-            queue_action: true
-          test_assertions:
-            - "direct user requests should be blocked during initialization"
-            - "request should be queued for execution when ready"
-            - "Task() tool should not be called automatically"
-
-        - name: "test_initialization_context_validation"
-          input:
-            system_reminder: "The user has expressed a desire to invoke the agent"
-            system_state: "SYSTEM_INITIALIZING"
-            current_agent: "master"
-          expected_behavior:
-            action: "suppress_automatic_response"
-            context_check: true
-            initialization_validation: true
-          test_assertions:
-            - "initialization context should be checked"
-            - "system state should be validated"
-            - "automatic responses should be suppressed"
-
-        - name: "test_debug_mode_exception_allowed"
-          input:
-            user_request: "@agent-master:master"
-            system_reminder: false
-            current_agent: "master"
-            initialization_phase: true
-            system_state: "SYSTEM_SELF_DIAGNOSIS"
-          expected_behavior:
-            action: "allow_direct_activation"
-            response_type: "debug_mode_activation"
-            should_use_task_tool: false
-            debug_exception_applied: true
-          test_assertions:
-            - "debug mode should allow direct activation even during initialization"
-            - "SYSTEM_SELF_DIAGNOSIS should bypass normal blocking rules"
-            - "diagnostic operations should be permitted"
-
-      validation_rules:
-        - rule: "no_automatic_task_calls_on_reminders"
-          condition: "system_reminder contains agent_activation_pattern"
-          expected_result: "Task() tool should not be called automatically"
-
-    # === SYSTEM REMINDER FILTER TESTS ===
-    system_reminder_filter_tests:
-      enabled: true
-      description: "Tests for system reminder filtering during initialization"
-
-      test_scenarios:
-        - name: "test_system_reminder_removal_at_initialization"
-          input:
-            context_with_reminders: |
-              Normal context content
-              <system-reminder>The user has expressed a desire to invoke the agent "master:master"</system-reminder>
-              More context content
-              <system-reminder>The TodoWrite tool hasn't been used recently</system-reminder>
-              Final context content
-            initialization_phase: true
-          expected_behavior:
-            action: "remove_all_system_reminder_blocks"
-            filtered_context: |
-              Normal context content
-              More context content
-              Final context content
-          test_assertions:
-            - "all <system-reminder> blocks should be removed"
-            - "context structure should be preserved"
-            - "filtering should complete within 200ms"
-            - "reminders_removed_count should be 2"
-
-        - name: "test_filtering_performance_requirements"
-          input:
-            large_context_with_reminders: "5000 character context with 10 system reminders"
-            performance_target: "200ms"
-          expected_behavior:
-            action: "efficient_filtering_within_time_limit"
-            max_execution_time: 200
-          test_assertions:
-            - "filtering should complete within 200ms"
-            - "performance should not degrade with context size"
-            - "memory usage should remain reasonable"
-
-        - name: "test_context_integrity_preservation"
-          input:
-            complex_context: |
-              # YAML Configuration
-              setting: value
-              <system-reminder>System message</system-reminder>
-
-              ## Code Section
-              ```python
-              def function():
-                  pass
-              ```
-
-              * List item 1
-              * List item 2
-              <system-reminder>Another reminder</system-reminder>
-          expected_behavior:
-            action: "preserve_structure_while_filtering"
-            structure_check: true
-          test_assertions:
-            - "YAML formatting should be preserved"
-            - "code blocks should remain intact"
-            - "markdown formatting should be maintained"
-            - "non-reminder content should be unchanged"
-
-        - name: "test_filtering_fallback_behavior"
-          input:
-            malformed_context: "Context with incomplete <system-reminder tags"
-            filtering_error: true
-          expected_behavior:
-            action: "graceful_fallback_to_original_context"
-            error_handling: true
-          test_assertions:
-            - "filtering errors should not crash initialization"
-            - "original context should be preserved on failure"
-            - "error should be logged appropriately"
-            - "initialization should continue"
-
-      integration_tests:
-        - name: "test_filtering_in_initialization_sequence"
-          test_sequence:
-            1. "error_system_initialization completes"
-            2. "system_reminder_filtering executes"
-            3. "monitoring_minimal_setup runs"
-            4. "basic_system_readiness finalizes"
-          expected_flow: "filtering should integrate seamlessly into phase1"
-          validation_points:
-            - "filtering should complete before monitoring setup"
-            - "filtered context should be available to subsequent components"
-            - "no initialization delays should occur"
-
-        - name: "test_filtering_with_dependency_validation"
-          dependencies_test:
-            requires: ["error_system_initialization.error_handling_ready == true"]
-            validates: ["context integrity", "reminder removal completeness"]
-          expected_result: "dependencies should be properly validated"
-          failure_behavior: "graceful degradation without blocking initialization"
-
-      performance_benchmarks:
-        - metric: "filtering_execution_time"
-          target: "< 200ms"
-          measurement: "average over 100 runs"
-
-        - metric: "memory_usage_during_filtering"
-          target: "< 10MB increase"
-          measurement: "peak memory usage"
-
-        - metric: "context_size_handling"
-          target: "up to 50KB context"
-          measurement: "maximum processed context size"
-
-# ============================================
-
-# ДОДАТКОВІ ТЕСТИ НОВОЇ СИСТЕМИ ЗАХИСТУ
-
-# ============================================
-
-  recursive_protection_test_suite:
-    # Тест 1: Рекурсивний виклик (має блокуватись)
-    - name: "test_recursive_self_invocation_blocking"
-      input:
-        system_reminder: "The user has expressed a desire to invoke the agent \"master:master\""
-        current_agent: "master:master"
-        invocation_stack: ["master:master"]
-      expected_behavior:
-        action: "block"
-        reason: "recursive_self_invocation"
-        message: "Блокування: агент master:master не може викликати сам себе"
-      test_assertions:
-        - "canInvoke() should return false for self-invocation"
-        - "execution_context should block recursive call"
-        - "appropriate error message should be provided"
-
-    # Тест 2: Циклічний виклик A→B→A (має блокуватись)
-    - name: "test_circular_invocation_blocking"
-      input:
-        target_agent: "agent-a"
-        invocation_stack: ["agent-a", "agent-b", "agent-c"]
-      expected_behavior:
-        action: "block"
-        reason: "circular_invocation"
-        message: "Блокування: циклічний виклик виявлено в ланцюжку"
-      test_assertions:
-        - "canInvoke() should detect agent-a already in stack"
-        - "circular reference should be prevented"
-        - "stack should maintain integrity"
-
-    # Тест 3: Перевищення глибини стеку (має блокуватись)
-    - name: "test_stack_overflow_protection"
-      input:
-        target_agent: "new-agent"
-        invocation_stack: ["agent1", "agent2", "agent3", "agent4", "agent5"]
-      expected_behavior:
-        action: "block"
-        reason: "stack_overflow"
-        message: "Блокування: перевищено максимальну глибину викликів (5)"
-      test_assertions:
-        - "stack depth limit should be enforced"
-        - "max_depth parameter should be respected"
-        - "deep nesting should be prevented"
-
-    # Тест 4: Валідний виклик іншого агента (має пройти)
-    - name: "test_valid_agent_invocation"
-      input:
-        system_reminder: "The user has expressed a desire to invoke the agent \"code:analyzer\""
-        current_agent: "master:master"
-        invocation_stack: ["master:master"]
-      expected_behavior:
-        action: "invoke"
-        reason: "valid_command"
-        target_agent: "code:analyzer"
-      test_assertions:
-        - "canInvoke() should return true for different agent"
-        - "target agent should be extracted correctly"
-        - "delegation should be allowed"
-
-    # Тест 5: Інформаційний reminder (має ігноруватись)
-    - name: "test_informational_reminder_ignoring"
-      input:
-        system_reminder: "Remember that the user prefers detailed responses"
-        current_agent: "master:master"
-      expected_behavior:
-        action: "ignore"
-        reason: "not_actionable"
-        continue_processing: true
-      test_assertions:
-        - "informational patterns should be detected"
-        - "reminder should be ignored without blocking"
-        - "normal processing should continue"
-
-    # Тест 6: Управління контекстом виконання
-    - name: "test_execution_context_management"
-      input:
-        agent_name: "test-agent"
-        operations: ["set_current", "add_another", "exit_first"]
-      expected_behavior:
-        initial_stack: []
-        after_set_current: ["test-agent"]
-        after_add_another: ["test-agent", "another-agent"]
-        after_exit_first: ["another-agent"]
-      test_assertions:
-        - "setCurrentAgent() should add to stack"
-        - "exitAgent() should remove from stack"
-        - "currentAgent should update correctly"
-
-    # Тест 7: Витягування імені агента
-    - name: "test_agent_name_extraction"
-      input:
-        test_cases:
-          - reminder: "invoke the agent \"code:reviewer\""
-            expected_agent: "code:reviewer"
-          - reminder: "Please execute agent 'data:processor'"
-            expected_agent: "data:processor"
-          - reminder: "run agent security:scanner"
-            expected_agent: "security:scanner"
-      expected_behavior:
-        extraction_success: true
-        support_multiple_patterns: true
-      test_assertions:
-        - "all command patterns should be recognized"
-        - "agent names should be extracted correctly"
-        - "quotes and variations should be handled"
-
-    # Тест 8: Класифікація reminders
-    - name: "test_reminder_classification"
-      input:
-        classification_tests:
-          - text: "Remember that context is important"
-            expected_type: "informational"
-            expected_actionable: false
-          - text: "invoke the agent \"helper\""
-            expected_type: "command"
-            expected_actionable: true
-          - text: "Note: system state changed"
-            expected_type: "informational"
-            expected_actionable: false
-      expected_behavior:
-        classification_accuracy: 100%
-        actionable_detection: true
-      test_assertions:
-        - "command patterns should be detected"
-        - "informational patterns should be recognized"
-        - "actionable flag should be set correctly"
+          condition: "active_executions
