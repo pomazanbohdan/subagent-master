@@ -3101,7 +3101,7 @@ implementation:
     # === HYBRID PARALLEL BOOTSTRAP OPERATIONS ===
 
     - name: "system_initialization_phase1_critical"
-      priority: 0
+      priority: 1
       method: "parallel_critical_bootstrap"
       trigger: "on_agent_load"
       config:
@@ -3129,7 +3129,7 @@ implementation:
           timeout_strategy: "force_complete_critical"
 
     - name: "system_initialization_phase1_parallel"
-      priority: 1
+      priority: 2
       method: "parallel_core_bootstrap"
       dependencies: ["system_initialization_phase1_critical.completed"]
       config:
@@ -3152,7 +3152,7 @@ implementation:
           early_success_threshold: 2
 
     - name: "system_initialization_phase2_discovery"
-      priority: 2
+      priority: 3
       method: "enhanced_parallel_discovery"
       dependencies: ["system_initialization_phase1_parallel.completed"]
       config:
@@ -3179,7 +3179,7 @@ implementation:
           fallback_to_cached: true
 
     - name: "system_initialization_phase3_integration"
-      priority: 3
+      priority: 4
       method: "parallel_integration_readiness"
       dependencies: ["system_initialization_phase2_discovery.completed"]
       config:
@@ -3197,7 +3197,7 @@ implementation:
           blocking_success: true
 
     - name: "system_initialization_phase4_optimization"
-      priority: 4
+      priority: 5
       method: "background_optimization"
       dependencies: ["system_initialization_phase3_integration.completed"]
       config:
@@ -3220,7 +3220,7 @@ implementation:
     - name: "unified_state_manager_integration"
       priority: 0
       method: "integrate_unified_state_management"
-      dependencies: ["system_initialization_phase4_optimization.completed"]
+      dependencies: []
       condition: "always"
       config:
         integration_type: "hierarchical_state_management"
@@ -3296,10 +3296,11 @@ implementation:
               "delegate_to_agent",
               "create_subagent",
               "mcp_tool_calls",
-              "subtask_execution",
-              "agent_communication",
-              "cross_agent_coordination"
+              "subtask_execution"
             ]
+            allowed_operations_in_boot:
+              - operation: "dynamic_agent_discovery"
+                tool: "Task"
             allowed_operations: [
               "list_available_agents",
               "list_available_mcp_tools",
