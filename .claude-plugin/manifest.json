@@ -1,7 +1,7 @@
 {
   "name": "orchestration",
   "version": "0.9.8",
-  "description": "Advanced master agent v2.1.0 with comprehensive diagnostic capabilities and unified state machine v2.1. Features: self-diagnosis mode, recursive call protection system, system reminder analysis, intelligent task orchestration, unified_greeting_engine, SYSTEM_WAITING state, comprehensive system resource discovery, enhanced error recovery mechanisms, and advanced debugging workflow with validation mode.",
+  "description": "Advanced master agent v2.1.0 with comprehensive diagnostic capabilities and unified state machine v2.1. Features: self-diagnosis mode with fixed SYSTEM_SELF_DIAGNOSIS deadlock issue, recursive call protection system, system reminder analysis, intelligent task orchestration, unified_greeting_engine, SYSTEM_WAITING state, comprehensive system resource discovery, enhanced error recovery mechanisms, and advanced debugging workflow with validation mode.",
   "author": "Bohdan <pomazan.bohdan@gmail.com>",
   "license": "MIT",
   "keywords": [

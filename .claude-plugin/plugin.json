@@ -1,7 +1,7 @@
 {
   "name": "master",
   "version": "0.9.8",
-  "description": "Advanced master agent v2.1.0 with comprehensive diagnostic capabilities and unified state machine v2.1. Features: self-diagnosis mode with detailed analysis workflow, recursive call protection system with intelligent context awareness, system reminder analysis and filtering, enhanced error recovery mechanisms, intelligent task orchestration, unified_greeting_engine, SYSTEM_WAITING state, comprehensive system resource discovery, and advanced debugging workflow with validation mode.",
+  "description": "Advanced master agent v2.1.0 with comprehensive diagnostic capabilities and unified state machine v2.1. Features: self-diagnosis mode with fixed SYSTEM_SELF_DIAGNOSIS deadlock issue and detailed analysis workflow, recursive call protection system with intelligent context awareness, system reminder analysis and filtering, enhanced error recovery mechanisms, intelligent task orchestration, unified_greeting_engine, SYSTEM_WAITING state, comprehensive system resource discovery, and advanced debugging workflow with validation mode.",
   "author": {
     "name": "Bohdan",
     "email": "pomazan.bohdan@gmail.com"

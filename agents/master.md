@@ -30,11 +30,11 @@ capabilities: [
 ] # Do not change!
 triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage", "parallel", "team", "multiple-agents", "clarify", "search", "research", "unclear", "help", "details", "requirements", "batch", "multiple-files", "bulk-edit", "mass-update", "parallel-files", "optimize", "schedule", "decompose", "parallelize", "tool", "select", "choose", "implement", "design", "secure", "test", "review", "architecture", "performance", "vulnerability", "expert", "specialist", "mandatory", "enforce", "comply", "audit", "validate", "authorize", "діагностика", "самодіагностики", "валідація", "аналіз поведінки", "режим самодіагностики", "пошук виправлення", "self diagnosis", "diagnostic mode", "debug analysis", "system analysis"] # Do not change!
 tools: ["dynamic_agent_discovery"]  # Do not change!
-version: "0.9.6"
+version: "0.9.7"
 
 component:
   name: "master"
-  version: "0.9.6"
+  version: "0.9.7"
   description: "An AI agent that optimizes task execution through intelligent planning, parallelization, and execution in subtasks or delegation to existing agents in the system, which are automatically initialized taking into account their competencies." # Do not change!
   category: "orchestration"
   priority: 1
@@ -44,9 +44,9 @@ component:
     optimized_tokens: 3300
     savings_percentage: 50
   latest_update:
-    version: "0.9.6"
-    changes: ["Added diagnostic command processing", "Removed legacy components", "Enhanced event-driven architecture", "Updated triggers for diagnostic support"]
-    timestamp: "2025-01-20"
+    version: "0.9.7"
+    changes: ["Fixed SYSTEM_SELF_DIAGNOSIS deadlock - added event-driven exit logic", "Added timeout protection and automatic recovery mechanisms", "Enhanced transition logic with proper exit triggers", "Improved delegation mode for debug operations"]
+    timestamp: "2025-01-06"
 
 implementation:
 
@@ -445,23 +445,92 @@ implementation:
             from_states: ["SYSTEM_WAITING"]
             to_state: "SYSTEM_SHUTDOWN"
       SYSTEM_SELF_DIAGNOSIS:
-        description: "System in self-diagnosis mode - handles debug and analysis tasks"
-        timeout: "infinite"  # This state handles potentially long-running analysis operations
+        description: "System in self-diagnosis mode - handles debug and analysis tasks with event-driven recovery"
+        timeout: 300  # 5 minutes timeout to prevent infinite blocking
         special_operations: ["debug_mode", "self_analysis", "system_reminder_handling"]
         guard_behavior: "relaxed_for_self_diagnosis"
-        delegation_mode: "disabled"
-        allowed_operations: ["native_tools", "system_analysis", "debug_operations", "log_analysis"]
-        blocked_operations: ["delegate_to_master", "agent_selection", "complex_delegation"]
+        delegation_mode: "event_based"
+        allowed_operations: ["native_tools", "system_analysis", "debug_operations", "log_analysis", "simple_delegation"]
+        blocked_operations: ["complex_delegation"]
         system_reminder_bypass: true
         self_call_protection: "enhanced_for_debug"
-        next_states: ["SYSTEM_READY", "SYSTEM_OPERATIONAL"]
+        next_states: ["SYSTEM_READY", "SYSTEM_OPERATIONAL", "SYSTEM_DEGRADED", "SYSTEM_FAILED"]
+
+        # Event-driven exit logic
+        event_handlers:
+          - event: "diagnosis.completed.successfully"
+            action: "transition_to_state"
+            target_state: "SYSTEM_READY"
+            priority: "high"
+            auto_trigger: true
+
+          - event: "debug.session.terminated.normally"
+            action: "transition_to_state"
+            target_state: "SYSTEM_OPERATIONAL"
+            priority: "high"
+            auto_trigger: true
+
+          - event: "timeout.elapsed"
+            action: "transition_to_state"
+            target_state: "SYSTEM_DEGRADED"
+            priority: "medium"
+            auto_trigger: true
+
+          - event: "manual.exit.requested"
+            action: "transition_to_state"
+            target_state: "SYSTEM_READY"
+            priority: "high"
+
+          - event: "error.critical.diagnosis"
+            action: "transition_to_state"
+            target_state: "SYSTEM_FAILED"
+            priority: "critical"
+            auto_trigger: true
+
+        # Automatic exit conditions
+        auto_exit_conditions:
+          - condition: "no_debug_activity_for_60s"
+            action: "transition_to_SYSTEM_READY"
+            check_interval: 30
+          - condition: "all_diagnosis_tasks_completed"
+            action: "transition_to_SYSTEM_OPERATIONAL"
+            check_interval: 15
+
+        # Enhanced transition logic with both entry and exit triggers
         transition_triggers:
+          # Entry triggers (existing logic preserved)
           - trigger: "self_diagnosis_request"
             from_states: ["SYSTEM_READY", "SYSTEM_OPERATIONAL"]
+            to_state: "SYSTEM_SELF_DIAGNOSIS"
+
           - trigger: "debug_mode_activated"
             from_states: ["SYSTEM_READY", "SYSTEM_OPERATIONAL"]
+            to_state: "SYSTEM_SELF_DIAGNOSIS"
+
           - trigger: "system_reminder_loop_detected"
             from_states: ["SYSTEM_READY", "SYSTEM_OPERATIONAL"]
+            to_state: "SYSTEM_SELF_DIAGNOSIS"
+
+          # NEW: Exit triggers from SYSTEM_SELF_DIAGNOSIS
+          - trigger: "diagnosis_complete"
+            from_states: ["SYSTEM_SELF_DIAGNOSIS"]
+            to_state: "SYSTEM_READY"
+
+          - trigger: "debug_session_finished"
+            from_states: ["SYSTEM_SELF_DIAGNOSIS"]
+            to_state: "SYSTEM_OPERATIONAL"
+
+          - trigger: "timeout_occurred"
+            from_states: ["SYSTEM_SELF_DIAGNOSIS"]
+            to_state: "SYSTEM_DEGRADED"
+
+          - trigger: "manual_exit_requested"
+            from_states: ["SYSTEM_SELF_DIAGNOSIS"]
+            to_state: "SYSTEM_READY"
+
+          - trigger: "critical_error_detected"
+            from_states: ["SYSTEM_SELF_DIAGNOSIS"]
+            to_state: "SYSTEM_FAILED"
       SYSTEM_OPERATIONAL:
         description: "System actively processing tasks"
         timeout: "infinite"  # System exits when tasks complete via task_processing_completed trigger
