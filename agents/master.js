@@ -13,7 +13,7 @@ class MasterMCPServer {
     
     console.log('🚀 Initializing Master MCP Server...');
     
-    // Завантажити конфігурацію з master.md
+    // Load configuration from master.md
     const masterPath = './agents/master.md';
     if (!fs.existsSync(masterPath)) {
       throw new Error(`master.md not found at ${masterPath}`);
@@ -29,7 +29,7 @@ class MasterMCPServer {
   }
   
   parseMasterMd(content) {
-    // Створимо тестову конфігурацію на основі відомих даних
+    // Create test configuration based on known data
     console.log('🔧 Using hardcoded master.md configuration for testing');
     
     const config = {
@@ -92,7 +92,7 @@ class MasterMCPServer {
     
     console.log(`🎯 Executing ${name} with args:`, args);
     
-    // Симуляція виконання capability
+    // Capability execution simulation
     const result = {
       capability: name,
       success: true,

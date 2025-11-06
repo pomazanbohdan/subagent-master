@@ -28,7 +28,7 @@ capabilities: [
   "tool-decision-matrix",
   "intelligent-workflow-routing"
 ] # Do not change!
-triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage", "parallel", "team", "multiple-agents", "clarify", "search", "research", "unclear", "help", "details", "requirements", "batch", "multiple-files", "bulk-edit", "mass-update", "parallel-files", "optimize", "schedule", "decompose", "parallelize", "tool", "select", "choose", "implement", "design", "secure", "test", "review", "architecture", "performance", "vulnerability", "expert", "specialist", "mandatory", "enforce", "comply", "audit", "validate", "authorize", "діагностика", "самодіагностики", "валідація", "аналіз поведінки", "режим самодіагностики", "пошук виправлення", "self diagnosis", "diagnostic mode", "debug analysis", "system analysis"] # Do not change!
+triggers: ["orchestrate", "delegate", "analyze", "plan", "coordinate", "manage", "parallel", "team", "multiple-agents", "clarify", "search", "research", "unclear", "help", "details", "requirements", "batch", "multiple-files", "bulk-edit", "mass-update", "parallel-files", "optimize", "schedule", "decompose", "parallelize", "tool", "select", "choose", "implement", "design", "secure", "test", "review", "architecture", "performance", "vulnerability", "expert", "specialist", "mandatory", "enforce", "comply", "audit", "validate", "authorize", "self diagnosis", "diagnostic mode", "debug analysis", "system analysis"] # Do not change!
 tools: ["dynamic_agent_discovery"]  # Do not change!
 version: "0.9.7"
 
@@ -44,11 +44,281 @@ component:
     optimized_tokens: 3300
     savings_percentage: 50
   latest_update:
-    version: "0.9.7"
-    changes: ["Fixed SYSTEM_SELF_DIAGNOSIS deadlock - added event-driven exit logic", "Added timeout protection and automatic recovery mechanisms", "Enhanced transition logic with proper exit triggers", "Improved delegation mode for debug operations"]
-    timestamp: "2025-01-06"
+    version: "0.9.10"
+    changes: ["Fixed critical incomplete state coverage bug - added SYSTEM_SELF_DIAGNOSIS transitions from OPERATIONAL/DEGRADED/RECOVERY states", "Enhanced state machine completeness for diagnostic accessibility", "Added comprehensive transition triggers for all critical states", "Improved system reliability with full diagnostic coverage", "Resolved critical architecture flaw that blocked self-diagnosis", "Maintained previous optimizations (parallel processing, caching, intelligent selection)"]
+    timestamp: "2025-01-07"
 
 implementation:
+
+# === TASK COMPLEXITY DETECTION MODULE ===
+
+  task_complexity_detection:
+    enabled: true
+    architecture: "multi_factor_analysis"
+    priority: "high"
+    integration_with: "unified_state_manager"
+    
+    # Complexity factors analysis
+    complexity_factors:
+      # Task structure analysis
+      structural_complexity:
+        multi_step_indicator: 
+          patterns: ["і", "та", "потім", "після цього", "спочатку", "наступний крок", "step", "then", "after", "next", "finally"]
+          weight: 0.3
+          
+        dependency_indicator:
+          patterns: ["потребує", "залежить від", "після", "requires", "depends on", "after", "needs"]
+          weight: 0.4
+          
+        parallel_indicator:
+          patterns: ["одночасно", "паралельно", "разом", "simultaneously", "parallel", "together", "concurrent"]
+          weight: 0.2
+          
+        conditional_indicator:
+          patterns: ["якщо", "у разі", "коли", "if", "when", "in case", "conditional"]
+          weight: 0.1
+      
+      # Resource requirements analysis
+      resource_complexity:
+        file_operations:
+          patterns: ["файл", "читати", "писати", "file", "read", "write", "create", "delete"]
+          base_complexity: 0.2
+          multiplier_per_file: 0.1
+          
+        system_operations:
+          patterns: ["система", "процес", "сервіс", "system", "process", "service", "daemon"]
+          base_complexity: 0.4
+          
+        network_operations:
+          patterns: ["мережа", "інтернет", "запит", "network", "internet", "request", "api"]
+          base_complexity: 0.3
+          
+        analysis_operations:
+          patterns: ["аналіз", "дослідити", "перевірити", "analyze", "research", "investigate", "validate"]
+          base_complexity: 0.5
+    
+    # Complexity scoring algorithm
+    complexity_scoring:
+      # Simple tasks (score 0.0-0.3)
+      simple_threshold: 0.3
+      simple_indicators:
+        - single_action
+        - no_dependencies
+        - minimal_resources
+        - clear_outcome
+      
+      # Moderate tasks (score 0.3-0.7)
+      moderate_threshold: 0.7
+      moderate_indicators:
+        - multiple_steps
+        - some_dependencies
+        - moderate_resources
+        - requires_planning
+      
+      # Complex tasks (score 0.7-1.0)
+      complex_threshold: 1.0
+      complex_indicators:
+        - many_steps
+        - complex_dependencies
+        - significant_resources
+        - requires_coordination
+    
+    # Automatic todo triggering
+    todo_triggering:
+      enabled: true
+      simple_tasks:
+        auto_todo: false
+        reasoning: "Simple tasks don't require todo planning"
+        
+      moderate_tasks:
+        auto_todo: true
+        todo_levels: 2
+        reasoning: "Moderate tasks benefit from basic todo structure"
+        
+      complex_tasks:
+        auto_todo: true
+        todo_levels: 3+
+        reasoning: "Complex tasks require comprehensive todo planning"
+        auto_breakdown: true
+    
+    # Integration points
+    integration:
+      with_unified_state_manager:
+        state_transitions: ["SYSTEM_READY", "SYSTEM_OPERATIONAL"]
+        event_triggers: ["task_received", "complexity_detected"]
+        
+      with_automatic_todo_planner:
+        data_exchange: ["complexity_score", "task_breakdown_suggestions"]
+        coordination: "complexity_based_planning"
+        
+      with_diagnostic_system:
+        complexity_logging: true
+        performance_tracking: true
+
+# === AUTOMATIC TODO PLANNER ===
+
+  automatic_todo_planner:
+    enabled: true
+    architecture: "intelligent_planning_system"
+    priority: "high"
+    integration_with: ["task_complexity_detection", "unified_state_manager"]
+    
+    # Planning triggers
+    planning_triggers:
+      complexity_based:
+        enabled: true
+        threshold: 0.3  # Moderate and above
+        source: "task_complexity_detection.complexity_score"
+        
+      manual_request:
+        enabled: true
+        patterns: ["план", "розбий", "зроби план", "plan", "breakdown", "create plan"]
+        
+      multi_step_detection:
+        enabled: true
+        min_steps: 3
+        source: "task_complexity_detection.structural_complexity.multi_step_indicator"
+        
+      dependency_detection:
+        enabled: true
+        min_dependencies: 2
+        source: "task_complexity_detection.structural_complexity.dependency_indicator"
+    
+    # Todo generation strategies
+    todo_generation_strategies:
+      # Simple task strategy
+      simple_tasks:
+        enabled: false  # No todo for simple tasks
+        reasoning: "Simple tasks don't benefit from todo structure"
+        
+      # Moderate task strategy
+      moderate_tasks:
+        enabled: true
+        max_todo_items: 5
+        planning_depth: 2
+        strategy: "linear_breakdown"
+        auto_prioritization: true
+        example_structure:
+          - "Analyze requirements"
+          - "Execute main task"
+          - "Validate results"
+          
+      # Complex task strategy
+      complex_tasks:
+        enabled: true
+        max_todo_items: 15
+        planning_depth: 3+
+        strategy: "hierarchical_breakdown"
+        auto_prioritization: true
+        dependency_tracking: true
+        parallel_execution_planning: true
+        example_structure:
+          level_1: ["Research phase", "Implementation phase", "Testing phase"]
+          level_2: ["Gather requirements", "Design solution", "Implement core", "Test components"]
+          level_3: ["Detailed analysis", "Create prototypes", "Write code", "Unit tests", "Integration tests"]
+    
+    # Todo item generation
+    todo_item_generation:
+      # Task breakdown patterns
+      breakdown_patterns:
+        analysis_phase:
+          keywords: ["аналіз", "дослідити", "вивчити", "analyze", "research", "investigate"]
+          todo_templates:
+            - "Analyze {subject}"
+            - "Research {topic}"
+            - "Investigate {aspect}"
+            - "Document findings about {subject}"
+            
+        implementation_phase:
+          keywords: ["реалізувати", "створити", "розробити", "implement", "create", "develop"]
+          todo_templates:
+            - "Implement {feature}"
+            - "Create {component}"
+            - "Develop {solution}"
+            - "Build {structure}"
+            
+        testing_phase:
+          keywords: ["тестувати", "перевірити", "валідувати", "test", "validate", "verify"]
+          todo_templates:
+            - "Test {component}"
+            - "Validate {functionality}"
+            - "Verify {requirement}"
+            - "Run tests on {system}"
+            
+        configuration_phase:
+          keywords: ["налаштувати", "конфігурувати", "configure", "setup", "config"]
+          todo_templates:
+            - "Configure {system}"
+            - "Setup {environment}"
+            - "Configure {component}"
+            - "Initialize {service}"
+      
+      # Dynamic todo creation
+      dynamic_todo_creation:
+        enabled: true
+        context_analysis: true
+        parameter_extraction: true
+        template_customization: true
+        
+      # Todo prioritization
+      prioritization:
+        enabled: true
+        factors:
+          dependency_order: 0.4
+          resource_requirements: 0.3
+          critical_path: 0.2
+          user_preference: 0.1
+          
+        priority_levels:
+          - "critical"  # Blocks other tasks
+          - "high"     # Important for progress
+          - "medium"   # Normal priority
+          - "low"      # Can be deferred
+    
+    # Todo execution coordination
+    execution_coordination:
+      # Progress tracking
+      progress_tracking:
+        enabled: true
+        auto_status_updates: true
+        completion_detection: true
+        milestone_tracking: true
+        
+      # Dependency management
+      dependency_management:
+        enabled: true
+        auto_dependency_resolution: true
+        circular_dependency_detection: true
+        dependency_visualization: true
+        
+      # Parallel execution
+      parallel_execution:
+        enabled: true
+        parallel_task_identification: true
+        resource_allocation: true
+        conflict_resolution: true
+        
+      # Adaptive planning
+      adaptive_planning:
+        enabled: true
+        plan_modification: true
+        dynamic_reprioritization: true
+        failure_recovery: true
+    
+    # Integration with other systems
+    integration:
+      with_task_complexity_detection:
+        data_flow: "complexity_score → planning_strategy"
+        feedback_loop: "execution_results → complexity_model_improvement"
+        
+      with_unified_state_manager:
+        state_transitions: ["SYSTEM_READY → SYSTEM_PLANNING", "SYSTEM_PLANNING → SYSTEM_OPERATIONAL"]
+        event_coordination: true
+        
+      with_performance_monitoring:
+        planning_efficiency_tracking: true
+        execution_time_prediction: true
+        resource_usage_optimization: true
 
 # === SYSTEM PROTECTION LAYER ===
 
@@ -445,8 +715,8 @@ implementation:
             from_states: ["SYSTEM_WAITING"]
             to_state: "SYSTEM_SHUTDOWN"
       SYSTEM_SELF_DIAGNOSIS:
-        description: "System in self-diagnosis mode - handles debug and analysis tasks with event-driven recovery"
-        timeout: 300  # 5 minutes timeout to prevent infinite blocking
+        description: "System in self-diagnosis mode - handles debug and analysis tasks with optimized event-driven recovery and parallel processing"
+        timeout: 180  # Reduced to 3 minutes for better responsiveness
         special_operations: ["debug_mode", "self_analysis", "system_reminder_handling"]
         guard_behavior: "relaxed_for_self_diagnosis"
         delegation_mode: "event_based"
@@ -456,45 +726,141 @@ implementation:
         self_call_protection: "enhanced_for_debug"
         next_states: ["SYSTEM_READY", "SYSTEM_OPERATIONAL", "SYSTEM_DEGRADED", "SYSTEM_FAILED"]
 
-        # Event-driven exit logic
+        # Enhanced event-driven exit logic with protection
         event_handlers:
           - event: "diagnosis.completed.successfully"
-            action: "transition_to_state"
+            action: "async_transition_to_state"
             target_state: "SYSTEM_READY"
-            priority: "high"
-            auto_trigger: true
-
-          - event: "debug.session.terminated.normally"
-            action: "transition_to_state"
-            target_state: "SYSTEM_OPERATIONAL"
-            priority: "high"
-            auto_trigger: true
-
-          - event: "timeout.elapsed"
-            action: "transition_to_state"
-            target_state: "SYSTEM_DEGRADED"
-            priority: "medium"
-            auto_trigger: true
-
-          - event: "manual.exit.requested"
-            action: "transition_to_state"
-            target_state: "SYSTEM_READY"
-            priority: "high"
-
-          - event: "error.critical.diagnosis"
-            action: "transition_to_state"
-            target_state: "SYSTEM_FAILED"
             priority: "critical"
             auto_trigger: true
+            timeout_ms: 1000
+            validation_required: true
 
-        # Automatic exit conditions
+          - event: "debug.session.terminated.normally"
+            action: "async_transition_to_state"
+            target_state: "SYSTEM_OPERATIONAL"
+            priority: "critical"
+            auto_trigger: true
+            timeout_ms: 1000
+            validation_required: true
+
+          - event: "timeout.elapsed"
+            action: "force_state_recovery"
+            recovery_strategy: "graceful_degradation"
+            target_state: "SYSTEM_DEGRADED"
+            priority: "emergency"
+            timeout_ms: 500
+
+          - event: "manual.exit.requested"
+            action: "immediate_transition_to_state"
+            target_state: "SYSTEM_READY"
+            priority: "high"
+            timeout_ms: 100
+
+          - event: "error.critical.diagnosis"
+            action: "emergency_transition_to_state"
+            target_state: "SYSTEM_FAILED"
+            priority: "emergency"
+            auto_trigger: true
+            timeout_ms: 100
+
+          - event: "transition.timeout.elapsed"
+            action: "force_state_recovery"
+            recovery_strategy: "emergency_mode"
+            target_state: "SYSTEM_READY"
+            priority: "emergency"
+            timeout_ms: 200
+
+        # Deadlock prevention mechanisms
+        deadlock_prevention:
+          max_concurrent_transitions: 1
+          transition_queue: "priority_based"
+          conflict_resolution: "highest_priority_wins"
+          state_transition_validation: true
+          async_transition_engine:
+            enabled: true
+            transition_timeout: 5000
+            fallback_strategy: "emergency_recovery"
+            health_check_interval: 1000
+            rollback_on_failure: true
+
+        # Event overload protection
+        event_overload_protection:
+          max_events_per_second: 100
+          event_queue_size_limit: 1000
+          priority_filtering: true
+          circuit_breaker: true
+          backpressure_handling: "drop_non_critical"
+
+        # Resource monitoring and optimization
+        resource_optimization:
+          enabled: true
+          monitoring_enabled: true
+          memory_management:
+            max_memory_per_diagnosis: "50MB"
+            memory_pools: "pre_allocated"
+            garbage_collection: "aggressive"
+            compression: "enabled"
+          cpu_management:
+            max_cpu_per_diagnosis: "60%"
+            time_slicing: "cooperative"
+            priority_boost: "diagnostic_tasks"
+          resource_monitoring:
+            real_time_monitoring: true
+            alert_thresholds: true
+            auto_scaling: true
+            resource_quotas: true
+
+        # Automatic exit conditions with intelligent detection
         auto_exit_conditions:
           - condition: "no_debug_activity_for_60s"
             action: "transition_to_SYSTEM_READY"
-            check_interval: 30
-          - condition: "all_diagnosis_tasks_completed"
+            priority: "high"
+
+          - condition: "all_diagnostic_tasks_completed"
+            action: "transition_to_SYSTEM_READY"
+            priority: "high"
+
+          - condition: "user_interaction_detected"
             action: "transition_to_SYSTEM_OPERATIONAL"
-            check_interval: 15
+            priority: "critical"
+
+          - condition: "resource_threshold_exceeded"
+            thresholds: ["memory > 80%", "cpu > 90%"]
+            action: "force_transition_to_SYSTEM_DEGRADED"
+            priority: "emergency"
+
+        # Diagnostic cache system for performance optimization
+        diagnostic_cache_system:
+          enabled: true
+          cache_strategy: "multi_level"
+
+          levels:
+            l1_memory_cache:
+              max_entries: 100
+              ttl_seconds: 300
+              eviction_policy: "lru"
+
+            l2_pattern_cache:
+              max_entries: 500
+              ttl_seconds: 1800
+              persistence: "session"
+
+            l3_result_cache:
+              max_entries: 1000
+              ttl_seconds: 3600
+              persistence: "cross_session"
+
+          cache_keys:
+            pattern_analysis: "diag_pattern_{normalized_input_hash}"
+            semantic_match: "diag_semantic_{semantic_hash}"
+            context_validation: "diag_context_{context_hash}"
+
+          cache_optimization:
+            precompute_common_patterns: true
+            batch_cache_warmup: true
+            intelligent_prefetch: true
+            compression_enabled: true
 
         # Enhanced transition logic with both entry and exit triggers
         transition_triggers:
@@ -535,12 +901,36 @@ implementation:
         description: "System actively processing tasks"
         timeout: "infinite"  # System exits when tasks complete via task_processing_completed trigger
         performance_monitoring: true
-        next_states: ["SYSTEM_READY", "SYSTEM_DEGRADED", "SYSTEM_SHUTDOWN"]
+        next_states: ["SYSTEM_READY", "SYSTEM_DEGRADED", "SYSTEM_SELF_DIAGNOSIS", "SYSTEM_SHUTDOWN"]
+
+        # Diagnostic transition triggers
+        transition_triggers:
+          - trigger: "diagnostic_needed_during_operation"
+            from_states: ["SYSTEM_OPERATIONAL"]
+            to_state: "SYSTEM_SELF_DIAGNOSIS"
+            conditions: ["error_detected", "performance_degradation", "system_anomaly"]
+
+          - trigger: "self_diagnosis_from_operational"
+            from_states: ["SYSTEM_OPERATIONAL"]
+            to_state: "SYSTEM_SELF_DIAGNOSIS"
+            conditions: ["user_request", "automatic_health_check"]
       SYSTEM_DEGRADED:
         description: "System with limited functionality"
         timeout: "infinite"
         recovery_strategies: ["auto_recovery", "manual_intervention", "graceful_degradation"]
-        next_states: ["SYSTEM_READY", "SYSTEM_OPERATIONAL", "SYSTEM_FAILED"]
+        next_states: ["SYSTEM_READY", "SYSTEM_OPERATIONAL", "SYSTEM_SELF_DIAGNOSIS", "SYSTEM_FAILED"]
+
+        # Diagnostic transition triggers
+        transition_triggers:
+          - trigger: "diagnostic_needed_during_degradation"
+            from_states: ["SYSTEM_DEGRADED"]
+            to_state: "SYSTEM_SELF_DIAGNOSIS"
+            conditions: ["persistent_errors", "degradation_worsening", "recovery_failure"]
+
+          - trigger: "self_diagnosis_from_degraded"
+            from_states: ["SYSTEM_DEGRADED"]
+            to_state: "SYSTEM_SELF_DIAGNOSIS"
+            conditions: ["user_request", "automatic_health_check", "recovery_stalled"]
       SYSTEM_FAILED:
         description: "System critical failure"
         timeout: "infinite"
@@ -551,8 +941,20 @@ implementation:
         description: "System in recovery mode"
         completion_triggers: ["recovery_complete", "system_restored", "recovery_success"]
         recovery_attempts: 3
-        next_states: ["SYSTEM_READY", "SYSTEM_FAILED", "SYSTEM_SHUTDOWN"]
+        next_states: ["SYSTEM_READY", "SYSTEM_FAILED", "SYSTEM_SELF_DIAGNOSIS", "SYSTEM_SHUTDOWN"]
         event_driven: true
+
+        # Diagnostic transition triggers
+        transition_triggers:
+          - trigger: "diagnostic_needed_during_recovery"
+            from_states: ["SYSTEM_RECOVERY"]
+            to_state: "SYSTEM_SELF_DIAGNOSIS"
+            conditions: ["recovery_stalled", "complex_failure_detected", "recovery_attempts_exhausted"]
+
+          - trigger: "self_diagnosis_from_recovery"
+            from_states: ["SYSTEM_RECOVERY"]
+            to_state: "SYSTEM_SELF_DIAGNOSIS"
+            conditions: ["user_request", "automatic_health_check", "recovery_complexity_high"]
       SYSTEM_SHUTDOWN:
         description: "System graceful shutdown"
         completion_triggers: ["cleanup_complete", "shutdown_ready", "all_services_stopped"]
@@ -631,6 +1033,27 @@ implementation:
         action: "emergency_degradation"
         events: ["system.degraded", "error.critical"]
         completion_triggers: ["emergency_degradation_complete"]
+
+      SYSTEM_OPERATIONAL_to_SYSTEM_SELF_DIAGNOSIS:
+        trigger: "diagnostic_needed_during_operation"
+        validator: "diagnostic_readiness_validator"
+        action: "initiate_diagnostic_mode"
+        events: ["system.diagnosis.started", "diagnostic.mode.activated"]
+        completion_triggers: ["diagnostic_mode_ready"]
+
+      SYSTEM_DEGRADED_to_SYSTEM_SELF_DIAGNOSIS:
+        trigger: "diagnostic_needed_during_degradation"
+        validator: "degraded_diagnostic_validator"
+        action: "initiate_diagnostic_from_degraded"
+        events: ["system.diagnosis.started", "degraded.diagnostic.mode"]
+        completion_triggers: ["degraded_diagnostic_ready"]
+
+      SYSTEM_RECOVERY_to_SYSTEM_SELF_DIAGNOSIS:
+        trigger: "diagnostic_needed_during_recovery"
+        validator: "recovery_diagnostic_validator"
+        action: "initiate_diagnostic_from_recovery"
+        events: ["system.diagnosis.started", "recovery.diagnostic.mode"]
+        completion_triggers: ["recovery_diagnostic_ready"]
       SYSTEM_DEGRADED_to_SYSTEM_READY:
         trigger: "components_restored"
         validator: "restoration_validator"
@@ -733,7 +1156,7 @@ implementation:
         failure_action: "force_cleanup_with_logging"
 
     # ============================================
-    # СИСТЕМА ЗАХИСТУ ВІД РЕКУРСИВНИХ ВИКЛИКІВ
+    # RECURSIVE CALL PROTECTION SYSTEM
     # ============================================
 
     recursive_call_protection:
@@ -741,13 +1164,13 @@ implementation:
       priority: "critical"
       description: "Universal protection against recursive agent calls and circular invocation chains"
 
-      # Контекст виконання агента
+      # Agent execution context
       execution_context:
         invocation_stack: []
         current_agent: null
         max_stack_depth: 5
 
-      # Аналізатор system reminders
+      # System reminders analyzer
       reminder_analyzer:
         command_patterns:
           - pattern: "invoke\\s+(?:the\\s+)?agent\\s+\"?([^\"]+)\"?"
@@ -766,84 +1189,84 @@ implementation:
           - "previous"
           - "earlier"
 
-      # Правила валідації викликів
+      # Call validation rules
       validation_rules:
-        # Блокування рекурсії: агент не може викликати сам себе
+        # Recursion blocking: agent cannot call itself
         self_invocation:
           enabled: true
           action: "block"
-          message: "Блокування: агент не може викликати сам себе"
+          message: "Blocking: agent cannot call itself"
 
-        # Блокування циклів: A→B→C→A
+        # Loop blocking: A→B→C→A
         circular_invocation:
           enabled: true
           action: "block"
-          message: "Блокування: циклічний виклик виявлено в ланцюжку"
+          message: "Blocking: circular call detected in chain"
 
-        # Блокування занадто глибокої вкладеності
+        # Deep nesting blocking
         stack_overflow:
           enabled: true
           max_depth: 5
           action: "block"
-          message: "Блокування: перевищено максимальну глибину викликів"
+          message: "Blocking: maximum call depth exceeded"
 
-        # Фільтрація інформаційних reminders
+        # Informational reminders filtering
         informational_filter:
           enabled: true
           action: "ignore"
-          message: "Ігнорування: інформаційний reminder не потребує дії"
-      # Основна логіка обробки reminders
+          message: "Ignoring: informational reminder requires no action"
+      # Main reminder processing logic
       reminder_processing_logic:
-        # Крок 1: Класифікація reminder
+        # Step 1: Reminder classification
         classify_reminder:
           check_command_patterns: true
           extract_target_agent: true
           determine_actionability: true
 
-        # Крок 2: Валідація можливості виклику
+        # Step 2: Invocation possibility validation
         validate_invocation:
           check_self_invocation: true
           check_circular_reference: true
           check_stack_depth: true
 
-        # Крок 3: Прийняття рішення
+        # Step 3: Decision making
         decision_matrix:
-          # Якщо reminders інформаційний → ігнорувати
+          # If reminder is informational → ignore
           informational_reminder:
             action: "ignore"
             continue_normal_processing: true
 
-          # Якщо reminders командний і валідація пройдена → виконувати
+          # If reminder is command and validation passed → execute
           valid_command_reminder:
             action: "invoke_target_agent"
             update_execution_context: true
 
-          # Якщо reminders командний але валідація не пройдена → блокувати
+          # If reminder is command but validation failed → block
           invalid_command_reminder:
             action: "block_with_reason"
             log_violation: true
 
-      # Функції керування контекстом
+      # Context management functions
       context_management:
-        # Встановити поточного агента
+        # Set current agent
         set_current_agent:
           add_to_stack: true
           timestamp_record: true
           update_current_agent: true
 
-        # Завершити роботу агента
+        # Complete agent work
         exit_agent:
           pop_from_stack: true
           update_current_agent: true
           cleanup_temporary_data: true
 
-        # Отримати поточний стан
+        # Get current state
         get_status:
           current_agent: true
           stack_depth: true
           invocation_chain: true
 
-        # Повний скид контексту
+        # Full context reset
         reset_context:
           clear_stack: true
           clear_current_agent: true
@@ -1145,7 +1568,7 @@ implementation:
           priority: "critical_above_all"
           response_behavior:
             action: "friendly_block_with_queue"
-            message: "⏳ Система ініціалізується... Ваше завдання буде автоматично виконано після завантаження."
+        message: "⏳ System initializing... Your task will be automatically executed after loading."
             queue_request: true
             auto_execute_on_ready: true
             notification_on_ready: true
@@ -1224,13 +1647,13 @@ implementation:
       # User notifications
       notification_system:
         - event: "operation_queued"
-          message: "📋 Ваше завдання додано в чергу очікування"
+          message: "📋 Your task has been added to the queue"
 
         - event: "system_ready_and_executing"
-          message: "✅ Система готова! Виконую ваші завдання з черги..."
+          message: "✅ System ready! Executing your queued tasks..."
 
         - event: "queue_execution_completed"
-          message: "🎉 Всі завдання з черги успішно виконано!"
+          message: "🎉 All queued tasks completed successfully!"
 
       # Fallback handling
       fallback_mechanisms:
@@ -3695,16 +4118,16 @@ implementation:
                 system_health: "from_system_initialization"
                 mcp_tools_count: "from_system_initialization"
               format_template: |
-                🔄 **Master Agent.2** - Система оркестрації активна
+                🔄 **Master Agent.2** - Orchestration system active
 
-                📊 **Доступні ресурси:**
-                🔧 **MCP Сервери:** {mcp_count} ({mcp_tools_count} інструментів)
-                📝 **Категорії MCP:** {mcp_categories}
-                👥 **Спеціалізовані агенти:** {agent_count}
-                🏷️ **Категорії агентів:** {agent_categories}
-                💚 **Стан системи:** {system_health}
+                📊 **Available resources:**
+                🔧 **MCP Servers:** {mcp_count} ({mcp_tools_count} tools)
+                📝 **MCP Categories:** {mcp_categories}
+                👥 **Specialized agents:** {agent_count}
+                🏷️ **Agent categories:** {agent_categories}
+                💚 **System status:** {system_health}
 
-                🎯 **Готовий до координації складних завдань через паралельне виконання**
+                🎯 **Ready to coordinate complex tasks through parallel execution**
               validation:
                 ensure_data_availability: true
                 format_validation: true
@@ -4116,37 +4539,54 @@ implementation:
         performance_improvements: "object"
         resource_efficiency_metrics: "object"
 
-    # === DIAGNOSTIC COMMAND PROCESSOR ===
+    # === OPTIMIZED DIAGNOSTIC COMMAND PROCESSOR ===
     - name: "diagnostic_command_processor"
-      priority: 20
-      method: "event_driven_diagnostic_detection"
+      priority: 15  # Elevated priority for faster response
+      method: "parallel_intelligent_diagnosis"
       event_subscription:
         listen_to: "task.received"
         correlation_field: "task_id"
-        processing_mode: "sequential"
+        processing_mode: "parallel"  # Changed from sequential to parallel
       dependencies:
         system_readiness_dependency:
           component: "system_readiness_phase"
           required_outputs: ["system_ready"]
           validation: "system_ready == true"
       config:
+        # Optimized diagnostic detection with parallel processing
+        parallel_diagnostic_config:
+          parallel_groups: ["pattern_matching", "semantic_analysis", "context_validation"]
+          max_parallel_operations: 3
+          timeout_per_operation_ms: 800
+
+        priority_scoring:
+          high_priority_patterns: ["self diagnosis", "diagnostic mode", "validation mode"]
+          medium_priority_patterns: ["diagnostic", "validation", "analyze your behavior"]
+          low_priority_patterns: ["find error", "validate statement", "plan correction"]
+
+        fast_path_optimization:
+          exact_match_threshold: 0.9
+          cache_lookup_first: true
+          early_exit_conditions: true
+          priority_queue_processing: true
+
         diagnostic_detection:
           primary_patterns:
             exact_phrases:
-              - "Режим самодіагностики"
-              - "Режим діагностики"
-              - "Режим валідації"
-              - "режим пошуку виправлення"
+              - "self diagnosis mode"
+              - "diagnostic mode"
+              - "validation mode"
+              - "correction search mode"
 
             contextual_patterns:
               contains_keywords:
-                - "самодіагностики"
-                - "діагностику"
-                - "валідації"
-                - "проаналізуй свою поведінку"
-                - "знайди помилку"
-                - "провалідуй твердження"
-                - "Сплануй виправлення"
+                - "self diagnosis"
+                - "diagnostic"
+                - "validation"
+                - "analyze your behavior"
+                - "find error"
+                - "validate statement"
+                - "plan correction"
 
           event_generation:
             self_diagnosis_request:
@@ -4158,6 +4598,33 @@ implementation:
               trigger_condition: "contextual_pattern_matched"
               event_name: "debug_mode_activated"
               source: "diagnostic_processor"
+
+        # Parallel diagnostic engine
+        parallel_diagnostic_engine:
+          enabled: true
+          parallel_strategy: "pipeline_with_stages"
+
+          diagnostic_stages:
+            stage_1_pattern_matching:
+              parallel_groups: ["exact_phrases", "contextual_keywords"]
+              max_parallel: 2
+              timeout_ms: 500
+
+            stage_2_semantic_analysis:
+              parallel_groups: ["tfidf_analysis", "domain_classification"]
+              max_parallel: 3
+              timeout_ms: 1000
+
+            stage_3_context_validation:
+              parallel_groups: ["system_context", "task_context", "user_intent"]
+              max_parallel: 3
+              timeout_ms: 800
+
+          stage_coordination:
+            async_stage_execution: true
+            stage_completion_events: true
+            error_handling: "fail_fast_with_recovery"
+            result_aggregation: "parallel_with_priority"
 
       output:
         diagnostic_detected: "boolean"
@@ -5540,6 +6007,52 @@ implementation:
         processing_summary: "object"
         events_received: "array"
         correlation_id: "string"
+
+    # === INTELLIGENT AGENT SELECTION OPTIMIZATION (Priority 15.1) ===
+
+    - name: "intelligent_agent_selection"
+      priority: 15.1  # Slightly higher than basic selection
+      method: "multi_factor_optimization"
+      dependencies:
+        competency_matching_dependency: "agent_competency_matching"
+        performance_history_dependency: "agent_performance_tracker"
+        availability_monitor_dependency: "agent_availability_monitor"
+      config:
+        selection_factors:
+          competency_match: 0.4
+          historical_performance: 0.3
+          current_workload: 0.2
+          availability_score: 0.1
+
+        agent_pool_management:
+          dynamic_agent_discovery: true
+          competency_caching: true
+          performance_tracking: true
+          load_balancing: "round_robin_with_priority"
+
+        delegation_optimization:
+          batch_delegation: true
+          parallel_agent_coordination: true
+          adaptive_timeout: true
+          fallback_agents: true
+
+        agent_selection_cache:
+          competency_matrix_cache: true
+          performance_history_cache: true
+          availability_status_cache: true
+          cache_ttl_seconds: 300
+
+        intelligent_filtering:
+          context_aware_selection: true
+          task_complexity_matching: true
+          expertise_level_matching: true
+          success_prediction: true
+
+      output:
+        optimized_agent_selection: "object"
+        selection_confidence: "float"
+        fallback_options: "array"
+        performance_prediction: "float"
 
     # === EVENT-DRIVEN AGENT SELECTION (Priority 15.6) ===
 

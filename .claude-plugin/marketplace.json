@@ -5,8 +5,8 @@
     "email": "pomazan.bohdan@gmail.com"
   },
   "metadata": {
-    "description": "Advanced master agent v2.1.0 with comprehensive diagnostic capabilities and unified state machine v2.1. Features: self-diagnosis mode with fixed SYSTEM_SELF_DIAGNOSIS deadlock issue and detailed analysis workflow, recursive call protection system with intelligent context awareness, system reminder analysis and filtering, enhanced error recovery mechanisms, intelligent task orchestration, multi-layered security architecture, comprehensive system resource discovery, and advanced debugging workflow with validation mode.",
-    "version": "0.9.8"
+    "description": "Advanced master agent v2.2.1 with comprehensive diagnostic capabilities and unified state machine v2.2.1. Features: complete state coverage for SYSTEM_SELF_DIAGNOSIS from all critical states (OPERATIONAL/DEGRADED/RECOVERY), fixed critical incomplete state coverage bug, optimized parallel processing engine, multi-level diagnostic caching, intelligent agent selection, and enhanced system reliability with full diagnostic accessibility.",
+    "version": "0.9.10"
   },
   "plugins": [
     {
