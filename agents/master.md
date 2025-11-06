@@ -49,7 +49,9 @@ component:
     timestamp: "2025-01-20"
 
 implementation:
-  # === SYSTEM PROTECTION LAYER ===
+
+# === SYSTEM PROTECTION LAYER ===
+
   system_protection:
     enabled: true
     architecture: "layered_protection_system"
@@ -496,7 +498,8 @@ implementation:
           notification_style: "silent_background"
           recovery_approach: "automatic_suggestion"
 
-  # === EVENT-DRIVEN ARCHITECTURE ===
+# === EVENT-DRIVEN ARCHITECTURE ===
+
   event_queue:
     enabled: true
     architecture: "event_queue_with_logical_priorities"
@@ -509,7 +512,8 @@ implementation:
     retry_backoff: "exponential"
     fallback_strategy: "minimal_functionality"
 
-  # === UNIFIED STATE MACHINE ARCHITECTURE ===
+# === UNIFIED STATE MACHINE ARCHITECTURE ===
+
   unified_state_manager:
     enabled: true
     architecture: "hierarchical"
@@ -1335,7 +1339,8 @@ implementation:
           levels: ["reduced_functionality", "minimal_operations", "read_only_mode"]
           conditions: ["resource_constraints", "component_failures"]
 
-  # === PERFORMANCE MONITORING SYSTEM ===
+# === PERFORMANCE MONITORING SYSTEM ===
+
   performance_monitoring_system:
     enabled: true
     architecture: "hierarchical"
@@ -1441,7 +1446,8 @@ implementation:
       trend_analysis_reports: true
       capacity_planning_reports: true
 
-  # === STATE PERSISTENCE SYSTEM ===
+# === STATE PERSISTENCE SYSTEM ===
+
   state_persistence_system:
     enabled: true
     architecture: "hierarchical"
@@ -1513,7 +1519,8 @@ implementation:
         transition_history: true
         error_patterns: true
 
-  # === STATE EVENT HANDLERS ===
+# === STATE EVENT HANDLERS ===
+
     state_change_observer:
       description: "Monitors state transitions and emits state change events"
       subscribes_to: ["state_machine.transition"]
@@ -1541,9 +1548,10 @@ implementation:
       publishes: ["system.recovery.initiated", "system.alert.critical"]
       timeout: "1s"
 
-  # === SHARED STATE MACHINE COMPONENTS ===
+# === SHARED STATE MACHINE COMPONENTS ===
 
-  # Unified Task Handler - eliminates duplication between state machines
+# Unified Task Handler - eliminates duplication between state machines
+
   unified_task_handler:
     enabled: true
     architecture: "component_based"
@@ -1599,7 +1607,8 @@ implementation:
             preserve_history: true
             cleanup_level: "temporal_only"
 
-  # Common Transition Engine - unified logic for all state transitions
+# Common Transition Engine - unified logic for all state transitions
+
   common_transition_engine:
     enabled: true
     architecture: "event_driven"
@@ -1638,7 +1647,8 @@ implementation:
             max_performance_impact: "10%"
             max_resource_usage: "80%"
 
-  # Shared Resource Manager - eliminates resource conflicts
+# Shared Resource Manager - eliminates resource conflicts
+
   shared_resource_manager:
     enabled: true
     architecture: "hierarchical"
@@ -1664,7 +1674,8 @@ implementation:
       priority_inheritance: true
       event_based_coordination: true
 
-  # Unified Error Handler - common error handling across all state machines
+# Unified Error Handler - common error handling across all state machines
+
   unified_error_handler:
     enabled: true
     architecture: "layered"
@@ -1705,9 +1716,10 @@ implementation:
           failure_threshold: 3
           recovery_triggers: ["circuit_recovery_ready", "system_stabilized"]
 
-  # === ENHANCED CRITICAL TRANSITION HANDLERS ===
+# === ENHANCED CRITICAL TRANSITION HANDLERS ===
 
-  # Critical transition handlers that were missing
+# Critical transition handlers that were missing
+
   critical_transition_handlers:
     # System Recovery Failure Handler
     system_recovery_failure_handler:
@@ -1801,9 +1813,10 @@ implementation:
         action: "continue_with_available_preparation"
         monitoring_level: "normal"
 
-  # === STANDARDIZED GUARD SYSTEMS ===
+# === STANDARDIZED GUARD SYSTEMS ===
 
-  # Unified guard framework to eliminate inconsistencies
+# Unified guard framework to eliminate inconsistencies
+
   standardized_guards:
     # System State Guard - universal across all state machines
     system_state_guard:
@@ -1877,9 +1890,10 @@ implementation:
         max_queue_size: 50
         event_coordination: true
 
-  # === ENHANCED RETRY MECHANISMS ===
+# === ENHANCED RETRY MECHANISMS ===
 
-  # Comprehensive retry framework for all state machines
+# Comprehensive retry framework for all state machines
+
   enhanced_retry_mechanisms:
     # Universal retry configuration
     universal_retry_config:
@@ -1957,9 +1971,10 @@ implementation:
             - "continue_with_essential_monitoring"
             - "activate_alert_system"
 
-  # === CONCURRENT SCENARIO HANDLING ===
+# === CONCURRENT SCENARIO HANDLING ===
 
-  # Comprehensive concurrent operation management
+# Comprehensive concurrent operation management
+
   concurrent_scenario_handling:
     # Atomic Operations Framework
     atomic_operations:
@@ -2044,9 +2059,10 @@ implementation:
           - name: "lockfree_hashtable"
             implementation: "hopscotch_hashing"
 
-  # === RACE CONDITION FIXES ===
+# === RACE CONDITION FIXES ===
 
-  # Comprehensive race condition elimination
+# Comprehensive race condition elimination
+
   race_condition_fixes:
     # Deadlock detection fixes
     deadlock_detection_fixes:
@@ -2133,9 +2149,10 @@ implementation:
           load_balancing: "work_stealing"
           pool_migration: "automatic"
 
-  # === UNIT TESTING FRAMEWORK FOR VALIDATORS ===
+# === UNIT TESTING FRAMEWORK FOR VALIDATORS ===
 
-  # Comprehensive testing framework for state transition validators
+# Comprehensive testing framework for state transition validators
+
   validator_testing_framework:
     # Test configuration
     test_configuration:
@@ -2254,7 +2271,8 @@ implementation:
           - name: "resource_usage_validator"
             method: "validate_resource_usage_bounds"
 
-  # Event-driven configuration
+# Event-driven configuration
+
   event_driven_config:
     # Critical events (bootstrap and system failures)
     critical:
@@ -2284,9 +2302,9 @@ implementation:
       parallel: true
       fallback: "skip_on_failure"
 
-  # Event-driven component mapping (replaces priority-based execution)
+# Event-driven component mapping (replaces priority-based execution)
 
-  # === MANDATORY TOOL ENFORCEMENT EVENTS ===
+# === MANDATORY TOOL ENFORCEMENT EVENTS ===
 
   task.tool.enforcement.started:
     description: "Tool usage enforcement validation started"
@@ -3388,17 +3406,26 @@ implementation:
         initialization_time: "float"
 
     # === ADAPTIVE MEMORY SYSTEM PHASE (Priority 4 - DUPLICATE REMOVED) ===
-  # This appears to be a duplicate - keeping first instance with priority 4
 
-  # - name: "adaptive_memory_system_phase"
-  #   priority: 2.5  # REMOVED - use first instance with priority 4
-  #   method: "initialize_adaptive_memory"
-  #   dependencies:
-  #     required_inputs:
-  #       - component: "system_discovery_phase"
-  #         expected_outputs: ["discovery_complete", "mcp_servers_discovered", "discovered_agents"]
-  #         validation: "discovery_complete == true"
-  # LEGACY DUPLICATE REMOVED - using first instance with priority 4
+# This appears to be a duplicate - keeping first instance with priority 4
+
+# - name: "adaptive_memory_system_phase"
+
+# priority: 2.5  # REMOVED - use first instance with priority 4
+
+# method: "initialize_adaptive_memory"
+
+# dependencies
+
+# required_inputs
+
+# - component: "system_discovery_phase"
+
+# expected_outputs: ["discovery_complete", "mcp_servers_discovered", "discovered_agents"]
+
+# validation: "discovery_complete == true"
+
+# LEGACY DUPLICATE REMOVED - using first instance with priority 4
 
     # === PARALLEL TODO PLANNING PHASE (Priority 2.7) ===
 
@@ -4531,7 +4558,7 @@ implementation:
         error_status: "boolean"
         processing_time: "float"
 
-  # === DYNAMIC AGENT DISCOVERY OPERATIONS ===
+# === DYNAMIC AGENT DISCOVERY OPERATIONS ===
 
     - name: "task_tool_agent_discovery"
       priority: 15
@@ -7865,7 +7892,8 @@ system_parallelity_rules:
   enabled: true
   enforcement: "automatic_with_fallback"
 
-  # Core Parallelity Principles
+# Core Parallelity Principles
+
   fundamental_rules:
     rule_1_file_independence:
       principle: "Different files = parallel execution"
@@ -7912,7 +7940,8 @@ system_parallelity_rules:
         - "Concurrent MCP server operations"
         - "Independent tool invocations"
 
-  # Advanced Parallelity Patterns
+# Advanced Parallelity Patterns
+
   advanced_patterns:
     configuration_sync_pattern:
       detection: "same configuration value across multiple files"
@@ -7932,7 +7961,8 @@ system_parallelity_rules:
       optimization: "maximize_parallel_while_preserving_order"
       confidence: 0.82
 
-  # Implementation Rules
+# Implementation Rules
+
   implementation_guidelines:
     automatic_decomposition:
       enabled: true
@@ -7954,7 +7984,8 @@ system_parallelity_rules:
       partial_parallel_execution: true
       error_isolation: true
 
-  # Learning and Adaptation
+# Learning and Adaptation
+
   adaptation_rules:
     learn_from_patterns: true
     update_confidence_scores: true
@@ -7967,7 +7998,8 @@ adaptive_planning:
   enabled: true
   architecture: "event_driven_with_visual_hierarchy"
 
-  # Visual TODO Formatter Component
+# Visual TODO Formatter Component
+
   visual_todo_formatter:
     description: "Creates dynamic visual hierarchy with └── prefixes based on task complexity"
     capabilities:
@@ -8061,7 +8093,8 @@ adaptive_planning:
         rule_3_group_optimization: "ALWAYS optimize execution groups"
         rule_4_conflict_prevention: "ALWAYS prevent resource conflicts"
 
-  # Task Complexity Analyzer Component
+# Task Complexity Analyzer Component
+
   complexity_analyzer:
     description: "Analyzes task complexity to determine hierarchy depth and decomposition needs"
     capabilities:
@@ -8101,7 +8134,8 @@ adaptive_planning:
       - involves_multiple_technologies: true
       - requires_coordination_with_others: true
 
-  # Task Decomposer Component
+# Task Decomposer Component
+
   task_decomposer:
     description: "Decomposes complex tasks into manageable subtasks"
     capabilities:
@@ -8128,7 +8162,8 @@ adaptive_planning:
       completable_by_one_person: true
       clear_success_criteria: true
 
-  # Recursive Planner Component
+# Recursive Planner Component
+
   recursive_planner:
     description: "Recursively analyzes and plans multi-level task hierarchies"
     capabilities:
@@ -8152,7 +8187,8 @@ adaptive_planning:
         description: "Combine top-down and bottom-up approaches"
         best_for: ["complex_projects", "ambiguous_requirements"]
 
-  # TodoWrite Integration Component
+# TodoWrite Integration Component
+
   todo_write_integration:
     description: "Manages TodoWrite operations with hierarchical task execution and dependency management"
     capabilities:
@@ -8373,7 +8409,8 @@ adaptive_planning:
         bottleneck_identification: true
         dependency_resolution_time: true
 
-  # Result Analyzer Component
+# Result Analyzer Component
+
   result_analyzer:
     description: "Analyzes execution results for replanning decisions"
     capabilities:
@@ -8390,7 +8427,8 @@ adaptive_planning:
       aggregate_level_results: true
       trigger_recursive_planning: "when_success_rate < 0.7 or complexity_increase_detected"
 
-  # Adaptive Replanner Component
+# Adaptive Replanner Component
+
   adaptive_replanner:
     description: "Automatically adjusts plans based on execution results"
     capabilities:
@@ -8403,7 +8441,8 @@ adaptive_planning:
       - "aggressive_replanning"
       - "dependency_based_restructure"
 
-  # Parallel Coordinator Component
+# Parallel Coordinator Component
+
   parallel_coordinator:
     description: "Coordinates parallel task execution with dependency management"
     capabilities:
@@ -8416,7 +8455,8 @@ adaptive_planning:
       dependency_validation: true
       deadlock_prevention: true
 
-  # Dependency Manager Component
+# Dependency Manager Component
+
   dependency_manager:
     description: "Manages task dependencies and execution order"
     capabilities:
@@ -8547,7 +8587,7 @@ parallel_pattern_recognition:
       confidence_adjustment: true
       pattern_evolution: true
 
-  # === PARALLEL OPERATION SELF-LEARNING ===
+# === PARALLEL OPERATION SELF-LEARNING ===
 
   parallel_operation_learning:
     enabled: true
@@ -8646,7 +8686,8 @@ event_system:
   enabled: true
   hybrid_mode: true  # Priority-based for system phases, event-driven for task processing
 
-  # System Lifecycle Events (Priority-based execution)
+# System Lifecycle Events (Priority-based execution)
+
   system_lifecycle_events:
     system.ready:
       description: "System has completed initialization and is ready for operations"
@@ -8752,7 +8793,8 @@ event_system:
       priority: "critical"
       activation_condition: "user_action_detected_in_waiting_state"
 
-  # Adaptive Planning Events
+# Adaptive Planning Events
+
   planning_events:
     planning.adaptive.initialized:
       description: "Adaptive planning system initialized with dynamic hierarchy capabilities"
@@ -8968,6 +9010,7 @@ event_system:
       handler_health_monitoring: true
 
 # ============================================
+
     # ТЕСТИ СИСТЕМИ ЗАХИСТУ ВІД РЕКУРСИВНИХ ВИКЛИКІВ
     # ============================================
 
@@ -9183,9 +9226,11 @@ event_system:
           target: "up to 50KB context"
           measurement: "maximum processed context size"
 
-  # ============================================
-  # ДОДАТКОВІ ТЕСТИ НОВОЇ СИСТЕМИ ЗАХИСТУ
-  # ============================================
+# ============================================
+
+# ДОДАТКОВІ ТЕСТИ НОВОЇ СИСТЕМИ ЗАХИСТУ
+
+# ============================================
 
   recursive_protection_test_suite:
     # Тест 1: Рекурсивний виклик (має блокуватись)
