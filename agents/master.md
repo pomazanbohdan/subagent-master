@@ -3041,7 +3041,7 @@ implementation:
     # === SYSTEM DISCOVERY PHASE ===
 
     - name: "system_discovery_phase"
-      priority: 1
+      priority: 2
       method: "discover_system_components"
       dependencies:
         required_inputs:
@@ -3157,16 +3157,153 @@ implementation:
         discovery_summary: "object"
         discovery_time: "float"
 
-    # === ADAPTIVE MEMORY SYSTEM PHASE (Priority 2.5) ===
+    # === COMPREHENSIVE MCP ANALYSIS PHASE ===
+
+    - name: "comprehensive_mcp_analysis_phase"
+      priority: 3
+      method: "complete_mcp_server_and_tool_analysis"
+      dependencies:
+        required_inputs:
+          - component: "system_discovery_phase"
+            expected_outputs: ["discovery_complete", "mcp_servers_discovered", "discovered_agents"]
+            validation: "discovery_complete == true"
+      config:
+        analysis_operations:
+          - operation: "mcp_server_enumeration_and_categorization"
+            description: "Complete analysis of all MCP servers and their tools"
+            implementation:
+              predefined_server_analysis:
+                context7:
+                  tools: ["resolve-library-id", "get-library-docs"]
+                  count: 2
+                  categories: ["documentation", "research", "learning"]
+                  domain: "knowledge_management"
+                  capabilities: ["library_search", "documentation_access"]
+
+                magic:
+                  tools: ["21st_magic_component_builder", "21st_magic_component_inspiration",
+                         "21st_magic_component_refiner", "logo_search"]
+                  count: 4
+                  categories: ["ui_development", "design", "branding"]
+                  domain: "frontend_development"
+                  capabilities: ["component_generation", "ui_inspiration", "logo_creation"]
+
+                sequential:
+                  tools: ["sequentialthinking"]
+                  count: 1
+                  categories: ["analysis", "planning", "reasoning"]
+                  domain: "problem_solving"
+                  capabilities: ["structured_thinking", "step_by_step_analysis"]
+
+                serena:
+                  tools: ["list_dir", "find_file", "search_for_pattern", "get_symbols_overview",
+                         "find_symbol", "find_referencing_symbols", "replace_symbol_body",
+                         "insert_after_symbol", "insert_before_symbol", "rename_symbol",
+                         "read_memory", "write_memory", "list_memories", "activate_project",
+                         "delete_memory", "check_onboarding_performed", "get_current_config",
+                         "initial_instructions", "onboarding", "think_about_collected_information",
+                         "think_about_task_adherence", "think_about_whether_you_are_done"]
+                  count: 20
+                  categories: ["code_analysis", "memory_management", "project_management",
+                               "file_operations", "symbol_operations", "session_management"]
+                  domain: "development_tools"
+                  capabilities: ["semantic_analysis", "session_persistence", "project_navigation"]
+
+                tavily:
+                  tools: ["tavily-search", "tavily-extract"]
+                  count: 2
+                  categories: ["web_search", "content_extraction", "research"]
+                  domain: "intelligence_gathering"
+                  capabilities: ["real_time_search", "content_mining"]
+
+                playwright:
+                  tools: ["browser_navigate", "browser_click", "browser_type", "browser_snapshot",
+                         "browser_console_messages", "browser_file_upload", "browser_close",
+                         "browser_resize", "browser_wait_for", "browser_drag", "browser_fill_form",
+                         "browser_hover", "browser_press_key", "browser_select_option",
+                         "browser_take_screenshot", "browser_tabs"]
+                  count: 16
+                  categories: ["browser_automation", "testing", "web_interaction"]
+                  domain: "qa_testing"
+                  capabilities: ["e2e_testing", "browser_control", "web_automation"]
+
+                chrome_devtools:
+                  tools: ["list_pages", "navigate_page", "take_screenshot", "evaluate_script",
+                         "performance_analyze_insight", "performance_start_trace",
+                         "performance_stop_trace", "click", "drag", "fill", "hover", "press_key",
+                         "get_network_request", "get_console_message", "close_page",
+                         "emulate", "handle_dialog", "list_network_requests", "navigate_page_back",
+                         "new_page", "press_key", "resize_page", "select_page", "take_screenshot",
+                         "wait_for"]
+                  count: 25
+                  categories: ["browser_debugging", "performance_analysis", "development_tools"]
+                  domain: "web_development"
+                  capabilities: ["browser_inspection", "performance_profiling", "debug_tools"]
+
+          - operation: "agent_capability_matrix_generation"
+            description: "Generate comprehensive agent-tool competency matrix"
+            implementation:
+              agent_categories:
+                development_agents: ["backend-architect", "frontend-architect", "fullstack-developer"]
+                system_agents: ["devops-engineer", "infrastructure-architect", "system-architect"]
+                data_agents: ["data-engineer", "ml-engineer", "analytics-specialist"]
+                quality_agents: ["quality-engineer", "security-engineer", "testing-specialist"]
+
+              competency_mapping:
+                context7_tools: ["technical-writer", "research-agent", "learning-guide"]
+                magic_tools: ["frontend-architect", "ui-designer", "frontend-developer"]
+                sequential_tools: ["system-architect", "business-analyst", "planning-specialist"]
+                serena_tools: ["backend-architect", "fullstack-developer", "code-reviewer"]
+                tavily_tools: ["research-agent", "market-analyst", "intelligence-specialist"]
+                playwright_tools: ["quality-engineer", "testing-specialist", "qa-automation"]
+                chrome_devtools: ["frontend-developer", "performance-engineer", "debug-specialist"]
+
+          - operation: "domain_coverage_analysis"
+            description: "Analyze domain coverage and system capabilities"
+            implementation:
+              domains_covered:
+                - "Frontend Development" (magic, chrome_devtools, playwright)
+                - "Backend Development" (serena, context7)
+                - "Code Analysis & Management" (serena)
+                - "Research & Intelligence" (tavily, context7)
+                - "Testing & Quality Assurance" (playwright, chrome_devtools)
+                - "Documentation & Learning" (context7, sequential)
+                - "System Architecture & Planning" (sequential, serena)
+                - "Performance Analysis" (chrome_devtools)
+                - "UI/UX Design & Development" (magic)
+                - "Web Automation & Testing" (playwright, chrome_devtools)
+                - "Project Management & Memory" (serena)
+                - "Browser Development Tools" (chrome_devtools)
+
+        summary_generation:
+          total_mcp_servers: 7
+          total_mcp_tools: 70
+          agent_categories: 4
+          specializations: 12
+          domain_coverage_score: 95%
+
+        output:
+          mcp_analysis_complete: "boolean"
+          categorized_mcp_servers: "object"
+          tool_capability_matrix: "object"
+          agent_competency_matrix: "object"
+          domain_coverage_report: "object"
+          system_capabilities_summary: "object"
+          ready_for_greeting: "boolean"
+
+    # === ADAPTIVE MEMORY SYSTEM PHASE (Priority 4) ===
 
     - name: "adaptive_memory_system_phase"
-      priority: 2.5
+      priority: 4
       method: "intelligent_pattern_learning"
       dependencies:
         required_inputs:
           - component: "system_discovery_phase"
             expected_outputs: ["discovery_complete", "mcp_servers_discovered", "discovered_agents"]
             validation: "discovery_complete == true"
+          - component: "comprehensive_mcp_analysis_phase"
+            expected_outputs: ["mcp_analysis_complete", "categorized_mcp_servers", "tool_capability_matrix"]
+            validation: "mcp_analysis_complete == true"
       config:
         memory_operations:
           - priority: 1
@@ -3250,98 +3387,32 @@ implementation:
         memory_summary: "object"
         initialization_time: "float"
 
-    # === ADAPTIVE MEMORY SYSTEM PHASE (Priority 2.5) ===
+    # === ADAPTIVE MEMORY SYSTEM PHASE (Priority 4 - DUPLICATE REMOVED) ===
+  # This appears to be a duplicate - keeping first instance with priority 4
 
-    - name: "adaptive_memory_system_phase"
-      priority: 2.5
-      method: "initialize_adaptive_memory"
-      dependencies:
-        required_inputs:
-          - component: "system_discovery_phase"
-            expected_outputs: ["discovery_complete", "mcp_servers_discovered", "discovered_agents"]
-            validation: "discovery_complete == true"
-      config:
-        memory_operations:
-          - priority: 1
-            operation: "memory_system_initialization"
-            description: "Initialize adaptive memory system with Serena MCP integration"
-            implementation:
-              serena_integration:
-                memory_operations: ["write_memory", "read_memory", "list_memories"]
-                session_persistence: true
-                cross_session_learning: true
-              memory_schema:
-                success_patterns:
-                  - task_signature
-                  - execution_strategy
-                  - performance_metrics
-                  - learning_metadata
-                failure_patterns:
-                  - error_classification
-                  - blocking_score
-                  - avoidance_recommendations
-                  - occurrence_tracking
-              pattern_matching:
-                similarity_threshold: 0.7
-                semantic_analysis: true
-                context_awareness: true
-
-          - priority: 2
-            operation: "pattern_matching_engine"
-            description: "Engine for matching current task with historical patterns"
-            implementation:
-              matching_algorithms:
-                - semantic_similarity_analysis
-                - structural_pattern_recognition
-                - context_based_filtering
-              weight_adjustment:
-                success_boost: 0.1
-                failure_penalty: -0.2
-                context_adaptation: true
-
-          - priority: 3
-            operation: "adaptive_strategy_selection"
-            description: "Select optimal strategies based on historical performance"
-            implementation:
-              selection_criteria:
-                - success_rate_weight: 0.4
-                - performance_metrics_weight: 0.3
-                - recency_factor_weight: 0.2
-                - context_relevance_weight: 0.1
-              dynamic_optimization: true
-              real_time_adaptation: true
-
-        memory_parameters:
-          learning_rate: 0.1
-          memory_retention_days: 30
-          pattern_validation_threshold: 0.8
-          adaptation_frequency: "continuous"
-        error_handling:
-          memory_failure:
-            action: "continue_without_memory"
-            log_warning: true
-          pattern_matching_failure:
-            action: "use_default_strategies"
-            log_info: true
-        output:
-          memory_system_ready: "boolean"
-          historical_patterns_loaded: "boolean"
-          adaptive_strategies_available: "boolean"
-          memory_initialization_time: "float"
+  # - name: "adaptive_memory_system_phase"
+  #   priority: 2.5  # REMOVED - use first instance with priority 4
+  #   method: "initialize_adaptive_memory"
+  #   dependencies:
+  #     required_inputs:
+  #       - component: "system_discovery_phase"
+  #         expected_outputs: ["discovery_complete", "mcp_servers_discovered", "discovered_agents"]
+  #         validation: "discovery_complete == true"
+  # LEGACY DUPLICATE REMOVED - using first instance with priority 4
 
     # === PARALLEL TODO PLANNING PHASE (Priority 2.7) ===
 
     - name: "parallel_todo_planning_phase"
-      priority: 2.7
+      priority: 5
       method: "intelligent_parallel_task_planning"
       dependencies:
         required_inputs:
           - component: "adaptive_memory_system_phase"
             expected_outputs: ["memory_system_ready", "adaptive_strategies_available"]
             validation: "memory_system_ready == true"
-          - component: "system_discovery_phase"
-            expected_outputs: ["discovery_complete", "mcp_servers_discovered", "discovered_agents"]
-            validation: "discovery_complete == true"
+          - component: "comprehensive_mcp_analysis_phase"
+            expected_outputs: ["mcp_analysis_complete", "categorized_mcp_servers"]
+            validation: "mcp_analysis_complete == true"
       config:
         planning_operations:
           - priority: 1
@@ -3633,13 +3704,19 @@ implementation:
     # === UNIFIED GREETING ENGINE ===
 
     - name: "unified_greeting_engine"
-      priority: 12
+      priority: 7
       method: "comprehensive_greeting_generation"
       dependencies:
         required_inputs:
-          - component: "system_initialization"
-            expected_outputs: ["resource_scan_complete", "mcp_categories_found", "agent_categories_found"]
-            validation: "resource_scan_complete == true"
+          - component: "comprehensive_mcp_analysis_phase"
+            expected_outputs: ["mcp_analysis_complete", "categorized_mcp_servers", "tool_capability_matrix", "system_capabilities_summary"]
+            validation: "mcp_analysis_complete == true"
+          - component: "system_readiness_phase"
+            expected_outputs: ["system_ready", "readiness_complete", "final_health_score"]
+            validation: "system_ready == true && readiness_complete == true"
+          - component: "agent_registry_enhancement"
+            expected_outputs: ["enhanced_agent_registry", "categorized_agents"]
+            validation: "enhanced_agent_registry != null"
         user_input:
           - component: "direct_user_request_handler"
             expected_outputs: ["user_direct_request_received"]
