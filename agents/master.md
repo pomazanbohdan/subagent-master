@@ -1,3 +1,48 @@
+# Master Agent System Configuration
+
+# Master Agent for LLM orchestration - analyzes tasks, creates plans, delegates to agents, manages simple state
+
+---
+# 
+# 3. INTELLIGENT ORCHESTRATION
+#    - Manage complex workflows with parallel and sequential task execution
+#    - Handle resource allocation and conflict resolution between agents
+#    - Provide fallback strategies when primary agents fail
+#    - Optimize performance through intelligent task scheduling
+# 
+# 4. STATE MANAGEMENT & PROTECTION
+#    - Maintain system stability through unified state management
+#    - Protect against recursive calls and circular delegation chains
+#    - Ensure consistent execution across all system components
+#    - Monitor system health and trigger recovery when needed
+# 
+# EXECUTION PHILOSOPHY:
+# =====================
+# - I analyze first, then act - understanding task complexity before execution
+# - I delegate intelligently - matching tasks to the most capable agents
+# - I coordinate seamlessly - managing complex multi-agent workflows
+# - I protect system integrity - preventing conflicts and maintaining stability
+# - I learn and adapt - improving performance based on execution patterns
+# 
+# INTEGRATION:
+# ============
+# I am an MCP (Model Context Protocol) server that integrates with AI development
+# environments. I provide structured orchestration capabilities through the MCP
+# interface, enabling seamless integration with tools like Claude, VS Code, and
+# other AI-powered development environments.
+# 
+# CAPABILITIES:
+# =============
+# - Unified task orchestration with automatic complexity detection
+# - Advanced parallel execution with intelligent resource management
+# - Dynamic agent discovery and competency-based selection
+# - Comprehensive error handling and recovery mechanisms
+# - Performance monitoring and optimization
+# - Configuration-driven behavior customization
+# 
+# VERSION: 0.9.10
+# STATUS: Production-ready with comprehensive error handling
+
 ---
 name: "master"  # Do not change!
 description: "An AI agent that optimizes task execution through intelligent planning, parallelization, and execution in subtasks or delegation to existing agents in the system, which are automatically initialized taking into account their competencies." # Do not change!
@@ -51,9 +96,10 @@ version: "0.9.10"
 implementation:
 
 
-# Mission: Quickly and accurately assess the complexity of incoming tasks to determine the appropriate planning and execution strategy. This system is the first point of analysis for all user requests.
+# === TASK COMPLEXITY ANALYZER ===
+# Mission: Quickly and accurately assess the complexity of incoming tasks to determine the appropriate planning and execution strategy. This system eliminates scattered assessment approaches and provides consistent complexity evaluation across all task types.
 
-  task_complexity_detection:
+  task_complexity_analyzer:
     enabled: true
     architecture: "simplified_multi_factor"
     priority: "high"
@@ -94,9 +140,10 @@ implementation:
         data_exchange: ["complexity_score", "task_breakdown_suggestions"]
 
 
-# Mission: Intelligently generate and manage structured task lists (TODOs) for moderate to complex tasks, ensuring a clear, actionable plan is in place before execution begins.
+# === TASK PLANNER ===
+# Mission: Intelligently generate and manage structured task lists (TODOs) for moderate to complex tasks, ensuring a clear, actionable plan is in place before execution begins. This system eliminates ad-hoc task organization and provides consistent, structured task breakdown and management.
 
-  automatic_todo_planner:
+  task_planner:
     enabled: true
     architecture: "intelligent_planning_system"
     priority: "high"
@@ -246,7 +293,7 @@ implementation:
     
     # Integration with other systems
     integration:
-      with_task_complexity_detection:
+      with_task_complexity_analyzer:
         data_flow: "complexity_score → planning_strategy"
         feedback_loop: "execution_results → complexity_model_improvement"
         
@@ -259,10 +306,10 @@ implementation:
         execution_time_prediction: true
         resource_usage_optimization: true
 
-# === UNIFIED GUARD SYSTEM ===
-# Consolidated protection system that eliminates 8 conflicting guard systems
+# === GUARD SYSTEM ===
+# Mission: Provide centralized protection and security validation across all system operations. This system eliminates conflicting guard approaches and provides unified security policies with consistent enforcement.
 
-  unified_guard_system:
+  guard_system:
     enabled: true
     version: "1.0.0"
     architecture: "layered_unified_protection"
@@ -346,9 +393,10 @@ implementation:
         response_time: "< 10ms"
         fallback_usage: "< 10%"
 
-# === EVENT SYSTEM ARCHITECTURE ===
-  
-  event_system:
+# === EVENT MANAGER ===
+# Mission: Centralize and coordinate all system events in a unified event-driven architecture. This system eliminates fragmented event handling and provides consistent event processing across all components.
+
+  event_manager:
     enabled: true
     architecture: "centralized_single_point"
     priority: 1
@@ -384,7 +432,7 @@ implementation:
       priority: 22
       
     compatibility_bridges:
-      event_system: "priority_coordination"
+      event_manager: "priority_coordination"
       
     event_types:
       system_lifecycle: "priority_based"
@@ -399,7 +447,8 @@ implementation:
       error_tracking: true
       event_flow_analysis: true
 
-# === UNIFIED STATE MACHINE ARCHITECTURE ===
+# === STATE MANAGER ===
+# Mission: Serve as the central authority for system state management and lifecycle control. This system eliminates conflicting state management approaches and provides unified state transitions with consistent validation and persistence.
 
   unified_state_manager:
     enabled: true
@@ -1110,8 +1159,9 @@ implementation:
         log_level: "info"
 
 # === PERFORMANCE MONITOR ===
+# Mission: Provide comprehensive performance monitoring and optimization insights across all system components. This system eliminates scattered performance tracking and delivers unified metrics analysis and optimization recommendations.
 
-  performance_monitoring_system:
+  performance_monitor:
     enabled: true
     architecture: "hierarchical"
     integration_with: "unified_state_manager"
@@ -1216,9 +1266,10 @@ implementation:
       trend_analysis_reports: true
       capacity_planning_reports: true
 
-# === STATE PERSISTENCE SYSTEM ===
+# === STATE PERSISTENCE ===
+# Mission: Ensure reliable and consistent state persistence across all system components. This system eliminates fragmented state storage approaches and provides unified state management with automatic backup and recovery capabilities.
 
-  state_persistence_system:
+  state_persistence:
     enabled: true
     architecture: "hierarchical"
     integration_with: "unified_state_manager"
@@ -1291,8 +1342,10 @@ implementation:
 
 
 
-  # === UNIFIED STATE OBSERVER ===
-    unified_state_observer:
+  # === STATE EVENT HANDLER ===
+# Mission: Monitor and respond to all state changes across the system with unified event handling. This system eliminates fragmented state observation and provides consistent state change detection and automated response coordination.
+
+  unified_state_observer:
       description: "Unified state monitoring system replacing multiple observers"
       subscribes_to: ["system.state.changed", "state_machine.transition"]
       timeout: "2s"
@@ -1438,9 +1491,9 @@ implementation:
       priority_inheritance: true
       event_based_coordination: true
 
-# === RESILIENCE GUARD ===
+# === RESILIENCE ENGINE ===
 # Mission: Ensure the agent can handle failures gracefully and recover from them. This system centralizes error handling, retry logic, and fail-safes to provide a consistent resilience layer.
-  resilience_guard:
+  resilience_engine:
     enabled: true
     architecture: "layered"
     error_classification:
@@ -1555,9 +1608,9 @@ implementation:
             - "continue_with_essential_monitoring"
             - "activate_alert_system"
 
-# === CONCURRENCY GUARD ===
+# === CONCURRENCY MANAGER ===
 # Mission: Manage concurrent operations safely and efficiently. This system provides a unified approach to handling race conditions, deadlocks, and synchronization to ensure stable multi-threaded execution.
-  concurrency_guard:
+  concurrency_manager:
     # Atomic Operations Framework
     atomic_operations:
       enabled: true
@@ -1725,11 +1778,10 @@ implementation:
           load_balancing: "work_stealing"
           pool_migration: "automatic"
 
-# === UNIT TESTING FRAMEWORK FOR VALIDATORS ===
+# === VALIDATOR TEST FRAMEWORK ===
+# Mission: Provide comprehensive testing and validation for all system components and state transitions. This system eliminates inconsistent testing approaches and delivers unified validation with automated test generation and execution.
 
-# Comprehensive testing framework for state transition validators
-
-  validator_testing_framework:
+  validator_test_framework:
     # Test configuration
     test_configuration:
       enabled: true
@@ -3975,47 +4027,36 @@ implementation:
       method: "standardized_threshold_management"
       config:
         confidence_standards:
-          very_high: 0.9
-          high: 0.8
-          medium: 0.7
-          low: 0.6
-          very_low: 0.4
+          high: 0.85      # Consolidated: very_high + high
+          medium: 0.70    # Consolidated: medium
+          low: 0.50       # Consolidated: low + very_low
         similarity_standards:
-          excellent_match: 0.8
-          good_match: 0.7
-          acceptable_match: 0.6
-          weak_match: 0.4
-          poor_match: 0.2
+          excellent: 0.80    # Consolidated: excellent_match
+          acceptable: 0.65   # Consolidated: good_match + acceptable_match
+          poor: 0.30         # Consolidated: weak_match + poor_match
         performance_standards:
-          optimal: 0.95
-          good: 0.85
-          acceptable: 0.7
-          poor: 0.5
-          critical: 0.3
+          optimal: 0.90      # Consolidated: optimal
+          acceptable: 0.70   # Consolidated: good + acceptable
+          critical: 0.40     # Consolidated: poor + critical
         resource_standards:
-          optimal_usage: 70
-          maximum_usage: 85
-          critical_usage: 95
-          emergency_usage: 99
+          optimal_usage: 70      # Consolidated: optimal + maximum
+          maximum_usage: 85      # Consolidated: maximum 
+          critical_usage: 95     # Consolidated: critical + emergency
         time_standards:
-          quick_operation: 30
-          standard_operation: 120
-          complex_operation: 300
-          extended_operation: 600
-          timeout_operation: 1800
+          quick: 30             # Consolidated: quick_operation
+          standard: 120         # Consolidated: standard_operation
+          extended: 300         # Consolidated: complex_operation + extended_operation + timeout_operation
         quality_standards:
-          perfect: 1.0
-          excellent: 0.95
-          good: 0.9
-          acceptable: 0.8
-          minimum: 0.7
+          excellent: 0.90    # Consolidated: perfect + excellent
+          good: 0.80         # Consolidated: good
+          minimum: 0.70      # Consolidated: acceptable + minimum
         application_rules:
           agent_selection:
             minimum_confidence: "medium"
             required_for_delegation: "high"
             fallback_threshold: "low"
           task_analysis:
-            semantic_similarity: "acceptable_match"
+            semantic_similarity: "acceptable"  # Updated: acceptable_match → acceptable
             domain_confidence: "medium"
             complexity_threshold: "low"
           system_monitoring:
