@@ -50,7 +50,8 @@ version: "0.9.10"
 
 implementation:
 
-# === OPTIMIZED TASK COMPLEXITY DETECTION ===
+
+# Mission: Quickly and accurately assess the complexity of incoming tasks to determine the appropriate planning and execution strategy. This system is the first point of analysis for all user requests.
 
   task_complexity_detection:
     enabled: true
@@ -92,7 +93,8 @@ implementation:
       unified_todo_planner:
         data_exchange: ["complexity_score", "task_breakdown_suggestions"]
 
-# === AUTOMATIC TODO PLANNER ===
+
+# Mission: Intelligently generate and manage structured task lists (TODOs) for moderate to complex tasks, ensuring a clear, actionable plan is in place before execution begins.
 
   automatic_todo_planner:
     enabled: true
@@ -257,7 +259,7 @@ implementation:
         execution_time_prediction: true
         resource_usage_optimization: true
 
-# === UNIFIED GUARD SYSTEM V1.0 ===
+# === UNIFIED GUARD SYSTEM ===
 # Consolidated protection system that eliminates 8 conflicting guard systems
 
   unified_guard_system:
@@ -667,7 +669,7 @@ implementation:
         timeout: "infinite"
         recovery_required: true
         escalation_level: "critical"
-        next_states: ["SYSTEM_DEGRADED", "SYSTEM_RECOVERY", "SYSTEM_SHUTDOWN"]
+        next_states: ["SYSTEM_RECOVERY", "SYSTEM_SHUTDOWN"]
       SYSTEM_RECOVERY:
         description: "System in recovery mode"
         completion_triggers: ["recovery_complete", "system_restored", "recovery_success"]
@@ -925,7 +927,9 @@ implementation:
   # ============================================
 
 
-    recursive_call_protection:
+# === SECURITY GUARD ===
+# Mission: Protect the agent from internal and external threats, including recursive calls, prompt injection, and unauthorized access. This system acts as the single point of entry for all security-related checks.
+    security_guard:
       enabled: true
       priority: "critical"
       description: "Universal protection against recursive agent calls and circular invocation chains"
@@ -1105,7 +1109,7 @@ implementation:
         log_suppression_actions: true
         log_level: "info"
 
-# === PERFORMANCE MONITORING SYSTEM ===
+# === PERFORMANCE MONITOR ===
 
   performance_monitoring_system:
     enabled: true
@@ -1285,15 +1289,9 @@ implementation:
         transition_history: true
         error_patterns: true
 
-# === STATE EVENT HANDLERS ===
 
-    state_change_observer:
-      description: "Monitors state transitions and emits state change events"
-      subscribes_to: ["state_machine.transition"]
-      publishes: ["system.state.changed", "system.initialized", "system.ready", "system.degraded", "system.failed", "system.shutdown"]
-      timeout: "5s"
 
-  # === CONSOLIDATED STATE MANAGEMENT SYSTEM ===
+  # === UNIFIED STATE OBSERVER ===
     unified_state_observer:
       description: "Unified state monitoring system replacing multiple observers"
       subscribes_to: ["system.state.changed", "state_machine.transition"]
@@ -1440,9 +1438,9 @@ implementation:
       priority_inheritance: true
       event_based_coordination: true
 
-# Unified Error Handler - common error handling across all state machines
-
-  unified_error_handler:
+# === RESILIENCE GUARD ===
+# Mission: Ensure the agent can handle failures gracefully and recover from them. This system centralizes error handling, retry logic, and fail-safes to provide a consistent resilience layer.
+  resilience_guard:
     enabled: true
     architecture: "layered"
     error_classification:
@@ -1481,186 +1479,6 @@ implementation:
           enabled: true
           failure_threshold: 3
           recovery_triggers: ["circuit_recovery_ready", "system_stabilized"]
-
-# === ENHANCED CRITICAL TRANSITION HANDLERS ===
-
-# Critical transition handlers that were missing
-
-  critical_transition_handlers:
-    # System Recovery Failure Handler
-    system_recovery_failure_handler:
-      enabled: true
-      transition: "SYSTEM_RECOVERY → SYSTEM_FAILED"
-      trigger: "recovery_failed"
-      completion_triggers: ["escalation_complete", "cascade_prevention_active"]
-      actions:
-        - name: "emergency_escalation"
-          method: "escalate_to_emergency_mode"
-          config:
-            preserve_state: true
-            notify_administration: true
-
-        - name: "cascade_prevention"
-          method: "prevent_cascade_failures"
-          config:
-            isolate_failed_components: true
-            activate_emergency_protocols: true
-
-      fallback_strategy:
-        action: "system_reset_with_state_preservation"
-        recovery_timeout: 300s
-
-    # Agent Selection Failure Handler
-    agent_selection_failure_handler:
-      enabled: true
-      transition: "AGENT_SELECTION → NO_AGENTS_AVAILABLE"
-      trigger: "no_suitable_agents_found"
-      timeout: 15s
-      actions:
-        - name: "fallback_agent_search"
-          method: "search_alternative_agent_categories"
-          config:
-            expand_search_criteria: true
-            lower_competency_threshold: 0.3
-
-        - name: "manual_intervention_request"
-          method: "request_manual_agent_selection"
-          config:
-            timeout: 60s
-            escalation_level: "high"
-
-      fallback_strategy:
-        action: "use_system_native_tools"
-        capabilities: ["basic_file_operations", "web_search", "bash_commands"]
-
-    # Recovery Completion Event Handler
-    recovery_completion_handler:
-      enabled: true
-      transition: "RECOVERY_EXECUTION → COMPLETED"
-      trigger: "recovery_completion_requested"
-      listen_to: ["recovery.completed", "recovery.success", "recovery.partial_complete"]
-      actions:
-        - name: "recovery_coordination"
-          method: "coordinate_recovery_completion"
-          config:
-            completion_validation: true
-            partial_completion_handling: true
-
-        - name: "recovery_finalization"
-          method: "finalize_recovery_process"
-          config:
-            finalization_strategies: ["full_recovery", "minimal_recovery", "component_level_recovery"]
-            success_validation: true
-
-      fallback_strategy:
-        action: "continue_with_recovery_results"
-        notification_level: "information"
-
-    # Preparation Completion Event Handler
-    preparation_completion_handler:
-      enabled: true
-      transition: "PREPARING → COMPLETED"
-      trigger: "preparation_completion_requested"
-      listen_to: ["preparation.completed", "preparation.sufficient", "preparation.minimal_ready"]
-      actions:
-        - name: "preparation_coordination"
-          method: "coordinate_preparation_completion"
-          config:
-            preparation_validation: true
-            resource_optimization: true
-
-        - name: "preparation_finalization"
-          method: "finalize_preparation_process"
-          config:
-            finalization_modes: ["full_preparation", "minimal_preparation", "cached_preparation"]
-            readiness_check: true
-
-      fallback_strategy:
-        action: "continue_with_available_preparation"
-        monitoring_level: "normal"
-
-# === STANDARDIZED GUARD SYSTEMS ===
-
-# Unified guard framework to eliminate inconsistencies
-
-  standardized_guards:
-    # System State Guard - universal across all state machines
-    system_state_guard:
-      enabled: true
-      states: ["READY", "OPERATIONAL", "COMPLETED"]
-      universal_conditions:
-        - condition: "system_health > 0.8"
-          validator: "system_health_monitor"
-          criticality: "critical"
-
-        - condition: "error_rate < 0.05"
-          validator: "error_rate_monitor"
-          criticality: "high"
-
-        - condition: "resources_available > 0.2"
-          validator: "resource_availability_monitor"
-          criticality: "high"
-
-      blocked_transitions: ["ANALYZING", "AGENT_SELECTION", "EXECUTING"]
-      priority: "critical"
-
-      actions:
-        on_block:
-          primary: "wait_with_timeout"
-          timeout: 30s
-          fallback: "escalate_to_recovery"
-
-        on_fail:
-          primary: "emergency_stop"
-          secondary: "preserve_system_state"
-
-    # Resource Guard - unified resource management
-    resource_guard:
-      enabled: true
-      universal_threshold: 0.2
-      adaptive_scaling: true
-      priority_preemption: true
-
-      resource_conditions:
-        - condition: "cpu_available > 0.3"
-          monitor: "cpu_usage_monitor"
-
-        - condition: "memory_available > 0.25"
-          monitor: "memory_usage_monitor"
-
-        - condition: "io_bandwidth_available > 0.2"
-          monitor: "io_performance_monitor"
-
-      blocked_transitions: ["EXECUTING", "MONITORING", "RECOVERY_EXECUTION"]
-      fallback: "pause_operation_and_wait"
-      priority: "high"
-
-    # Concurrency Guard - standardized across all state machines
-    concurrency_guard:
-      enabled: true
-      max_concurrent_operations: 5
-      adaptive_limit: true
-      queue_management: true
-
-      concurrency_conditions:
-        - condition: "active_operations < max_concurrent"
-          monitor: "operation_counter"
-          dynamic_adjustment: true
-
-      blocked_transitions: ["AGENT_ASSIGNMENT", "TASK_EXECUTION"]
-      fallback: "queue_for_available_slot"
-      priority: "medium"
-
-      queue_management:
-        strategy: "priority_based"
-        max_queue_size: 50
-        event_coordination: true
-
-# === ENHANCED RETRY MECHANISMS ===
-
-# Comprehensive retry framework for all state machines
-
-  enhanced_retry_mechanisms:
     # Universal retry configuration
     universal_retry_config:
       enabled: true
@@ -1737,11 +1555,9 @@ implementation:
             - "continue_with_essential_monitoring"
             - "activate_alert_system"
 
-# === CONCURRENT SCENARIO HANDLING ===
-
-# Comprehensive concurrent operation management
-
-  concurrent_scenario_handling:
+# === CONCURRENCY GUARD ===
+# Mission: Manage concurrent operations safely and efficiently. This system provides a unified approach to handling race conditions, deadlocks, and synchronization to ensure stable multi-threaded execution.
+  concurrency_guard:
     # Atomic Operations Framework
     atomic_operations:
       enabled: true
@@ -1824,12 +1640,6 @@ implementation:
 
           - name: "lockfree_hashtable"
             implementation: "hopscotch_hashing"
-
-# === RACE CONDITION FIXES ===
-
-# Comprehensive race condition elimination
-
-  race_condition_fixes:
     # Deadlock detection fixes
     deadlock_detection_fixes:
       # Real-time wait-for graph monitoring
