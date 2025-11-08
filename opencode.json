@@ -32,13 +32,33 @@
         "AGENT_NAME": "master",
         "LOG_LEVEL": "info"
       }
+    },
+    "fast_filesystem": {
+      "type": "local",
+      "command": ["bunx", "-y", "fast-filesystem-mcp"],
+      "enabled": true,
+      "timeout": 15000,
+      "environment": {
+        "NODE_ENV": "production"
+      }
+    },
+    "sequential_thinking": {
+      "type": "local",
+      "command": ["bunx", "-y", "@modelcontextprotocol/server-sequential-thinking"],
+      "enabled": true,
+      "timeout": 15000,
+      "environment": {
+        "NODE_ENV": "production"
+      }
     }
   },
   "tools": {
     "context7": true,
     "gh_grep": true,
     "mcp_everything": false,
-    "subagent_master": true
+    "subagent_master": true,
+    "fast_filesystem": true,
+    "sequential_thinking": true
   },
   "agent": {
     "master": {
@@ -51,7 +71,9 @@
         "context7": true,
         "gh_grep": true,
         "subagent_master": true,
-        "mcp_everything": false
+        "mcp_everything": false,
+        "fast_filesystem": true,
+        "sequential_thinking": true
       },
       "permission": {
         "edit": "allow",
